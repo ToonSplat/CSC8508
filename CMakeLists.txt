@@ -55,7 +55,7 @@ include(CMake/GlobalSettingsInclude.cmake OPTIONAL)
 ################################################################################
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-find_package(Vulkan REQUIRED)
+find_package(Vulkan)
 
 set(ASSET_ROOT "${CMAKE_SOURCE_DIR}/Assets/" CACHE STRING "" FORCE)
 add_compile_definitions(ASSETROOTLOCATION="${ASSET_ROOT}") 
