@@ -13,7 +13,7 @@
       "variables": [
         {
           "name": "USE_VULKAN",
-          "value": "True",
+          "value": "False",
           "type": "BOOL"
         }
       ]
