@@ -63,14 +63,16 @@ bool CollisionDetection::RayBoxIntersection(const Ray& r, const Vector3& boxPos,
 		else if (rayDir[i] < 0)
 			tVals[i] = (boxMax[i] - rayPos[i]) / rayDir[i];
 	}
+
 	float bestT = tVals.GetMaxElement();
 	if (bestT < 0.0f)
 		return false; // Prevent backwards rays
 
 	Vector3 intersection = rayPos + (rayDir * bestT);
 	const float epsilon = 0.0001f; // Amount of tolerance on calculations
+
 	for (int i = 0; i < 3; ++i) {
-		if (intersection[i] + epsilon < boxMin[i] || intersection[i] + epsilon > boxMax[i])
+		if (intersection[i] + epsilon < boxMin[i] || intersection[i] - epsilon > boxMax[i])
 			return false;
 	}
 	collision.collidedAt = intersection;
