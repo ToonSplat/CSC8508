@@ -21,6 +21,13 @@ namespace NCL {
 			}
 
 			void SetGravity(const Vector3& g);
+
+			//Added
+			float GetLinearDamping() { return linearDamping; }
+			void SetLinearDamping(float d) { linearDamping = d; }
+
+			void ToggleUseBroadPhase() { useBroadPhase != useBroadPhase; }
+
 		protected:
 			void BasicCollisionDetection();
 			void BroadPhase();
@@ -50,6 +57,9 @@ namespace NCL {
 			std::vector<CollisionDetection::CollisionInfo> broadphaseCollisionsVec;
 			bool useBroadPhase		= true;
 			int numCollisionFrames	= 5;
+
+			//Added
+			float linearDamping;
 		};
 	}
 }

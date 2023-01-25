@@ -35,6 +35,8 @@ namespace NCL {
 			void InitMixedGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing);
 			void InitCubeGridWorld(int numRows, int numCols, float rowSpacing, float colSpacing, const Vector3& cubeDims);
 
+			void BridgeConstraintTest();
+
 			void InitDefaultFloor();
 
 			bool SelectObject();
@@ -49,6 +51,9 @@ namespace NCL {
 			GameObject* AddPlayerToWorld(const Vector3& position);
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
+
+			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
+			StateGameObject* testStateObj;
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;

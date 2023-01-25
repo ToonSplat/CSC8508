@@ -326,7 +326,7 @@ void GameTechRenderer::NewRenderLines() {
 	SetDebugLineBufferSizes(frameLineCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, frameLineCount * sizeof(Debug::DebugLineEntry), lines.data());
+	glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(Debug::DebugLineEntry), lines.data());
 	
 
 	glBindVertexArray(lineVAO);
