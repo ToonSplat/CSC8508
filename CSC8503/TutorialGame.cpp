@@ -68,7 +68,9 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
-	if (!inSelectionMode) {
+	if (cameraTargetObject)
+		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
+	else if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
 	if (lockedObject != nullptr) {
@@ -116,6 +118,12 @@ void TutorialGame::UpdateGame(float dt) {
 
 			objClosest->GetRenderObject()->SetColour(Vector4(1, 0, 1, 1));
 		}
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
+		if (selectionObject)
+			cameraTargetObject = selectionObject;
+		else cameraTargetObject = nullptr;
 	}
 
 	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
