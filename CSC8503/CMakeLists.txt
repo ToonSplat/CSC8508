@@ -7,7 +7,10 @@ set(Header_Files
     "GameTechRenderer.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
+    "PaintableObject.h"
+    "PaintableZone.h"
     "StateGameObject.h"
+    "Team.h"
     "TutorialGame.h"
 )
 source_group("Header Files" FILES ${Header_Files})
@@ -17,7 +20,10 @@ set(Source_Files
     "Main.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
+    "PaintableObject.cpp"
+    "PaintableZone.cpp"
     "StateGameObject.cpp"
+    "Team.cpp"
     "TutorialGame.cpp"
 )
 
