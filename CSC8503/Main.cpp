@@ -266,6 +266,9 @@ int main() {
 	TutorialGame* g = new TutorialGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	TestBehaviourTree();
+
+	std::cout << "ANGLE: " << Vector3::Angle(Vector3(1, 0, 0), Vector3(0, 1, 0)) << std::endl;
+
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
 		TestPathFinding();
 		DisplayPathFinding();

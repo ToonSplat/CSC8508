@@ -19,6 +19,8 @@ namespace NCL {
 			GameWorld();
 			~GameWorld();
 
+			static GameWorld* Get() { return instance; }
+
 			void Clear();
 			void ClearAndErase();
 
@@ -68,6 +70,9 @@ namespace NCL {
 			bool shuffleObjects;
 			int		worldIDCounter;
 			int		worldStateCounter;
+
+		private:
+			static GameWorld* instance;
 		};
 	}
 }
