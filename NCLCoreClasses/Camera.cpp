@@ -60,7 +60,7 @@ void Camera::UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize) 
 	Vector3 rotation = Matrix3::FromEuler(Vector3(0, yaw, pitch)) * Vector3(0, 0, targetSize.y * 5);
 	Vector3 positionDifference = targetPosition - lastTargetPosition;
 
-	positionDifference *= (dt + 0.02f);
+	positionDifference *= (dt + 0.05f);
 
 	position = lastTargetPosition + positionDifference + rotation + Vector3(0, targetSize.y * 0.25f, 0);
 
