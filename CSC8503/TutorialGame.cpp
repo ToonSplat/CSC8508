@@ -9,7 +9,6 @@
 #include "StateGameObject.h"
 
 
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -21,7 +20,7 @@ TutorialGame::TutorialGame()	{
 	renderer = new GameTechRenderer(*world);
 #endif
 
-	physics		= new PhysicsSystem(*world);
+	physics		= new PhysicsSystem(*world);	
 
 	forceMagnitude	= 10.0f;
 	objMovementForce = 10.0f;
@@ -31,6 +30,7 @@ TutorialGame::TutorialGame()	{
 	inSelectionMode = false;
 
 	InitialiseAssets();
+	//InitCamera();
 }
 
 /*
@@ -204,6 +204,7 @@ void TutorialGame::ObjMovement(float dt) {
 	}
 	else if (!Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer < sprintMax) {
 		sprintTimer += dt;
+		sprintTimer = max(sprintTimer, sprintMax);
 	}
 
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))

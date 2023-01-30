@@ -16,6 +16,10 @@ PaintableObject::PaintableObject(PaintableZone* parent, Team* owner) : parent(pa
 	parent->AddObject(owner);
 }
 
+void PaintableObject::Update(float dt) {
+
+}
+
 void PaintableObject::Hit(Team* hitBy) {
 	if (parent)
 		parent->ChangeChildOwner(owner, hitBy);
