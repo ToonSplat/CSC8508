@@ -9,7 +9,6 @@
 #include "StateGameObject.h"
 
 
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -21,13 +20,14 @@ TutorialGame::TutorialGame()	{
 	renderer = new GameTechRenderer(*world);
 #endif
 
-	physics		= new PhysicsSystem(*world);
+	physics		= new PhysicsSystem(*world);	
 
 	forceMagnitude	= 10.0f;
 	useGravity		= false;
 	inSelectionMode = false;
 
 	InitialiseAssets();
+	//InitCamera();
 }
 
 /*

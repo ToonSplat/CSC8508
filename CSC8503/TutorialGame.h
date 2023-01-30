@@ -64,6 +64,7 @@ namespace NCL {
 #endif
 			PhysicsSystem*		physics;
 			GameWorld*			world;
+			ToonLevelManager* levelManager;
 
 			bool useGravity;
 			bool inSelectionMode;
