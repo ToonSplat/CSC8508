@@ -1,4 +1,9 @@
 #pragma once
+#include "GameTechRenderer.h"
+#ifdef USEVULKAN
+#include "GameTechVulkanRenderer.h"
+#endif
+
 #include "GameObject.h"
 
 namespace NCL {
@@ -12,27 +17,31 @@ namespace NCL {
 
         protected:
             // Weapon Stats
-            int ammo; // Current ammo to use
-            float fireRate; // time between shot
-            float reloadTime; // time between reloads
+            int ammoInUse; // Current ammo to use
+            int ammoHeld; // Total ammo currently held
             int maxAmmoHeld; // Max ammo allowed to be held
             int maxAmmoInUse; // Max ammo before reloading
+            float fireRate; // time between shot
+            float reloadTime; // time between reloads
             float maxShootDistance; // max dist can be shot
 
 
             void Shoot(float dt);
-            void Reload();
+            void Reload(float dt);
             void PickUpAmmo();
 
 
             //Variables
-            float timer;
+            float shootTimer;
+            float reloadTimer;
 
-            enum status {
+            enum statusTypes {
                 isFiring,
                 isIdle,
                 isReloading
             };
+
+            statusTypes status;
         };
     }
 }
