@@ -62,6 +62,7 @@ namespace NCL {
 			StateGameObject* testStateObj;
 
 			void ShootObject();
+			void CreateBullet();
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;

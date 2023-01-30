@@ -71,6 +71,11 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
+#pragma region To Be Changed
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+	Debug::Print("[]", Vector2(49, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+#pragma endregion
+
 	if (cameraTargetObject)
 	{
 		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
@@ -607,7 +612,7 @@ bool TutorialGame::SelectObject() {
 				selectionObject = nullptr;
 			}
 
-			Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
+			Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
 
 			RayCollision closestCollision;
 			if (world->Raycast(ray, closestCollision, true)) {
@@ -707,8 +712,34 @@ void TutorialGame::BridgeConstraintTest() {
 
 void TutorialGame::ShootObject()
 {
-	if (selectionObject && cameraTargetObject && Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT) && Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
+	if (selectionObject && cameraTargetObject && Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT) && Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT))
 	{
 		Debug::DrawLine(selectionObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetPosition(), Vector4(1, 0, 0, 1), 1.0f);
+		CreateBullet();
 	}
+}
+
+void TutorialGame::CreateBullet()
+{
+	GameObject*   sphereBullet = new GameObject("Fire");
+	float		  radius	   = 0.1f;
+	Vector3		  sphereSize   = Vector3(radius, radius, radius);
+	SphereVolume* volume	   = new SphereVolume(radius + 0.5f);
+	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
+
+	sphereBullet->GetTransform().SetScale(sphereSize);
+	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), sphereMesh, nullptr, basicShader));
+	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
+
+	sphereBullet->GetPhysicsObject()->SetInverseMass(20.0f);
+	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+	sphereBullet->GetPhysicsObject()->InitSphereInertia();
+	world->AddGameObject(sphereBullet);
+
+
+	Vector3 position		 = cameraTargetObject->GetTransform().GetPosition();
+	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
+	Vector3 forceInDirection = Matrix4::Rotation(world->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(world->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1) * 400.0f;
+	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
+	sphereBullet->GetPhysicsObject()->InitSphereInertia();
 }
