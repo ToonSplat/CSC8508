@@ -69,7 +69,15 @@ TutorialGame::~TutorialGame()	{
 
 void TutorialGame::UpdateGame(float dt) {
 	if (cameraTargetObject)
+	{
 		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
+		float horizontalAngle	   = world->GetMainCamera()->GetYaw();
+		float verticalAngle		   = world->GetMainCamera()->GetPitch();
+		Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
+		Matrix4 verticalRotation   = Matrix4::Rotation(verticalAngle, Vector3(1, 0, 0));
+		Matrix4 combinedRotation   = horizontalRotation * verticalRotation;
+		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);
+	}
 	else if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
