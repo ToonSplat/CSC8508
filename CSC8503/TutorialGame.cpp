@@ -359,7 +359,7 @@ void TutorialGame::InitWorld() {
 	InitGameExamples();
 	InitDefaultFloor();
 
-	sampleWeapon = new PaintBallClass(10, 25, 0.5f, 1.0f, 5);
+	sampleWeapon = new PaintBallClass(15, 50, 1.0f, 1.0f, 5);
 }
 
 /*
