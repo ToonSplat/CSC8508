@@ -23,6 +23,8 @@ namespace NCL
 			GameWorld* world;
 			ToonLevelManager* levelManager;
 
+			Player* cameraTargetObject = nullptr;
+
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 

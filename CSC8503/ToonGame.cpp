@@ -18,6 +18,8 @@ NCL::CSC8503::ToonGame::ToonGame()
 	subZones = new std::vector<PaintableZone*>;
 
 	levelManager = new ToonLevelManager(*renderer, mainZone, subZones);
+
+	cameraTargetObject = levelManager->AddMoveablePlayer(Vector3(-20, 5, -20));
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
@@ -36,6 +38,15 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
 	world->GetMainCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
+
+	world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
+	float horizontalAngle = world->GetMainCamera()->GetYaw();
+	float verticalAngle = world->GetMainCamera()->GetPitch() + 20;
+
+	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
+	Matrix4 cam = view.Inverse();
+
+	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 
 	renderer->Update(dt);
 	physics->Update(dt);
