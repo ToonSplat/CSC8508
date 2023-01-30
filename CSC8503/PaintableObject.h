@@ -8,6 +8,7 @@ namespace NCL {
 		public:
 			PaintableObject(void);
 			PaintableObject(PaintableZone* parent);
+			PaintableObject(PaintableZone* parent, Team* owner);
 			~PaintableObject(void) = default;
 
 			void Hit(Team* hitBy);

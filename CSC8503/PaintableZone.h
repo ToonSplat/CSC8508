@@ -10,9 +10,12 @@ namespace NCL {
 			~PaintableZone(void) = default;
 
 			void AddObject(void);
+			void AddObject(Team* owner);
+			void RemoveObject(Team* owner);
+
 			void ChangeChildOwner(Team* oldOwner, Team* newOwner);
 
-			Team* GetOwner(void) const { return owner; }
+			Team* GetOwner(void) { if (owner) return owner; else return nullptr; }
 
 		private:
 			void CheckZoneOwner(void);
