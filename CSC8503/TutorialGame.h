@@ -61,6 +61,8 @@ namespace NCL {
 			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
 			StateGameObject* testStateObj;
 
+			void ShootObject();
+
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;
 #else

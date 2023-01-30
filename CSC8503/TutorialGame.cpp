@@ -599,6 +599,8 @@ bool TutorialGame::SelectObject() {
 	if (inSelectionMode) {
 		Debug::Print("Press Q to change to camera mode!", Vector2(5, 85));
 
+		ShootObject();
+
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
 			if (selectionObject) {	//set colour to deselected;
 				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
@@ -701,4 +703,12 @@ void TutorialGame::BridgeConstraintTest() {
 	}
 	PositionConstraint* constraint = new PositionConstraint(previous, end, maxDistance);
 	world->AddConstraint(constraint);
+}
+
+void TutorialGame::ShootObject()
+{
+	if (selectionObject && cameraTargetObject && Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT) && Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
+	{
+		Debug::DrawLine(selectionObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetPosition(), Vector4(1, 0, 0, 1), 1.0f);
+	}
 }
