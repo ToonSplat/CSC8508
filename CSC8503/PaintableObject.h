@@ -1,15 +1,18 @@
 #pragma once
 #include "PaintableZone.h"
+#include "GameObject.h"
 
 namespace NCL {
 	namespace CSC8503 {
-		class PaintableObject {
+		class PaintableObject : GameObject {
 			// TODO: Actually link this class to something placable in the world... GameObject?
 		public:
 			PaintableObject(void);
 			PaintableObject(PaintableZone* parent);
 			PaintableObject(PaintableZone* parent, Team* owner);
 			~PaintableObject(void) = default;
+
+			void Update(float dt);
 
 			void Hit(Team* hitBy);
 
