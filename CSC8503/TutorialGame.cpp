@@ -198,6 +198,7 @@ void TutorialGame::ObjMovement(float dt) {
 	}
 	else if (!Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer < sprintMax) {
 		sprintTimer += dt;
+		sprintTimer = max(sprintTimer, sprintMax);
 	}
 
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
