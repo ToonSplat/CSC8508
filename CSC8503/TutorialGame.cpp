@@ -76,11 +76,17 @@ void TutorialGame::UpdateGame(float dt) {
 		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
 		float horizontalAngle	   = world->GetMainCamera()->GetYaw();
 		float verticalAngle		   = world->GetMainCamera()->GetPitch();
-		Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
+	
+		Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
+		Matrix4 cam = view.Inverse();
+		
+		cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
+		
+		//ObjMovement(dt);
+		/*Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
 		Matrix4 verticalRotation   = Matrix4::Rotation(verticalAngle, Vector3(1, 0, 0));
 		Matrix4 combinedRotation   = horizontalRotation * verticalRotation;
-		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);
-		ObjMovement(dt);
+		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);*/
 	}
 	else if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
@@ -133,11 +139,11 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
+	/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
 		if (selectionObject)
 			cameraTargetObject = selectionObject;
 		else cameraTargetObject = nullptr;
-	}
+	}*/
 
 	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
@@ -359,6 +365,8 @@ void TutorialGame::InitWorld() {
 
 	InitGameExamples();
 	InitDefaultFloor();
+
+	cameraTargetObject = AddMoveablePlayer(Vector3(0, 20, 0));
 }
 
 /*
@@ -462,6 +470,31 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position) {
 	character->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(character);
+
+	return character;
+}
+
+Player* TutorialGame::AddMoveablePlayer(const Vector3& position) {
+	float meshSize = 1.0f;
+	float inverseMass = 0.5f;
+
+	Player* character = new Player();
+	SphereVolume* volume = new SphereVolume(1.0f);
+
+	character->SetBoundingVolume((CollisionVolume*)volume);
+
+	character->GetTransform()
+		.SetScale(Vector3(meshSize, meshSize, meshSize))
+		.SetPosition(position);
+
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, basicShader));
+	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+
+	character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	character->GetPhysicsObject()->InitSphereInertia();
+
+	world->AddGameObject(character);
+	//player = character;
 
 	return character;
 }

@@ -12,6 +12,7 @@ set(Header_Files
     "StateGameObject.h"
     "Team.h"
     "TutorialGame.h"
+    "Player.h"
     "ToonLevelManager.h"
     "ToonGame.h"
 )
@@ -27,6 +28,7 @@ set(Source_Files
     "StateGameObject.cpp"
     "Team.cpp"
     "TutorialGame.cpp"
+    "Player.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
 )
