@@ -23,6 +23,7 @@ namespace NCL {
 
 			void GameOver();
 			void ResetGame();
+			void ObjMovement(float dt);
 
 			void InitCamera();
 			void UpdateKeys();
@@ -71,7 +72,10 @@ namespace NCL {
 			bool useGravity;
 			bool inSelectionMode;
 
-			float		forceMagnitude;
+			float objMovementForce;
+			float forceMagnitude;
+			float sprintTimer;
+			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
 			GameObject* cameraTargetObject = nullptr;
