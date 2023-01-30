@@ -14,7 +14,10 @@ NCL::CSC8503::ToonGame::ToonGame()
 	physics = new PhysicsSystem(*world);
 	physics->UseGravity(true);
 
-	levelManager = new ToonLevelManager(*renderer);
+	mainZone = new PaintableZone();
+	subZones = new std::vector<PaintableZone*>;
+
+	levelManager = new ToonLevelManager(*renderer, mainZone, subZones);
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
@@ -22,6 +25,10 @@ NCL::CSC8503::ToonGame::~ToonGame()
 	delete world;
 	delete renderer;
 	delete physics;
+	delete mainZone;
+	for (auto& zone : *subZones)
+		delete zone;
+	delete subZones;
 	delete levelManager;
 }
 
@@ -59,4 +66,8 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		if (world->Raycast(ray, closestCollision, true))
 			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
 	}
+
+	/*mainZone->PrintOwnership();
+	for (auto& zone : *subZones)
+		zone->PrintOwnership();*/
 }

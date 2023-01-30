@@ -1,5 +1,6 @@
 #pragma once
 #include "GameTechRenderer.h"
+#include "PaintableObject.h"
 
 namespace NCL
 {
@@ -16,7 +17,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer& renderer);
+			ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones);
 			~ToonLevelManager();
 
 		protected:
@@ -44,7 +45,7 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			GameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
+			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, PaintableZone* zone, float inverseMass = 10.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
@@ -55,7 +56,9 @@ namespace NCL
 
 			GameTechRenderer& gameRenderer;
 
-			GameObject* axisObject;
+			PaintableZone* mainZone;
+			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
+			PaintableObject* axisObject;
 		};
 	}
 }
