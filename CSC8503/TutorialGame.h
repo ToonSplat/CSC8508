@@ -81,7 +81,7 @@ namespace NCL {
 			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
-			GameObject* cameraTargetObject = nullptr;
+			Player* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;
@@ -97,7 +97,7 @@ namespace NCL {
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject	= nullptr;
-			Player* player;
+			//Player* player;
 			Vector3 lockedOffset		= Vector3(0, 14, 20);
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;

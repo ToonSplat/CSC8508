@@ -80,7 +80,7 @@ void TutorialGame::UpdateGame(float dt) {
 		Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
 		Matrix4 cam = view.Inverse();
 		
-		player->Update(cam, horizontalAngle, verticalAngle, dt);
+		cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 		
 		//ObjMovement(dt);
 		/*Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
@@ -139,11 +139,11 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
+	/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
 		if (selectionObject)
 			cameraTargetObject = selectionObject;
 		else cameraTargetObject = nullptr;
-	}
+	}*/
 
 	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
@@ -493,7 +493,7 @@ Player* TutorialGame::AddMoveablePlayer(const Vector3& position) {
 	character->GetPhysicsObject()->InitSphereInertia();
 
 	world->AddGameObject(character);
-	player = character;
+	//player = character;
 
 	return character;
 }
