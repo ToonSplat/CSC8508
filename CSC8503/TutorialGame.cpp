@@ -75,7 +75,7 @@ void TutorialGame::UpdateGame(float dt) {
 	{
 		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
 		float horizontalAngle	   = world->GetMainCamera()->GetYaw();
-		float verticalAngle		   = world->GetMainCamera()->GetPitch();
+		float verticalAngle		   = world->GetMainCamera()->GetPitch() + 20;
 	
 		Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
 		Matrix4 cam = view.Inverse();
