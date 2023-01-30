@@ -741,5 +741,4 @@ void TutorialGame::CreateBullet()
 	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
 	Vector3 forceInDirection = Matrix4::Rotation(world->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(world->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1) * 400.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
-	sphereBullet->GetPhysicsObject()->InitSphereInertia();
 }

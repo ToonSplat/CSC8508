@@ -62,7 +62,7 @@ void Camera::UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize) 
 
 	positionDifference *= (dt + 0.05f);
 
-	position = lastTargetPosition + positionDifference + rotation + Vector3(0, targetSize.y * 0.25f, 0);
+	position = lastTargetPosition + positionDifference + rotation + Vector3(0, targetSize.y * 1.25f, 0);
 
 	lastTargetPosition += positionDifference;
 }
