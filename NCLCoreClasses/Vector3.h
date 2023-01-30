@@ -172,5 +172,18 @@ namespace NCL::Maths {
 			o << "Vector3(" << v.x << "," << v.y << "," << v.z << ")" << std::endl;
 			return o;
 		}
+
+		inline static float Angle(const Vector3& A, const Vector3& B)
+		{
+			float angle = 0.0f;
+			float dot = Vector3::Dot(A, B);
+			float magA = A.Length();
+			float magB = B.Length();
+
+			float res = dot / (magA * magB);
+			angle = acos(res);
+
+			return angle * 180.0f / 3.14f;
+		}
 	};
 }

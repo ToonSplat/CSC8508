@@ -7,6 +7,8 @@
 
 #include "StateGameObject.h"
 
+#include "ToonLevelManager.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -68,6 +70,7 @@ namespace NCL {
 #endif
 			PhysicsSystem*		physics;
 			GameWorld*			world;
+			ToonLevelManager* levelManager;
 
 			bool useGravity;
 			bool inSelectionMode;

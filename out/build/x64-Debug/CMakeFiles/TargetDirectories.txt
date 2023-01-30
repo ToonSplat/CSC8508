@@ -1,0 +1,14 @@
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/NCLCoreClasses.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/edit_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/rebuild_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/CSC8503CoreClasses.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/edit_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/rebuild_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/OpenGLRendering/CMakeFiles/OpenGLRendering.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/OpenGLRendering/CMakeFiles/edit_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/OpenGLRendering/CMakeFiles/rebuild_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/edit_cache.dir
+D:/Works/C++_Tutorials/Newcastle University/CSC8507/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/rebuild_cache.dir
