@@ -4,8 +4,7 @@
 
 namespace NCL {
 	namespace CSC8503 {
-		class PaintableObject : GameObject {
-			// TODO: Actually link this class to something placable in the world... GameObject?
+		class PaintableObject : public GameObject {
 		public:
 			PaintableObject(void);
 			PaintableObject(PaintableZone* parent);

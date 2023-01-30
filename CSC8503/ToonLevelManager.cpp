@@ -7,8 +7,8 @@
 using namespace NCL;
 using namespace CSC8503;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
-	gameRenderer(renderer)
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones) :
+	gameRenderer(renderer), mainZone(mainZone), subZones(subZones)
 {
 	if (!LoadAssets()) return;
 	LoadLevel();
@@ -73,7 +73,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 
 bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 {
-	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, nullptr, 0.0f);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
 	int XZ = Axes::X | Axes::Z;
@@ -107,7 +107,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 
 	//Bridges
 	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
-	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2.0f, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
 
 	//Boxes
 	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(20.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple);
@@ -126,10 +126,13 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	return true;
 }
 
-GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, PaintableZone* zone, float inverseMass)
 {
-	GameObject* cube = new GameObject();
-
+	PaintableObject* cube;
+	if(zone)
+		cube = new PaintableObject(zone);
+	else 
+		cube = new PaintableObject();
 	AABBVolume* volume = new AABBVolume(scale);
 	cube->SetBoundingVolume((CollisionVolume*)volume);
 
@@ -151,6 +154,7 @@ GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& positi
 
 void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex)
 {
+	PaintableZone* tempZone = new PaintableZone(mainZone);
 	SetSelectedAxes(axes);
 	for (int x = 0; x < gridSize.x && (gridSize.x > 0); x++)
 	{
@@ -163,8 +167,9 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 				newPos.y = (IsYSelected() ? y * gridSpacing * cubeScale.y : 0.0f) + gridPosition.y;
 				newPos.z = (IsZSelected() ? z * gridSpacing * cubeScale.z : 0.0f) + gridPosition.z;
 
-				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, 0.0f);
+				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, tempZone, 0.0f);
 			}
 		}
 	}
+	subZones->push_back(tempZone);
 }

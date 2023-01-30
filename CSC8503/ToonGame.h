@@ -23,6 +23,9 @@ namespace NCL
 			GameWorld* world;
 			ToonLevelManager* levelManager;
 
+			PaintableZone* mainZone;
+			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
+
 			bool showCursor;
 		};
 	}
