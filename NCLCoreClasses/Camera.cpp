@@ -1,8 +1,26 @@
 #include "Camera.h"
 #include "Window.h"
+#include "Matrix3.h"
 #include <algorithm>
 
 using namespace NCL;
+
+void Camera::UpdatePitchAndYaw() {
+	//Update the mouse by how much
+	pitch -= (Window::GetMouse()->GetRelativePosition().y);
+	yaw -= (Window::GetMouse()->GetRelativePosition().x);
+
+	//Bounds check the pitch, to be between straight up and straight down ;)
+	pitch = std::min(pitch, 90.0f);
+	pitch = std::max(pitch, -90.0f);
+
+	if (yaw < 0) {
+		yaw += 360.0f;
+	}
+	if (yaw > 360.0f) {
+		yaw -= 360.0f;
+	}
+}
 
 /*
 Polls the camera for keyboard / mouse movement.
@@ -10,20 +28,7 @@ Should be done once per frame! Pass it the msec since
 last frame (default value is for simplicities sake...)
 */
 void Camera::UpdateCamera(float dt) {
-	//Update the mouse by how much
-	pitch	-= (Window::GetMouse()->GetRelativePosition().y);
-	yaw		-= (Window::GetMouse()->GetRelativePosition().x);
-
-	//Bounds check the pitch, to be between straight up and straight down ;)
-	pitch = std::min(pitch, 90.0f);
-	pitch = std::max(pitch, -90.0f);
-
-	if (yaw <0) {
-		yaw += 360.0f;
-	}
-	if (yaw > 360.0f) {
-		yaw -= 360.0f;
-	}
+	UpdatePitchAndYaw();
 
 	float frameSpeed = 100 * dt;
 
@@ -47,6 +52,19 @@ void Camera::UpdateCamera(float dt) {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::SPACE)) {
 		position.y -= frameSpeed;
 	}
+}
+
+void Camera::UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize) {
+	UpdatePitchAndYaw();
+
+	Vector3 rotation = Matrix3::FromEuler(Vector3(0, yaw, pitch)) * Vector3(0, 0, targetSize.y * 5);
+	Vector3 positionDifference = targetPosition - lastTargetPosition;
+
+	positionDifference *= (dt + 0.02f);
+
+	position = lastTargetPosition + positionDifference + rotation + Vector3(0, targetSize.y * 0.25f, 0);
+
+	lastTargetPosition += positionDifference;
 }
 
 /*

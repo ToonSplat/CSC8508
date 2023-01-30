@@ -19,6 +19,12 @@ namespace NCL {
 		protected:
 			void InitialiseAssets();
 
+			void UpdateTimer(float dt);
+
+			void GameOver();
+			void ResetGame();
+			void ObjMovement(float dt);
+
 			void InitCamera();
 			void UpdateKeys();
 
@@ -66,9 +72,13 @@ namespace NCL {
 			bool useGravity;
 			bool inSelectionMode;
 
-			float		forceMagnitude;
+			float objMovementForce;
+			float forceMagnitude;
+			float sprintTimer;
+			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
+			GameObject* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;
@@ -90,6 +100,9 @@ namespace NCL {
 			}
 
 			GameObject* objClosest = nullptr;
+
+			bool isGameOver;
+			float timer;
 		};
 	}
 }

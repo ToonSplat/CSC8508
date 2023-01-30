@@ -51,6 +51,8 @@ namespace NCL {
 
 		void UpdateCamera(float dt);
 
+		void UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize);
+
 		float GetFieldOfVision() const {
 			return fov;
 		}
@@ -97,6 +99,8 @@ namespace NCL {
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
 	protected:
+		void UpdatePitchAndYaw();
+
 		CameraType camType;
 
 		float	nearPlane;
@@ -110,5 +114,6 @@ namespace NCL {
 		float	yaw;
 		float	pitch;
 		Vector3 position;
+		Vector3 lastTargetPosition;
 	};
 }

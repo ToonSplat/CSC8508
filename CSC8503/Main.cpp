@@ -39,6 +39,7 @@ void TestPathFinding() {
 
 	NavigationPath outPath;
 
+	testNodes.clear();
 	Vector3 startPos(80, 0, 10);
 	Vector3 endPos(80, 0, 80);
 

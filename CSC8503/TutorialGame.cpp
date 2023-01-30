@@ -24,6 +24,9 @@ TutorialGame::TutorialGame()	{
 	physics		= new PhysicsSystem(*world);
 
 	forceMagnitude	= 10.0f;
+	objMovementForce = 10.0f;
+	sprintMax = 2.5f;
+	sprintTimer = 2.0;
 	useGravity		= false;
 	inSelectionMode = false;
 
@@ -68,9 +71,21 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
-	if (!inSelectionMode) {
+	if (cameraTargetObject)
+	{
+		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
+		float horizontalAngle	   = world->GetMainCamera()->GetYaw();
+		float verticalAngle		   = world->GetMainCamera()->GetPitch();
+		Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
+		Matrix4 verticalRotation   = Matrix4::Rotation(verticalAngle, Vector3(1, 0, 0));
+		Matrix4 combinedRotation   = horizontalRotation * verticalRotation;
+		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);
+		ObjMovement(dt);
+	}
+	else if (!inSelectionMode) {
 		world->GetMainCamera()->UpdateCamera(dt);
 	}
+
 	if (lockedObject != nullptr) {
 		Vector3 objPos = lockedObject->GetTransform().GetPosition();
 		Vector3 camPos = objPos + lockedOffset;
@@ -118,6 +133,12 @@ void TutorialGame::UpdateGame(float dt) {
 		}
 	}
 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Y)) {
+		if (selectionObject)
+			cameraTargetObject = selectionObject;
+		else cameraTargetObject = nullptr;
+	}
+
 	Debug::DrawLine(Vector3(), Vector3(0, 100, 0), Vector4(1, 0, 0, 1));
 
 	SelectObject();
@@ -130,9 +151,79 @@ void TutorialGame::UpdateGame(float dt) {
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 
-	if (testStateObj) {
+	if (testStateObj)
 		testStateObj->Update(dt);
+	
+
+	if (!isGameOver)
+		UpdateTimer(dt);
+	else
+		GameOver();
+}
+
+void TutorialGame::UpdateTimer(float dt) {
+	int mins = std::floor((int)round(timer) / 60);
+	int secs = (int)round(timer) - (mins * 60);
+	string tmp;
+	secs <= 9 ? tmp = "0" + std::to_string(secs) : tmp = std::to_string(secs);
+
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::RETURN))
+		timer -= (dt * 25);
+	else
+		timer -= dt;
+
+	Debug::Print("Time Left:" + std::to_string(mins) + ":" + tmp, Vector2(60, 20));
+
+	if (timer <= 0)
+		isGameOver = true;
+}
+
+void TutorialGame::ObjMovement(float dt) {
+	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
+	Matrix4 cam = view.Inverse();
+
+	Vector3 rightAxis = Vector3(cam.GetColumn(0)); //view is inverse of model!
+
+	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
+	fwdAxis.y = 0.0f;
+	fwdAxis.Normalise();
+
+	Debug::Print("Sprint:" + std::to_string((int)round((sprintTimer/sprintMax)*100)) + "%", Vector2(60, 30));
+
+	float fwdForce = objMovementForce;
+
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W) && Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer > 0.0f) {
+		fwdForce = objMovementForce + 5.0f;
+		sprintTimer -= dt;
 	}
+	else if (!Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer < sprintMax) {
+		sprintTimer += dt;
+	}
+
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
+		cameraTargetObject->GetPhysicsObject()->AddForce(fwdAxis * fwdForce);
+
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A))
+		cameraTargetObject->GetPhysicsObject()->AddForce(-rightAxis * objMovementForce);
+
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D))
+		cameraTargetObject->GetPhysicsObject()->AddForce(rightAxis * objMovementForce);
+
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S))
+		cameraTargetObject->GetPhysicsObject()->AddForce(-fwdAxis * objMovementForce);
+}
+
+void TutorialGame::GameOver() {
+	Debug::Print("Game Over!", Vector2(40, 40));
+	Debug::Print("Press Space to reset", Vector2(35, 60));
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+		ResetGame();
+}
+
+void TutorialGame::ResetGame() {
+	InitWorld();
+	selectionObject = nullptr;
 }
 
 void TutorialGame::UpdateKeys() {
@@ -176,36 +267,38 @@ void TutorialGame::UpdateKeys() {
 }
 
 void TutorialGame::LockedObjectMovement() {
-	Matrix4 view		= world->GetMainCamera()->BuildViewMatrix();
-	Matrix4 camWorld	= view.Inverse();
+	if (!cameraTargetObject) {
+		Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
+		Matrix4 camWorld = view.Inverse();
 
-	Vector3 rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
+		Vector3 rightAxis = Vector3(camWorld.GetColumn(0)); //view is inverse of model!
 
-	//forward is more tricky -  camera forward is 'into' the screen...
-	//so we can take a guess, and use the cross of straight up, and
-	//the right axis, to hopefully get a vector that's good enough!
+		//forward is more tricky -  camera forward is 'into' the screen...
+		//so we can take a guess, and use the cross of straight up, and
+		//the right axis, to hopefully get a vector that's good enough!
 
-	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
-	fwdAxis.y = 0.0f;
-	fwdAxis.Normalise();
+		Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
+		fwdAxis.y = 0.0f;
+		fwdAxis.Normalise();
 
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-		selectionObject->GetPhysicsObject()->AddForce(fwdAxis);
-	}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
+			selectionObject->GetPhysicsObject()->AddForce(fwdAxis);
+		}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-		selectionObject->GetPhysicsObject()->AddForce(-fwdAxis);
-	}
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
+			selectionObject->GetPhysicsObject()->AddForce(-fwdAxis);
+		}
 
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT)) {
-		selectionObject->GetPhysicsObject()->AddForce(Vector3(0,-10,0));
+		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::NEXT)) {
+			selectionObject->GetPhysicsObject()->AddForce(Vector3(0, -10, 0));
+		}
 	}
 }
 
 void TutorialGame::DebugObjectMovement() {
 //If we've selected an object, we can manipulate it with some key presses
-	if (inSelectionMode && selectionObject) {
+	if (inSelectionMode && selectionObject && !cameraTargetObject) {
 		//Twist the selected object!
 		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
 			selectionObject->GetPhysicsObject()->AddTorque(Vector3(-10, 0, 0));
@@ -254,6 +347,9 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 	
+	timer = 300.0f; // 5 minute timer
+	isGameOver = false;
+
 	testStateObj = AddStateObjToWorld(Vector3(-10, 10, -10), Vector3(2, 2, 2), 10.0f);
 
 	InitMixedGridWorld(15, 15, 3.5f, 3.5f);
@@ -565,19 +661,20 @@ void TutorialGame::MoveSelectedObject() {
 		}
 	}
 	
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(1, 0, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 0, -1) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(-1, 0, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 0, 1) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SPACE)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 1, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT)) 
-		selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, -1, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
-
+	if (!cameraTargetObject) {
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(1, 0, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 0, -1) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(-1, 0, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 0, 1) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SPACE))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, 1, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+		if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT))
+			selectionObject->GetPhysicsObject()->AddForceAtPosition(Vector3(0, -1, 0) * forceMagnitude, selectionObject->GetTransform().GetPosition());
+	}
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::L))
 		physics->ToggleUseBroadPhase();
 }
