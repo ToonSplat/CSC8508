@@ -130,9 +130,44 @@ void TutorialGame::UpdateGame(float dt) {
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 
-	if (testStateObj) {
+	if (testStateObj)
 		testStateObj->Update(dt);
-	}
+	
+
+	if (!isGameOver)
+		UpdateTimer(dt);
+	else
+		GameOver();
+}
+
+void TutorialGame::UpdateTimer(float dt) {
+	int mins = std::floor((int)round(timer) / 60);
+	int secs = (int)round(timer) - (mins * 60);
+	string tmp;
+	secs <= 9 ? tmp = "0" + std::to_string(secs) : tmp = std::to_string(secs);
+
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::RETURN))
+		timer -= (dt * 25);
+	else
+		timer -= dt;
+
+	Debug::Print("Time Left:" + std::to_string(mins) + ":" + tmp, Vector2(60, 25));
+
+	if (timer <= 0)
+		isGameOver = true;
+}
+
+void TutorialGame::GameOver() {
+	Debug::Print("Game Over!", Vector2(40, 40));
+	Debug::Print("Press Space to reset", Vector2(35, 60));
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+		ResetGame();
+}
+
+void TutorialGame::ResetGame() {
+	InitWorld();
+	selectionObject = nullptr;
 }
 
 void TutorialGame::UpdateKeys() {
@@ -254,6 +289,9 @@ void TutorialGame::InitWorld() {
 	world->ClearAndErase();
 	physics->Clear();
 	
+	timer = 300.0f; // 5 minute timer
+	isGameOver = false;
+
 	testStateObj = AddStateObjToWorld(Vector3(-10, 10, -10), Vector3(2, 2, 2), 10.0f);
 
 	InitMixedGridWorld(15, 15, 3.5f, 3.5f);
