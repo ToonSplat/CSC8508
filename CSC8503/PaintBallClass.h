@@ -10,7 +10,7 @@ namespace NCL {
     namespace CSC8503 {
         class PaintBallClass {
         public:
-            PaintBallClass();
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             void Update (float dt);
@@ -25,10 +25,9 @@ namespace NCL {
             float reloadTime; // time between reloads
             float maxShootDistance; // max dist can be shot
 
-
             void Shoot(float dt);
             void Reload(float dt);
-            void PickUpAmmo();
+            void PickUpAmmo(int amt);
 
 
             //Variables

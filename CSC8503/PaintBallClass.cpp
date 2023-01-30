@@ -3,8 +3,17 @@
 using namespace NCL;
 using namespace CSC8503;
 
-PaintBallClass::PaintBallClass() {
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist) {
+	ammoInUse = _maxAmmoInUse;
+	ammoHeld = _maxAmmoHeld;
+	maxAmmoHeld = _maxAmmoHeld;
+	maxAmmoInUse = _maxAmmoInUse;
+	fireRate = _fireRate;
+	reloadTime = _reloadTime;
+	maxShootDistance = _maxShootDist;
 
+	shootTimer = 0.0f;
+	reloadTimer = 0.0f;
 }
 
 PaintBallClass::~PaintBallClass() {
@@ -37,6 +46,7 @@ void PaintBallClass::Shoot(float dt) {
 	if (shootTimer >= fireRate && ammoInUse > 0) {
 		// Shoot Projectile here
 		std::cout << "Weapon is shooting" << std::endl;
+		ammoInUse--;
 		shootTimer = 0.0f;
 	}
 }
@@ -46,10 +56,20 @@ void PaintBallClass::Reload(float dt) {
 		reloadTimer += dt;
 		if (reloadTimer >= reloadTime) {
 			//Reload Maths here
+			if ((ammoHeld + ammoInUse) < maxAmmoInUse) {
+				ammoInUse += ammoHeld;
+				ammoHeld = 0;
+			}
+			else {
+				int temp = maxAmmoInUse - ammoInUse;
+				ammoInUse += temp;
+				ammoHeld -= temp;
+			}
+			std::cout << "Ammo: " << ammoInUse << "/" << ammoHeld << std::endl;
 		}
 	}
 }
 
-void PaintBallClass::PickUpAmmo() {
+void PaintBallClass::PickUpAmmo(int amt) {
 
 }
