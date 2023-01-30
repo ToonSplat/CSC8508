@@ -19,6 +19,11 @@ namespace NCL {
 		protected:
 			void InitialiseAssets();
 
+			void UpdateTimer(float dt);
+
+			void GameOver();
+			void ResetGame();
+
 			void InitCamera();
 			void UpdateKeys();
 
@@ -91,6 +96,9 @@ namespace NCL {
 			}
 
 			GameObject* objClosest = nullptr;
+
+			bool isGameOver;
+			float timer;
 		};
 	}
 }
