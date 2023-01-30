@@ -265,8 +265,8 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	TutorialGame* g = new TutorialGame();
-	//ToonGame* g = new ToonGame();
+	//TutorialGame* g = new TutorialGame();
+	ToonGame* g = new ToonGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	//TestBehaviourTree();
 

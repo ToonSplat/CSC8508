@@ -1,6 +1,9 @@
 #pragma once
 #include "GameTechRenderer.h"
+#include "PaintableZone.h"
 #include "PaintableObject.h"
+
+#include "Player.h"
 
 namespace NCL
 {
@@ -19,6 +22,8 @@ namespace NCL
 		public:
 			ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones);
 			~ToonLevelManager();
+
+			Player* AddMoveablePlayer(const Vector3& position);
 
 		protected:
 			bool LoadAssets();
@@ -49,6 +54,7 @@ namespace NCL
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
+			MeshGeometry* charMesh = nullptr;
 			MeshGeometry* cubeMesh;
 			TextureBase* basicTex;
 			TextureBase* basicTexPurple;
