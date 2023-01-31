@@ -13,6 +13,7 @@ set(Header_Files
     "Team.h"
     "TutorialGame.h"
     "Player.h"
+    "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
 )
