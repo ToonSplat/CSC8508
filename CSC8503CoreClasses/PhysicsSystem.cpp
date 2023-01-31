@@ -152,7 +152,7 @@ void PhysicsSystem::Update(float dt) {
 
 	g.Tick();
 	float updateTime = g.GetTimeDeltaMSec();
-	std::cout << "Full Physics Time: " << updateTime << std::endl;
+	//std::cout << "Full Physics Time: " << updateTime << std::endl;
 
 	//Uh oh, physics is taking too long...
 	if (updateTime > realDT) {
@@ -336,6 +336,8 @@ void PhysicsSystem::BroadPhase() {
 		CollisionDetection::CollisionInfo info;
 		for (auto i = data.begin(); i != data.end(); ++i) {
 			for (auto j = std::next(i); j != data.end(); ++j) {
+				if ((*i).object->GetPhysicsObject()->GetInverseMass() == 0 && (*j).object->GetPhysicsObject()->GetInverseMass() == 0)
+					continue;
 				// Is this pair of items in th ecollisions set
 				// Is the same pair is in another quadtree node together
 				info.a = std::min((*i).object, (*j).object);
