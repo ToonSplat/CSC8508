@@ -23,6 +23,7 @@ namespace NCL::Maths {
 		Matrix4(float elements[16]);
 		Matrix4(const Matrix3& m3);
 		Matrix4(const Quaternion& quat);
+		Matrix4(const float& quatX, const float& quatY, const float& quatZ, const float& quatW);
 		~Matrix4(void) = default;
 
 		//Set all matrix values to zero
@@ -45,10 +46,12 @@ namespace NCL::Maths {
 		//Creates a scaling matrix (puts the 'scale' vector down the diagonal)
 		//Analogous to glScalef
 		static Matrix4 Scale(const Vector3& scale);
+		static Matrix4 Scale(const float& scaleX, const float& scaleY, const float& scaleZ);
 
 		//Creates a translation matrix (identity, with 'translation' vector at
 		//floats 12, 13, and 14. Analogous to glTranslatef
 		static Matrix4 Translation(const Vector3& translation);
+		static Matrix4 Translation(const float& translationX, const float& translationY, const float& translationZ);
 
 		//Creates a perspective matrix, with 'znear' and 'zfar' as the near and 
 		//far planes, using 'aspect' and 'fov' as the aspect ratio and vertical

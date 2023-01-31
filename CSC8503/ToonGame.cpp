@@ -8,20 +8,20 @@ using namespace CSC8503;
 
 NCL::CSC8503::ToonGame::ToonGame()
 {
-	world = new GameWorld();
+	physicsWorld = physicsCommon.createPhysicsWorld();
+	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
+	levelManager = new ToonLevelManager(*renderer, *physicsWorld);
 
-	physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);
-
-	levelManager = new ToonLevelManager(*renderer);
+	//physics = new PhysicsSystem(*world);
+	//physics->UseGravity(true);
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
 	delete renderer;
-	delete physics;
+	//delete physics;
 	delete levelManager;
 }
 
@@ -51,12 +51,12 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) 
+	/*if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
 	{
 		Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
 
 		RayCollision closestCollision;
 		if (world->Raycast(ray, closestCollision, true))
 			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
-	}
+	}*/
 }

@@ -17,7 +17,7 @@ TutorialGame::TutorialGame()	{
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
 #else 
-	renderer = new GameTechRenderer(*world);
+	//renderer = new GameTechRenderer(*world);
 #endif
 
 	physics		= new PhysicsSystem(*world);	

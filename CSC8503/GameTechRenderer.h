@@ -5,6 +5,7 @@
 #include "OGLMesh.h"
 
 #include "GameWorld.h"
+#include "ToonGameWorld.h"
 
 namespace NCL {
 	class Maths::Vector3;
@@ -14,7 +15,7 @@ namespace NCL {
 
 		class GameTechRenderer : public OGLRenderer	{
 		public:
-			GameTechRenderer(GameWorld& world);
+			GameTechRenderer(ToonGameWorld& world);			
 			~GameTechRenderer();
 
 			MeshGeometry*	LoadMesh(const string& name);
@@ -22,6 +23,8 @@ namespace NCL {
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
 		protected:
+
+			void SetupStuffs();
 			void NewRenderLines();
 			void NewRenderText();
 
@@ -29,7 +32,8 @@ namespace NCL {
 
 			OGLShader*		defaultShader;
 
-			GameWorld&	gameWorld;
+			//GameWorld&	gameWorld;
+			ToonGameWorld&	gameWorld;
 
 			void BuildObjectList();
 			void SortObjectList();

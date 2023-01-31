@@ -70,6 +70,31 @@ Matrix4::Matrix4(const Quaternion& quat) : Matrix4() {
 	array[2][2]  = 1 - 2 * xx - 2 * yy;
 }
 
+NCL::Maths::Matrix4::Matrix4(const float& quatX, const float& quatY, const float& quatZ, const float& quatW)
+{
+	float yy = quatY * quatY;
+	float zz = quatZ * quatZ;
+	float xy = quatX * quatY;
+	float zw = quatZ * quatW;
+	float xz = quatX * quatZ;
+	float yw = quatY * quatW;
+	float xx = quatX * quatX;
+	float yz = quatY * quatZ;
+	float xw = quatX * quatW;
+
+	array[0][0] = 1 - 2 * yy - 2 * zz;
+	array[0][1] = 2 * xy + 2 * zw;
+	array[0][2] = 2 * xz - 2 * yw;
+
+	array[1][0] = 2 * xy - 2 * zw;
+	array[1][1] = 1 - 2 * xx - 2 * zz;
+	array[1][2] = 2 * yz + 2 * xw;
+
+	array[2][0] = 2 * xz + 2 * yw;
+	array[2][1] = 2 * yz - 2 * xw;
+	array[2][2] = 1 - 2 * xx - 2 * yy;
+}
+
 void Matrix4::ToZero()	{
 	for (int i = 0; i < 4; ++i) {
 		for (int j = 0; j < 4; ++j) {
@@ -190,11 +215,29 @@ Matrix4 Matrix4::Scale( const Vector3 &scale )	{
 	return m;
 }
 
+Matrix4 NCL::Maths::Matrix4::Scale(const float& scaleX, const float& scaleY, const float& scaleZ)
+{
+	Matrix4 m;
+	m.array[0][0] = scaleX;
+	m.array[1][1] = scaleY;
+	m.array[2][2] = scaleZ;
+	return m;
+}
+
 Matrix4 Matrix4::Translation( const Vector3 &translation )	{
 	Matrix4 m;
 	m.array[3][0] = translation.x;
 	m.array[3][1] = translation.y;
 	m.array[3][2] = translation.z;	
+	return m;
+}
+
+Matrix4 NCL::Maths::Matrix4::Translation(const float& translationX, const float& translationY, const float& translationZ)
+{
+	Matrix4 m;
+	m.array[3][0] = translationX;
+	m.array[3][1] = translationY;
+	m.array[3][2] = translationZ;
 	return m;
 }
 

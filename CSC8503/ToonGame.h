@@ -4,6 +4,7 @@
 #include "PhysicsSystem.h"
 
 #include "ToonLevelManager.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
 {
@@ -20,8 +21,11 @@ namespace NCL
 		protected:
 			GameTechRenderer* renderer;
 			PhysicsSystem* physics;
-			GameWorld* world;
+			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
+
+			reactphysics3d::PhysicsCommon physicsCommon;
+			reactphysics3d::PhysicsWorld* physicsWorld;
 
 			bool showCursor;
 		};

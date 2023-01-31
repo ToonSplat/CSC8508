@@ -1,14 +1,16 @@
 #include "PhysicsObject.h"
 #include "RenderObject.h"
-
+#include "ToonGameObject.h"
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
+#include <reactphysics3d/reactphysics3d.h>
 
 using namespace NCL;
 using namespace CSC8503;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
-	gameRenderer(renderer)
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld) :
+	gameRenderer(renderer),
+	physicsWorld(_physicsWorld)
 {
 	if (!LoadAssets()) return;
 	LoadLevel();
@@ -73,8 +75,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 
 bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 {
-	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
-	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+	//axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
+	//Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
 	int XZ = Axes::X | Axes::Z;
 	int XY = Axes::X | Axes::Y;
@@ -126,7 +128,22 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	return true;
 }
 
-GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+{
+	ToonGameObject* cube = new ToonGameObject(physicsWorld);
+
+	cube->SetRenderObject(new RenderObject(cubeMesh, cubeTex, basicShader));
+
+	cube->GetTransform().SetPosition(position).
+						SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+						SetScale(scale * 2.0f);
+
+	ToonGameWorld::Get()->AddGameObject(cube);
+
+	return cube;
+}
+
+/*GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
 {
 	GameObject* cube = new GameObject();
 
@@ -147,7 +164,7 @@ GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& positi
 	GameWorld::Get()->AddGameObject(cube);
 
 	return cube;
-}
+}*/
 
 void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex)
 {

@@ -1,5 +1,6 @@
 #pragma once
 #include "GameTechRenderer.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
 {
@@ -16,7 +17,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer& renderer);
+			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld);
 			~ToonLevelManager();
 
 		protected:
@@ -44,7 +45,8 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			GameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
+			//GameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
+			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
@@ -54,8 +56,9 @@ namespace NCL
 			ShaderBase* basicShader;
 
 			GameTechRenderer& gameRenderer;
+			reactphysics3d::PhysicsWorld& physicsWorld;
 
-			GameObject* axisObject;
+			//GameObject* axisObject;
 		};
 	}
 }
