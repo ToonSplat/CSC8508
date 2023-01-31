@@ -10,7 +10,7 @@ namespace NCL {
     namespace CSC8503 {
         class PaintBallClass {
         public:
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist);
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject);
             ~PaintBallClass();
 
             void Update (float dt);
@@ -28,11 +28,16 @@ namespace NCL {
             void Shoot(float dt);
             void Reload(float dt);
             void PickUpAmmo(int amt);
+            void CreateBullet();
 
 
             //Variables
             float shootTimer;
             float reloadTimer;
+            GameWorld* m_World;
+            ShaderBase* m_BasicShader;
+            MeshGeometry* m_SphereMesh;
+            GameObject* m_CameraTargetObject;
 
             enum statusTypes {
                 isFiring,

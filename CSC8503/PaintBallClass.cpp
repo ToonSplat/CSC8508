@@ -1,16 +1,22 @@
 #include "PaintBallClass.h"
+#include "RenderObject.h"
+#include "PhysicsObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist) {
-	ammoInUse = _maxAmmoInUse;
-	ammoHeld = _maxAmmoHeld;
-	maxAmmoHeld = _maxAmmoHeld;
-	maxAmmoInUse = _maxAmmoInUse;
-	fireRate = _fireRate;
-	reloadTime = _reloadTime;
-	maxShootDistance = _maxShootDist;
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject) {
+	ammoInUse			 = _maxAmmoInUse;
+	ammoHeld			 = _maxAmmoHeld;
+	maxAmmoHeld			 = _maxAmmoHeld;
+	maxAmmoInUse		 = _maxAmmoInUse;
+	fireRate			 = _fireRate;
+	reloadTime			 = _reloadTime;
+	maxShootDistance	 = _maxShootDist;
+	m_World				 = world;
+	m_BasicShader		 = basicShader;
+	m_SphereMesh		 = sphereMesh;
+	m_CameraTargetObject = cameraTargetObject;
 
 	shootTimer = 0.0f;
 	reloadTimer = 0.0f;
@@ -45,6 +51,7 @@ void PaintBallClass::Shoot(float dt) {
 	shootTimer += dt;
 	if (shootTimer >= fireRate && ammoInUse > 0) {
 		// Shoot Projectile here
+		CreateBullet();
 		std::cout << "Weapon is shooting" << std::endl;
 		ammoInUse--;
 		shootTimer = 0.0f;
@@ -72,4 +79,30 @@ void PaintBallClass::Reload(float dt) {
 
 void PaintBallClass::PickUpAmmo(int amt) {
 
+}
+
+
+
+void PaintBallClass::CreateBullet()
+{
+	GameObject*   sphereBullet = new GameObject("Fire");
+	float		  radius = 0.1f;
+	Vector3		  sphereSize = Vector3(radius, radius, radius);
+	SphereVolume* volume = new SphereVolume(radius + 0.5f);
+	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
+
+	sphereBullet->GetTransform().SetScale(sphereSize);
+	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), m_SphereMesh, nullptr, m_BasicShader));
+	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
+
+	sphereBullet->GetPhysicsObject()->SetInverseMass(20.0f);
+	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+	sphereBullet->GetPhysicsObject()->InitSphereInertia();
+	m_World->AddGameObject(sphereBullet);
+
+
+	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
+	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
+	Vector3 forceInDirection = Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1) * 400.0f;
+	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 }

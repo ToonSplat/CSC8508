@@ -162,8 +162,9 @@ void TutorialGame::UpdateGame(float dt) {
 		UpdateTimer(dt);
 	else
 		GameOver();
-
-	sampleWeapon->Update(dt);
+	
+	if (cameraTargetObject && !sampleWeapon) { sampleWeapon = new PaintBallClass(15, 50, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject); }
+	if (sampleWeapon) { sampleWeapon->Update(dt); }
 }
 
 void TutorialGame::UpdateTimer(float dt) {
@@ -364,7 +365,7 @@ void TutorialGame::InitWorld() {
 	InitGameExamples();
 	InitDefaultFloor();
 
-	sampleWeapon = new PaintBallClass(15, 50, 1.0f, 1.0f, 5);
+	/*sampleWeapon = new PaintBallClass(15, 50, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject);*/
 }
 
 /*
@@ -606,7 +607,7 @@ bool TutorialGame::SelectObject() {
 	if (inSelectionMode) {
 		Debug::Print("Press Q to change to camera mode!", Vector2(5, 85));
 
-		ShootObject();
+		//ShootObject();
 
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
 			if (selectionObject) {	//set colour to deselected;
