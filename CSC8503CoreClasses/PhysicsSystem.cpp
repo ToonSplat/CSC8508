@@ -20,6 +20,8 @@ PhysicsSystem::PhysicsSystem(GameWorld& g) : gameWorld(g)	{
 	globalDamping	= 0.995f;
 	SetGravity(Vector3(0.0f, -9.8f, 0.0f));
 	linearDamping = 0.4f; // Higher number stops closer
+	treeDepth = 9;
+	treeSize = 7;
 }
 
 PhysicsSystem::~PhysicsSystem()	{
@@ -84,10 +86,32 @@ void PhysicsSystem::Update(float dt) {
 		std::cout << "Setting constraint iterations to " << constraintIterationCount << std::endl;
 	}
 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUMPAD8)) {
+		treeSize++;
+		std::cout << "Setting tree node size to " << treeSize << std::endl;
+		int i = 1;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUMPAD2)) {
+		treeSize--;
+		std::cout << "Setting tree node size to " << treeSize << std::endl;
+		int i = 1;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUMPAD4)) {
+		treeDepth--;
+		std::cout << "Setting tree depth to " << treeDepth << std::endl;
+		int i = 1;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUMPAD6)) {
+		treeDepth++;
+		std::cout << "Setting tree depth to " << treeDepth << std::endl;
+		int i = 1;
+	}
+
 	dTOffset += dt; //We accumulate time delta here - there might be remainders from previous frame!
 
-	GameTimer t;
+	GameTimer t, g;
 	t.GetTimeDeltaSeconds();
+	g.GetTimeDeltaSeconds();
 
 	if (useBroadPhase) {
 		UpdateObjectAABBs();
@@ -96,8 +120,14 @@ void PhysicsSystem::Update(float dt) {
 	while(dTOffset > realDT) {
 		IntegrateAccel(realDT); //Update accelerations from external forces
 		if (useBroadPhase) {
+			//t.Tick();
+			//std::cout << "PRE-BROAD: " << t.GetTimeDeltaMSec() << std::endl;
 			BroadPhase();
+			//t.Tick();
+			//std::cout << "BROAD: " << t.GetTimeDeltaMSec() << std::endl;
 			NarrowPhase();
+			//t.Tick();
+			//std::cout << "NARROW: " << t.GetTimeDeltaMSec() << std::endl;
 		}
 		else {
 			BasicCollisionDetection();
@@ -120,8 +150,9 @@ void PhysicsSystem::Update(float dt) {
 
 	UpdateCollisionList(); //Remove any old collisions
 
-	t.Tick();
-	float updateTime = t.GetTimeDeltaSeconds();
+	g.Tick();
+	float updateTime = g.GetTimeDeltaMSec();
+	std::cout << "Full Physics Time: " << updateTime << std::endl;
 
 	//Uh oh, physics is taking too long...
 	if (updateTime > realDT) {
@@ -286,7 +317,8 @@ compare the collisions that we absolutely need to.
 */
 void PhysicsSystem::BroadPhase() {
 	broadphaseCollisions.clear();
-	QuadTree<GameObject*> tree(Vector2(1024, 1024), 7, 6);
+	//GameTimer t;
+	QuadTree<GameObject*> tree(Vector2(1024, 1024), treeDepth, treeSize);
 
 	std::vector<GameObject*>::const_iterator first;
 	std::vector<GameObject*>::const_iterator last;
@@ -298,6 +330,8 @@ void PhysicsSystem::BroadPhase() {
 		Vector3 pos = (*i)->GetTransform().GetPosition();
 		tree.Insert(*i, pos, halfSizes);
 	}
+	//t.Tick();
+	//std::cout << "BROAD - Making Tree: " << t.GetTimeDeltaMSec() << std::endl;
 	tree.OperateOnContents([&](std::list<QuadTreeEntry<GameObject*>>& data) {
 		CollisionDetection::CollisionInfo info;
 		for (auto i = data.begin(); i != data.end(); ++i) {
@@ -310,6 +344,8 @@ void PhysicsSystem::BroadPhase() {
 			}
 		}
 	});
+	//t.Tick();
+	//std::cout << "BROAD - Collision Testing: " << t.GetTimeDeltaMSec() << std::endl;
 }
 
 /*
