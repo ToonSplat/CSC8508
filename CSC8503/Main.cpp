@@ -15,6 +15,7 @@
 #include "NavigationMesh.h"
 
 #include "TutorialGame.h"
+#include "ToonGame.h"
 #include "NetworkedGame.h"
 
 #include "PushdownMachine.h"
@@ -264,12 +265,16 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	TutorialGame* g = new TutorialGame();
+	//TutorialGame* g = new TutorialGame();
+	ToonGame* g = new ToonGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	TestBehaviourTree();
+	//TestBehaviourTree();
+
+	//std::cout << "ANGLE: " << Vector3::Angle(Vector3(1, 0, 0), Vector3(0, 1, 0)) << std::endl;
+
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
-		TestPathFinding();
-		DisplayPathFinding();
+		//TestPathFinding();
+		//DisplayPathFinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;

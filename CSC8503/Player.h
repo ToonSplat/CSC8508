@@ -1,89 +1,56 @@
 #pragma once
-
-#include <stack>
 #include "GameObject.h"
-#include "MeshGeometry.h"
-#include "GameTechRenderer.h"
+#include "Team.h"
+#include "Matrix4.h"
+#include "Vector4.h"
+#include "Quaternion.h"
+#include "Window.h"
+#include "PhysicsObject.h"
+#include "Debug.h"
+#include <vector>
+#include "PaintBallClass.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-#define MIN_FIRE_FORCE 600.0f
-#define MAX_FIRE_FORCE 1200.0f
-
-#define MAX_AVAILABLE_FIRE 10
-
-class Player : public GameObject
-{
-private:
-	GameWorld* m_World;
-	Vector3		position;
-	float		m_PlayerYaw;
-	float		m_PlayerPitch;
-	bool		m_IsPlayerJumping = false;
-	bool		m_IsPlayerRunning = false;
-	float		m_MovingSpeed;
-	float		m_IsJumpFinished = true;
-	const float m_PlayerBaseYPos = 1.5f;
-	const float m_PlayerJumpHeight = 2.0f;
-
-	MeshGeometry* m_SphereMesh = nullptr;
-	TextureBase* m_BasicTex = nullptr;
-	ShaderBase* m_BasicShader = nullptr;
-
-	float		  m_FireForce = MIN_FIRE_FORCE;
-
-	int			  m_firesLeft = MAX_AVAILABLE_FIRE;
-
-	std::stack<GameObject*> m_FireInStack;
-	bool					m_HasKey = false;
-	float					m_playerHealth = 100.0f;
-	Vector3					m_PreviousPosition = Vector3(0.0f, 0.0f, 0.0f);
-	GameObject* m_DoorObject;
-	GameObject* m_HealthObject;
-	GameObject* m_TimerObject;
-	std::vector<GameObject*> m_FiresVector;
-
+class Player : public GameObject {
 public:
-	Player(MeshGeometry* playerMesh, Vector3 playerPosition, GameTechRenderer* renderer, GameWorld* world, GameObject* doorObject, GameObject* healthObject, GameObject* timerObject);
+	Player();
+	Player(Team* team);
 	~Player();
 
-	void InitializeFire();
-	void ResetFire();
+	void Update(Matrix4& inverseView, float& yaw, float& pitch, float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
 
-	GameObject* GetPlayerObject() { return this; }
-	void HandlePlayer(float dt);
-	float GetYaw() { return m_PlayerYaw; }
-	float GetPitch() { return m_PlayerPitch; }
-	void  Fire();
-	void Refresh() { m_playerHealth = 100.0f; }
+	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
+	float GetMoveSpeed() const { return moveSpeed; }
+	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
+	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	bool GetIsAlive() { return m_playerHealth > 0.0f; }
+	void UpdateTargetObject(GameObject* targetObj) { targetObj = targetObject; }
+	void UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh, GameWorld* wld);
 
-	bool HasPlayerMoved()
-	{
-		Vector3 difference = m_PreviousPosition - GetTransform().GetPosition();
-		m_PreviousPosition = GetTransform().GetPosition();
-		bool result = IsThereAnyDifferenceInMovement(difference);
-		return result;
-	}
+protected:
+	void Shoot();
 
-	void OnCollisionBegin(GameObject* otherObject) override;
-	void OnCollisionEnd(GameObject* otherObject) override;
-	void IncreaseHealth(float by);
+	Team* team;
 
-private:
-	void CreatePlayer(MeshGeometry* playerMesh, const Vector3 playerPosition, GameTechRenderer* renderer);
-	void MakeGoatJump(float speed);
-	void UpdateMovingSpeed();
-	void UpdateFireForce(float change);
-	void PrintData();
+	float moveSpeed = 10.0f;
+	float sprintMax = 2.5f;
+	float sprintTimer = 2.0f;
+	float sprintMulitplier = 5.0f;
+	int ammoRemaining = 100;
 
-	bool IsThereAnyDifferenceInMovement(Vector3 diff)
-	{
-		bool x = abs(diff.x) > 0.1f;
-		bool y = abs(diff.y) > 0.1f;
-		bool z = abs(diff.z) > 0.1f;
-		return (x || y || z);
-	}
+	GameObject* targetObject = nullptr;
+	PaintBallClass* sampleWeapon = nullptr;
+	GameWorld* world;
+	ShaderBase* basicShader;
+	MeshGeometry* sphereMesh;
+	/*
+	* Future Implementations:
+	*
+	* Weapon* weapon
+	* int PercentageCoveredDuringMatch
+	* std::vector<Powerups*> appliedPowerups
+	*
+	*/
 };

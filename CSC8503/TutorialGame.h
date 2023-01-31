@@ -7,6 +7,9 @@
 
 #include "StateGameObject.h"
 #include "PaintBallClass.h"
+#include "Player.h"
+
+#include "ToonLevelManager.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -59,6 +62,8 @@ namespace NCL {
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
+			Player* AddMoveablePlayer(const Vector3& position);
+
 			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
 			StateGameObject* testStateObj;
 
@@ -70,6 +75,7 @@ namespace NCL {
 #endif
 			PhysicsSystem*		physics;
 			GameWorld*			world;
+			ToonLevelManager* levelManager;
 
 			bool useGravity;
 			bool inSelectionMode;
@@ -80,7 +86,7 @@ namespace NCL {
 			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
-			GameObject* cameraTargetObject = nullptr;
+			Player* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;
@@ -96,6 +102,7 @@ namespace NCL {
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject	= nullptr;
+			//Player* player;
 			Vector3 lockedOffset		= Vector3(0, 14, 20);
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
