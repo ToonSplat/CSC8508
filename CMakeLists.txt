@@ -71,6 +71,17 @@ add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
+add_subdirectory(openal-soft)
+add_subdirectory(libsndfile)
+target_link_libraries(${PROJECT_NAME} PUBLIC OpenAL)
+target_link_libraries(${PROJECT_NAME} PUBLIC sndfile)
+target_include_directories(${PROJECT_NAME} PUBLIC
+                          "${PROJECT_BINARY_DIR}"
+                          "${PROJECT_SOURCE_DIR}/openal-soft/include"
+			  "${PROJECT_SOURCE_DIR}/libsndfile/include"
+                          )
+
+
 if(USE_VULKAN)
     add_subdirectory(VulkanRendering)
 endif()
