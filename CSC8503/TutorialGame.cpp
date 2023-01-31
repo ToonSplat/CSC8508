@@ -71,7 +71,7 @@ TutorialGame::~TutorialGame()	{
 void TutorialGame::UpdateGame(float dt) {
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(49, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
 	if (cameraTargetObject)
@@ -163,8 +163,12 @@ void TutorialGame::UpdateGame(float dt) {
 	else
 		GameOver();
 	
-	if (cameraTargetObject && !sampleWeapon) { sampleWeapon = new PaintBallClass(15, 50, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject); }
-	if (sampleWeapon) { sampleWeapon->Update(dt); }
+	if (cameraTargetObject && !sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject); }
+	if (sampleWeapon) 
+	{
+		sampleWeapon->UpdateTargetObject(selectionObject);
+		sampleWeapon->Update(dt);
+	}
 }
 
 void TutorialGame::UpdateTimer(float dt) {
@@ -607,8 +611,6 @@ bool TutorialGame::SelectObject() {
 	if (inSelectionMode) {
 		Debug::Print("Press Q to change to camera mode!", Vector2(5, 85));
 
-		//ShootObject();
-
 		if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) {
 			if (selectionObject) {	//set colour to deselected;
 				selectionObject->GetRenderObject()->SetColour(Vector4(1, 1, 1, 1));
@@ -711,37 +713,4 @@ void TutorialGame::BridgeConstraintTest() {
 	}
 	PositionConstraint* constraint = new PositionConstraint(previous, end, maxDistance);
 	world->AddConstraint(constraint);
-}
-
-void TutorialGame::ShootObject()
-{
-	if (selectionObject && cameraTargetObject && Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT) && Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT))
-	{
-		Debug::DrawLine(selectionObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetPosition(), Vector4(1, 0, 0, 1), 1.0f);
-		CreateBullet();
-	}
-}
-
-void TutorialGame::CreateBullet()
-{
-	GameObject*   sphereBullet = new GameObject("Fire");
-	float		  radius	   = 0.1f;
-	Vector3		  sphereSize   = Vector3(radius, radius, radius);
-	SphereVolume* volume	   = new SphereVolume(radius + 0.5f);
-	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
-
-	sphereBullet->GetTransform().SetScale(sphereSize);
-	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), sphereMesh, nullptr, basicShader));
-	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
-
-	sphereBullet->GetPhysicsObject()->SetInverseMass(20.0f);
-	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
-	sphereBullet->GetPhysicsObject()->InitSphereInertia();
-	world->AddGameObject(sphereBullet);
-
-
-	Vector3 position		 = cameraTargetObject->GetTransform().GetPosition();
-	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
-	Vector3 forceInDirection = Matrix4::Rotation(world->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(world->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1) * 400.0f;
-	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 }

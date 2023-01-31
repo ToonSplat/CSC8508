@@ -14,6 +14,7 @@ namespace NCL {
             ~PaintBallClass();
 
             void Update (float dt);
+            void UpdateTargetObject(GameObject* targetObject);
 
         protected:
             // Weapon Stats
@@ -30,7 +31,6 @@ namespace NCL {
             void PickUpAmmo(int amt);
             void CreateBullet();
 
-
             //Variables
             float shootTimer;
             float reloadTimer;
@@ -38,6 +38,7 @@ namespace NCL {
             ShaderBase* m_BasicShader;
             MeshGeometry* m_SphereMesh;
             GameObject* m_CameraTargetObject;
+            GameObject* m_TargetObjet;
 
             enum statusTypes {
                 isFiring,

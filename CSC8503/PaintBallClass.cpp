@@ -86,23 +86,31 @@ void PaintBallClass::PickUpAmmo(int amt) {
 void PaintBallClass::CreateBullet()
 {
 	GameObject*   sphereBullet = new GameObject("Fire");
-	float		  radius = 0.1f;
-	Vector3		  sphereSize = Vector3(radius, radius, radius);
-	SphereVolume* volume = new SphereVolume(radius + 0.5f);
+	float		  radius	   = 0.1f;
+	Vector3		  sphereSize   = Vector3(radius, radius, radius);
+	SphereVolume* volume	   = new SphereVolume(radius + 0.5f);
 	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
 
 	sphereBullet->GetTransform().SetScale(sphereSize);
 	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), m_SphereMesh, nullptr, m_BasicShader));
 	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
 
-	sphereBullet->GetPhysicsObject()->SetInverseMass(20.0f);
+	sphereBullet->GetPhysicsObject()->SetInverseMass(100.0f);
 	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	sphereBullet->GetPhysicsObject()->InitSphereInertia();
 	m_World->AddGameObject(sphereBullet);
 
 
 	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
-	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5f, position.z));
-	Vector3 forceInDirection = Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1) * 400.0f;
+	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z));
+
+	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.03f, 0);
+	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*m_World->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
+	Vector3 forceInDirection = direction * 100.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
+}
+
+void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject)
+{
+	m_TargetObjet = targetObject;
 }
