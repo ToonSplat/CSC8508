@@ -36,7 +36,7 @@ NCL::CSC8503::ToonGame::~ToonGame()
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
-	world->GetMainCamera()->UpdateCamera(dt);
+	//world->GetMainCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 
 	world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
