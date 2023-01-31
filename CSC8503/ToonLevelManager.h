@@ -17,7 +17,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld);
+			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
 			~ToonLevelManager();
 
 		protected:
@@ -56,6 +56,7 @@ namespace NCL
 			ShaderBase* basicShader;
 
 			GameTechRenderer& gameRenderer;
+			reactphysics3d::PhysicsCommon& physicsCommon;
 			reactphysics3d::PhysicsWorld& physicsWorld;
 
 			//GameObject* axisObject;

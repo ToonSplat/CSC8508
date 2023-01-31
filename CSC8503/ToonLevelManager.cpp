@@ -1,5 +1,5 @@
 #include "PhysicsObject.h"
-#include "RenderObject.h"
+#include "ToonRenderObject.h"
 #include "ToonGameObject.h"
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
@@ -8,9 +8,10 @@
 using namespace NCL;
 using namespace CSC8503;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld) :
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon) :
 	gameRenderer(renderer),
-	physicsWorld(_physicsWorld)
+	physicsWorld(_physicsWorld),
+	physicsCommon(_physicsCommon)
 {
 	if (!LoadAssets()) return;
 	LoadLevel();
@@ -132,11 +133,22 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 {
 	ToonGameObject* cube = new ToonGameObject(physicsWorld);
 
-	cube->SetRenderObject(new RenderObject(cubeMesh, cubeTex, basicShader));
-
 	cube->GetTransform().SetPosition(position).
-						SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
-						SetScale(scale * 2.0f);
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(scale * 2.0f);
+
+	std::cout << cube->GetTransform().GetMatrix() << std::endl;
+
+	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
+	cube->AddRigidbody();
+	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+
+	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
+	reactphysics3d::BoxShape* cubeBoxShape = physicsCommon.createBoxShape(boxExtent);
+	cube->SetCollisionShape(cubeBoxShape);
+
+	reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, cube->GetTransform().GetR3DTransform());
+	cube->SetCollider(cubeBoxShape);
 
 	ToonGameWorld::Get()->AddGameObject(cube);
 

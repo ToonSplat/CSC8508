@@ -1,25 +1,15 @@
 #include "ToonGameObject.h"
-#include "RenderObject.h"
+#include "ToonRenderObject.h"
 
 NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World) : physicsWorld(RP3D_World)
 {
-	reactphysics3d::Transform RP3DTransform;
-	reactphysics3d::Vector3 RP3DPosition;
-	reactphysics3d::Quaternion RP3DOrientation;
+	worldID = -1;
+	isActive = true;
 
-	RP3DPosition.x = transform.GetPosition().x;
-	RP3DPosition.y = transform.GetPosition().y;
-	RP3DPosition.z = transform.GetPosition().z;
-
-	RP3DOrientation.x = transform.GetOrientation().x;
-	RP3DOrientation.y = transform.GetOrientation().y;
-	RP3DOrientation.z = transform.GetOrientation().z;
-	RP3DOrientation.w = transform.GetOrientation().w;
-
-	RP3DTransform.setPosition(RP3DPosition);
-	RP3DTransform.setOrientation(RP3DOrientation);
-
-	rigidBody = physicsWorld.createRigidBody(RP3DTransform);
+	rigidBody = nullptr;
+	renderObject = nullptr;
+	collisionShape = nullptr;
+	collider = nullptr;
 }
 
 NCL::CSC8503::ToonGameObject::~ToonGameObject()
@@ -31,10 +21,15 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 	delete collider;
 }
 
-void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, const reactphysics3d::Transform& RP3D_Transform)
+void NCL::CSC8503::ToonGameObject::AddRigidbody()
+{
+	rigidBody = physicsWorld.createRigidBody(transform.GetR3DTransform());
+}
+
+void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape)
 {
 	if (rigidBody == nullptr)
 		return;
 
-	rigidBody->addCollider(RP3D_CollisionShape, RP3D_Transform);
+	rigidBody->addCollider(RP3D_CollisionShape, transform.GetR3DTransform());
 }

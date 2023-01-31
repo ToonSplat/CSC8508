@@ -70,7 +70,7 @@ Matrix4::Matrix4(const Quaternion& quat) : Matrix4() {
 	array[2][2]  = 1 - 2 * xx - 2 * yy;
 }
 
-NCL::Maths::Matrix4::Matrix4(const float& quatX, const float& quatY, const float& quatZ, const float& quatW)
+NCL::Maths::Matrix4::Matrix4(float quatX, float quatY, float quatZ, float quatW)
 {
 	float yy = quatY * quatY;
 	float zz = quatZ * quatZ;
@@ -215,7 +215,7 @@ Matrix4 Matrix4::Scale( const Vector3 &scale )	{
 	return m;
 }
 
-Matrix4 NCL::Maths::Matrix4::Scale(const float& scaleX, const float& scaleY, const float& scaleZ)
+Matrix4 NCL::Maths::Matrix4::Scale(float scaleX, float scaleY, float scaleZ)
 {
 	Matrix4 m;
 	m.array[0][0] = scaleX;
@@ -232,7 +232,7 @@ Matrix4 Matrix4::Translation( const Vector3 &translation )	{
 	return m;
 }
 
-Matrix4 NCL::Maths::Matrix4::Translation(const float& translationX, const float& translationY, const float& translationZ)
+Matrix4 NCL::Maths::Matrix4::Translation(const float translationX, const float translationY, const float translationZ)
 {
 	Matrix4 m;
 	m.array[3][0] = translationX;

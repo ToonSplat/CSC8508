@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "ToonGameObject.h"
 #include "RenderObject.h"
+#include "ToonRenderObject.h"
 #include "Camera.h"
 #include "TextureLoader.h"
 using namespace NCL;
@@ -139,7 +140,7 @@ void GameTechRenderer::BuildObjectList() {
 	gameWorld.OperateOnContents(
 		[&](ToonGameObject* o) {
 			if (o->IsActive()) {
-				const RenderObject* g = o->GetRenderObject();
+				const ToonRenderObject* g = o->GetRenderObject();
 				if (g) {
 					activeObjects.emplace_back(g);
 				}

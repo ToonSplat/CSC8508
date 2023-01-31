@@ -12,6 +12,7 @@ namespace NCL {
 	class Maths::Vector4;
 	namespace CSC8503 {
 		class RenderObject;
+		class ToonRenderObject;
 
 		class GameTechRenderer : public OGLRenderer	{
 		public:
@@ -46,7 +47,7 @@ namespace NCL {
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
 
-			vector<const RenderObject*> activeObjects;
+			vector<const ToonRenderObject*> activeObjects;
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;

@@ -11,7 +11,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
-	levelManager = new ToonLevelManager(*renderer, *physicsWorld);
+	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
 
 	//physics = new PhysicsSystem(*world);
 	//physics->UseGravity(true);
@@ -31,7 +31,8 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 
 	renderer->Update(dt);
-	physics->Update(dt);
+	//physics->Update(dt);
+	physicsWorld->update(dt);
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);

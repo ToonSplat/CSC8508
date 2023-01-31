@@ -4,7 +4,7 @@
 
 namespace NCL::CSC8503
 {
-	class RenderObject;
+	class ToonRenderObject;
 	class ToonGameObject
 	{
 	public:
@@ -17,14 +17,15 @@ namespace NCL::CSC8503
 
 		ToonTransform& GetTransform() { return transform; }
 
-		RenderObject* GetRenderObject() const { return renderObject; }
-		void SetRenderObject(RenderObject* newRenderObject) { renderObject = newRenderObject; }
+		ToonRenderObject* GetRenderObject() const { return renderObject; }
+		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; }
 
 		reactphysics3d::RigidBody* GetRigidbody() const { return rigidBody; }
 		void SetRigidbody(reactphysics3d::RigidBody* RP3D_Rigidbody) { rigidBody = RP3D_Rigidbody; }
+		void AddRigidbody();
 		
 		reactphysics3d::Collider* GetCollider() const { return collider; };
-		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, const reactphysics3d::Transform& RP3D_Transform);
+		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape);
 
 		reactphysics3d::CollisionShape* GetCollisionShape() const { return collisionShape; };
 		void SetCollisionShape(reactphysics3d::CollisionShape* RP3D_CollisionShape) { collisionShape = RP3D_CollisionShape; }
@@ -38,7 +39,7 @@ namespace NCL::CSC8503
 		std::string	name;
 
 		ToonTransform transform;
-		RenderObject* renderObject;
+		ToonRenderObject* renderObject;
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::CollisionShape* collisionShape;
 		reactphysics3d::Collider* collider;
