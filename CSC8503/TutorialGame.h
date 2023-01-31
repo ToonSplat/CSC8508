@@ -6,6 +6,7 @@
 #include "PhysicsSystem.h"
 
 #include "StateGameObject.h"
+#include "PaintBallClass.h"
 
 namespace NCL {
 	namespace CSC8503 {
@@ -106,7 +107,8 @@ namespace NCL {
 
 			bool isGameOver;
 			float timer;
+
+			PaintBallClass* sampleWeapon;
 		};
 	}
 }
-

@@ -8,8 +8,6 @@
 #include "OrientationConstraint.h"
 #include "StateGameObject.h"
 
-
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -164,6 +162,8 @@ void TutorialGame::UpdateGame(float dt) {
 		UpdateTimer(dt);
 	else
 		GameOver();
+
+	sampleWeapon->Update(dt);
 }
 
 void TutorialGame::UpdateTimer(float dt) {
@@ -363,6 +363,8 @@ void TutorialGame::InitWorld() {
 
 	InitGameExamples();
 	InitDefaultFloor();
+
+	sampleWeapon = new PaintBallClass(15, 50, 1.0f, 1.0f, 5);
 }
 
 /*
