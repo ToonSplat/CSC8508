@@ -20,6 +20,7 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	Matrix4 verticalRotation = Matrix4::Rotation(pitch, Vector3(1, 0, 0));
 	Matrix4 combinedRotation = horizontalRotation * verticalRotation;
 	this->GetTransform().SetOrientation(combinedRotation);
+	this->GetRigidbody()->setTransform(transform.GetR3DTransform());
 
 	Vector3 rightAxis = Vector3(inverseView.GetColumn(0)); 
 
