@@ -26,14 +26,16 @@ void PaintableObject::Hit(Team* hitBy) {
 	owner = hitBy;
 }
 
-void PaintableObject::AddImpactPoint(ImpactPoint point) {
+void PaintableObject::AddImpactPoint(ImpactPoint& point) {
 	int impactCount = impactPoints.size();
 
 	if (impactCount < 10) {
-		impactPoints.push(point);
+		impactPoints.push_back(point);
 	}
 	else {
-		impactPoints.pop();
-		impactPoints.push(point);
+		impactPoints.pop_front();
+		impactPoints.push_back(point);
 	}
+
+
 }

@@ -34,7 +34,9 @@ namespace NCL {
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera(); 
+			void RenderCamera();
+			void PassImpactPointDetails(const NCL::CSC8503::RenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
+
 			void RenderSkybox();
 
 			void LoadSkybox();
