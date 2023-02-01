@@ -20,6 +20,8 @@ set(Header_Files
     "ToonTransform.h"
     "ToonGameWorld.h"
     "ToonRenderObject.h"
+    "ToonRaycastCallback.h"
+    "ToonUtils.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 

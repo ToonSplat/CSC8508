@@ -50,6 +50,24 @@ void NCL::CSC8503::ToonLevelManager::Update(float dt)
 			axisObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1000.0f, 0));
 			axisObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
 		}
+
+		static bool scaled = false;
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M))
+		{
+			axisObject->SetPosition(reactphysics3d::Vector3(0, 40, 0));
+			axisObject->SetOrientation(Vector3(0.0f, 0.0f, 0.0f));
+			scaled = !scaled;
+			axisObject->SetScale(scaled ? Vector3(1, 1, 1) : Vector3(4, 1, 1));
+			//axisObject->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(90.0f, 0.0f, 0.0f));
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::B))
+		{
+			Vector3 end = ToonGameWorld::Get()->GetMainCamera()->GetPosition() + ToonGameWorld::Get()->GetMainCamera()->GetForward() * 4.0f;
+			axisObject->SetPosition(end);
+			axisObject->GetRigidbody()->setLinearVelocity(reactphysics3d::Vector3(0, 0, 0));
+		}		
+		//ToonGameWorld::Get()->GetMainCamera()->GetPosition();
 	}
 }
 
