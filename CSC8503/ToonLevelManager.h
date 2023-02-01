@@ -1,5 +1,9 @@
 #pragma once
 #include "GameTechRenderer.h"
+#include "PaintableZone.h"
+#include "PaintableObject.h"
+
+#include "Player.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
@@ -17,6 +21,11 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
+
+			Player* AddMoveablePlayer(const Vector3& position, GameWorld* world);
+
+			ShaderBase* GetBasicShader()  { return basicShader; }
+			MeshGeometry* GetSphereMesh() { return sphereMesh; }
 			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
 			~ToonLevelManager();
 
@@ -47,12 +56,13 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			//GameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
 			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
+			MeshGeometry* charMesh = nullptr;
 			MeshGeometry* cubeMesh;
+			MeshGeometry* sphereMesh;
 			TextureBase* basicTex;
 			TextureBase* basicTexPurple;
 			ShaderBase* basicShader;

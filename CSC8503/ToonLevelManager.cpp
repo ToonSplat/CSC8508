@@ -1,4 +1,5 @@
 #include "PhysicsObject.h"
+#include "RenderObject.h"
 #include "ToonRenderObject.h"
 #include "ToonGameObject.h"
 #include "ToonLevelManager.h"
@@ -48,6 +49,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 {
 	//All Models
 	if (!LoadModel(&cubeMesh, "cube.msh")) return false;
+	if (!LoadModel(&charMesh, "goat.msh")) return false;
+	if (!LoadModel(&sphereMesh, "sphere.msh"));
 
 	//All Textures
 	if (!LoadTexture(&basicTex, "Prefab_Grey50.png", true)) return false;
@@ -211,8 +214,36 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 				newPos.y = (IsYSelected() ? y * gridSpacing * cubeScale.y : 0.0f) + gridPosition.y;
 				newPos.z = (IsZSelected() ? z * gridSpacing * cubeScale.z : 0.0f) + gridPosition.z;
 
-				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, 0.0f);
+				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, tempZone, 0.0f);
 			}
 		}
 	}
+	subZones->push_back(tempZone);
+}
+
+Player* ToonLevelManager::AddMoveablePlayer(const Vector3& position, GameWorld* world) {
+	float meshSize = 1.0f;
+	float inverseMass = 0.5f;
+
+	Player* character = new Player();
+	SphereVolume* volume = new SphereVolume(1.0f);
+
+	character->SetBoundingVolume((CollisionVolume*)volume);
+
+	character->GetTransform()
+		.SetScale(Vector3(meshSize, meshSize, meshSize))
+		.SetPosition(position);
+
+	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, basicShader));
+	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
+
+	character->GetPhysicsObject()->SetInverseMass(inverseMass);
+	character->GetPhysicsObject()->InitSphereInertia();
+
+	character->UpdateObjects(basicShader, sphereMesh, world);
+
+	GameWorld::Get()->AddGameObject(character);
+	//player = character;
+
+	return character;
 }

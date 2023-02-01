@@ -6,6 +6,10 @@
 #include "PhysicsSystem.h"
 
 #include "StateGameObject.h"
+#include "PaintBallClass.h"
+#include "Player.h"
+
+#include "ToonLevelManager.h"
 
 #include "ToonLevelManager.h"
 
@@ -20,6 +24,12 @@ namespace NCL {
 
 		protected:
 			void InitialiseAssets();
+
+			void UpdateTimer(float dt);
+
+			void GameOver();
+			void ResetGame();
+			void ObjMovement(float dt);
 
 			void InitCamera();
 			void UpdateKeys();
@@ -54,8 +64,11 @@ namespace NCL {
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
+			Player* AddMoveablePlayer(const Vector3& position);
+
 			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
 			StateGameObject* testStateObj;
+
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;
@@ -69,10 +82,13 @@ namespace NCL {
 			bool useGravity;
 			bool inSelectionMode;
 
-			float		forceMagnitude;
+			float objMovementForce;
+			float forceMagnitude;
+			float sprintTimer;
+			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
-			GameObject* cameraTargetObject = nullptr;
+			Player* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;
@@ -88,13 +104,18 @@ namespace NCL {
 
 			//Coursework Additional functionality	
 			GameObject* lockedObject	= nullptr;
+			//Player* player;
 			Vector3 lockedOffset		= Vector3(0, 14, 20);
 			void LockCameraToObject(GameObject* o) {
 				lockedObject = o;
 			}
 
 			GameObject* objClosest = nullptr;
+
+			bool isGameOver;
+			float timer;
+
+			PaintBallClass* sampleWeapon;
 		};
 	}
 }
-

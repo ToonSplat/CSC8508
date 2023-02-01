@@ -19,6 +19,13 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
+			Player*		cameraTargetObject = nullptr;
+			GameObject* targetObject	   = nullptr;
+
+			PaintableZone* mainZone;
+			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
+
+			PaintBallClass* sampleWeapon;
 			GameTechRenderer* renderer;
 			PhysicsSystem* physics;
 			ToonGameWorld* world;
