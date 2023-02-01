@@ -16,6 +16,7 @@ set(Header_Files
     "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
+    "HitSphere.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -32,6 +33,7 @@ set(Source_Files
     "Player.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
+    "HitSphere.cpp"
 )
 
 if(USE_VULKAN)

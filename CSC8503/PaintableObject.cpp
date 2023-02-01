@@ -26,14 +26,17 @@ void PaintableObject::Hit(Team* hitBy) {
 	owner = hitBy;
 }
 
-void PaintableObject::AddImpactPoint(ImpactPoint point) {
+void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.
+	Vector3 localPoint = this->GetTransform().GetPosition() - point.GetImpactLocation();
+	point.SetImpactLocation(localPoint);
+	
 	int impactCount = impactPoints.size();
 
 	if (impactCount < 10) {
-		impactPoints.push(point);
+		impactPoints.push_back(point);
 	}
 	else {
-		impactPoints.pop();
-		impactPoints.push(point);
+		impactPoints.pop_front();
+		impactPoints.push_back(point);
 	}
 }

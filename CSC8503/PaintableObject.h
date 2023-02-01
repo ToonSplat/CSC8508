@@ -2,7 +2,6 @@
 #include "PaintableZone.h"
 #include "GameObject.h"
 #include "ImpactPoint.h"
-#include <queue>
 
 namespace NCL {
 	namespace CSC8503 {
@@ -23,7 +22,7 @@ namespace NCL {
 			Team* owner;
 			PaintableZone* parent;
 			const int OBJECT_SCORE = 1;
-			std::queue<ImpactPoint> impactPoints;
+			std::deque<ImpactPoint> impactPoints;
 		};
 	}
 }
