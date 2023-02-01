@@ -120,7 +120,7 @@ void GameTechRenderer::RenderFrame() {
 	glClearColor(1, 1, 1, 1);
 	BuildObjectList();
 	SortObjectList();
-	//RenderShadowMap();
+	RenderShadowMap();
 	RenderSkybox();
 	RenderCamera();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...

@@ -15,9 +15,9 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, rea
 {
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(40, 70, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
-	//LoadLevel();
+	LoadLevel();
 }
 
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
@@ -29,8 +29,8 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
-	if (axisObject)
-		std::cout << "Position: " << axisObject->GetTransform().GetPosition().x << ", " << axisObject->GetTransform().GetPosition().y << ", " << axisObject->GetTransform().GetPosition().z << std::endl;
+	//if (axisObject)
+		//std::cout << "Position: " << axisObject->GetTransform().GetPosition().x << ", " << axisObject->GetTransform().GetPosition().y << ", " << axisObject->GetTransform().GetPosition().z << std::endl;
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
