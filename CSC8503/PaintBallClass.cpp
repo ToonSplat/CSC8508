@@ -102,9 +102,9 @@ void PaintBallClass::CreateBullet()
 
 
 	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
-	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z));
-
 	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
+	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
+
 	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*m_World->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
 	Vector3 forceInDirection = direction * 100.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
