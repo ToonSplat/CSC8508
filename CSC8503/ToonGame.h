@@ -28,6 +28,8 @@ namespace NCL
 			reactphysics3d::PhysicsWorld* physicsWorld;
 
 			bool showCursor;
+			const float timeStep = 1.0f / 60.0f;
+			float accumulator;
 		};
 	}
 }

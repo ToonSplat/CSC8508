@@ -8,7 +8,10 @@ using namespace CSC8503;
 
 NCL::CSC8503::ToonGame::ToonGame()
 {
+	accumulator = 0.0f;
+
 	physicsWorld = physicsCommon.createPhysicsWorld();
+	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
 	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
@@ -19,6 +22,8 @@ NCL::CSC8503::ToonGame::ToonGame()
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
+	physicsCommon.destroyPhysicsWorld(physicsWorld);
+
 	delete world;
 	delete renderer;
 	//delete physics;
@@ -31,8 +36,15 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 
 	renderer->Update(dt);
+
+	accumulator += dt;
+	while (accumulator >= timeStep)
+	{
+		physicsWorld->update(timeStep);
+		accumulator -= timeStep;
+	}
 	//physics->Update(dt);
-	physicsWorld->update(dt);
+	levelManager->Update(dt);
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);

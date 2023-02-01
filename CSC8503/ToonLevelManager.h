@@ -20,6 +20,8 @@ namespace NCL
 			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
 			~ToonLevelManager();
 
+			void Update(float dt);
+
 		protected:
 			bool LoadAssets();
 			bool LoadModel(MeshGeometry** mesh, const std::string& meshFileName);
@@ -59,7 +61,7 @@ namespace NCL
 			reactphysics3d::PhysicsCommon& physicsCommon;
 			reactphysics3d::PhysicsWorld& physicsWorld;
 
-			//GameObject* axisObject;
+			ToonGameObject* axisObject;
 		};
 	}
 }

@@ -14,7 +14,10 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, rea
 	physicsCommon(_physicsCommon)
 {
 	if (!LoadAssets()) return;
-	LoadLevel();
+
+	axisObject = AddCubeToWorld(Vector3(40, 70, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
+	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+	//LoadLevel();
 }
 
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
@@ -22,6 +25,12 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 	delete cubeMesh;
 	delete basicTex;
 	delete basicShader;
+}
+
+void NCL::CSC8503::ToonLevelManager::Update(float dt)
+{
+	if (axisObject)
+		std::cout << "Position: " << axisObject->GetTransform().GetPosition().x << ", " << axisObject->GetTransform().GetPosition().y << ", " << axisObject->GetTransform().GetPosition().z << std::endl;
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
@@ -76,9 +85,6 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 
 bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 {
-	//axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
-	//Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
-
 	int XZ = Axes::X | Axes::Z;
 	int XY = Axes::X | Axes::Y;
 	int YZ = Axes::Y | Axes::Z;
@@ -137,11 +143,11 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(scale * 2.0f);
 
-	std::cout << cube->GetTransform().GetMatrix() << std::endl;
+	//std::cout << cube->GetTransform().GetMatrix() << std::endl;
 
 	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
 	cube->AddRigidbody();
-	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	cube->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
 	reactphysics3d::BoxShape* cubeBoxShape = physicsCommon.createBoxShape(boxExtent);
