@@ -67,19 +67,14 @@ endif()
 ################################################################################
 # Sub-projects
 ################################################################################
+link_directories("./openal-soft/Debug/OpenAL")
+link_directories("./libsndfile/Debug/SndFile")
 add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
-add_subdirectory(openal-soft)
-add_subdirectory(libsndfile)
-target_link_libraries(${PROJECT_NAME} PUBLIC OpenAL)
-target_link_libraries(${PROJECT_NAME} PUBLIC sndfile)
-target_include_directories(${PROJECT_NAME} PUBLIC
-                          "${PROJECT_BINARY_DIR}"
-                          "${PROJECT_SOURCE_DIR}/openal-soft/include"
-			  "${PROJECT_SOURCE_DIR}/libsndfile/include"
-                          )
+
+file(COPY ./openal-soft/Debug/OpenAL/OpenAL32.dll DESTINATION ./CSC8503)
 
 
 if(USE_VULKAN)

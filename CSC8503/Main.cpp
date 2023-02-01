@@ -27,6 +27,9 @@
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
 
+#include "Audio.h"
+#include "Assets.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -264,6 +267,11 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
+	
+	Audio* audio = Audio::get();
+	ALuint sound = audio->AddSound("somesound.wav");
+	ALuint speaker = audio->AddSource();
+	audio->PlaySound(sound, speaker);
 
 	//TutorialGame* g = new TutorialGame();
 	ToonGame* g = new ToonGame();

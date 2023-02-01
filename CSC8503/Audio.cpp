@@ -6,7 +6,9 @@ Audio* Audio::get() {
 }
 
 Audio::Audio() {
-    device = alcOpenDevice(nullptr);
+
+    const ALCchar* defaultDeviceString = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
+    device = alcOpenDevice(defaultDeviceString);
     if (!device)
         throw("failed to get device");
     context = alcCreateContext(device, nullptr);
@@ -26,8 +28,13 @@ Audio::Audio() {
 
 Audio::~Audio() {
 
-    alDeleteBuffers(soundEffectBuffers.size(), soundEffectBuffers.data());
     alDeleteSources(soundSources.size(), soundSources.data());
+    soundSources.clear();
+    for (std::map<std::string, ALuint>::iterator it = soundEffectBuffers.begin(); it != soundEffectBuffers.end(); ++it) {
+        soundSources.push_back(it->second);
+    }
+    alDeleteBuffers(soundSources.size(), soundSources.data());
+   
     soundEffectBuffers.clear();
     soundSources.clear();
 
@@ -35,8 +42,6 @@ Audio::~Audio() {
         throw("failed to make context not-current");
     alcDestroyContext(context);
     alcCloseDevice(device);
-
-
 }
 
 ALuint Audio::AddSound(const char* filename)
@@ -48,18 +53,23 @@ ALuint Audio::AddSound(const char* filename)
     short* membuf;
     sf_count_t num_frames;
     ALsizei num_bytes;
-
+    
+    std::string fullFilePath(NCL::Assets::SOUNDSDIR + filename);
+    char* filepath;
+    strcpy(filepath, fullFilePath.c_str());
+    
+    
 
     /* Open the audio file and check that it's usable. */
-    sndfile = sf_open(filename, SFM_READ, &sfinfo);
+    sndfile = sf_open(filepath, SFM_READ, &sfinfo);
     if (!sndfile)
     {
-        fprintf(stderr, "Could not open audio in %s: %s\n", filename, sf_strerror(sndfile));
+        fprintf(stderr, "Could not open audio in %s: %s\n", filepath, sf_strerror(sndfile));
         return 0;
     }
     if (sfinfo.frames < 1 || sfinfo.frames >(sf_count_t)(INT_MAX / sizeof(short)) / sfinfo.channels)
     {
-        fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", filename, sfinfo.frames);
+        fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", filepath, sfinfo.frames);
         sf_close(sndfile);
         return 0;
     }
@@ -95,7 +105,7 @@ ALuint Audio::AddSound(const char* filename)
     {
         free(membuf);
         sf_close(sndfile);
-        fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filename, num_frames);
+        fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filepath, num_frames);
         return 0;
     }
     num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
@@ -120,19 +130,28 @@ ALuint Audio::AddSound(const char* filename)
         return 0;
     }
 
-    this->soundEffectBuffers.push_back(buffer);
+    this->soundEffectBuffers.insert({ filepath, buffer});
 
     return buffer;
 }
 
 bool Audio::RemoveSound(const ALuint& buffer) {
-    std::vector <ALuint>::iterator position = std::find(soundEffectBuffers.begin(), soundEffectBuffers.end(), buffer);
-    if (position != soundEffectBuffers.end()) {
-        soundEffectBuffers.erase(position);
-        return true;
+    for (std::map<std::string, ALuint>::iterator it = soundEffectBuffers.begin(); it != soundEffectBuffers.end(); ++it) {
+        if (buffer != it->second) {
+            soundEffectBuffers.erase(it->first);
+            alDeleteBuffers(1,&buffer);
+            return true;
+        }
     }
+   
     return false;
 }
+bool Audio::RemoveSound(std::string filename) {
+    alDeleteBuffers(1, &soundEffectBuffers.find(filename)->second);
+    soundEffectBuffers.erase(filename);
+    return true;
+}
+
 
 ALuint Audio::AddSource() {
     ALuint source;
@@ -141,7 +160,7 @@ ALuint Audio::AddSource() {
     alSourcef(source, AL_GAIN, 1.0f);
     alSource3f(source, AL_POSITION, 0, 0, 0);
     alSource3f(source, AL_VELOCITY, 0, 0, 0);
-    alSourcei(source, AL_LOOPING, AL_FALSE);
+    alSourcei(source, AL_LOOPING, AL_TRUE);
 
     this->soundSources.push_back(source);
     return source;
