@@ -13,7 +13,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	renderer = new GameTechRenderer(*world);
 
 	physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);
+	physics->UseGravity(false);
 
 	mainZone = new PaintableZone();
 	subZones = new std::vector<PaintableZone*>;
@@ -39,7 +39,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	Debug::Print("[]", Vector2(48.5, 51), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 	world->GetMainCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);

@@ -101,16 +101,17 @@ void PaintBallClass::CreateBullet()
 	m_World->AddGameObject(sphereBullet);
 
 
-	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
-	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
-	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
+	Vector3 position  = m_CameraTargetObject->GetTransform().GetPosition();
+	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1));// +Vector3(0, 0.05f, 0);
+	sphereBullet->GetTransform().SetPosition(m_World->GetMainCamera()->GetPosition() + (direction * 5));//(Vector3(position.x, position.y, position.z) + (direction * 5));
 
 	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*m_World->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
-	Vector3 forceInDirection = direction * 100.0f;
+	Vector3 forceInDirection = direction * 10.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 }
 
-void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject)
+void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject, GameWorld* world)
 {
 	m_TargetObjet = targetObject;
+	m_World = world;
 }

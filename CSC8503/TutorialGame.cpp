@@ -173,7 +173,7 @@ void TutorialGame::UpdateGame(float dt) {
 	if (cameraTargetObject && !sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject); }
 	if (sampleWeapon) 
 	{
-		sampleWeapon->UpdateTargetObject(selectionObject);
+		sampleWeapon->UpdateTargetObject(selectionObject, world);
 		sampleWeapon->Update(dt);
 	}
 }

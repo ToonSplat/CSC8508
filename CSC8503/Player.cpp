@@ -54,7 +54,7 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, this); }
 	if (sampleWeapon)
 	{
-		sampleWeapon->UpdateTargetObject(targetObject);
+		sampleWeapon->UpdateTargetObject(targetObject, world);
 		sampleWeapon->Update(dt);
 	}
 	

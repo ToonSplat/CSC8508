@@ -14,7 +14,7 @@ namespace NCL {
             ~PaintBallClass();
 
             void Update (float dt);
-            void UpdateTargetObject(GameObject* targetObject);
+            void UpdateTargetObject(GameObject* targetObject, GameWorld* world);
 
         protected:
             // Weapon Stats
