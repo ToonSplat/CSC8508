@@ -28,7 +28,7 @@ PaintBallClass::~PaintBallClass() {
 
 void PaintBallClass::Update(float dt) {
 	//if left mouse status
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT) && ammoInUse > 0)
+	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT) && ammoInUse > 0)
 		status = isFiring;
 	else if (ammoInUse <= 0 || Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::R))
 		status = isReloading;
@@ -88,7 +88,7 @@ void PaintBallClass::CreateBullet()
 	GameObject*   sphereBullet = new GameObject("Fire");
 	float		  radius	   = 0.1f;
 	Vector3		  sphereSize   = Vector3(radius, radius, radius);
-	SphereVolume* volume	   = new SphereVolume(radius + 0.5f);
+	SphereVolume* volume	   = new SphereVolume(radius);
 	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
 
 	sphereBullet->GetTransform().SetScale(sphereSize);
