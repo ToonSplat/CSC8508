@@ -14,6 +14,7 @@ namespace NCL::CSC8503
 		const std::string& GetName() const { return name; }
 
 		bool IsActive() const { return isActive; }
+		void SetActive(const bool& status) { isActive = status; }
 
 		ToonTransform& GetTransform() { return transform; }
 
@@ -30,6 +31,18 @@ namespace NCL::CSC8503
 		reactphysics3d::CollisionShape* GetCollisionShape() const { return collisionShape; };
 		void SetCollisionShape(reactphysics3d::CollisionShape* RP3D_CollisionShape) { collisionShape = RP3D_CollisionShape; }
 
+		void SetPosition(const reactphysics3d::Vector3& newPos);
+		void SetPosition(const Vector3& newPos);
+		void SetPosition(const float& x, const float& y, const float& z);
+
+		void SetOrientation(const reactphysics3d::Vector3& newRotEulerAngles);
+		void SetOrientation(const Vector3& newRotEulerAngles);
+		void SetOrientation(const reactphysics3d::Quaternion& newRot);
+		void SetOrientation(const Quaternion& newRot);
+
+		void SetScale(const Vector3& newScale) { transform.SetScale(newScale); }
+		void SetScale(const reactphysics3d::Vector3& newScale) { transform.SetScale(newScale); }
+
 		void SetWorldID(int newID) { worldID = newID; }
 		int	GetWorldID() const { return worldID; }
 
@@ -42,8 +55,7 @@ namespace NCL::CSC8503
 		ToonRenderObject* renderObject;
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::CollisionShape* collisionShape;
-		reactphysics3d::Collider* collider;
-		Matrix4 modelMatrix;
+		reactphysics3d::Collider* collider;		
 
 	private:
 		reactphysics3d::PhysicsWorld& physicsWorld;

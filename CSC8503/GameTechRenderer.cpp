@@ -203,14 +203,13 @@ void GameTechRenderer::RenderShadowMap() {
 
 			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
 
-
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 		BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}		
+		}
 	}
 
 	glViewport(0, 0, windowWidth, windowHeight);

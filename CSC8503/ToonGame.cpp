@@ -2,6 +2,8 @@
 #include "PhysicsObject.h"
 
 #include "ToonGame.h"
+#include "ToonUtils.h"
+#include "ToonRaycastCallback.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -62,6 +64,21 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 			Window::GetWindow()->ShowOSPointer(false);
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
+	}
+
+	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
+	{
+		Vector3 end = world->GetMainCamera()->GetPosition() + world->GetMainCamera()->GetForward() * 500.0f;
+		std::cout << "End: " << end << std::endl;
+		reactphysics3d::Vector3 endRay = ToonUtils::ConvertToRP3DVector3(end);
+		reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(world->GetMainCamera()->GetPosition()), endRay);
+		ToonRaycastCallback rayCallback;
+
+		physicsWorld->raycast(ray, &rayCallback);
+		Debug::Print("Click Pos: " + std::to_string(rayCallback.GetHitWorldPos().x) + ", " + std::to_string(rayCallback.GetHitWorldPos().z), Vector2(5, 85));
+
+		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
+		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
 	}
 
 	/*if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
