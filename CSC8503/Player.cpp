@@ -37,6 +37,7 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	}
 	else if (!Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer < sprintMax) {
 		sprintTimer += dt;
+		sprintTimer = max(sprintTimer, sprintMax);
 	}
 
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
