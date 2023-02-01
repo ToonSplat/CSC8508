@@ -25,3 +25,15 @@ void PaintableObject::Hit(Team* hitBy) {
 		parent->ChangeChildOwner(owner, hitBy);
 	owner = hitBy;
 }
+
+void PaintableObject::AddImpactPoint(ImpactPoint point) {
+	int impactCount = impactPoints.size();
+
+	if (impactCount < 10) {
+		impactPoints.push(point);
+	}
+	else {
+		impactPoints.pop();
+		impactPoints.push(point);
+	}
+}
