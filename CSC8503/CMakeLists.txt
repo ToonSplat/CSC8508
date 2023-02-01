@@ -16,6 +16,10 @@ set(Header_Files
     "Player.h"
     "ToonLevelManager.h"
     "ToonGame.h"
+    "ToonGameObject.h"
+    "ToonTransform.h"
+    "ToonGameWorld.h"
+    "ToonRenderObject.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -33,13 +37,15 @@ set(Source_Files
     "Player.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
+    "ToonGameObject.cpp"
+    "ToonTransform.cpp"
+    "ToonGameWorld.cpp"
+    "ToonRenderObject.cpp"
 )
 
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
 list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
-
-
 
 file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 
@@ -123,7 +129,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         "UNICODE;"
-        "_UNICODE" 
+        "_UNICODE"
+        "NOMINMAX"
         "WIN32_LEAN_AND_MEAN"
         "_WINSOCKAPI_"   
         "_WINSOCK2API_"
@@ -198,6 +205,18 @@ if(MSVC)
     )
 endif()
 
+if(WIN32) 
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../ReactPhysics3D") 
+endif() 
+
+#Import the ReactPhysics3D library 
+find_package(ReactPhysics3D REQUIRED)
+
+set(ADDITIONAL_LIBRARY_DEPENDENCIES
+    "ReactPhysics3D::ReactPhysics3D"
+)
+
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 ################################################################################
 # Dependencies
 ################################################################################

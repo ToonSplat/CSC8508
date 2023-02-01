@@ -1,16 +1,25 @@
 #include "PhysicsObject.h"
 #include "RenderObject.h"
-
+#include "ToonRenderObject.h"
+#include "ToonGameObject.h"
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
+#include <reactphysics3d/reactphysics3d.h>
 
 using namespace NCL;
 using namespace CSC8503;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones) :
-	gameRenderer(renderer), mainZone(mainZone), subZones(subZones)
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon) :
+	gameRenderer(renderer),
+	physicsWorld(_physicsWorld),
+	physicsCommon(_physicsCommon)
 {
 	if (!LoadAssets()) return;
+
+	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), basicTexPurple, 0.0f);
+	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+
 	LoadLevel();
 }
 
@@ -19,6 +28,21 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 	delete cubeMesh;
 	delete basicTex;
 	delete basicShader;
+}
+
+void NCL::CSC8503::ToonLevelManager::Update(float dt)
+{
+	//if (axisObject)
+		//std::cout << "Position: " << axisObject->GetRigidbody()->getTransform().getPosition().x << ", " << axisObject->GetRigidbody()->getTransform().getPosition().y << ", " << axisObject->GetRigidbody()->getTransform().getPosition().z << std::endl;
+
+	if (axisObject)
+	{
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N))
+		{
+			axisObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1000.0f, 0));
+			axisObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
+		}
+	}
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
@@ -75,14 +99,10 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 
 bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 {
-	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, nullptr, 0.0f);
-	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
-
 	int XZ = Axes::X | Axes::Z;
 	int XY = Axes::X | Axes::Y;
 	int YZ = Axes::Y | Axes::Z;
 	int XYZ = Axes::X | Axes::Y | Axes::Z;
-
 
 	//Floors
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(-40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, basicTex);
@@ -90,27 +110,27 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, 0), Vector3(2, 0.5f, 2), 0.0f, basicTex);
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, -80), Vector3(2, 0.5f, 2), 0.0f, basicTex);
 
-	////Walls Big
-	//AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(78.0f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
-	//AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(-42.5f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	//Walls Big
+	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(78.0f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(-42.5f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
 
-	//AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, -82), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
-	//AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, 38), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, -82), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, 38), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
 
-	////Walls Small
-	//AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
-	//AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
-	//AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
-	//AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	//Walls Small
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex);
 
-	//AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
-	//AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
-	//AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
-	//AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex);
 
 	//Bridges
 	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
-	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2.0f, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
+	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex);
 
 	//Boxes
 	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(20.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple);
@@ -129,13 +149,38 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	return true;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, PaintableZone* zone, float inverseMass)
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
 {
-	PaintableObject* cube;
-	if(zone)
-		cube = new PaintableObject(zone);
-	else 
-		cube = new PaintableObject();
+	ToonGameObject* cube = new ToonGameObject(physicsWorld);
+
+	cube->GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(scale * 2.0f);
+
+	//std::cout << cube->GetTransform().GetMatrix() << std::endl;
+
+	cube->AddRigidbody();
+	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
+
+	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
+	reactphysics3d::BoxShape* cubeBoxShape = physicsCommon.createBoxShape(boxExtent);
+	cube->SetCollisionShape(cubeBoxShape);
+
+	//reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, reactphysics3d::Transform::identity());
+
+	cube->SetCollider(cubeBoxShape);
+	cube->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	ToonGameWorld::Get()->AddGameObject(cube);
+
+	return cube;
+}
+
+/*GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+{
+	GameObject* cube = new GameObject();
+
 	AABBVolume* volume = new AABBVolume(scale);
 	cube->SetBoundingVolume((CollisionVolume*)volume);
 
@@ -153,11 +198,10 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 	GameWorld::Get()->AddGameObject(cube);
 
 	return cube;
-}
+}*/
 
 void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex)
 {
-	PaintableZone* tempZone = new PaintableZone(mainZone);
 	SetSelectedAxes(axes);
 	for (int x = 0; x < gridSize.x && (gridSize.x > 0); x++)
 	{

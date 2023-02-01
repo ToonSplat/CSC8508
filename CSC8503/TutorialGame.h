@@ -11,6 +11,8 @@
 
 #include "ToonLevelManager.h"
 
+#include "ToonLevelManager.h"
+
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{

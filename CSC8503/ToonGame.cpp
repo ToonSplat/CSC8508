@@ -9,29 +9,30 @@ using namespace CSC8503;
 
 NCL::CSC8503::ToonGame::ToonGame()
 {
-	world = new GameWorld();
-	renderer = new GameTechRenderer(*world);
-
-	physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);
-
-	mainZone = new PaintableZone();
-	subZones = new std::vector<PaintableZone*>;
-
-	levelManager = new ToonLevelManager(*renderer, mainZone, subZones);
 
 	cameraTargetObject = levelManager->AddMoveablePlayer(Vector3(-20, 5, -20), world);
+	accumulator = 0.0f;
+
+	physicsWorld = physicsCommon.createPhysicsWorld();
+	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+	world = new ToonGameWorld();
+	renderer = new GameTechRenderer(*world);
+	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
+
+	//physics = new PhysicsSystem(*world);
+	//physics->UseGravity(true);
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
 	delete renderer;
-	delete physics;
 	delete mainZone;
 	for (auto& zone : *subZones)
 		delete zone;
 	delete subZones;
+	physicsCommon.destroyPhysicsWorld(physicsWorld);
+	//delete physics;
 	delete levelManager;
 }
 
@@ -41,8 +42,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
-	world->GetMainCamera()->UpdateCamera(dt);
-	world->UpdateWorld(dt);
 
 	world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
 	float horizontalAngle = world->GetMainCamera()->GetYaw();
@@ -53,9 +52,20 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 	cameraTargetObject->UpdateTargetObject(targetObject);
+  
+	world->GetMainCamera()->UpdateCamera(dt);
+	world->UpdateWorld(dt);
 
 	renderer->Update(dt);
-	physics->Update(dt);
+
+	accumulator += dt;
+	while (accumulator >= timeStep)
+	{
+		physicsWorld->update(timeStep);
+		accumulator -= timeStep;
+	}
+	//physics->Update(dt);
+	levelManager->Update(dt);
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
@@ -90,11 +100,3 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	for (auto& zone : *subZones)
 		zone->PrintOwnership();*/
 }
-
-//void NCL::CSC8503::ToonGame::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh)
-//{
-//	basicShader = basicShad;
-//	sphereMesh  = sphMesh;
-//	cameraTargetObject->UpdateObjects(basicShader, sphereMesh, world);
-//
-//}

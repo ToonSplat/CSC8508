@@ -4,6 +4,7 @@
 #include "PaintableObject.h"
 
 #include "Player.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
 {
@@ -20,13 +21,15 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones);
-			~ToonLevelManager();
 
 			Player* AddMoveablePlayer(const Vector3& position, GameWorld* world);
 
 			ShaderBase* GetBasicShader()  { return basicShader; }
 			MeshGeometry* GetSphereMesh() { return sphereMesh; }
+			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
+			~ToonLevelManager();
+
+			void Update(float dt);
 
 		protected:
 			bool LoadAssets();
@@ -53,7 +56,7 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, PaintableZone* zone, float inverseMass = 10.0f);
+			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
@@ -65,10 +68,10 @@ namespace NCL
 			ShaderBase* basicShader;
 
 			GameTechRenderer& gameRenderer;
+			reactphysics3d::PhysicsCommon& physicsCommon;
+			reactphysics3d::PhysicsWorld& physicsWorld;
 
-			PaintableZone* mainZone;
-			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
-			PaintableObject* axisObject;
+			ToonGameObject* axisObject;
 		};
 	}
 }

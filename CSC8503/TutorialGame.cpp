@@ -7,7 +7,6 @@
 #include "PositionConstraint.h"
 #include "OrientationConstraint.h"
 #include "StateGameObject.h"
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -16,7 +15,7 @@ TutorialGame::TutorialGame()	{
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
 #else 
-	renderer = new GameTechRenderer(*world);
+	//renderer = new GameTechRenderer(*world);
 #endif
 
 	physics		= new PhysicsSystem(*world);	
