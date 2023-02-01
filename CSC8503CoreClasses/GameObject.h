@@ -1,6 +1,7 @@
 #pragma once
 #include "Transform.h"
 #include "CollisionVolume.h"
+#include "RenderObject.h"
 
 using std::vector;
 
@@ -44,6 +45,7 @@ namespace NCL::CSC8503 {
 
 		void SetRenderObject(RenderObject* newObject) {
 			renderObject = newObject;
+			renderObject->SetGameObject(this);
 		}
 
 		void SetPhysicsObject(PhysicsObject* newObject) {
