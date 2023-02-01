@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "ToonGameObject.h"
 #include "Team.h"
 #include "Matrix4.h"
 #include "Vector4.h"
@@ -13,10 +13,10 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public GameObject {
+class Player : public ToonGameObject {
 public:
-	Player();
-	Player(Team* team);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
 	void Update(Matrix4& inverseView, float& yaw, float& pitch, float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
@@ -26,8 +26,8 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	void UpdateTargetObject(GameObject* targetObj) { targetObj = targetObject; }
-	void UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh, GameWorld* wld);
+	void UpdateTargetObject(ToonGameObject* targetObj) { targetObj = targetObject; }
+	void UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh);
 
 protected:
 	void Shoot();
@@ -40,9 +40,8 @@ protected:
 	float sprintMulitplier = 5.0f;
 	int ammoRemaining = 100;
 
-	GameObject* targetObject = nullptr;
+	ToonGameObject* targetObject = nullptr;
 	PaintBallClass* sampleWeapon = nullptr;
-	GameWorld* world;
 	ShaderBase* basicShader;
 	MeshGeometry* sphereMesh;
 	/*

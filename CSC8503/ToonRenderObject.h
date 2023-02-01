@@ -31,6 +31,8 @@ namespace NCL {
 				return mesh;
 			}
 
+			void SetMesh(MeshGeometry* mesh) { this->mesh = mesh; }
+
 			ToonTransform*		GetTransform() const {
 				return transform;
 			}

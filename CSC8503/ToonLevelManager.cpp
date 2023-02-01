@@ -9,14 +9,18 @@
 using namespace NCL;
 using namespace CSC8503;
 
+ToonLevelManager* ToonLevelManager::instance = nullptr;
+
 NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon) :
 	gameRenderer(renderer),
 	physicsWorld(_physicsWorld),
 	physicsCommon(_physicsCommon)
 {
+	instance = this;
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), basicTexPurple, 0.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), basicTexPurple, 1.0f);
+	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
@@ -26,7 +30,11 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, rea
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 {
 	delete cubeMesh;
+	delete charMesh;
+	delete sphereMesh;
+	delete checkTex;
 	delete basicTex;
+	delete basicTexPurple;
 	delete basicShader;
 }
 
@@ -53,6 +61,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel(&sphereMesh, "sphere.msh"));
 
 	//All Textures
+	if (!LoadTexture(&checkTex, "checkerboard.png", false)) return false;
 	if (!LoadTexture(&basicTex, "Prefab_Grey50.png", true)) return false;
 	if (!LoadTexture(&basicTexPurple, "Prefab_Purple.png", true)) return false;
 
@@ -149,7 +158,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	return true;
 }
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
 {
 	ToonGameObject* cube = new ToonGameObject(physicsWorld);
 
@@ -161,6 +171,7 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 
 	cube->AddRigidbody();
 	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	cube->GetRigidbody()->setMass(mass);
 	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
@@ -177,28 +188,32 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	return cube;
 }
 
-/*GameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass)
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
 {
-	GameObject* cube = new GameObject();
+	ToonGameObject* sphere = new ToonGameObject(physicsWorld);
 
-	AABBVolume* volume = new AABBVolume(scale);
-	cube->SetBoundingVolume((CollisionVolume*)volume);
+	sphere->GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(Vector3(radius, radius, radius));
 
-	cube->GetTransform()
-		.SetPosition(position)
-		.SetOrientation(Quaternion::EulerAnglesToQuaternion(rotationEuler.x, rotationEuler.y, rotationEuler.z))
-		.SetScale(scale * 2);
+	//std::cout << cube->GetTransform().GetMatrix() << std::endl;
 
-	cube->SetRenderObject(new RenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
-	cube->SetPhysicsObject(new PhysicsObject(&cube->GetTransform(), cube->GetBoundingVolume()));
+	sphere->AddRigidbody();
+	sphere->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), sphereMesh, sphereTex, basicShader));
 
-	cube->GetPhysicsObject()->SetInverseMass(inverseMass);
-	cube->GetPhysicsObject()->InitCubeInertia();
+	reactphysics3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
+	sphere->SetCollisionShape(sphereShape);
 
-	GameWorld::Get()->AddGameObject(cube);
+	//reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, reactphysics3d::Transform::identity());
 
-	return cube;
-}*/
+	sphere->SetCollider(sphereShape);
+	sphere->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	ToonGameWorld::Get()->AddGameObject(sphere);
+
+	return sphere;
+}
 
 void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex)
 {
@@ -214,36 +229,18 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 				newPos.y = (IsYSelected() ? y * gridSpacing * cubeScale.y : 0.0f) + gridPosition.y;
 				newPos.z = (IsZSelected() ? z * gridSpacing * cubeScale.z : 0.0f) + gridPosition.z;
 
-				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, tempZone, 0.0f);
+				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, 0.0f);
 			}
 		}
 	}
-	subZones->push_back(tempZone);
 }
 
-Player* ToonLevelManager::AddMoveablePlayer(const Vector3& position, GameWorld* world) {
-	float meshSize = 1.0f;
-	float inverseMass = 0.5f;
+Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) {
+	Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 
-	Player* character = new Player();
-	SphereVolume* volume = new SphereVolume(1.0f);
+	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 
-	character->SetBoundingVolume((CollisionVolume*)volume);
+	player->GetRenderObject()->SetMesh(charMesh);
 
-	character->GetTransform()
-		.SetScale(Vector3(meshSize, meshSize, meshSize))
-		.SetPosition(position);
-
-	character->SetRenderObject(new RenderObject(&character->GetTransform(), charMesh, nullptr, basicShader));
-	character->SetPhysicsObject(new PhysicsObject(&character->GetTransform(), character->GetBoundingVolume()));
-
-	character->GetPhysicsObject()->SetInverseMass(inverseMass);
-	character->GetPhysicsObject()->InitSphereInertia();
-
-	character->UpdateObjects(basicShader, sphereMesh, world);
-
-	GameWorld::Get()->AddGameObject(character);
-	//player = character;
-
-	return character;
+	return player;
 }

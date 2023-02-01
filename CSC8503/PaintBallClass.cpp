@@ -1,11 +1,12 @@
 #include "PaintBallClass.h"
 #include "RenderObject.h"
 #include "PhysicsObject.h"
+#include "ToonLevelManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject) {
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh, ToonGameObject* cameraTargetObject) {
 	ammoInUse			 = _maxAmmoInUse;
 	ammoHeld			 = _maxAmmoHeld;
 	maxAmmoHeld			 = _maxAmmoHeld;
@@ -13,7 +14,6 @@ PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRat
 	fireRate			 = _fireRate;
 	reloadTime			 = _reloadTime;
 	maxShootDistance	 = _maxShootDist;
-	m_World				 = world;
 	m_BasicShader		 = basicShader;
 	m_SphereMesh		 = sphereMesh;
 	m_CameraTargetObject = cameraTargetObject;
@@ -81,36 +81,38 @@ void PaintBallClass::PickUpAmmo(int amt) {
 
 }
 
-
-
-void PaintBallClass::CreateBullet()
-{
-	GameObject*   sphereBullet = new GameObject("Fire");
-	float		  radius	   = 0.1f;
-	Vector3		  sphereSize   = Vector3(radius, radius, radius);
-	SphereVolume* volume	   = new SphereVolume(radius);
-	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
-
-	sphereBullet->GetTransform().SetScale(sphereSize);
-	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), m_SphereMesh, nullptr, m_BasicShader));
-	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
-
-	sphereBullet->GetPhysicsObject()->SetInverseMass(100.0f);
-	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
-	sphereBullet->GetPhysicsObject()->InitSphereInertia();
-	m_World->AddGameObject(sphereBullet);
-
-
-	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
-	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
-	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
-
-	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*m_World->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
-	Vector3 forceInDirection = direction * 100.0f;
-	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
+void PaintBallClass::CreateBullet() {
+	/*ToonLevelManager::Get();*/
 }
 
-void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject)
+//void PaintBallClass::CreateBullet()
+//{
+//	GameObject*   sphereBullet = new GameObject("Fire");
+//	float		  radius	   = 0.1f;
+//	Vector3		  sphereSize   = Vector3(radius, radius, radius);
+//	SphereVolume* volume	   = new SphereVolume(radius);
+//	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
+//
+//	sphereBullet->GetTransform().SetScale(sphereSize);
+//	sphereBullet->SetRenderObject(new RenderObject(&sphereBullet->GetTransform(), m_SphereMesh, nullptr, m_BasicShader));
+//	sphereBullet->SetPhysicsObject(new PhysicsObject(&sphereBullet->GetTransform(), sphereBullet->GetBoundingVolume()));
+//
+//	sphereBullet->GetPhysicsObject()->SetInverseMass(100.0f);
+//	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+//	sphereBullet->GetPhysicsObject()->InitSphereInertia();
+//	//ToonGameWorld::Get()->AddGameObject(sphereBullet);
+//
+//
+//	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
+//	Vector3 direction = (Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
+//	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
+//
+//	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*ToonGameWorld::Get()->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
+//	Vector3 forceInDirection = direction * 100.0f;
+//	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
+//}
+
+void NCL::CSC8503::PaintBallClass::UpdateTargetObject(ToonGameObject* targetObject)
 {
 	m_TargetObjet = targetObject;
 }

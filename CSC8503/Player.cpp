@@ -3,11 +3,11 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player() {
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World) : ToonGameObject(RP3D_World) {
 	team = nullptr;
 }
 
-Player::Player(Team* chosenTeam) {
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam) : ToonGameObject(RP3D_World) {
 	team = chosenTeam;
 }
 
@@ -39,19 +39,20 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 		sprintTimer += dt;
 	}
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
-		this->GetPhysicsObject()->AddForce(fwdAxis * fwdForce);
-
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A))
-		this->GetPhysicsObject()->AddForce(-rightAxis * moveSpeed);
-
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D))
-		this->GetPhysicsObject()->AddForce(rightAxis * moveSpeed);
-
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S))
-		this->GetPhysicsObject()->AddForce(-fwdAxis * moveSpeed);
-
-	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, this); }
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W)) {
+		this->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 10.0f, 0));
+		//this->GetPhysicsObject()->AddForce(fwdAxis * fwdForce);
+	}
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A)) {
+		//this->GetPhysicsObject()->AddForce(-rightAxis * moveSpeed);
+	}
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D)) {
+		//this->GetPhysicsObject()->AddForce(rightAxis * moveSpeed);
+	}
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) {
+		//this->GetPhysicsObject()->AddForce(-fwdAxis * moveSpeed);
+	}
+	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, basicShader, sphereMesh, this); }
 	if (sampleWeapon)
 	{
 		sampleWeapon->UpdateTargetObject(targetObject);
@@ -61,11 +62,10 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	return;
 }
 
-void Player::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh, GameWorld* wld)
+void Player::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh)
 {
 	basicShader = basicShad;
 	sphereMesh  = sphMesh;
-	world		= wld;
 }
 
 void Player::Shoot() {

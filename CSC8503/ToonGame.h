@@ -20,7 +20,7 @@ namespace NCL
 
 		protected:
 			Player*		cameraTargetObject = nullptr;
-			GameObject* targetObject	   = nullptr;
+			ToonGameObject* targetObject	   = nullptr;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
@@ -33,6 +33,8 @@ namespace NCL
 
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
+
+			Vector3 ReactVec3ToNcl(reactphysics3d::Vector3 vector3);
 
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;

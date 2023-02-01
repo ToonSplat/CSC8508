@@ -11,8 +11,6 @@
 
 #include "ToonLevelManager.h"
 
-#include "ToonLevelManager.h"
-
 namespace NCL {
 	namespace CSC8503 {
 		class TutorialGame		{
@@ -64,7 +62,7 @@ namespace NCL {
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
-			Player* AddMoveablePlayer(const Vector3& position);
+			GameObject* AddMoveablePlayer(const Vector3& position);
 
 			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
 			StateGameObject* testStateObj;
@@ -88,7 +86,7 @@ namespace NCL {
 			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
-			Player* cameraTargetObject = nullptr;
+			GameObject* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;

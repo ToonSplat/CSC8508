@@ -4,17 +4,17 @@
 #include "GameTechVulkanRenderer.h"
 #endif
 
-#include "GameObject.h"
+#include "ToonGameObject.h"
 
 namespace NCL {
     namespace CSC8503 {
         class PaintBallClass {
         public:
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject);
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh, ToonGameObject* cameraTargetObject);
             ~PaintBallClass();
 
             void Update (float dt);
-            void UpdateTargetObject(GameObject* targetObject);
+            void UpdateTargetObject(ToonGameObject* targetObject);
 
         protected:
             // Weapon Stats
@@ -34,11 +34,10 @@ namespace NCL {
             //Variables
             float shootTimer;
             float reloadTimer;
-            GameWorld* m_World;
             ShaderBase* m_BasicShader;
             MeshGeometry* m_SphereMesh;
-            GameObject* m_CameraTargetObject;
-            GameObject* m_TargetObjet;
+            ToonGameObject* m_CameraTargetObject;
+            ToonGameObject* m_TargetObjet;
 
             enum statusTypes {
                 isFiring,

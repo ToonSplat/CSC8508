@@ -21,13 +21,13 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-
-			Player* AddMoveablePlayer(const Vector3& position, GameWorld* world);
-
+			Player* AddPlayerToWorld(const Vector3& position);
 			ShaderBase* GetBasicShader()  { return basicShader; }
 			MeshGeometry* GetSphereMesh() { return sphereMesh; }
 			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
 			~ToonLevelManager();
+
+			static ToonLevelManager* Get() { return instance; }
 
 			void Update(float dt);
 
@@ -56,13 +56,15 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float inverseMass = 10.0f);
+			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
+			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 		private:
 			MeshGeometry* charMesh = nullptr;
 			MeshGeometry* cubeMesh;
 			MeshGeometry* sphereMesh;
+			TextureBase* checkTex;
 			TextureBase* basicTex;
 			TextureBase* basicTexPurple;
 			ShaderBase* basicShader;
@@ -72,6 +74,8 @@ namespace NCL
 			reactphysics3d::PhysicsWorld& physicsWorld;
 
 			ToonGameObject* axisObject;
+
+			static ToonLevelManager* instance;
 		};
 	}
 }

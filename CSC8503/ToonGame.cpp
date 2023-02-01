@@ -1,6 +1,6 @@
 #include "GameWorld.h"
 #include "PhysicsObject.h"
-
+#include "Camera.h"
 #include "ToonGame.h"
 #include "PaintBallClass.h"
 
@@ -10,7 +10,6 @@ using namespace CSC8503;
 NCL::CSC8503::ToonGame::ToonGame()
 {
 
-	cameraTargetObject = levelManager->AddMoveablePlayer(Vector3(-20, 5, -20), world);
 	accumulator = 0.0f;
 
 	physicsWorld = physicsCommon.createPhysicsWorld();
@@ -18,6 +17,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
 	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
+	cameraTargetObject = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
 
 	//physics = new PhysicsSystem(*world);
 	//physics->UseGravity(true);
@@ -43,18 +43,18 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
-	world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
-	float horizontalAngle = world->GetMainCamera()->GetYaw();
-	float verticalAngle = world->GetMainCamera()->GetPitch() + 20;
+	ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt, ReactVec3ToNcl(cameraTargetObject->GetRigidbody()->getTransform().getPosition()), 
+		ReactVec3ToNcl(cameraTargetObject->GetTransform().GetScale()));
+	float horizontalAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
+	float verticalAngle = ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 20;
 
-	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
+	Matrix4 view = ToonGameWorld::Get()->GetMainCamera()->BuildViewMatrix();
 	Matrix4 cam = view.Inverse();
+	//ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
 
 	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 	cameraTargetObject->UpdateTargetObject(targetObject);
-  
-	world->GetMainCamera()->UpdateCamera(dt);
-	world->UpdateWorld(dt);
+	ToonGameWorld::Get()->UpdateWorld(dt);
 
 	renderer->Update(dt);
 
@@ -90,13 +90,16 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//BuildRayFromMouse(*world->GetMainCamera());
 
 		RayCollision closestCollision;
-		if (world->Raycast(ray, closestCollision, true))
+		/*if (ToonGameWorld::Get()->Raycast(ray, closestCollision, true))
 		{
 			targetObject = (GameObject*)closestCollision.node;
 			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
-		}
+		}*/
 	}
-	/*mainZone->PrintOwnership();
-	for (auto& zone : *subZones)
-		zone->PrintOwnership();*/
+}
+
+Vector3 ToonGame::ReactVec3ToNcl(reactphysics3d::Vector3 vector3)
+{
+	Vector3 ret = Vector3(vector3.x, vector3.y, vector3.z);
+	return ret;
 }
