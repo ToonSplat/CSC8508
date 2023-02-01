@@ -48,7 +48,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glClearColor(1, 1, 1, 1);
-
+	
 	//Set up the light properties
 	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
 	lightRadius = 1000.0f;
