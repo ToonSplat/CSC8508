@@ -15,8 +15,10 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, rea
 {
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), basicTex, 0.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), basicTexPurple, 0.0f);
+	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+
 	LoadLevel();
 }
 
@@ -30,7 +32,16 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
 	//if (axisObject)
-		//std::cout << "Position: " << axisObject->GetTransform().GetPosition().x << ", " << axisObject->GetTransform().GetPosition().y << ", " << axisObject->GetTransform().GetPosition().z << std::endl;
+		//std::cout << "Position: " << axisObject->GetRigidbody()->getTransform().getPosition().x << ", " << axisObject->GetRigidbody()->getTransform().getPosition().y << ", " << axisObject->GetRigidbody()->getTransform().getPosition().z << std::endl;
+
+	if (axisObject)
+	{
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N))
+		{
+			axisObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1000.0f, 0));
+			axisObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
+		}
+	}
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
@@ -145,16 +156,18 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 
 	//std::cout << cube->GetTransform().GetMatrix() << std::endl;
 
-	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
 	cube->AddRigidbody();
-	cube->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
 	reactphysics3d::BoxShape* cubeBoxShape = physicsCommon.createBoxShape(boxExtent);
 	cube->SetCollisionShape(cubeBoxShape);
 
-	reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, cube->GetTransform().GetR3DTransform());
+	//reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, reactphysics3d::Transform::identity());
+
 	cube->SetCollider(cubeBoxShape);
+	cube->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	ToonGameWorld::Get()->AddGameObject(cube);
 

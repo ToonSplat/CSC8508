@@ -31,5 +31,5 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 	if (rigidBody == nullptr)
 		return;
 
-	rigidBody->addCollider(RP3D_CollisionShape, transform.GetR3DTransform());
+	collider = rigidBody->addCollider(RP3D_CollisionShape, reactphysics3d::Transform::identity());
 }

@@ -2,6 +2,7 @@
 #include "TextureBase.h"
 #include "ShaderBase.h"
 #include "Vector4.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL {
 	using namespace NCL::Rendering;
@@ -50,7 +51,7 @@ namespace NCL {
 			MeshGeometry*	mesh;
 			TextureBase*	texture;
 			ShaderBase*		shader;
-			ToonTransform*	transform;
+			ToonTransform*	transform;			
 			Vector4			colour;
 		};
 	}

@@ -47,7 +47,7 @@ namespace NCL {
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
 
-			vector<const ToonRenderObject*> activeObjects;
+			vector<const ToonGameObject*> activeObjects;
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;

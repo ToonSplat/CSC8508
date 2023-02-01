@@ -43,6 +43,7 @@ namespace NCL::CSC8503
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::CollisionShape* collisionShape;
 		reactphysics3d::Collider* collider;
+		Matrix4 modelMatrix;
 
 	private:
 		reactphysics3d::PhysicsWorld& physicsWorld;
