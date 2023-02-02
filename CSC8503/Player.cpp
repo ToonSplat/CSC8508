@@ -12,7 +12,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam) : Too
 }
 
 Player::~Player() {
-	delete sampleWeapon;
+	
 }
 
 void Player::Update(float dt) {
@@ -42,25 +42,16 @@ void Player::Update(float dt) {
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) 
 		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(0, 0, 10.0f));
 
-	if (!sampleWeapon) {
-		std::cout << "I need a weapon" << std::endl;
-		sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, basicShader, sphereMesh, this);
-	}
-	else std::cout << "I have my weapon " << sampleWeapon << std::endl;
-	if (sampleWeapon)
-	{
-		std::cout << sampleWeapon << std::endl;
-		//sampleWeapon->UpdateTargetObject(targetObject);
-		sampleWeapon->Update(dt);
-	}
+	weapon.Update(dt);
 	
 	return;
 }
 
-void Player::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh)
-{
-	basicShader = basicShad;
-	sphereMesh  = sphMesh;
+void Player::SetWeapon(PaintBallClass* base) {
+	weapon = base->MakeInstance();
+	std::cout << "WEAPON MADE" << std::endl;
+	weapon.SetOwner(this);
+	weapon.SetTeam(team);
 }
 
 void Player::Shoot() {

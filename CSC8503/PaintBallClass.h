@@ -8,13 +8,20 @@
 
 namespace NCL {
     namespace CSC8503 {
+        class Team;
         class PaintBallClass {
         public:
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh, ToonGameObject* cameraTargetObject);
+            PaintBallClass();
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
             ~PaintBallClass();
 
             void Update (float dt);
             void UpdateTargetObject(ToonGameObject* targetObject);
+
+            void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
+            void SetTeam(Team* team) { this->team = team; };
+
+            PaintBallClass MakeInstance();
 
         protected:
             // Weapon Stats
@@ -31,12 +38,14 @@ namespace NCL {
             void PickUpAmmo(int amt);
             void CreateBullet();
 
+            Team* team;
+
             //Variables
             float shootTimer;
             float reloadTimer;
             ShaderBase* m_BasicShader;
             MeshGeometry* m_SphereMesh;
-            ToonGameObject* m_CameraTargetObject;
+            ToonGameObject* owningObject;
             ToonGameObject* m_TargetObjet;
 
             enum statusTypes {

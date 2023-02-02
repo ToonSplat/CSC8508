@@ -19,22 +19,17 @@ NCL::CSC8503::ToonGame::ToonGame()
 	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
 	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
+	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetBasicShader(), levelManager->GetSphereMesh());
 	cameraTargetObject = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
-
-	//physics = new PhysicsSystem(*world);
-	//physics->UseGravity(true);
+	cameraTargetObject->SetWeapon(baseWeapon);
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
 	delete renderer;
-	delete mainZone;
-	for (auto& zone : *subZones)
-		delete zone;
-	delete subZones;
+	delete baseWeapon;
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
-	//delete physics;
 	delete levelManager;
 }
 
@@ -52,7 +47,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
 
 	cameraTargetObject->Update(dt);
-	cameraTargetObject->UpdateTargetObject(targetObject);
 	ToonGameWorld::Get()->UpdateWorld(dt); // This doesn't actually do anything yet... will it?
 
 	renderer->Update(dt);
@@ -93,7 +87,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
 	{
 		Vector3 end = world->GetMainCamera()->GetPosition() + world->GetMainCamera()->GetForward() * 500.0f;
-		std::cout << "End: " << end << std::endl;
+		//std::cout << "End: " << end << std::endl;
 		reactphysics3d::Vector3 endRay = ToonUtils::ConvertToRP3DVector3(end);
 		reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(world->GetMainCamera()->GetPosition()), endRay);
 		ToonRaycastCallback rayCallback;

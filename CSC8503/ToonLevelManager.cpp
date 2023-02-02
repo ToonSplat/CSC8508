@@ -257,10 +257,20 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) {
 	Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 	reactphysics3d::RigidBody* body = player->GetRigidbody();
 	body->setType(reactphysics3d::BodyType::DYNAMIC);
-	body->setLinearDamping(0.33);
-	body->setAngularDamping(0.33);
+	body->setLinearDamping(0.66);
+	body->setAngularDamping(0.66);
 
 	player->GetRenderObject()->SetMesh(charMesh);
 
 	return player;
+}
+
+ToonGameObject* ToonLevelManager::MakeBullet() {
+	ToonGameObject* bullet = AddSphereToWorld(Vector3(), Vector3(), 0.25f, basicTex);
+	reactphysics3d::RigidBody* body = bullet->GetRigidbody();
+	body->setType(reactphysics3d::BodyType::DYNAMIC);
+	body->setLinearDamping(0.66);
+	body->setAngularDamping(0.66);
+	body->setMass(0.1);
+	return bullet;
 }

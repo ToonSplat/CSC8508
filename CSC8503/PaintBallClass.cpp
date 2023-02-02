@@ -2,34 +2,33 @@
 #include "RenderObject.h"
 #include "PhysicsObject.h"
 #include "ToonLevelManager.h"
+#include "ToonRenderObject.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh, ToonGameObject* cameraTargetObject) {
-	ammoInUse			 = _maxAmmoInUse;
-	ammoHeld			 = _maxAmmoHeld;
-	maxAmmoHeld			 = _maxAmmoHeld;
-	maxAmmoInUse		 = _maxAmmoInUse;
-	fireRate			 = _fireRate;
-	reloadTime			 = _reloadTime;
-	maxShootDistance	 = _maxShootDist;
-	m_BasicShader		 = basicShader;
-	m_SphereMesh		 = sphereMesh;
-	m_CameraTargetObject = cameraTargetObject;
+PaintBallClass::PaintBallClass(){}
+
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist,
+	ShaderBase* basicShader, MeshGeometry* sphereMesh) :
+	ammoInUse(_maxAmmoInUse), ammoHeld(_maxAmmoHeld), maxAmmoInUse(_maxAmmoInUse), maxAmmoHeld(_maxAmmoHeld),
+	fireRate(_fireRate), reloadTime(_reloadTime), maxShootDistance(_maxShootDist), m_BasicShader(basicShader), m_SphereMesh(sphereMesh) {
 
 	shootTimer = 0.0f;
 	reloadTimer = 0.0f;
-	std::cout << "PaintBallClass created " << this << std::endl;
 }
 
 PaintBallClass::~PaintBallClass() {
-	std::cout << this << " deleted" << std::endl;
+	
+}
+
+PaintBallClass PaintBallClass::MakeInstance() {
+	return PaintBallClass(maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance, m_BasicShader, m_SphereMesh);
 }
 
 void PaintBallClass::Update(float dt) {
-	std::cout << this << std::endl;
 	//if left mouse status
+	if (ammoInUse == 0) std::cout << "WEAPON LOAD FAIL?\n";
 	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT) && ammoInUse > 0)
 		status = isFiring;
 	else if (ammoInUse <= 0 || Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::R))
@@ -84,6 +83,17 @@ void PaintBallClass::PickUpAmmo(int amt) {
 }
 
 void PaintBallClass::CreateBullet() {
+	std::cout << "BANG" << std::endl;
+	ToonGameObject* bullet = ToonLevelManager::Get()->MakeBullet();
+	bullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() +10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+	bullet->SetOrientation(orientation);
+	orientation.normalize();
+	bullet->SetPosition(owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0));
+	std::cout << "Goat Position: " << owningObject->GetRigidbody()->getTransform().getPosition().to_string() <<
+		"\nGoat and Bullet Orientation: " << orientation.to_string() <<
+		"\nBulletPosition: " << bullet->GetRigidbody()->getTransform().getPosition().to_string() << std::endl;
+	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
 	/*ToonLevelManager::Get();*/
 }
 
@@ -105,7 +115,7 @@ void PaintBallClass::CreateBullet() {
 //	//ToonGameWorld::Get()->AddGameObject(sphereBullet);
 //
 //
-//	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
+//	Vector3 position = owningObject->GetTransform().GetPosition();
 //	Vector3 direction = (Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
 //	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
 //
