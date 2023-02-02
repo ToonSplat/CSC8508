@@ -4,6 +4,8 @@
 #include "PhysicsSystem.h"
 
 #include "ToonLevelManager.h"
+#include <reactphysics3d/reactphysics3d.h>
+#include "PaintBallClass.h"
 
 namespace NCL
 {
@@ -18,17 +20,25 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
-			GameTechRenderer* renderer;
-			PhysicsSystem* physics;
-			GameWorld* world;
-			ToonLevelManager* levelManager;
-
-			Player* cameraTargetObject = nullptr;
+			Player*		cameraTargetObject = nullptr;
+			ToonGameObject* targetObject	   = nullptr;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 
+			PaintBallClass* sampleWeapon;
+			GameTechRenderer* renderer;
+			PhysicsSystem* physics;
+			ToonGameWorld* world;
+			ToonLevelManager* levelManager;
+			PaintBallClass* baseWeapon;
+
+			reactphysics3d::PhysicsCommon physicsCommon;
+			reactphysics3d::PhysicsWorld* physicsWorld;
+
 			bool showCursor;
+			const float timeStep = 1.0f / 60.0f;
+			float accumulator;
 		};
 	}
 }

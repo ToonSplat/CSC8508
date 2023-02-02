@@ -4,6 +4,7 @@
 #include "PaintableObject.h"
 
 #include "Player.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
 {
@@ -20,10 +21,16 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer& renderer, PaintableZone* mainZone, std::vector<PaintableZone*>* subZones);
+			Player* AddPlayerToWorld(const Vector3& position);
+			ToonGameObject* MakeBullet();
+			ShaderBase* GetBasicShader()  { return basicShader; }
+			MeshGeometry* GetSphereMesh() { return sphereMesh; }
+			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
 			~ToonLevelManager();
 
-			Player* AddMoveablePlayer(const Vector3& position);
+			static ToonLevelManager* Get() { return instance; }
+
+			void Update(float dt);
 
 		protected:
 			bool LoadAssets();
@@ -50,21 +57,30 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, PaintableZone* zone, float inverseMass = 10.0f);
+			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
+			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
+
+			MeshGeometry* GetSphereMesh() const { return sphereMesh; }
+			ShaderBase* GetBasicShader() const { return basicShader; }
+
 
 		private:
 			MeshGeometry* charMesh = nullptr;
 			MeshGeometry* cubeMesh;
+			MeshGeometry* sphereMesh;
+			TextureBase* checkTex;
 			TextureBase* basicTex;
 			TextureBase* basicTexPurple;
 			ShaderBase* basicShader;
 
 			GameTechRenderer& gameRenderer;
+			reactphysics3d::PhysicsCommon& physicsCommon;
+			reactphysics3d::PhysicsWorld& physicsWorld;
 
-			PaintableZone* mainZone;
-			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
-			PaintableObject* axisObject;
+			ToonGameObject* axisObject;
+
+			static ToonLevelManager* instance;
 		};
 	}
 }

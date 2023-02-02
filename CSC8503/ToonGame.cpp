@@ -1,55 +1,64 @@
 #include "GameWorld.h"
 #include "PhysicsObject.h"
-
+#include "Camera.h"
 #include "ToonGame.h"
+#include "ToonUtils.h"
+#include "ToonRaycastCallback.h"
+#include "PaintBallClass.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 NCL::CSC8503::ToonGame::ToonGame()
 {
-	world = new GameWorld();
+
+	accumulator = 0.0f;
+
+	physicsWorld = physicsCommon.createPhysicsWorld();
+	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);
-
-	physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);
-
-	mainZone = new PaintableZone();
-	subZones = new std::vector<PaintableZone*>;
-
-	levelManager = new ToonLevelManager(*renderer, mainZone, subZones);
-
-	cameraTargetObject = levelManager->AddMoveablePlayer(Vector3(-20, 5, -20));
+	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
+	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetBasicShader(), levelManager->GetSphereMesh());
+	cameraTargetObject = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
+	cameraTargetObject->SetWeapon(baseWeapon);
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
 	delete renderer;
-	delete physics;
-	delete mainZone;
-	for (auto& zone : *subZones)
-		delete zone;
-	delete subZones;
+	delete baseWeapon;
+	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete levelManager;
 }
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
-	//world->GetMainCamera()->UpdateCamera(dt);
-	world->UpdateWorld(dt);
+#pragma region To Be Changed
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+#pragma endregion
 
-	world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
-	float horizontalAngle = world->GetMainCamera()->GetYaw();
-	float verticalAngle = world->GetMainCamera()->GetPitch() + 20;
+	if(cameraTargetObject)
+		ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt, ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetRigidbody()->getTransform().getPosition()), 
+			ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetTransform().GetScale()));
+	else
+		ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
 
-	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
-	Matrix4 cam = view.Inverse();
-
-	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
+	cameraTargetObject->Update(dt);
+	ToonGameWorld::Get()->UpdateWorld(dt); // This doesn't actually do anything yet... will it?
 
 	renderer->Update(dt);
-	physics->Update(dt);
+
+	accumulator += dt;
+	while (accumulator >= timeStep)
+	{
+		physicsWorld->update(timeStep);
+		accumulator -= timeStep;
+	}
+
+	levelManager->Update(dt);
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
@@ -69,16 +78,24 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
 	{
-		Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
-
-		RayCollision closestCollision;
-		if (world->Raycast(ray, closestCollision, true))
-			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
+		cameraTargetObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
+		cameraTargetObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
 	}
 
-	/*mainZone->PrintOwnership();
-	for (auto& zone : *subZones)
-		zone->PrintOwnership();*/
+	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
+	{
+		Vector3 end = world->GetMainCamera()->GetPosition() + world->GetMainCamera()->GetForward() * 500.0f;
+		//std::cout << "End: " << end << std::endl;
+		reactphysics3d::Vector3 endRay = ToonUtils::ConvertToRP3DVector3(end);
+		reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(world->GetMainCamera()->GetPosition()), endRay);
+		ToonRaycastCallback rayCallback;
+
+		physicsWorld->raycast(ray, &rayCallback);
+		Debug::Print("Click Pos: " + std::to_string(rayCallback.GetHitWorldPos().x) + ", " + std::to_string(rayCallback.GetHitWorldPos().z), Vector2(5, 85));
+
+		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
+		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
+	}
 }
