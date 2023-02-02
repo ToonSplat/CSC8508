@@ -13,8 +13,8 @@ namespace NCL {
             PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject);
             ~PaintBallClass();
 
-            void Update (float dt);
-            void UpdateTargetObject(GameObject* targetObject, GameWorld* world);
+            void Update(float dt);
+            void UpdateTargetObject(GameObject* targetObject, GameWorld* world, Vector3 collisionAt);
 
         protected:
             // Weapon Stats
@@ -39,6 +39,7 @@ namespace NCL {
             MeshGeometry* m_SphereMesh;
             GameObject* m_CameraTargetObject;
             GameObject* m_TargetObjet;
+            Vector3 m_CollisionAt;
 
             enum statusTypes {
                 isFiring,
@@ -47,6 +48,9 @@ namespace NCL {
             };
 
             statusTypes status;
+
+        private:
+            Vector3 GetDirection(Vector3 fromPosition, Vector3 toPosition);
         };
     }
 }

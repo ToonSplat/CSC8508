@@ -13,7 +13,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	renderer = new GameTechRenderer(*world);
 
 	physics = new PhysicsSystem(*world);
-	physics->UseGravity(false);
+	physics->UseGravity(true);
 
 	mainZone = new PaintableZone();
 	subZones = new std::vector<PaintableZone*>;
@@ -51,8 +51,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
 	Matrix4 cam = view.Inverse();
 
-	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
-	cameraTargetObject->UpdateTargetObject(targetObject);
 
 	renderer->Update(dt);
 	physics->Update(dt);
@@ -60,22 +58,22 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q)) 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
 	{
 		showCursor = !showCursor;
-		if (showCursor) 
+		if (showCursor)
 		{
 			Window::GetWindow()->ShowOSPointer(true);
 			Window::GetWindow()->LockMouseToWindow(false);
 		}
-		else 
+		else
 		{
 			Window::GetWindow()->ShowOSPointer(false);
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
 	}
 
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT)) 
+	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
 	{
 		Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//BuildRayFromMouse(*world->GetMainCamera());
 
@@ -83,9 +81,15 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		if (world->Raycast(ray, closestCollision, true))
 		{
 			targetObject = (GameObject*)closestCollision.node;
-			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
 		}
+		else
+		{
+			targetObject = nullptr;
+		}
+		cameraTargetObject->UpdateTargetObject(targetObject, closestCollision.collidedAt);
+		Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
 	}
+	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 	/*mainZone->PrintOwnership();
 	for (auto& zone : *subZones)
 		zone->PrintOwnership();*/

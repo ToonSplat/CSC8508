@@ -21,7 +21,7 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	Matrix4 combinedRotation = horizontalRotation * verticalRotation;
 	this->GetTransform().SetOrientation(combinedRotation);
 
-	Vector3 rightAxis = Vector3(inverseView.GetColumn(0)); 
+	Vector3 rightAxis = Vector3(inverseView.GetColumn(0));
 
 	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
 	fwdAxis.y = 0.0f;
@@ -54,18 +54,18 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, this); }
 	if (sampleWeapon)
 	{
-		sampleWeapon->UpdateTargetObject(targetObject, world);
+		sampleWeapon->UpdateTargetObject(targetObject, world, m_CollisionAt);
 		sampleWeapon->Update(dt);
 	}
-	
+
 	return;
 }
 
 void Player::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh, GameWorld* wld)
 {
 	basicShader = basicShad;
-	sphereMesh  = sphMesh;
-	world		= wld;
+	sphereMesh = sphMesh;
+	world = wld;
 }
 
 void Player::Shoot() {

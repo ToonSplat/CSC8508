@@ -6,16 +6,16 @@ using namespace NCL;
 using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, GameWorld* world, ShaderBase* basicShader, MeshGeometry* sphereMesh, GameObject* cameraTargetObject) {
-	ammoInUse			 = _maxAmmoInUse;
-	ammoHeld			 = _maxAmmoHeld;
-	maxAmmoHeld			 = _maxAmmoHeld;
-	maxAmmoInUse		 = _maxAmmoInUse;
-	fireRate			 = _fireRate;
-	reloadTime			 = _reloadTime;
-	maxShootDistance	 = _maxShootDist;
-	m_World				 = world;
-	m_BasicShader		 = basicShader;
-	m_SphereMesh		 = sphereMesh;
+	ammoInUse = _maxAmmoInUse;
+	ammoHeld = _maxAmmoHeld;
+	maxAmmoHeld = _maxAmmoHeld;
+	maxAmmoInUse = _maxAmmoInUse;
+	fireRate = _fireRate;
+	reloadTime = _reloadTime;
+	maxShootDistance = _maxShootDist;
+	m_World = world;
+	m_BasicShader = basicShader;
+	m_SphereMesh = sphereMesh;
 	m_CameraTargetObject = cameraTargetObject;
 
 	shootTimer = 0.0f;
@@ -85,10 +85,10 @@ void PaintBallClass::PickUpAmmo(int amt) {
 
 void PaintBallClass::CreateBullet()
 {
-	GameObject*   sphereBullet = new GameObject("Fire");
-	float		  radius	   = 0.1f;
-	Vector3		  sphereSize   = Vector3(radius, radius, radius);
-	SphereVolume* volume	   = new SphereVolume(radius);
+	GameObject* sphereBullet = new GameObject("Fire");
+	float		  radius = 0.1f;
+	Vector3		  sphereSize = Vector3(radius, radius, radius);
+	SphereVolume* volume = new SphereVolume(radius);
 	sphereBullet->SetBoundingVolume((CollisionVolume*)volume);
 
 	sphereBullet->GetTransform().SetScale(sphereSize);
@@ -101,17 +101,29 @@ void PaintBallClass::CreateBullet()
 	m_World->AddGameObject(sphereBullet);
 
 
-	Vector3 position  = m_CameraTargetObject->GetTransform().GetPosition();
-	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1));// +Vector3(0, 0.05f, 0);
-	sphereBullet->GetTransform().SetPosition(m_World->GetMainCamera()->GetPosition() + (direction * 5));//(Vector3(position.x, position.y, position.z) + (direction * 5));
-
-	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*m_World->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
-	Vector3 forceInDirection = direction * 10.0f;
+	Vector3 position = m_CameraTargetObject->GetTransform().GetPosition();
+	Vector3 direction = (Matrix4::Rotation(m_World->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(m_World->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1));
+	if (m_TargetObjet)
+	{
+		direction = GetDirection(m_CameraTargetObject->GetTransform().GetPosition() + Vector3(0, 0.5, 0), m_CollisionAt);
+			sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y + 0.5, position.z) + (direction * 5));
+	}
+	else
+	{
+		sphereBullet->GetTransform().SetPosition(m_World->GetMainCamera()->GetPosition() + (direction * 5));
+	}
+	Vector3 forceInDirection = direction * 100.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 }
 
-void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject, GameWorld* world)
+Vector3 NCL::CSC8503::PaintBallClass::GetDirection(Vector3 fromPosition, Vector3 toPosition)
+{
+	return (toPosition - fromPosition).Normalised();
+}
+
+void NCL::CSC8503::PaintBallClass::UpdateTargetObject(GameObject* targetObject, GameWorld* world, Vector3 collisionAt)
 {
 	m_TargetObjet = targetObject;
 	m_World = world;
+	m_CollisionAt = collisionAt;
 }

@@ -26,7 +26,12 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	void UpdateTargetObject(GameObject* targetObj) { targetObj = targetObject; }
+	void UpdateTargetObject(GameObject* targetObj, Vector3 collisionAt)
+	{
+		targetObject = targetObj;
+		m_CollisionAt = collisionAt;
+		Shoot();
+	}
 	void UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh, GameWorld* wld);
 
 protected:
@@ -45,6 +50,7 @@ protected:
 	GameWorld* world;
 	ShaderBase* basicShader;
 	MeshGeometry* sphereMesh;
+	Vector3 m_CollisionAt;
 	/*
 	* Future Implementations:
 	*
