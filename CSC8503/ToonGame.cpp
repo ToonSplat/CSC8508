@@ -45,18 +45,15 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
-	ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt, ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetRigidbody()->getTransform().getPosition()), 
-		ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetTransform().GetScale()));
-	float horizontalAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
-	float verticalAngle = ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 20;
+	if(cameraTargetObject)
+		ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt, ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetRigidbody()->getTransform().getPosition()), 
+			ToonUtils::ConvertToNCLVector3(cameraTargetObject->GetTransform().GetScale()));
+	else
+		ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
 
-	Matrix4 view = ToonGameWorld::Get()->GetMainCamera()->BuildViewMatrix();
-	Matrix4 cam = view.Inverse();
-	//ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
-
-	//cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
+	cameraTargetObject->Update(dt);
 	cameraTargetObject->UpdateTargetObject(targetObject);
-	ToonGameWorld::Get()->UpdateWorld(dt);
+	ToonGameWorld::Get()->UpdateWorld(dt); // This doesn't actually do anything yet... will it?
 
 	renderer->Update(dt);
 
@@ -67,8 +64,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		accumulator -= timeStep;
 	}
 
-	cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
-	//physics->Update(dt);
 	levelManager->Update(dt);
 
 	renderer->Render();

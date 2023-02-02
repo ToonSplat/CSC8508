@@ -20,13 +20,15 @@ PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRat
 
 	shootTimer = 0.0f;
 	reloadTimer = 0.0f;
+	std::cout << "PaintBallClass created " << this << std::endl;
 }
 
 PaintBallClass::~PaintBallClass() {
-
+	std::cout << this << " deleted" << std::endl;
 }
 
 void PaintBallClass::Update(float dt) {
+	std::cout << this << std::endl;
 	//if left mouse status
 	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT) && ammoInUse > 0)
 		status = isFiring;

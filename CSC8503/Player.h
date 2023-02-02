@@ -19,7 +19,7 @@ public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
-	void Update(Matrix4& inverseView, float& yaw, float& pitch, float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
+	void Update(float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
