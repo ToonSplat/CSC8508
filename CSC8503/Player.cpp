@@ -16,16 +16,8 @@ Player::~Player() {
 }
 
 void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
-	reactphysics3d::Transform oldTrans = GetRigidbody()->getTransform();
-	reactphysics3d::Vector3 orient = oldTrans.getOrientation().getVectorV();
-	//orient.y += rand();
 	reactphysics3d::Quaternion newOrient = reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(0, yaw/180.0f * _Pi, 0));
-	std::cout << newOrient.to_string() << std::endl;
-	reactphysics3d::Transform newTrans(oldTrans.getPosition(), newOrient);
 	SetOrientation(newOrient);
-	//GetRigidbody()->setTransform(newTrans);
-	//this->GetTransform().SetOrientation(combinedRotation);
-	//this->GetRigidbody()->setTransform(transform.GetR3DTransform());
 
 	Vector3 rightAxis = Vector3(inverseView.GetColumn(0)); 
 

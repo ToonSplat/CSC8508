@@ -66,5 +66,5 @@ void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Quaterni
 
 void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRotQuat)
 {
-	SetOrientation(reactphysics3d::Quaternion(newRotQuat.x, newRotQuat.y, newRotQuat.z, newRotQuat.w))
+	SetOrientation(reactphysics3d::Quaternion(newRotQuat.x, newRotQuat.y, newRotQuat.z, newRotQuat.w));
 }
