@@ -16,11 +16,16 @@ Player::~Player() {
 }
 
 void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
-	Matrix4 horizontalRotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0));
-	Matrix4 verticalRotation = Matrix4::Rotation(pitch, Vector3(1, 0, 0));
-	Matrix4 combinedRotation = horizontalRotation * verticalRotation;
-	this->GetTransform().SetOrientation(combinedRotation);
-	this->GetRigidbody()->setTransform(transform.GetR3DTransform());
+	reactphysics3d::Transform oldTrans = GetRigidbody()->getTransform();
+	reactphysics3d::Vector3 orient = oldTrans.getOrientation().getVectorV();
+	//orient.y += rand();
+	reactphysics3d::Quaternion newOrient = reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(0, yaw/180.0f * _Pi, 0));
+	std::cout << newOrient.to_string() << std::endl;
+	reactphysics3d::Transform newTrans(oldTrans.getPosition(), newOrient);
+	SetOrientation(newOrient);
+	//GetRigidbody()->setTransform(newTrans);
+	//this->GetTransform().SetOrientation(combinedRotation);
+	//this->GetRigidbody()->setTransform(transform.GetR3DTransform());
 
 	Vector3 rightAxis = Vector3(inverseView.GetColumn(0)); 
 
@@ -54,11 +59,11 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 		//this->GetPhysicsObject()->AddForce(-fwdAxis * moveSpeed);
 	}
 	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, basicShader, sphereMesh, this); }
-	if (sampleWeapon)
+	/*if (sampleWeapon)
 	{
 		sampleWeapon->UpdateTargetObject(targetObject);
 		sampleWeapon->Update(dt);
-	}
+	}*/
 	
 	return;
 }

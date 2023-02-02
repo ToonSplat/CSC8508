@@ -36,53 +36,35 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 
 void NCL::CSC8503::ToonGameObject::SetPosition(const reactphysics3d::Vector3& newPos)
 {
-	transform.SetPosition(newPos);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	rigidBody->setTransform(reactphysics3d::Transform(newPos, rigidBody->getTransform().getOrientation()));
 }
 
 void NCL::CSC8503::ToonGameObject::SetPosition(const Vector3& newPos)
 {
-	transform.SetPosition(newPos);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	SetPosition(reactphysics3d::Vector3(newPos.x, newPos.y, newPos.z));
 }
 
 void NCL::CSC8503::ToonGameObject::SetPosition(const float& x, const float& y, const float& z)
 {
-	Vector3 newPos(x, y, z);
-	transform.SetPosition(newPos);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	SetPosition(reactphysics3d::Vector3(x, y, z));
 }
 
-void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Vector3& newRotEulerAngles)
+void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Vector3& newRotVec3)
 {
-	reactphysics3d::Quaternion newRot = reactphysics3d::Quaternion::fromEulerAngles(newRotEulerAngles);
-	transform.SetOrientation(newRot);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(newRotVec3));
 }
 
-void NCL::CSC8503::ToonGameObject::SetOrientation(const Vector3& newRotEulerAngles)
+void NCL::CSC8503::ToonGameObject::SetOrientation(const Vector3& newRotVec3)
 {
-	reactphysics3d::Vector3 newEulerAngles(newRotEulerAngles.x, newRotEulerAngles.y, newRotEulerAngles.z);
-	reactphysics3d::Quaternion newRot = reactphysics3d::Quaternion::fromEulerAngles(newEulerAngles);
-	transform.SetOrientation(newRot);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(newRotVec3.x, newRotVec3.y, newRotVec3.z)));
 }
 
-void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Quaternion& newRot)
+void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Quaternion& newRotQuat)
 {
-	transform.SetOrientation(newRot);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	rigidBody->setTransform(reactphysics3d::Transform(rigidBody->getTransform().getPosition(), newRotQuat));
 }
 
-void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRot)
+void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRotQuat)
 {
-	transform.SetOrientation(newRot);
-	if (rigidBody)
-		rigidBody->setTransform(transform.GetR3DTransform());
+	SetOrientation(reactphysics3d::Quaternion(newRotQuat.x, newRotQuat.y, newRotQuat.z, newRotQuat.w))
 }

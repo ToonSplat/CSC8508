@@ -34,8 +34,6 @@ namespace NCL
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
 
-			Vector3 ReactVec3ToNcl(reactphysics3d::Vector3 vector3);
-
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;
 			float accumulator;
