@@ -75,7 +75,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
 	{
-		Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//BuildRayFromMouse(*world->GetMainCamera());
+		Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());
 
 		RayCollision closestCollision;
 		if (world->Raycast(ray, closestCollision, true))
@@ -94,11 +94,3 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	for (auto& zone : *subZones)
 		zone->PrintOwnership();*/
 }
-
-//void NCL::CSC8503::ToonGame::UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh)
-//{
-//	basicShader = basicShad;
-//	sphereMesh  = sphMesh;
-//	cameraTargetObject->UpdateObjects(basicShader, sphereMesh, world);
-//
-//}
