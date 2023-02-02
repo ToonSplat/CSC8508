@@ -29,7 +29,6 @@ in Vertex
 	vec4 shadowProj;
 	vec3 normal;
 	vec3 worldPos;
-	vec3 localPos;
 } IN;
 
 out vec4 fragColor;
@@ -45,7 +44,7 @@ void main(void)
 	vec3  incident = normalize ( lightPos - IN.worldPos );
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
 	
-	vec3 viewDir = normalize ( cameraPos - IN . worldPos );
+	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
 	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
@@ -57,17 +56,17 @@ void main(void)
 	 albedo *= texture(mainTex, IN.texCoord);
 	}
 
+
+	
 	if (impactPointCount > 0){
 		for (int i = 0; i < impactPointCount; i++){
-			float distanceBetween = distance(IN.localPos, impactPoints[i].position);
+			vec3 impactWorldPos = impactPoints[i].position + IN.worldPos;
+			float distanceBetween = distance(impactWorldPos, impactPoints[i].position);
 			if (distanceBetween <= impactPoints[i].radius){
 				albedo = vec4(impactPoints[i].colour, 1.0);
 			}
 		}
 	}
-	
-	
-
 	
 	albedo.rgb = pow(albedo.rgb, vec3(2.2));
 	

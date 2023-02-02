@@ -26,7 +26,7 @@ void PaintableObject::Hit(Team* hitBy) {
 	owner = hitBy;
 }
 
-void PaintableObject::AddImpactPoint(ImpactPoint& point) {
+void PaintableObject::AddImpactPoint(ImpactPoint point) {
 	int impactCount = impactPoints.size();
 
 	if (impactCount < 10) {
