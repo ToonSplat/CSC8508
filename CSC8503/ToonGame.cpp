@@ -15,6 +15,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	accumulator = 0.0f;
 
 	physicsWorld = physicsCommon.createPhysicsWorld();
+	eventListener = new ToonEventListener(physicsWorld);
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	world = new ToonGameWorld();
 	renderer = new GameTechRenderer(*world);

@@ -6,6 +6,7 @@
 #include "ToonLevelManager.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
+#include "ToonEventListener.h"
 
 namespace NCL
 {
@@ -32,6 +33,7 @@ namespace NCL
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
+			ToonEventListener* eventListener;
 
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
