@@ -6,6 +6,7 @@
 #include "Window.h"
 #include "Maths.h"
 #include "Debug.h"
+#include "PhysicsObject.h"
 
 using namespace NCL;
 
