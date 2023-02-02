@@ -19,6 +19,8 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 	reactphysics3d::Quaternion newOrient = reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(0, yaw/180.0f * _Pi, 0));
 	SetOrientation(newOrient);
 
+	std::cout << newOrient.getVectorV().to_string() << std::endl;
+
 	Vector3 rightAxis = Vector3(inverseView.GetColumn(0)); 
 
 	Vector3 fwdAxis = Vector3::Cross(Vector3(0, 1, 0), rightAxis);
@@ -37,19 +39,18 @@ void Player::Update(Matrix4& inverseView, float& yaw, float& pitch, float dt) {
 		sprintTimer += dt;
 	}
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W)) {
-		this->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 10.0f, 0));
-		//this->GetPhysicsObject()->AddForce(fwdAxis * fwdForce);
-	}
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W)) 
+		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(0, 0, -10.0f));
+
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A)) {
-		//this->GetPhysicsObject()->AddForce(-rightAxis * moveSpeed);
+		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(-10.0f, 0, 0));
 	}
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D)) {
-		//this->GetPhysicsObject()->AddForce(rightAxis * moveSpeed);
+		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 0, 0));
 	}
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) {
-		//this->GetPhysicsObject()->AddForce(-fwdAxis * moveSpeed);
-	}
+	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) 
+		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(0, 0, 10.0f));
+
 	if (!sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, basicShader, sphereMesh, this); }
 	/*if (sampleWeapon)
 	{
