@@ -10,6 +10,7 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		class ToonFollowCamera;
 		class ToonGame
 		{
 		public:
@@ -19,22 +20,24 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
-			Player*		cameraTargetObject = nullptr;
-			ToonGameObject* targetObject	   = nullptr;
+			void UpdateCamera(float dt);
+			void UpdateTesting();
+
+		protected:
+			ToonFollowCamera* followCamera;
+			Player*	player = nullptr;
+			ToonGameObject* targetObject = nullptr;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 
 			PaintBallClass* sampleWeapon;
 			GameTechRenderer* renderer;
-			PhysicsSystem* physics;
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
 
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
-
-			Vector3 ReactVec3ToNcl(reactphysics3d::Vector3 vector3);
 
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;

@@ -22,7 +22,9 @@ namespace NCL
 			void RemoveGameObject(ToonGameObject* o, bool andDelete = false);
 
 			static ToonGameWorld* Get() { return instance; }
+
 			Camera* GetMainCamera() const { return mainCamera; }
+			void SetMainCamera(Camera* newCamera) { mainCamera = newCamera; }
 
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);

@@ -19,6 +19,7 @@ public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
+	void Update(float dt);
 	void Update(Matrix4& inverseView, float& yaw, float& pitch, float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
@@ -34,7 +35,8 @@ protected:
 
 	Team* team;
 
-	float moveSpeed = 10.0f;
+	float moveSpeed = 500.0f;
+	float targetAngle = 0.0f;
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
@@ -44,6 +46,8 @@ protected:
 	PaintBallClass* sampleWeapon = nullptr;
 	ShaderBase* basicShader;
 	MeshGeometry* sphereMesh;
+
+	bool isAiming, isMoving;
 	/*
 	* Future Implementations:
 	*

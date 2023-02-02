@@ -253,10 +253,13 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) {
+Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) 
+{
 	Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	player->GetRigidbody()->setLinearDamping(0.66f);
+	player->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
 
 	player->GetRenderObject()->SetMesh(charMesh);
 
