@@ -16,7 +16,11 @@ namespace NCL {
 
 			void Hit(Team* hitBy);
 
-			void AddImpactPoint(ImpactPoint point);
+			void AddImpactPoint(ImpactPoint& point);
+
+			std::deque<ImpactPoint> GetImpactPoints() const {
+				return impactPoints;
+			}
 
 		private:
 			Team* owner;

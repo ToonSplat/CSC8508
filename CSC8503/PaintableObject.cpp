@@ -26,6 +26,7 @@ void PaintableObject::Hit(Team* hitBy) {
 	owner = hitBy;
 }
 
+
 void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.
 	Vector3 localPoint = this->GetTransform().GetPosition() - point.GetImpactLocation();
 	point.SetImpactLocation(localPoint);
