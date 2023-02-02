@@ -13,7 +13,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	renderer = new GameTechRenderer(*world);
 
 	physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);
+	physics->UseGravity(false);
 
 	mainZone = new PaintableZone();
 	subZones = new std::vector<PaintableZone*>;

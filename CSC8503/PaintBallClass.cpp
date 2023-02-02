@@ -112,7 +112,7 @@ void PaintBallClass::CreateBullet()
 	{
 		sphereBullet->GetTransform().SetPosition(m_World->GetMainCamera()->GetPosition() + (direction * 5));
 	}
-	Vector3 forceInDirection = direction * 100.0f;
+	Vector3 forceInDirection = direction * 10.0f;
 	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 }
 

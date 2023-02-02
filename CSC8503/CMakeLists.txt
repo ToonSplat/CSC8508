@@ -14,6 +14,7 @@ set(Header_Files
     "TutorialGame.h"
     "PaintBallClass.h"
     "Player.h"
+    "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
 )
