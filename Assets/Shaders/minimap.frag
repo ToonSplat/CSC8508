@@ -26,10 +26,6 @@ out vec4 fragColor;
 
 void main(void)
 {
-	
-	vec3  incident = normalize ( lightPos - IN.worldPos );
-	
-	
 	vec4 albedo = objectColour;
 
 	if (impactPointCount > 0){

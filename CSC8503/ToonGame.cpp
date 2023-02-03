@@ -47,6 +47,21 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 	player->Update(dt);
 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M)) {
+
+		bool minimapVisible = renderer->IsMinimapVisible();
+		// this section is not needed!
+		if (minimapVisible) {
+			world->SetMainCamera(followCamera);
+		}
+		else {
+			world->SetMainCamera(minimapCamera);
+		}
+
+		renderer->ShowMinimap(!minimapVisible);
+
+	}
+
 	renderer->Update(dt);
 
 	accumulator += dt;
