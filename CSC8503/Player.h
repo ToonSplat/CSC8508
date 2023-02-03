@@ -19,7 +19,7 @@ public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
-	void Update(float dt);
+	void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }

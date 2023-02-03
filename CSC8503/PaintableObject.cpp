@@ -1,34 +1,18 @@
 #include "PaintableObject.h"
+#include "ToonUtils.h"
 
 using namespace NCL::CSC8503;
 
-PaintableObject::PaintableObject(void) {
-	owner = nullptr;
-	parent = nullptr;
-}
-
-PaintableObject::PaintableObject(PaintableZone* parent) : parent(parent) {
-	owner = nullptr;
-	parent->AddObject();
-}
-
-PaintableObject::PaintableObject(PaintableZone* parent, Team* owner) : parent(parent), owner(owner) {
-	parent->AddObject(owner);
+PaintableObject::PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World) : ToonGameObject(RP3D_World) {
 }
 
 void PaintableObject::Update(float dt) {
 
 }
 
-void PaintableObject::Hit(Team* hitBy) {
-	if (parent)
-		parent->ChangeChildOwner(owner, hitBy);
-	owner = hitBy;
-}
-
 
 void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.
-	Vector3 localPoint = this->GetTransform().GetPosition() - point.GetImpactLocation();
+	Vector3 localPoint = point.GetImpactLocation() - ToonUtils::ConvertToNCLVector3(GetRigidbody()->getTransform().getPosition());
 	point.SetImpactLocation(localPoint);
 	
 	int impactCount = impactPoints.size();

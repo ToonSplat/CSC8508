@@ -206,9 +206,8 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	return cube;
 }
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(ToonGameObject* sphere, const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
 {
-	ToonGameObject* sphere = new ToonGameObject(physicsWorld);
 
 	sphere->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -254,7 +253,8 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 }
 
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) {
-	Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
+	Player* player = new Player(physicsWorld);
+	AddSphereToWorld(player, position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 	reactphysics3d::RigidBody* body = player->GetRigidbody();
 	body->setType(reactphysics3d::BodyType::DYNAMIC);
 	body->setLinearDamping(0.66);
@@ -266,7 +266,8 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) {
 }
 
 ToonGameObject* ToonLevelManager::MakeBullet() {
-	ToonGameObject* bullet = AddSphereToWorld(Vector3(), Vector3(), 0.25f, basicTex);
+	ToonGameObject* bullet = new ToonGameObject(physicsWorld);
+	AddSphereToWorld(bullet, Vector3(), Vector3(), 0.25f, basicTex);
 	reactphysics3d::RigidBody* body = bullet->GetRigidbody();
 	body->setType(reactphysics3d::BodyType::DYNAMIC);
 	body->setLinearDamping(0.66);

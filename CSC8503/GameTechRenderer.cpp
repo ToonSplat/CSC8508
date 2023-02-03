@@ -307,7 +307,7 @@ void GameTechRenderer::RenderCamera() {
 			Vector3 camPos = gameWorld.GetMainCamera()->GetPosition();
 			glUniform3fv(cameraLocation, 1, camPos.array);
 
-			PassImpactPointDetails(i, impactPointCountLocation, impactPointsLocation, shader);
+			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, shader);
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
@@ -359,9 +359,9 @@ void GameTechRenderer::RenderCamera() {
 	}
 }
 
-void GameTechRenderer::PassImpactPointDetails(const RenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, OGLShader* shader)
+void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, OGLShader* shader)
 {
-	GameObject* linkedObject = (*i).GetGameObject();
+	ToonGameObject* linkedObject = (*i).GetGameObject();
 
 	if (dynamic_cast<PaintableObject*>(linkedObject)) {
 		PaintableObject* paintedObject = (PaintableObject*)linkedObject;

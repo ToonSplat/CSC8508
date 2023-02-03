@@ -10,6 +10,7 @@ namespace NCL {
 	class MeshGeometry;
 	namespace CSC8503 {
 		class ToonTransform;
+		class ToonGameObject;
 		using namespace Maths;
 
 		class ToonRenderObject
@@ -49,7 +50,14 @@ namespace NCL {
 				return colour;
 			}
 
+			void SetGameObject(ToonGameObject* gameObject) { this->gameObject = gameObject; }
+
+			ToonGameObject* GetGameObject() const {
+				return gameObject;
+			}
+
 		protected:
+			ToonGameObject* gameObject;
 			MeshGeometry*	mesh;
 			TextureBase*	texture;
 			ShaderBase*		shader;

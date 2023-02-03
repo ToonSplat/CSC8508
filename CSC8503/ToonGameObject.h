@@ -1,15 +1,17 @@
 #pragma once
 #include "ToonTransform.h"
+#include "ToonRenderObject.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL::CSC8503
 {
-	class ToonRenderObject;
 	class ToonGameObject
 	{
 	public:
 		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World);
 		~ToonGameObject();
+
+		virtual void Update(float dt) { std::cout << "Base class update"; };
 
 		const std::string& GetName() const { return name; }
 
@@ -19,7 +21,7 @@ namespace NCL::CSC8503
 		ToonTransform& GetTransform() { return transform; }
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
-		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; }
+		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; newRenderObject->SetGameObject(this); }
 
 		reactphysics3d::RigidBody* GetRigidbody() const { return rigidBody; }
 		void SetRigidbody(reactphysics3d::RigidBody* RP3D_Rigidbody) { rigidBody = RP3D_Rigidbody; }
