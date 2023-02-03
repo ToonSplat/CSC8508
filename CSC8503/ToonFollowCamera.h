@@ -25,6 +25,7 @@ namespace NCL
 
 		private:
 			float requiredRayDistance, defaultRayDistance;
+			Vector3 followOffset;
 			float h, v;
 		};
 	}

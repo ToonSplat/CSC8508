@@ -12,6 +12,7 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) :
 	requiredRayDistance = defaultRayDistance = 10.0f;
 	pitchOffset = 12.0f;
 	h = v = 0.0f;
+	followOffset = Vector3();
 }
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
@@ -31,6 +32,17 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	Vector3 lookDirection = finalRotMat * Vector3(0, 0, -1);
 
 	position = focusPoint - lookDirection * requiredRayDistance;
+
+	//Stare at GOAT!
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, focusPoint, Vector3(0, 1, 0)).Inverse();
+	Quaternion q(viewMatrix);
+	pitch = q.ToEuler().x + pitchOffset;
+	yaw = q.ToEuler().y;
+
+	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
+	camForward = rotation * Vector3(0, 0, -1);
+	camRight = rotation * Vector3(1, 0, 0);
+	camUp = rotation * Vector3(0, 1, 0);
 
 	//Prevent Wall Clipping
 	/*Ray collisionRay = Ray(focusPoint, -lookDirection);
@@ -86,17 +98,5 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	//position = followTarget.GetTransform().GetPosition() + followOffset;
 
 	//float distance = (position - followTarget.GetPosition()).Length();
-	//std::cout << distance << std::endl;
-
-
-	//Stare at GOAT!
-	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, focusPoint, Vector3(0, 1, 0)).Inverse();
-	Quaternion q(viewMatrix);
-	pitch = q.ToEuler().x + pitchOffset;
-	yaw = q.ToEuler().y;
-
-	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
-	camForward = rotation * Vector3(0, 0, -1);
-	camRight = rotation * Vector3(1, 0, 0);
-	camUp = rotation * Vector3(0, 1, 0);
+	//std::cout << distance << std::endl;	
 }
