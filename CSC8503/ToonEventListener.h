@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ToonEventListener.h"
+#include "PaintableObject.h"
+#include "ImpactPoint.h"
+#include "HitSphere.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL::CSC8503 {
@@ -27,7 +30,26 @@ namespace NCL::CSC8503 {
 
                     // Get the contact point on the first collider and convert it in world-space 
                     reactphysics3d::Vector3 worldPoint = contactPair.getCollider1()->getLocalToWorldTransform() * contactPoint.getLocalPointOnCollider1();
-                    //std::cout << "CONTACT POINT: " << worldPoint.to_string() << std::endl;
+                    std::cout << "CONTACT POINT: " << worldPoint.to_string() << std::endl;
+                    
+                    if (dynamic_cast<ToonGameObject*>(contactPair.getBody1()) || dynamic_cast<ToonGameObject*>(contactPair.getBody2())) {
+                        // Create a HitSphere here if one object is paintball
+                    }
+                }
+            }
+        }
+
+        // Override the onTrigger() method
+        virtual void onTrigger(const reactphysics3d::OverlapCallback::CallbackData& callbackData) override {
+            
+            for (reactphysics3d::uint p = 0; p < callbackData.getNbOverlappingPairs(); p++) {
+                
+                reactphysics3d::OverlapCallback::OverlapPair overlapPair = callbackData.getOverlappingPair(p);
+
+                if (dynamic_cast<PaintableObject*>(overlapPair.getBody2())) {
+                    PaintableObject* object = (PaintableObject*)overlapPair.getBody2();
+                    HitSphere* sphere = (HitSphere*)overlapPair.getBody1();
+                    object->AddImpactPoint(ImpactPoint(sphere->GetTransform().GetPosition(), sphere->GetTeamColour(), 5));
                 }
             }
         }
