@@ -16,7 +16,6 @@ namespace NCL {
             ~PaintBallClass();
 
             void Update (float dt);
-            void UpdateTargetObject(ToonGameObject* targetObject);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
@@ -36,7 +35,7 @@ namespace NCL {
             void Shoot(float dt);
             void Reload(float dt);
             void PickUpAmmo(int amt);
-            void CreateBullet();
+            void FireBullet();
 
             Team* team;
 
@@ -46,7 +45,6 @@ namespace NCL {
             ShaderBase* m_BasicShader;
             MeshGeometry* m_SphereMesh;
             ToonGameObject* owningObject;
-            ToonGameObject* m_TargetObjet;
 
             enum statusTypes {
                 isFiring,

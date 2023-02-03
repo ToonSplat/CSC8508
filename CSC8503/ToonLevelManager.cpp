@@ -269,10 +269,3 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position)
 
 	return player;
 }
-
-PaintBallProjectile* ToonLevelManager::MakeBullet(const Vector3& position) {
-	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
-	bullet->SetRenderObject(new ToonRenderObject(&bullet->GetTransform(), sphereMesh, basicTexPurple, basicShader));
-
-	return bullet;
-}
