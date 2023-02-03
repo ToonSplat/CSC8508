@@ -14,6 +14,8 @@ public:
 
 	void Update(float dt);
 
+	Vector3 GetTeamColour() const { return teamColour; }
+
 protected:
 	Vector3 teamColour;
 
