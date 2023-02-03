@@ -11,10 +11,8 @@ using namespace CSC8503;
 
 ToonLevelManager* ToonLevelManager::instance = nullptr;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon) :
-	gameRenderer(renderer),
-	physicsWorld(_physicsWorld),
-	physicsCommon(_physicsCommon)
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
+	gameRenderer(renderer)
 {
 	instance = this;
 	if (!LoadAssets()) return;
@@ -179,7 +177,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 
 ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
 {
-	ToonGameObject* cube = new ToonGameObject(physicsWorld);
+	ToonGameObject* cube = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -190,10 +188,11 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	cube->AddRigidbody();
 	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	cube->GetRigidbody()->setMass(mass);
+	cube->GetRigidbody()->setIsAllowedToSleep(true);
 	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
-	reactphysics3d::BoxShape* cubeBoxShape = physicsCommon.createBoxShape(boxExtent);
+	reactphysics3d::BoxShape* cubeBoxShape = ToonGameWorld::Get()->GetPhysicsCommon().createBoxShape(boxExtent);
 	cube->SetCollisionShape(cubeBoxShape);
 
 	//reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, reactphysics3d::Transform::identity());
@@ -208,7 +207,7 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 
 ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
 {
-	ToonGameObject* sphere = new ToonGameObject(physicsWorld);
+	ToonGameObject* sphere = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
 	sphere->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -218,9 +217,11 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& 
 
 	sphere->AddRigidbody();
 	sphere->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	sphere->GetRigidbody()->setIsAllowedToSleep(true);
+
 	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), sphereMesh, sphereTex, basicShader));
 
-	reactphysics3d::SphereShape* sphereShape = physicsCommon.createSphereShape(radius);
+	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
 	sphere->SetCollisionShape(sphereShape);
 
 	//reactphysics3d::Collider* cubeCollider = cube->GetRigidbody()->addCollider(cubeBoxShape, reactphysics3d::Transform::identity());
@@ -255,13 +256,16 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) 
 {
-	Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
+	/*Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-	player->GetRigidbody()->setLinearDamping(0.66f);
+	player->GetRigidbody()->setLinearDamping(0.8f);
 	player->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
 
-	player->GetRenderObject()->SetMesh(charMesh);
+	player->GetRenderObject()->SetMesh(charMesh);*/
+
+	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), charMesh, basicTexPurple, basicShader));
 
 	return player;
 }

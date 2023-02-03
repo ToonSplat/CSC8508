@@ -9,12 +9,16 @@ ToonGameWorld* ToonGameWorld::instance = nullptr;
 
 NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
+	physicsWorld = physicsCommon.createPhysicsWorld();
+	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+
 	mainCamera = new Camera();
 	instance = this;
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
+	physicsCommon.destroyPhysicsWorld(physicsWorld);
 }
 
 void NCL::CSC8503::ToonGameWorld::Clear()

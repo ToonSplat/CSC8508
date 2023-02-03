@@ -3,12 +3,11 @@
 #include "Maths.h"
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
+#include <reactphysics3d/reactphysics3d.h>
 //#include <iostream>
 
-NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld& gWorld, ToonGameObject& target, reactphysics3d::PhysicsWorld& _physicsWorld) : 
-	gameWorld(gWorld),
-	followTarget(target),
-	physicsWorld(_physicsWorld)
+NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) : 
+	followTarget(target)
 {
 	requiredRayDistance = 10.0f;
 	pitchOffset = 12.0f;

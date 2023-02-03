@@ -11,16 +11,13 @@ using namespace CSC8503;
 
 NCL::CSC8503::ToonGame::ToonGame()
 {
-	physicsWorld = physicsCommon.createPhysicsWorld();
-	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
-
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
 	
-	levelManager = new ToonLevelManager(*renderer, *physicsWorld, physicsCommon);
+	levelManager = new ToonLevelManager(*renderer);
 	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
 	
-	followCamera = new ToonFollowCamera(*world, *player, *physicsWorld);
+	followCamera = new ToonFollowCamera(*player);
 	world->SetMainCamera(followCamera);
 
 	accumulator = 0.0f;
@@ -37,8 +34,7 @@ NCL::CSC8503::ToonGame::~ToonGame()
 	delete mainZone;
 	for (auto& zone : *subZones)
 		delete zone;
-	delete subZones;
-	physicsCommon.destroyPhysicsWorld(physicsWorld);
+	delete subZones;	
 	//delete physics;
 	delete levelManager;
 }
@@ -59,7 +55,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
-		physicsWorld->update(timeStep);
+		world->GetPhysicsWorld().update(timeStep);
 		accumulator -= timeStep;
 	}
 
@@ -112,7 +108,7 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 		reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(world->GetMainCamera()->GetPosition()), endRay);
 		ToonRaycastCallback rayCallback;
 
-		physicsWorld->raycast(ray, &rayCallback);
+		ToonGameWorld::Get()->GetPhysicsWorld().raycast(ray, &rayCallback);
 
 		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
 		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);

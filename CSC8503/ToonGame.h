@@ -17,7 +17,7 @@ namespace NCL
 			ToonGame();
 			~ToonGame();
 
-			virtual void UpdateGame(float dt);
+			virtual void UpdateGame(float dt);			
 
 		protected:
 			void UpdateCamera(float dt);
@@ -35,9 +35,6 @@ namespace NCL
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
-
-			reactphysics3d::PhysicsCommon physicsCommon;
-			reactphysics3d::PhysicsWorld* physicsWorld;
 
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;
