@@ -11,25 +11,31 @@
 #include <map>
 #include <Assets.h>
 
-class Audio {
+namespace NCL
+{
+	namespace CSC8503
+	{
+		struct Sound {
+			Sound();
+			Sound(ALuint* buf, float len) { buffer = buf; length = len; }
+			ALuint* buffer;
+			float length;
+		};
+		
+		static class Audio {
 
-public:
-	static Audio* get();
-	ALuint AddSound(const char* filename);
-	bool RemoveSound(std::string filename);
-	bool RemoveSound(const ALuint& buffer);
+		public:;
+			static void AddSound(const char* filename);
+			static Sound* GetSound(std::string filename);
 
-	ALuint AddSource();
+			static bool RemoveSound(std::string filename);
 
-	void PlaySound(ALuint buffer, ALuint source);
+			static void DeleteSounds();
+		private:
+			Audio();
+			~Audio();
 
-private:
-	Audio();
-	~Audio();
-
-	std::map<std::string,ALuint> soundEffectBuffers;
-	std::vector<ALuint> soundSources;
-
-	ALCdevice* device;
-	ALCcontext* context;
- };
+			static std::map<std::string, Sound*> soundEffectBuffers;
+		};
+	}
+}

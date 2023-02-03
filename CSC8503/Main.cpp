@@ -27,8 +27,7 @@
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
 
-#include "Audio.h"
-#include "Assets.h"
+#include "AudioSystem.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -36,6 +35,10 @@ using namespace CSC8503;
 #include <chrono>
 #include <thread>
 #include <sstream>
+
+//Audio sounds
+std::map<std::string, NCL::CSC8503::Sound*> NCL::CSC8503::Audio::soundEffectBuffers;
+
 
 vector<Vector3> testNodes;
 void TestPathFinding() {
@@ -265,13 +268,10 @@ int main() {
 		return -1;
 	}	
 
+	AudioSystem::Initialise();
+
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-	
-	Audio* audio = Audio::get();
-	ALuint sound = audio->AddSound("somesound.wav");
-	ALuint speaker = audio->AddSource();
-	audio->PlaySound(sound, speaker);
 
 	//TutorialGame* g = new TutorialGame();
 	ToonGame* g = new ToonGame();
@@ -303,6 +303,8 @@ int main() {
 
 		g->UpdateGame(dt);
 	}
+	Audio::DeleteSounds();
+	AudioSystem::Destroy();
 	Window::DestroyGameWindow();
 
 }

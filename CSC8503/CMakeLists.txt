@@ -16,6 +16,8 @@ set(Header_Files
     "ToonLevelManager.h"
     "ToonGame.h"
     "Audio.h"
+    "AudioEmitter.h"
+    "AudioSystem.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -33,6 +35,8 @@ set(Source_Files
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
     "Audio.cpp"
+    "AudioEmitter.cpp"
+    "AudioSystem.cpp"
 )
 
 if(USE_VULKAN)

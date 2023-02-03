@@ -8,6 +8,7 @@
 #include "PhysicsObject.h"
 #include "Debug.h"
 #include <vector>
+#include "AudioSystem.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -36,6 +37,7 @@ protected:
 	float sprintMulitplier = 5.0f;
 	int ammoRemaining = 100;
 
+	AudioSystem* audioSystem;
 	/*
 	* Future Implementations:
 	* 
