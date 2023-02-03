@@ -9,7 +9,7 @@
 NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) : 
 	followTarget(target)
 {
-	requiredRayDistance = 10.0f;
+	requiredRayDistance = defaultRayDistance = 10.0f;
 	pitchOffset = 12.0f;
 	h = v = 0.0f;
 }
