@@ -1,6 +1,7 @@
 #include "PaintBallClass.h"
 #include "RenderObject.h"
 #include "PhysicsObject.h"
+#include "PaintBallProjectile.h"
 #include "ToonLevelManager.h"
 #include "ToonRenderObject.h"
 
@@ -11,15 +12,26 @@ PaintBallClass::PaintBallClass(){}
 
 PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist,
 	ShaderBase* basicShader, MeshGeometry* sphereMesh) :
-	ammoInUse(_maxAmmoInUse), ammoHeld(_maxAmmoHeld), maxAmmoInUse(_maxAmmoInUse), maxAmmoHeld(_maxAmmoHeld),
-	fireRate(_fireRate), reloadTime(_reloadTime), maxShootDistance(_maxShootDist), m_BasicShader(basicShader), m_SphereMesh(sphereMesh) {
+	ammoInUse(_maxAmmoInUse), 
+	ammoHeld(_maxAmmoHeld), 
+	maxAmmoInUse(_maxAmmoInUse), 
+	maxAmmoHeld(_maxAmmoHeld),
+	fireRate(_fireRate), 
+	reloadTime(_reloadTime), 
+	maxShootDistance(_maxShootDist), 
+	m_BasicShader(basicShader), 
+	m_SphereMesh(sphereMesh) 
+{
+	owningObject = nullptr;
+	team = nullptr;
 
 	shootTimer = 0.0f;
 	reloadTimer = 0.0f;
+	status = isIdle;
 }
 
-PaintBallClass::~PaintBallClass() {
-	
+PaintBallClass::~PaintBallClass() 
+{
 }
 
 PaintBallClass PaintBallClass::MakeInstance() {
@@ -36,33 +48,38 @@ void PaintBallClass::Update(float dt) {
 	else
 		status = isIdle;
 
-	switch (status) {
-	case isIdle:
-		break;
-	case isFiring:
-		Shoot(dt);
-		break;
-	case isReloading:
-		Reload(dt);
-		break;
+	switch (status) 
+	{
+		case isIdle:
+			break;
+		case isFiring:
+			Shoot(dt);
+			break;
+		case isReloading:
+			Reload(dt);
+			break;
 	}
 }
 
 void PaintBallClass::Shoot(float dt) {
 	shootTimer += dt;
-	if (shootTimer >= fireRate && ammoInUse > 0) {
+	if (shootTimer >= fireRate && ammoInUse > 0) 
+	{
 		// Shoot Projectile here
-		CreateBullet();
+		FireBullet();
 		std::cout << "Weapon is shooting" << std::endl;
 		ammoInUse--;
 		shootTimer = 0.0f;
 	}
 }
 
-void PaintBallClass::Reload(float dt) {
-	if (ammoInUse < maxAmmoInUse && ammoHeld > 0) {
+void PaintBallClass::Reload(float dt) 
+{
+	if (ammoInUse < maxAmmoInUse && ammoHeld > 0) 
+	{
 		reloadTimer += dt;
-		if (reloadTimer >= reloadTime) {
+		if (reloadTimer >= reloadTime) 
+		{
 			//Reload Maths here
 			if ((ammoHeld + ammoInUse) < maxAmmoInUse) {
 				ammoInUse += ammoHeld;
@@ -82,19 +99,19 @@ void PaintBallClass::PickUpAmmo(int amt) {
 
 }
 
-void PaintBallClass::CreateBullet() {
-	std::cout << "BANG" << std::endl;
-	ToonGameObject* bullet = ToonLevelManager::Get()->MakeBullet(Vector3(0, 0, 0));
-	bullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() +10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
-	bullet->SetOrientation(orientation);
+void PaintBallClass::FireBullet() 
+{
+	if (owningObject == nullptr)
+		return;
+
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 	orientation.normalize();
-	bullet->SetPosition(owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0));
-	std::cout << "Goat Position: " << owningObject->GetRigidbody()->getTransform().getPosition().to_string() <<
-		"\nGoat and Bullet Orientation: " << orientation.to_string() <<
-		"\nBulletPosition: " << bullet->GetRigidbody()->getTransform().getPosition().to_string() << std::endl;
+	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0);
+
+	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 10.0f);
+	bullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
-	/*ToonLevelManager::Get();*/
+
 }
 
 //void PaintBallClass::CreateBullet()
@@ -123,8 +140,3 @@ void PaintBallClass::CreateBullet() {
 //	Vector3 forceInDirection = direction * 100.0f;
 //	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 //}
-
-void NCL::CSC8503::PaintBallClass::UpdateTargetObject(ToonGameObject* targetObject)
-{
-	m_TargetObjet = targetObject;
-}
