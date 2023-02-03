@@ -24,6 +24,8 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
+	GetRigidbody()->setUserData(ToonGameWorld::Get()->GetUserData()[0]);
+
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 

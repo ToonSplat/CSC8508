@@ -50,7 +50,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
-		world->GetPhysicsWorld().update(timeStep);
+		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
 		accumulator -= timeStep;
 	}
   

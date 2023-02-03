@@ -12,7 +12,7 @@ namespace NCL {
         class PaintBallClass {
         public:
             PaintBallClass();
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
             ~PaintBallClass();
 
             void Update (float dt);

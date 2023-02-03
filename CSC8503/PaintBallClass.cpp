@@ -10,7 +10,7 @@ using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(){}
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist,
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist,
 	ShaderBase* basicShader, MeshGeometry* sphereMesh) :
 	ammoInUse(_maxAmmoInUse), 
 	ammoHeld(_maxAmmoHeld), 
@@ -64,7 +64,7 @@ void PaintBallClass::Update(float dt) {
 
 void PaintBallClass::Shoot(float dt) {
 	shootTimer += dt;
-	if (shootTimer >= fireRate && ammoInUse > 0) 
+	if (/*shootTimer >= fireRate &&*/ ammoInUse > 0) 
 	{
 		// Shoot Projectile here
 		FireBullet();
