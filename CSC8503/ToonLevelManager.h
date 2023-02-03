@@ -31,6 +31,28 @@ namespace NCL
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
 
+			MeshGeometry* GetMesh(std::string meshName) const { 
+				if (meshMap.count(meshName) == 0) {
+					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
+					return nullptr;
+				}
+				else return meshMap.at(meshName); 
+			}
+			TextureBase* GetTexture(std::string textureName) const {
+				if (textureMap.count(textureName) == 0) {
+					std::cout << "ERROR: Attempting to get Texture that isn't loaded\n";
+					return nullptr;
+				}
+				else return textureMap.at(textureName);
+			}
+			ShaderBase* GetShader(std::string shaderName) const {
+				if (shaderMap.count(shaderName) == 0) {
+					std::cout << "ERROR: Attempting to get Shader that isn't loaded\n";
+					return nullptr;
+				}
+				else return shaderMap.at(shaderName);
+			}
+
 			static ToonLevelManager* Get() { return instance; }
 
 			void Update(float dt);
@@ -64,18 +86,11 @@ namespace NCL
 			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
-			MeshGeometry* GetSphereMesh() const { return sphereMesh; }
-			ShaderBase* GetBasicShader() const { return basicShader; }
-
 
 		private:
-			MeshGeometry* charMesh = nullptr;
-			MeshGeometry* cubeMesh;
-			MeshGeometry* sphereMesh;
-			TextureBase* checkTex;
-			TextureBase* basicTex;
-			TextureBase* basicTexPurple;
-			ShaderBase* basicShader;
+			std::map<std::string, MeshGeometry*> meshMap;
+			std::map<std::string, TextureBase*> textureMap;
+			std::map<std::string, ShaderBase*> shaderMap;
 
 			GameTechRenderer& gameRenderer;			
 
