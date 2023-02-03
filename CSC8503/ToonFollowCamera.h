@@ -15,6 +15,9 @@ namespace NCL
 
 			virtual void UpdateCamera(float dt) override;
 
+			void SetFollowDistance(const float& newDistance) { requiredRayDistance = newDistance; }
+			float GetFollowDistance() const { return requiredRayDistance; }
+
 		protected:
 			ToonGameObject& followTarget;
 

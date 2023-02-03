@@ -64,37 +64,15 @@ endif()
 
 source_group("Source Files" FILES ${Source_Files})
 
-set(Imgui_Files
-    "../ThirdParty/imgui/imconfig.h"
-    "../ThirdParty/imgui/imgui.h"
-    "../ThirdParty/imgui/imgui.cpp"
-    "../ThirdParty/imgui/imgui_demo.cpp"
-    "../ThirdParty/imgui/imgui_draw.cpp"
-    "../ThirdParty/imgui/imgui_impl_opengl3.h"
-    "../ThirdParty/imgui/imgui_impl_opengl3.cpp"
-    "../ThirdParty/imgui/imgui_impl_opengl3_loader.h"
-    "../ThirdParty/imgui/imgui_impl_win32.h"
-    "../ThirdParty/imgui/imgui_impl_win32.cpp"
-    "../ThirdParty/imgui/imgui_internal.h"
-    "../ThirdParty/imgui/imgui_tables.cpp"
-    "../ThirdParty/imgui/imgui_widgets.cpp"
-    "../ThirdParty/imgui/imstb_rectpack.h"
-    "../ThirdParty/imgui/imstb_textedit.h"
-    "../ThirdParty/imgui/imstb_truetype.h"
-)
-source_group("Imgui Files" FILES ${Imgui_Files})
-
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
-    ${Imgui_Files}
 )
 
 if(USE_VULKAN)
     set(ALL_FILES 
         ${Header_Files}
         ${Source_Files}
-        ${Imgui_Files}
         ${SHADER_FILES}
     )
 
@@ -261,7 +239,6 @@ endif()
 include_directories("../OpenGLRendering/")
 include_directories("../NCLCoreClasses/")
 include_directories("../CSC8503CoreClasses/")
-include_directories("../ThirdParty/imgui/")
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC NCLCoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC CSC8503CoreClasses)

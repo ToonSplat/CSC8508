@@ -1,6 +1,7 @@
 // Ryan was here
 
 #include "Window.h"
+#include "Win32Window.h"
 
 #include "Debug.h"
 
@@ -26,6 +27,10 @@
 #include "BehaviourSelector.h"
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
+
+#include "../ThirdParty/imgui/imgui.h"
+#include "../ThirdParty/imgui/imgui_impl_opengl3.h"
+#include "../ThirdParty/imgui/imgui_impl_win32.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -254,8 +259,9 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
-int main() {
-	Window*w = Window::CreateGameWindow("ToonSplat", 1280, 720);
+int main() 
+{
+	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	//TestPushdownAutomata(w);
 
 	if (!w->HasInitialised()) {
@@ -265,12 +271,21 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
+
 	//TutorialGame* g = new TutorialGame();
 	ToonGame* g = new ToonGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	//TestBehaviourTree();
 
-	//std::cout << "ANGLE: " << Vector3::Angle(Vector3(1, 0, 0), Vector3(0, 1, 0)) << std::endl;
+	//-----------------------------------------------------------
+	//Imgui 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
+	ImGui_ImplOpenGL3_Init();
+	//-----------------------------------------------------------
 
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
 		//TestPathFinding();
@@ -295,6 +310,14 @@ int main() {
 
 		g->UpdateGame(dt);
 	}
+
+	//-----------------------------------------------------------
+	//Imgui 
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+	//-----------------------------------------------------------
+
 	Window::DestroyGameWindow();
 
 }

@@ -13,10 +13,11 @@ NCL::CSC8503::ToonGame::ToonGame()
 {
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
-	
 	levelManager = new ToonLevelManager(*renderer);
-	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
+	
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
+
+	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
 	player->SetWeapon(baseWeapon);
 	
 	followCamera = new ToonFollowCamera(*player);
@@ -59,7 +60,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	renderer->Render();
 	//Debug::UpdateRenderables(dt);
 
-	//UpdateTesting();
+	UpdateTesting();
 }
 
 void NCL::CSC8503::ToonGame::UpdateCamera(float dt)
@@ -92,7 +93,7 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 		}
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
+	/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
 	{
 		player->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
 		player->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
@@ -109,5 +110,5 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 
 		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
 		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
-	}
+	}*/
 }
