@@ -15,21 +15,18 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 
 	mainCamera = new Camera();
 	instance = this;
-
-	gameData.push_back(new string("Paintball"));
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
-	for (auto& i : gameData)
-		delete i;
 	delete eventListener;
 }
 
 void NCL::CSC8503::ToonGameWorld::Clear()
 {
 	gameObjects.clear();
+	activePaintballs.clear();
 	worldIDCounter = 0;
 	worldStateCounter = 0;
 }
@@ -37,6 +34,9 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
+		delete i;
+	}
+	for (auto& i : activePaintballs) {
 		delete i;
 	}
 	

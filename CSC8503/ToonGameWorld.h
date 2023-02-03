@@ -2,6 +2,8 @@
 #include <vector>
 #include <reactphysics3d/reactphysics3d.h>
 #include "ToonEventListener.h"
+#include <unordered_set>
+#include "PaintBallProjectile.h"
 
 namespace NCL
 {
@@ -23,6 +25,22 @@ namespace NCL
 			void AddGameObject(ToonGameObject* o);
 			void RemoveGameObject(ToonGameObject* o, bool andDelete = false);
 
+			void AddPaintball(PaintBallProjectile* paintball) {
+				activePaintballs.emplace(paintball);
+			}
+			void RemovePaintball(PaintBallProjectile* paintball) {
+				activePaintballs.erase(paintball);
+			}
+			std::unordered_set<PaintBallProjectile*> GetPaintballs(void) const { return activePaintballs; }
+
+			void AddHitSphere(HitSphere* hitSphere) {
+				activeHitSpheres.emplace(hitSphere);
+			}
+			void RemoveHitSphere(HitSphere* hitSphere) {
+				activeHitSpheres.erase(hitSphere);
+			}
+			std::unordered_set<HitSphere*> GetHitSpheres(void) const { return activeHitSpheres; }
+
 			static ToonGameWorld* Get() { return instance; }
 
 			Camera* GetMainCamera() const { return mainCamera; }
@@ -30,8 +48,6 @@ namespace NCL
 
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
-
-			std::vector<string*> GetUserData() const { return gameData; }
 
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
@@ -44,8 +60,8 @@ namespace NCL
 			ToonEventListener* eventListener;
 
 			std::vector<ToonGameObject*> gameObjects;
-
-			std::vector<string*> gameData;
+			std::unordered_set<PaintBallProjectile*> activePaintballs;
+			std::unordered_set<HitSphere*> activeHitSpheres;
 
 			int		worldIDCounter;
 			int		worldStateCounter;

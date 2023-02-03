@@ -22,7 +22,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			Player* AddPlayerToWorld(const Vector3& position);
+			Player* AddPlayerToWorld(const Vector3& position, Team* team);
 			
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();

@@ -4,7 +4,7 @@
 
 using namespace NCL::CSC8503;
 
-ToonEventListener::ToonEventListener(reactphysics3d::PhysicsWorld* physicsWorld){
+ToonEventListener::ToonEventListener(reactphysics3d::PhysicsWorld* physicsWorld) : physicsWorld(physicsWorld) {
 	physicsWorld->setEventListener(this);
 }
 
@@ -26,8 +26,21 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             // Get the contact point on the first collider and convert it in world-space 
             reactphysics3d::Vector3 worldPoint = contactPair.getCollider1()->getLocalToWorldTransform() * contactPoint.getLocalPointOnCollider1();
             //std::cout << "CONTACT POINT: " << worldPoint.to_string() << std::endl;
-            if (contactPair.getBody1()->getUserData() == ToonGameWorld::Get()->GetUserData()[0] || contactPair.getBody2()->getUserData() == ToonGameWorld::Get()->GetUserData()[0]) {
-                std::cout << "PAINTBALL HIT" << std::endl;
+            
+        }
+#
+        // Check if impact involves a paintball
+        void* body1 = contactPair.getBody1()->getUserData();
+        void* body2 = contactPair.getBody2()->getUserData();
+        for (PaintBallProjectile* i : ToonGameWorld::Get()->GetPaintballs()) {
+            if (i == body1 || i == body2) {
+                std::cout << "PAINTBALL COLLISION\n";
+                // Make the HitSphere
+                HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
+                // Remove the Paintball
+                ToonGameWorld::Get()->RemovePaintball(i);
+                ToonGameWorld::Get()->RemoveGameObject(i, false);
+                break;
             }
         }
     }
@@ -40,10 +53,13 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
 
         reactphysics3d::OverlapCallback::OverlapPair overlapPair = callbackData.getOverlappingPair(p);
 
-        if (dynamic_cast<PaintableObject*>(overlapPair.getBody2())) {
-            PaintableObject* object = (PaintableObject*)overlapPair.getBody2();
-            HitSphere* sphere = (HitSphere*)overlapPair.getBody1();
-            object->AddImpactPoint(ImpactPoint(sphere->GetTransform().GetPosition(), sphere->GetTeamColour(), 5));
+        void* body1 = overlapPair.getBody1()->getUserData();
+        void* body2 = overlapPair.getBody2()->getUserData();
+        for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+            if (i == body1 || i == body2) {
+                std::cout << "HITSPHERE COLLISION\n";
+                break;
+            }
         }
     }
 }

@@ -15,6 +15,7 @@ namespace NCL::CSC8503 {
 
         virtual void onContact(const CollisionCallback::CallbackData& callbackData) override;
         virtual void onTrigger(const reactphysics3d::OverlapCallback::CallbackData& callbackData) override;
-        
+	protected:
+		reactphysics3d::PhysicsWorld* physicsWorld;
 	};
 }
