@@ -1,24 +1,24 @@
 #pragma once
-#include "PaintableZone.h"
-#include "GameObject.h"
+#include "ToonGameObject.h"
+#include "ImpactPoint.h"
 
 namespace NCL {
 	namespace CSC8503 {
-		class PaintableObject : public GameObject {
+		class PaintableObject : public ToonGameObject {
 		public:
-			PaintableObject(void);
-			PaintableObject(PaintableZone* parent);
-			PaintableObject(PaintableZone* parent, Team* owner);
+			PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World);
 			~PaintableObject(void) = default;
 
-			void Update(float dt);
+			void Update(float dt) override;
 
-			void Hit(Team* hitBy);
+			void AddImpactPoint(ImpactPoint point);
+
+			std::deque<ImpactPoint> GetImpactPoints() const {
+				return impactPoints;
+			}
 
 		private:
-			Team* owner;
-			PaintableZone* parent;
-			const int OBJECT_SCORE = 1;
+			std::deque<ImpactPoint> impactPoints;
 		};
 	}
 }

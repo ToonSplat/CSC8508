@@ -22,20 +22,13 @@ NCL::CSC8503::ToonGame::ToonGame()
 
 	accumulator = 0.0f;
 	showCursor = false;
-
-	/*physics = new PhysicsSystem(*world);
-	physics->UseGravity(true);*/
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
 	delete renderer;
-	delete mainZone;
-	for (auto& zone : *subZones)
-		delete zone;
-	delete subZones;	
-	//delete physics;
+	delete baseWeapon;
 	delete levelManager;
 }
 
@@ -58,8 +51,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		world->GetPhysicsWorld().update(timeStep);
 		accumulator -= timeStep;
 	}
-
-	//physics->Update(dt);
+  
 	levelManager->Update(dt);
 
 	renderer->Render();
@@ -99,6 +91,12 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 			Window::GetWindow()->ShowOSPointer(false);
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
+	{
+		cameraTargetObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
+		cameraTargetObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
 	}
 
 	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))

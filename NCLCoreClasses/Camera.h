@@ -75,6 +75,8 @@ namespace NCL {
 			return *this;
 		}
 
+		Vector3 GetForward() const { return camForward; }
+
 		//Builds a view matrix for the current camera variables, suitable for sending straight
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').
 		Matrix4 BuildViewMatrix() const;
@@ -95,8 +97,6 @@ namespace NCL {
 		float	GetPitch() const { return pitch; }
 		//Sets pitch, in degrees
 		Camera& SetPitch(float p) { pitch = p; return *this; }
-
-		Vector3 GetForward() const { return camForward; }
 
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);

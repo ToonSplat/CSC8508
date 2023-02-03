@@ -22,6 +22,7 @@ namespace NCL
 		{
 		public:
 			Player* AddPlayerToWorld(const Vector3& position);
+			ToonGameObject* MakeBullet();
 			ShaderBase* GetBasicShader()  { return basicShader; }
 			MeshGeometry* GetSphereMesh() { return sphereMesh; }
 			ToonLevelManager(GameTechRenderer& renderer);
@@ -57,8 +58,12 @@ namespace NCL
 			}
 
 			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
-			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
+			ToonGameObject* AddSphereToWorld(ToonGameObject* sphere, const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
+
+			MeshGeometry* GetSphereMesh() const { return sphereMesh; }
+			ShaderBase* GetBasicShader() const { return basicShader; }
+
 
 		private:
 			MeshGeometry* charMesh = nullptr;

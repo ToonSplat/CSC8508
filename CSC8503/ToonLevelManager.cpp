@@ -205,7 +205,7 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	return cube;
 }
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
+ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(ToonGameObject* sphere, const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass)
 {
 	ToonGameObject* sphere = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
@@ -268,4 +268,15 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position)
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), charMesh, basicTexPurple, basicShader));
 
 	return player;
+}
+
+ToonGameObject* ToonLevelManager::MakeBullet() {
+	ToonGameObject* bullet = new ToonGameObject(physicsWorld);
+	AddSphereToWorld(bullet, Vector3(), Vector3(), 0.25f, basicTex);
+	reactphysics3d::RigidBody* body = bullet->GetRigidbody();
+	body->setType(reactphysics3d::BodyType::DYNAMIC);
+	body->setLinearDamping(0.66);
+	body->setAngularDamping(0.66);
+	body->setMass(0.1);
+	return bullet;
 }

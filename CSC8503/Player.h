@@ -19,16 +19,14 @@ public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
-	void Update(float dt);
-	void Update(Matrix4& inverseView, float& yaw, float& pitch, float dt); //All Keyboard inputs done through this; should be called in main game loop e.g. player->Update(...);
+	void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	void UpdateTargetObject(ToonGameObject* targetObj) { targetObj = targetObject; }
-	void UpdateObjects(ShaderBase* basicShad, MeshGeometry* sphMesh);
+	void SetWeapon(PaintBallClass* base);
 
 protected:
 	void Shoot();
@@ -42,13 +40,8 @@ protected:
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
-	int ammoRemaining = 100;
 
-	ToonGameObject* targetObject = nullptr;
-	PaintBallClass* sampleWeapon = nullptr;
-	ShaderBase* basicShader;
-	MeshGeometry* sphereMesh;
-
+	PaintBallClass weapon;
 	bool isAiming, isMoving;
 	/*
 	* Future Implementations:

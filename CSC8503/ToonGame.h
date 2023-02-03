@@ -5,6 +5,8 @@
 
 #include "ToonLevelManager.h"
 #include <reactphysics3d/reactphysics3d.h>
+#include "PaintBallClass.h"
+#include "ToonEventListener.h"
 
 namespace NCL
 {
@@ -35,6 +37,8 @@ namespace NCL
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
+			PaintBallClass* baseWeapon;
+			ToonEventListener* eventListener;
 
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;
