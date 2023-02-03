@@ -25,6 +25,7 @@ set(Header_Files
     "ToonRenderObject.h"
     "ToonRaycastCallback.h"
     "ToonUtils.h"
+    "ToonFollowCamera.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -48,6 +49,7 @@ set(Source_Files
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
     "ToonRenderObject.cpp"
+    "ToonFollowCamera.cpp"
 )
 
 if(USE_VULKAN)
