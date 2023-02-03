@@ -15,7 +15,7 @@ using namespace CSC8503;
 
 class Player : public ToonGameObject {
 public:
-	Player(reactphysics3d::PhysicsWorld& RP3D_World);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius);
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam);
 	~Player();
 
@@ -33,12 +33,16 @@ protected:
 
 	Team* team;
 
-	float moveSpeed = 10.0f;
+	float moveSpeed;
+	float rotationSpeed;
+	float aimingSpeed;
+	float targetAngle = 0.0f;
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
-
 	PaintBallClass weapon;
+
+	bool isAiming, isMoving;
 	/*
 	* Future Implementations:
 	*

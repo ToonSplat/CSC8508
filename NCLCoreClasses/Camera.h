@@ -49,7 +49,7 @@ namespace NCL {
 
 		~Camera(void) = default;
 
-		void UpdateCamera(float dt);
+		virtual void UpdateCamera(float dt);
 
 		void UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize);
 

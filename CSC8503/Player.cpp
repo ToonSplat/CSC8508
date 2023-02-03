@@ -1,50 +1,92 @@
 #include "Player.h"
+#include "Maths.h"
+#include "ToonUtils.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World) : ToonGameObject(RP3D_World) {
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius) : ToonGameObject(RP3D_World) 
+{
 	team = nullptr;
+	isAiming = false;
+
+	moveSpeed = 30.0f;
+	rotationSpeed = 6.0f;
+	aimingSpeed = 10.0f;
+
+	GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(Vector3(radius, radius, radius));
+
+	AddRigidbody();
+	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	GetRigidbody()->setLinearDamping(0.8f);
+	GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
+	GetRigidbody()->setIsAllowedToSleep(true);
+
+	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
+	SetCollisionShape(sphereShape);
+	SetCollider(sphereShape);
+	GetCollider()->getMaterial().setBounciness(0.1f);
+
+	ToonGameWorld::Get()->AddGameObject(this);
 }
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam) : ToonGameObject(RP3D_World) {
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam) : ToonGameObject(RP3D_World) 
+{
 	team = chosenTeam;
+	isAiming = false;
+
+	moveSpeed = 20.0f;
+	rotationSpeed = 6.0f;
+	aimingSpeed = 10.0f;
 }
 
 Player::~Player() {
 	
 }
 
-void Player::Update(float dt) {
-	SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(0, ToonGameWorld::Get()->GetMainCamera()->GetYaw() / 180.0f * _Pi, 0)));
 
-	Debug::Print("Sprint:" + std::to_string((int)round((sprintTimer / sprintMax) * 100)) + "%", Vector2(60, 30));
+void Player::Update(float dt)
+{
+	isAiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
 
-	float fwdForce = moveSpeed;
+	Matrix4 rotation = Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0));
+	Vector3 forward = rotation * Vector3(0, 0, -1.0f);
+	Vector3 right = rotation * Vector3(1, 0, 0);
+	Vector3 up = rotation * Vector3(0, 1, 0);
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W) && Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer > 0.0f) {
-		fwdForce = moveSpeed + sprintMulitplier;
-		sprintTimer -= dt;
-	}
-	else if (!Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::SHIFT) && sprintTimer < sprintMax) {
-		sprintTimer += dt;
-	}
+	//linearMovement.z = -1.0f;
+		/*targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
+		if (!isAiming) targetAngle -= 90.0f;*/
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W)) 
-		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(0, 0, -10.0f));
+	Vector3 linearMovement;	
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W)) linearMovement += forward;
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S)) linearMovement -= forward;
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A)) 
-		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(-10.0f, 0, 0));
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
+
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 	
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::D)) 
-		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 0, 0));
-	
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S)) 
-		this->GetRigidbody()->applyLocalForceAtCenterOfMass(reactphysics3d::Vector3(0, 0, 10.0f));
+	isMoving = linearMovement.Length() >= 0.1f;
+	if (isAiming) targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
 
-	weapon.Update(dt);
+	//targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
+	if (!isAiming && isMoving) targetAngle = RadiansToDegrees(atan2(-linearMovement.Normalised().x, -linearMovement.Normalised().z));
+
+	//else if (!isAiming && isMoving)
+		//targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z)) + ToonGameWorld::Get()->GetMainCamera()->GetYaw();
 	
-	return;
+	Quaternion newRotNCL = Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0);
+	reactphysics3d::Quaternion newRot(newRotNCL.x, newRotNCL.y, newRotNCL.z, newRotNCL.w);
+	reactphysics3d::Transform newRotTransform(GetRigidbody()->getTransform().getPosition(), reactphysics3d::Quaternion::slerp(GetRigidbody()->getTransform().getOrientation(), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
+	GetRigidbody()->setTransform(newRotTransform);
+
+	if (isMoving)
+		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
+    weapon.Update(dt);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

@@ -25,7 +25,7 @@ namespace NCL
 			ToonGameObject* MakeBullet();
 			ShaderBase* GetBasicShader()  { return basicShader; }
 			MeshGeometry* GetSphereMesh() { return sphereMesh; }
-			ToonLevelManager(GameTechRenderer& renderer, reactphysics3d::PhysicsWorld& _physicsWorld, reactphysics3d::PhysicsCommon& _physicsCommon);
+			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
 
 			static ToonLevelManager* Get() { return instance; }
@@ -74,9 +74,7 @@ namespace NCL
 			TextureBase* basicTexPurple;
 			ShaderBase* basicShader;
 
-			GameTechRenderer& gameRenderer;
-			reactphysics3d::PhysicsCommon& physicsCommon;
-			reactphysics3d::PhysicsWorld& physicsWorld;
+			GameTechRenderer& gameRenderer;			
 
 			ToonGameObject* axisObject;
 
