@@ -13,7 +13,7 @@ set(Header_Files
     "Team.h"
     "TutorialGame.h"
     "PaintBallClass.h"
-    "PaintBallProjectile.cpp"
+    "PaintBallProjectile.h"
     "Player.h"
     "ImpactPoint.h"
     "ToonLevelManager.h"
