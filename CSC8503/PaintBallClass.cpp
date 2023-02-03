@@ -84,7 +84,7 @@ void PaintBallClass::PickUpAmmo(int amt) {
 
 void PaintBallClass::CreateBullet() {
 	std::cout << "BANG" << std::endl;
-	ToonGameObject* bullet = ToonLevelManager::Get()->MakeBullet();
+	ToonGameObject* bullet = ToonLevelManager::Get()->MakeBullet(Vector3(0, 0, 0));
 	bullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() +10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 	bullet->SetOrientation(orientation);

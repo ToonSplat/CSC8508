@@ -4,6 +4,7 @@
 #include "PaintableObject.h"
 
 #include "Player.h"
+#include "PaintBallProjectile.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
@@ -22,7 +23,7 @@ namespace NCL
 		{
 		public:
 			Player* AddPlayerToWorld(const Vector3& position);
-			ToonGameObject* MakeBullet();
+			PaintBallProjectile* MakeBullet(const Vector3& position);
 			ShaderBase* GetBasicShader()  { return basicShader; }
 			MeshGeometry* GetSphereMesh() { return sphereMesh; }
 			ToonLevelManager(GameTechRenderer& renderer);
@@ -58,7 +59,7 @@ namespace NCL
 			}
 
 			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
-			ToonGameObject* AddSphereToWorld(ToonGameObject* sphere, const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
+			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
 			MeshGeometry* GetSphereMesh() const { return sphereMesh; }

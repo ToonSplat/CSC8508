@@ -16,6 +16,8 @@ NCL::CSC8503::ToonGame::ToonGame()
 	
 	levelManager = new ToonLevelManager(*renderer);
 	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
+	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetBasicShader(), levelManager->GetSphereMesh());
+	player->SetWeapon(baseWeapon);
 	
 	followCamera = new ToonFollowCamera(*player);
 	world->SetMainCamera(followCamera);
@@ -70,9 +72,6 @@ void NCL::CSC8503::ToonGame::UpdateCamera(float dt)
 	Matrix4 view = ToonGameWorld::Get()->GetMainCamera()->BuildViewMatrix();
 	Matrix4 cam = view.Inverse();
 	//ToonGameWorld::Get()->GetMainCamera()->UpdateCamera(dt);
-
-	player->Update(cam, horizontalAngle, verticalAngle, dt);
-	player->UpdateTargetObject(targetObject);
 	ToonGameWorld::Get()->UpdateWorld(dt);
 }
 
@@ -95,8 +94,8 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
 	{
-		cameraTargetObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
-		cameraTargetObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
+		player->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
+		player->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
 	}
 
 	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
