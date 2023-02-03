@@ -14,7 +14,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
 	
-	testTeam = new Team("The Blue Wave", Vector3(0, 1.0f, 0));
+	testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
 	levelManager = new ToonLevelManager(*renderer);
 	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20), testTeam);
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));

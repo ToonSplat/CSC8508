@@ -15,6 +15,7 @@ HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, react
 		SetScale(Vector3(radius, radius, radius));
 
 	SetRenderObject(new ToonRenderObject(&GetTransform(), ToonLevelManager::Get()->GetMesh("sphere"), ToonLevelManager::Get()->GetTexture("basic"), ToonLevelManager::Get()->GetShader("basic")));
+	GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1.0f));
 
 	AddRigidbody();
 	GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
