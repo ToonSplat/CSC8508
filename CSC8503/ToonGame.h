@@ -4,31 +4,45 @@
 #include "PhysicsSystem.h"
 
 #include "ToonLevelManager.h"
+#include <reactphysics3d/reactphysics3d.h>
+#include "PaintBallClass.h"
+#include "ToonEventListener.h"
 
 namespace NCL
 {
 	namespace CSC8503
 	{
+		class ToonFollowCamera;
 		class ToonGame
 		{
 		public:
 			ToonGame();
 			~ToonGame();
 
-			virtual void UpdateGame(float dt);
+			virtual void UpdateGame(float dt);			
 
 		protected:
-			GameTechRenderer* renderer;
-			PhysicsSystem* physics;
-			GameWorld* world;
-			ToonLevelManager* levelManager;
+			void UpdateCamera(float dt);
+			void UpdateTesting();
 
-			Player* cameraTargetObject = nullptr;
+		protected:
+			ToonFollowCamera* followCamera;
+			Player*	player = nullptr;
+			ToonGameObject* targetObject = nullptr;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 
+			PaintBallClass* sampleWeapon;
+			GameTechRenderer* renderer;
+			ToonGameWorld* world;
+			ToonLevelManager* levelManager;
+			PaintBallClass* baseWeapon;
+			ToonEventListener* eventListener;
+
 			bool showCursor;
+			const float timeStep = 1.0f / 60.0f;
+			float accumulator;
 		};
 	}
 }

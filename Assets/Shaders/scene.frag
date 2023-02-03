@@ -1,5 +1,15 @@
 #version 400 core
 
+struct ImpactPoint{
+	vec3 position;
+	vec3 colour;
+	float radius;
+};
+#define MAX_IMPACT_POINTS 10
+uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
+
+uniform int impactPointCount;
+
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
 uniform sampler2DShadow shadowTex;
@@ -34,7 +44,7 @@ void main(void)
 	vec3  incident = normalize ( lightPos - IN.worldPos );
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
 	
-	vec3 viewDir = normalize ( cameraPos - IN . worldPos );
+	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
 	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
@@ -44,6 +54,18 @@ void main(void)
 	
 	if(hasTexture) {
 	 albedo *= texture(mainTex, IN.texCoord);
+	}
+
+
+	
+	if (impactPointCount > 0){
+		for (int i = 0; i < impactPointCount; i++){
+			vec3 impactWorldPos = impactPoints[i].position + IN.worldPos;
+			float distanceBetween = distance(impactWorldPos, impactPoints[i].position);
+			if (distanceBetween <= impactPoints[i].radius){
+				albedo = vec4(impactPoints[i].colour, 1.0);
+			}
+		}
 	}
 	
 	albedo.rgb = pow(albedo.rgb, vec3(2.2));
@@ -57,12 +79,4 @@ void main(void)
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	
 	fragColor.a = albedo.a;
-
-//fragColor.rgb = IN.normal;
-
-	//fragColor = IN.colour;
-	
-	//fragColor.xy = IN.texCoord.xy;
-	
-	//fragColor = IN.colour;
 }

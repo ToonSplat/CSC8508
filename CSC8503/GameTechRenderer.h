@@ -5,16 +5,18 @@
 #include "OGLMesh.h"
 
 #include "GameWorld.h"
+#include "ToonGameWorld.h"
 
 namespace NCL {
 	class Maths::Vector3;
 	class Maths::Vector4;
 	namespace CSC8503 {
 		class RenderObject;
+		class ToonRenderObject;
 
 		class GameTechRenderer : public OGLRenderer	{
 		public:
-			GameTechRenderer(GameWorld& world);
+			GameTechRenderer(ToonGameWorld& world);			
 			~GameTechRenderer();
 
 			MeshGeometry*	LoadMesh(const string& name);
@@ -22,6 +24,8 @@ namespace NCL {
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
 		protected:
+
+			void SetupStuffs();
 			void NewRenderLines();
 			void NewRenderText();
 
@@ -29,12 +33,15 @@ namespace NCL {
 
 			OGLShader*		defaultShader;
 
-			GameWorld&	gameWorld;
+			//GameWorld&	gameWorld;
+			ToonGameWorld&	gameWorld;
 
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera(); 
+			void RenderCamera();
+			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
+
 			void RenderSkybox();
 
 			void LoadSkybox();
@@ -42,7 +49,7 @@ namespace NCL {
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
 
-			vector<const RenderObject*> activeObjects;
+			vector<const ToonGameObject*> activeObjects;
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
