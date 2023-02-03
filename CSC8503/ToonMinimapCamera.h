@@ -14,6 +14,6 @@ namespace NCL::CSC8503 {
 	protected:
 		ToonGameObject& followTarget;
 		float zoomFactor = 10.0f;
-		float distanceFromFocus = 50.0f;
+		float distanceFromFocus = 10.0f;
 	};
 }

@@ -45,5 +45,5 @@ void NCL::CSC8503::ToonMinimapCamera::UpdateCamera(float dt)
 	}
 
 	Vector3 focusPoint = ToonUtils::ConvertToNCLVector3(followTarget.GetRigidbody()->getTransform().getPosition());
-	position = Vector3(focusPoint.x, focusPoint.y + distanceFromFocus, focusPoint.y);
+	position = Vector3(focusPoint.x, focusPoint.y + distanceFromFocus, focusPoint.z);
 }
