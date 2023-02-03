@@ -11,7 +11,7 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(Vector3(radius, radius, radius));
 
-	SetRenderObject(new ToonRenderObject(&GetTransform(), ToonLevelManager::Get()->GetSphereMesh(), ToonLevelManager::Get()->GetBasicTexture(), ToonLevelManager::Get()->GetBasicShader()));
+	SetRenderObject(new ToonRenderObject(&GetTransform(), ToonLevelManager::Get()->GetMesh("sphere"), ToonLevelManager::Get()->GetTexture("basic"), ToonLevelManager::Get()->GetShader("basic")));
 
 	AddRigidbody();
 	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);

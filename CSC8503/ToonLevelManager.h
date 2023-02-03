@@ -24,10 +24,6 @@ namespace NCL
 		public:
 			Player* AddPlayerToWorld(const Vector3& position);
 			
-			ShaderBase* GetBasicShader()  { return basicShader; }
-			MeshGeometry* GetSphereMesh() { return sphereMesh; }
-			TextureBase* GetBasicTexture() { return basicTexPurple; }
-
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
 

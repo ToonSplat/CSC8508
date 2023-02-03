@@ -40,7 +40,8 @@ PaintBallClass PaintBallClass::MakeInstance() {
 
 void PaintBallClass::Update(float dt) {
 	//if left mouse status
-	if (ammoInUse == 0) std::cout << "WEAPON LOAD FAIL?\n";
+	//if (ammoInUse == 0) std::cout << "WEAPON LOAD FAIL?\n";
+
 	if (Window::GetMouse()->ButtonPressed(NCL::MouseButtons::LEFT) && ammoInUse > 0)
 		status = isFiring;
 	else if (ammoInUse <= 0 || Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::R))
@@ -67,7 +68,7 @@ void PaintBallClass::Shoot(float dt) {
 	{
 		// Shoot Projectile here
 		FireBullet();
-		std::cout << "Weapon is shooting" << std::endl;
+		//std::cout << "Weapon is shooting" << std::endl;
 		ammoInUse--;
 		shootTimer = 0.0f;
 	}
