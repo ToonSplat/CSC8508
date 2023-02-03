@@ -66,7 +66,6 @@ void Player::Update(float dt)
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
 
-
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 	
 	isMoving = linearMovement.Length() >= 0.1f;
