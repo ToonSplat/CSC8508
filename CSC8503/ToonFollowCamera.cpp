@@ -12,7 +12,10 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) :
 	requiredRayDistance = defaultRayDistance = 10.0f;
 	pitchOffset = 12.0f;
 	h = v = 0.0f;
-	followOffset = Vector3();
+	radianX = radianY = 0.0f;
+	followOffset = Vector3(0, 0, 10.0f);
+	targetOffset = Vector3(1.0f, 2.0f, 5.0f);
+	up = Vector3(0, 1, 0);
 }
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
@@ -24,7 +27,40 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
 
-	Matrix4 yawMat = Matrix4::Rotation(h, Vector3(0, 1, 0));
+	radianX = DegreesToRadians(v);
+	radianY = DegreesToRadians(-h);
+
+	Quaternion rot;
+	reactphysics3d::Quaternion rRot = followTarget.GetRigidbody()->getTransform().getOrientation();
+	rot.x = rRot.x;
+	rot.y = rRot.y;
+	rot.z = rRot.z;
+	rot.w = rRot.w;
+
+	Matrix4 modelMatrix = Matrix4::Translation(followTarget.GetRigidbody()->getTransform().getPosition().x,
+		followTarget.GetRigidbody()->getTransform().getPosition().y,
+		followTarget.GetRigidbody()->getTransform().getPosition().z) *
+
+		Matrix4(rot) *
+
+		Matrix4::Scale(followTarget.GetRenderObject()->GetTransform()->GetScale().x, followTarget.GetRenderObject()->GetTransform()->GetScale().y, followTarget.GetRenderObject()->GetTransform()->GetScale().z);
+
+	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget.GetRigidbody()->getTransform().getPosition());
+	Vector3 targetLocalPos = modelMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);
+	targetLocalPos += targetOffset;
+
+	position = modelMatrix * Vector4(targetLocalPos, 1.0f);
+	/*position.x = targetPos.x + followOffset.z * cos(radianY) * cos(radianX) + followOffset.x;
+	position.y = targetPos.y + followOffset.z * sin(radianX) + followOffset.y;
+	position.z = targetPos.z + followOffset.z * sin(radianY) * cos(radianX);*/
+
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, targetWorldPos, Vector3(0, 1, 0)).Inverse();
+	Quaternion q(viewMatrix);
+	pitch = q.ToEuler().x;
+	yaw = q.ToEuler().y;
+
+#pragma region OLD
+	/*Matrix4 yawMat = Matrix4::Rotation(h, Vector3(0, 1, 0));
 	Matrix4 pitchMat = Matrix4::Rotation(v, yawMat * Vector3(-1, 0, 0));
 	Matrix4 finalRotMat = pitchMat * yawMat;
 
@@ -42,7 +78,9 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
 	camForward = rotation * Vector3(0, 0, -1);
 	camRight = rotation * Vector3(1, 0, 0);
-	camUp = rotation * Vector3(0, 1, 0);
+	camUp = rotation * Vector3(0, 1, 0);*/
+#pragma endregion
+
 
 	//Prevent Wall Clipping
 	/*Ray collisionRay = Ray(focusPoint, -lookDirection);

@@ -160,6 +160,8 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 		Vector3 cPos = gameWorld.GetMainCamera()->GetPosition();
 		Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
+		Vector3 cFollowOffset = followCamera->GetFollowOffset();
+		Vector3 cTargetOffset = followCamera->GetTargetOffset();
 		float distance = followCamera->GetFollowDistance();
 
 		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
@@ -167,6 +169,8 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
+		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
+		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 	}
 	ImGui::End();
 
