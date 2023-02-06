@@ -20,7 +20,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
 	player->SetWeapon(baseWeapon);
 	
-	followCamera = new ToonFollowCamera(*player);
+	followCamera = new ToonFollowCamera(player);
 	world->SetMainCamera(followCamera);
 
 	accumulator = 0.0f;

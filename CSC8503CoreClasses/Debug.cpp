@@ -54,6 +54,34 @@ void Debug::DrawAxisLines(const Matrix4& modelMatrix, float scaleBoost, float ti
 	DrawLine(worldPos, worldPos + (fwd * scaleBoost), Debug::BLUE, time);
 }
 
+void NCL::Debug::DrawBox(const Vector3& boxCenter, const Vector3& boxSize, const Vector4& colour, float time)
+{
+	Vector3 v3FrontTopLeft = Vector3(boxCenter.x - boxSize.x, boxCenter.y + boxSize.y, boxCenter.z - boxSize.z);
+	Vector3 v3FrontTopRight = Vector3(boxCenter.x + boxSize.x, boxCenter.y + boxSize.y, boxCenter.z - boxSize.z);
+	Vector3 v3FrontBottomLeft = Vector3(boxCenter.x - boxSize.x, boxCenter.y - boxSize.y, boxCenter.z - boxSize.z);
+	Vector3 v3FrontBottomRight = Vector3(boxCenter.x + boxSize.x, boxCenter.y - boxSize.y, boxCenter.z - boxSize.z);
+
+	Vector3 v3BackTopLeft = Vector3(boxCenter.x - boxSize.x, boxCenter.y + boxSize.y, boxCenter.z + boxSize.z);
+	Vector3 v3BackTopRight = Vector3(boxCenter.x + boxSize.x, boxCenter.y + boxSize.y, boxCenter.z + boxSize.z);
+	Vector3 v3BackBottomLeft = Vector3(boxCenter.x - boxSize.x, boxCenter.y - boxSize.y, boxCenter.z + boxSize.z);
+	Vector3 v3BackBottomRight = Vector3(boxCenter.x + boxSize.x, boxCenter.y - boxSize.y, boxCenter.z + boxSize.z);
+
+	DrawLine(v3FrontTopLeft, v3FrontTopRight, colour, time);
+	DrawLine(v3FrontTopRight, v3FrontBottomRight, colour, time);
+	DrawLine(v3FrontBottomRight, v3FrontBottomLeft, colour, time);
+	DrawLine(v3FrontBottomLeft, v3FrontTopLeft, colour, time);
+
+	DrawLine(v3BackTopLeft, v3BackTopRight, colour, time);
+	DrawLine(v3BackTopRight, v3BackBottomRight, colour, time);
+	DrawLine(v3BackBottomRight, v3BackBottomLeft, colour, time);
+	DrawLine(v3BackBottomLeft, v3BackTopLeft, colour, time);
+
+	DrawLine(v3FrontTopLeft, v3BackTopLeft, colour, time);
+	DrawLine(v3FrontTopRight, v3BackTopRight, colour, time);
+	DrawLine(v3FrontBottomRight, v3BackBottomRight, colour, time);
+	DrawLine(v3FrontBottomLeft, v3BackBottomLeft, colour, time);
+}
+
 void Debug::UpdateRenderables(float dt) {
 	int trim = 0;
 	for (int i = 0; i < lineEntries.size(); ) {

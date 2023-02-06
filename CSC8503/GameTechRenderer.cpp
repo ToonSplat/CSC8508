@@ -144,7 +144,7 @@ void GameTechRenderer::RenderFrame() {
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	RenderImGUI();
+	//RenderImGUI();
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderImGUI()
@@ -162,15 +162,20 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
+		Vector3 cAimOffset = followCamera->GetAimOffset();
+
 		float distance = followCamera->GetFollowDistance();
+		float cPitchOffset = followCamera->GetPitchOffset();
 
 		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
 		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld.GetMainCamera()->SetPitch(cPos.x);
 		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
+		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
 		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
+		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
 	}
 	ImGui::End();
 

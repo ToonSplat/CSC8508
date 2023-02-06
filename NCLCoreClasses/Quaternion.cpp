@@ -216,6 +216,25 @@ Quaternion Quaternion::AxisAngleToQuaterion(const Vector3& vector, float degrees
 	return Quaternion((float)(vector.x * result), (float)(vector.y * result), (float)(vector.z * result), (float)cos(theta / 2.0f));
 }
 
+Quaternion NCL::Maths::Quaternion::AxisAngleToQuaterion(float degrees, const Vector3& axis)
+{
+	axis.Normalised();
+	float halfAngle = (float)Maths::DegreesToRadians(degrees) * 0.5f;
+	float s = sin(halfAngle);
+
+	return Quaternion(cos(halfAngle), axis.x * s, axis.y * s, axis.z * s);
+}
+
+Quaternion NCL::Maths::Quaternion::RotateTowards(const Quaternion& from, const Quaternion& to, float maxDegrees)
+{
+	float angle = acos(Dot(from, to));
+	if (angle < 0.0001f)
+		return to;
+
+	float t = std::min(1.0f, maxDegrees / angle);
+	return Lerp(from, to, t).Normalised();
+}
+
 
 Vector3		Quaternion::operator *(const Vector3 &a)	const {
 	Quaternion newVec = *this * Quaternion(a.x, a.y, a.z, 0.0f) * Conjugate();

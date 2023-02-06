@@ -6,22 +6,53 @@
 #include <reactphysics3d/reactphysics3d.h>
 //#include <iostream>
 
-NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) : 
+NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) : 
 	followTarget(target)
 {
-	requiredRayDistance = defaultRayDistance = 10.0f;
+	requiredRayDistance = defaultRayDistance = 0.35f;
 	pitchOffset = 12.0f;
 	h = v = 0.0f;
 	radianX = radianY = 0.0f;
 	followOffset = Vector3(0, 0, 10.0f);
-	targetOffset = Vector3(1.0f, 2.0f, 5.0f);
+	targetOffset = Vector3(0.0f, 1.0f, 4.0f);
+	aimOffset = Vector3(0.5f, 1.0f, 2.0f);
+	
 	up = Vector3(0, 1, 0);
+	right = Vector3(1, 0, 0);
+
+	Quaternion rot;
+	reactphysics3d::Quaternion rRot = followTarget->GetRigidbody()->getTransform().getOrientation();
+	rot.x = rRot.x;
+	rot.y = rRot.y;
+	rot.z = rRot.z;
+	rot.w = rRot.w;
+
+	_originTransform = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
+		followTarget->GetRigidbody()->getTransform().getPosition().y,
+		followTarget->GetRigidbody()->getTransform().getPosition().z) *
+
+		Matrix4(rot) *
+
+		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x,
+						followTarget->GetRenderObject()->GetTransform()->GetScale().y,
+						followTarget->GetRenderObject()->GetTransform()->GetScale().z);
+
+	_back = _originTransform * Vector3(0, 0, -1);
+	_right = _originTransform * Vector3(1, 0, 0);
+
+	player = (Player*)followTarget;
 }
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 {
 	v -= (Window::GetMouse()->GetRelativePosition().y);
 	v = Clamp(v, -80.0f, 80.0f);
+
+	lookEuler += Vector3(Window::GetMouse()->GetRelativePosition().y, Window::GetMouse()->GetRelativePosition().x, 0) * dt * 75.0f;
+	lookEuler.y = (float)((int)lookEuler.y % 360);
+
+	//std::cout << lookEuler << std::endl;
+	//lookEuler.z = (float)((int)lookEuler.z % 360);
 
 	h -= (Window::GetMouse()->GetRelativePosition().x);
 	if (h < 0) h += 360.0f;
@@ -31,34 +62,76 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	radianY = DegreesToRadians(-h);
 
 	Quaternion rot;
-	reactphysics3d::Quaternion rRot = followTarget.GetRigidbody()->getTransform().getOrientation();
+	reactphysics3d::Quaternion rRot = followTarget->GetRigidbody()->getTransform().getOrientation();
 	rot.x = rRot.x;
 	rot.y = rRot.y;
 	rot.z = rRot.z;
 	rot.w = rRot.w;
 
-	Matrix4 modelMatrix = Matrix4::Translation(followTarget.GetRigidbody()->getTransform().getPosition().x,
-		followTarget.GetRigidbody()->getTransform().getPosition().y,
-		followTarget.GetRigidbody()->getTransform().getPosition().z) *
+	Matrix4 modelMatrixNoRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
+		followTarget->GetRigidbody()->getTransform().getPosition().y,
+		followTarget->GetRigidbody()->getTransform().getPosition().z) *		
+
+		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x, 
+						followTarget->GetRenderObject()->GetTransform()->GetScale().y, 
+						followTarget->GetRenderObject()->GetTransform()->GetScale().z);
+
+	Matrix4 modelMatrixWithRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
+		followTarget->GetRigidbody()->getTransform().getPosition().y,
+		followTarget->GetRigidbody()->getTransform().getPosition().z) *
 
 		Matrix4(rot) *
 
-		Matrix4::Scale(followTarget.GetRenderObject()->GetTransform()->GetScale().x, followTarget.GetRenderObject()->GetTransform()->GetScale().y, followTarget.GetRenderObject()->GetTransform()->GetScale().z);
+		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x,
+			followTarget->GetRenderObject()->GetTransform()->GetScale().y,
+			followTarget->GetRenderObject()->GetTransform()->GetScale().z);
 
-	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget.GetRigidbody()->getTransform().getPosition());
-	Vector3 targetLocalPos = modelMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);
-	targetLocalPos += targetOffset;
+	Matrix4 rotMatrix = Matrix4::Rotation(h, up) * Matrix4::Rotation(v, right);
+	Matrix4 finalMatrix = modelMatrixNoRot * rotMatrix;
 
-	position = modelMatrix * Vector4(targetLocalPos, 1.0f);
-	/*position.x = targetPos.x + followOffset.z * cos(radianY) * cos(radianX) + followOffset.x;
-	position.y = targetPos.y + followOffset.z * sin(radianX) + followOffset.y;
-	position.z = targetPos.z + followOffset.z * sin(radianY) * cos(radianX);*/
+	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget->GetRigidbody()->getTransform().getPosition());	
+	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);
 
-	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, targetWorldPos, Vector3(0, 1, 0)).Inverse();
+	Vector3 localOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
+	Vector3 worldOffset = finalMatrix * Vector4(localOffset, 1.0f);
+	
+	Vector3 targetAimLocal = targetLocalPos + Vector3(0.65f, 0.75f, 0);
+	Vector3 targetAimWorld = modelMatrixWithRot * Vector4(targetAimLocal, 1.0f);
+
+	Debug::DrawBox(targetAimWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::GREEN, 0);
+
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, targetWorldPos, up).Inverse();
 	Quaternion q(viewMatrix);
 	pitch = q.ToEuler().x;
 	yaw = q.ToEuler().y;
 
+	position = Lerp(position, worldOffset, dt * 10.0f);
+
+#pragma region From Unity Tutorial
+	/*float cYaw = lookEuler.y;
+float cPitch = lookEuler.x;
+_rotY = Quaternion::RotateTowards(_rotY, Quaternion::AxisAngleToQuaterion(up, cYaw), dt * 400.0f);
+_rotX = Quaternion::RotateTowards(_rotX, Quaternion::AxisAngleToQuaterion(_right, cPitch), dt * 400.0f);
+
+Vector3 offset = targetOffset;
+Vector3 shoulderOffset = _rotY * _originTransform * offset;
+Vector3 armOffset = _rotY * (_rotX * _back * requiredRayDistance);
+
+Vector3 shoulderPosition = targetPos + shoulderOffset;
+position = shoulderPosition + armOffset;
+
+//Debug::DrawLine(shoulderPosition, shoulderPosition + up, Debug::RED);
+
+Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, shoulderPosition, up).Inverse();
+Quaternion q(viewMatrix);
+pitch = q.ToEuler().x;
+yaw = q.ToEuler().y;*/
+#pragma endregion
+
+
+	/*position.x = targetPos.x + followOffset.z * cos(radianY) * cos(radianX) + followOffset.x;
+	position.y = targetPos.y + followOffset.z * sin(radianX) + followOffset.y;
+	position.z = targetPos.z + followOffset.z * sin(radianY) * cos(radianX);*/
 #pragma region OLD
 	/*Matrix4 yawMat = Matrix4::Rotation(h, Vector3(0, 1, 0));
 	Matrix4 pitchMat = Matrix4::Rotation(v, yawMat * Vector3(-1, 0, 0));
