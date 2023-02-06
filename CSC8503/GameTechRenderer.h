@@ -29,10 +29,17 @@ namespace NCL {
 		protected:
 
 			void SetupStuffs();
+			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 
 			void RenderFrame()	override;
+
+			void PresentScene();
+
+			void DrawMinimap();
+
+			void DrawMainScene();
 
 			OGLShader*		defaultShader;
 
@@ -90,6 +97,14 @@ namespace NCL {
 			size_t textCount;
 
 			bool minimapEnabled = true;
+
+			GLuint sceneFBO;
+			GLuint sceneTexture;
+			void GenerateSceneFBO(int width, int height);
+
+			GLuint minimapFBO;
+			GLuint minimapTexture;
+			void GenerateMinimapFBO(int width, int height);
 		};
 	}
 }
