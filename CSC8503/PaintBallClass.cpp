@@ -95,7 +95,7 @@ void PaintBallClass::DrawTrajectory(float force)
 	{
 		float deltaTime = singlePointTime * i;
 		float x			= velocity.x * deltaTime;
-		float y			= velocity.y * deltaTime - 0.5f * 9.8 * deltaTime * deltaTime;
+		float y			= velocity.y * deltaTime - (0.5f * 9.8 * deltaTime * deltaTime);
 		float z		    = velocity.z * deltaTime;
 		position.x	   += x;
 		position.y	   += y;
@@ -104,9 +104,10 @@ void PaintBallClass::DrawTrajectory(float force)
 		if (!bullet[i])
 		{
 			bullet[i] = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.1, 0.1f, team);
+			bullet[i]->GetRigidbody()->setIsActive(false);
 		}
 		bullet[i]->SetPosition(position.x, position.y, position.z);
-		bullet[i]->GetRigidbody()->setMass(0);
+		bullet[i]->GetRigidbody()->setMass(0.1);
 	}
 }
 
@@ -116,7 +117,7 @@ void PaintBallClass::HideTrajectory()
 	{
 		if (bullet[i])
 		{
-			bullet[i]->SetPosition(Vector3(-100 * i, -100, -100));
+			bullet[i]->SetPosition(Vector3(-100, -100, -100));
 		}
 	}
 }
