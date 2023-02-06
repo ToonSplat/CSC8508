@@ -25,7 +25,9 @@ HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, react
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
-	//GetCollider()->setIsTrigger(true);
+
+	GetCollider()->setIsTrigger(true);
+
 
 	GetRigidbody()->setUserData(this);
 

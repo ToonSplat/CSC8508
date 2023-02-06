@@ -30,6 +30,7 @@ namespace NCL
 			}
 			void RemovePaintball(PaintBallProjectile* paintball) {
 				activePaintballs.erase(paintball);
+				objectsToDelete.insert(paintball);
 			}
 			std::unordered_set<PaintBallProjectile*> GetPaintballs(void) const { return activePaintballs; }
 
@@ -49,6 +50,12 @@ namespace NCL
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
 
+			void DeleteObjects() {
+				for (auto& object : objectsToDelete)
+					delete object;
+				objectsToDelete.clear();
+			}
+
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
 
@@ -62,6 +69,7 @@ namespace NCL
 			std::vector<ToonGameObject*> gameObjects;
 			std::unordered_set<PaintBallProjectile*> activePaintballs;
 			std::unordered_set<HitSphere*> activeHitSpheres;
+			std::unordered_set<ToonGameObject*> objectsToDelete;
 
 			int		worldIDCounter;
 			int		worldStateCounter;
