@@ -19,14 +19,14 @@ HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, react
 	GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1.0f));
 
 	AddRigidbody();
-	GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius);
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
-	GetCollider()->setIsTrigger(true);
+	//GetCollider()->setIsTrigger(true);
 
 
 	GetRigidbody()->setUserData(this);

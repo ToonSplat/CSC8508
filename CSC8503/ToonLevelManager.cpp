@@ -5,6 +5,7 @@
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
 #include <reactphysics3d/reactphysics3d.h>
+#include "ToonGameWorld.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -18,6 +19,8 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	if (!LoadAssets()) return;
 
 	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), 1.0f);
+	axisObject->GetRigidbody()->setUserData(axisObject);
+	ToonGameWorld::Get()->AddPaintableObject(axisObject);
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
@@ -146,9 +149,9 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 }
 
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
 {
-	ToonGameObject* cube = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
+	PaintableObject* cube = new PaintableObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -171,7 +174,10 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	cube->SetCollider(cubeBoxShape);
 	cube->GetCollider()->getMaterial().setBounciness(0.1f);
 
+	//cube->GetRigidbody()->setUserData(ToonGameWorld::Get());
+
 	ToonGameWorld::Get()->AddGameObject(cube);
+	//ToonGameWorld::Get()->AddPaintableObject(cube);
 
 	return cube;
 }

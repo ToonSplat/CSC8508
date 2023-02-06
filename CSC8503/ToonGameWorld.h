@@ -39,8 +39,25 @@ namespace NCL
 			}
 			void RemoveHitSphere(HitSphere* hitSphere) {
 				activeHitSpheres.erase(hitSphere);
+				objectsToDelete.insert(hitSphere);
 			}
 			std::unordered_set<HitSphere*> GetHitSpheres(void) const { return activeHitSpheres; }
+
+			void AddPaintableObject(PaintableObject* hitSphere) {
+				paintableObjects.emplace(hitSphere);
+			}
+			void RemovePaintableObject(PaintableObject* hitSphere) {
+				paintableObjects.erase(hitSphere);
+				objectsToDelete.insert(hitSphere);
+			}
+			std::unordered_set<PaintableObject*> GetPaintableObjects(void) const { 
+				return paintableObjects;
+			}
+
+			void GetGameObjects(void) const {
+				for (auto& object : gameObjects)
+					std::cout << object->GetRigidbody()->getUserData() << std::endl;
+			}
 
 			static ToonGameWorld* Get() { return instance; }
 
@@ -69,6 +86,7 @@ namespace NCL
 			std::vector<ToonGameObject*> gameObjects;
 			std::unordered_set<PaintBallProjectile*> activePaintballs;
 			std::unordered_set<HitSphere*> activeHitSpheres;
+			std::unordered_set<PaintableObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
 			int		worldIDCounter;

@@ -52,11 +52,27 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         // Check if collision involves HitSpheres 
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
             if (i == body1 || i == body2) {
-                std::cout << "HitSphere Collision" << std::endl;
-                /*if ((PaintableObject*)body1) {
-                    PaintableObject* p1 = (PaintableObject*)body1;
-                    p1->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
-                }*/
+                std::cout << "HITSPHERE COLLISION\n";
+                for (PaintableObject* p : ToonGameWorld::Get()->GetPaintableObjects()) {
+                    if (p == body1 || p == body2) {
+                        std::cout << "WITH PAINTABLE OBJECT\n";
+                        if (p == body1) {
+                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
+                            //std::cout << "Body1 is paintable" << std::endl;
+                        }
+                        else {
+                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
+                            //std::cout << "Body2 is paintable" << std::endl;
+                        }
+                        //delete the hitsphere
+                        ToonGameWorld::Get()->RemoveHitSphere(i);
+                        ToonGameWorld::Get()->RemoveGameObject(i, false);
+                        break;
+                    }
+                }
+                //std::cout << "HitSphere Collision" << std::endl;
+                //std::cout << "PO: " << ToonGameWorld::Get() << " Body1: " << body1 << " Body2 " << body2 << std::endl;
+                
             }
         }
     }
@@ -72,13 +88,13 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
         
         std::cout << "HitSphere collisions" << std::endl;
         
-        /*void* body1 = overlapPair.getBody1()->getUserData();
+        void* body1 = overlapPair.getBody1()->getUserData();
         void* body2 = overlapPair.getBody2()->getUserData();
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
             if (i == body1 || i == body2) {
                 std::cout << "HITSPHERE COLLISION\n";
                 break;
             }
-        }*/
+        }
     }
 }
