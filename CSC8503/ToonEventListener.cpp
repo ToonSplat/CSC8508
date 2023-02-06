@@ -1,6 +1,7 @@
 #include "ToonEventListener.h"
 #include "ToonGameWorld.h"
 #include "PaintBallProjectile.h"
+#include "ToonUtils.h"
 
 using namespace NCL::CSC8503;
 
@@ -43,6 +44,17 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                 break;
             }
         }
+
+        // Check if collision involves HitSpheres 
+        for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+            if (i == body1 || i == body2) {
+                std::cout << "HitSphere Collision" << std::endl;
+                /*if ((PaintableObject*)body1) {
+                    PaintableObject* p1 = (PaintableObject*)body1;
+                    p1->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
+                }*/
+            }
+        }
     }
 }
 
@@ -53,13 +65,16 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
 
         reactphysics3d::OverlapCallback::OverlapPair overlapPair = callbackData.getOverlappingPair(p);
 
-        void* body1 = overlapPair.getBody1()->getUserData();
+        
+        std::cout << "HitSphere collisions" << std::endl;
+        
+        /*void* body1 = overlapPair.getBody1()->getUserData();
         void* body2 = overlapPair.getBody2()->getUserData();
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
             if (i == body1 || i == body2) {
                 std::cout << "HITSPHERE COLLISION\n";
                 break;
             }
-        }
+        }*/
     }
 }

@@ -10,6 +10,7 @@ using namespace CSC8503;
 HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, reactphysics3d::Vector3 position, float radius /*, Weapon* weapon*/) : ToonGameObject(RP3D_World), radius(radius) {
 	lifetime = 1.5f;
 	teamColour = team->getTeamColour();
+	this->radius = radius;
 
 	GetTransform().SetPosition(position).
 		SetScale(Vector3(radius, radius, radius));
@@ -24,6 +25,7 @@ HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, react
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
+	//GetCollider()->setIsTrigger(true);
 
 	GetRigidbody()->setUserData(this);
 

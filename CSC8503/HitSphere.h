@@ -15,6 +15,7 @@ public:
 	void Update(float dt);
 
 	Vector3 GetTeamColour() const { return teamColour; }
+	float GetRadius() const { return radius; }
 
 protected:
 	float radius;
