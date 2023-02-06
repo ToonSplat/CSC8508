@@ -57,12 +57,10 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                     if (p == body1 || p == body2) {
                         std::cout << "WITH PAINTABLE OBJECT\n";
                         if (p == body1) {
-                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
-                            //std::cout << "Body1 is paintable" << std::endl;
+                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));                          
                         }
                         else {
                             p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
-                            //std::cout << "Body2 is paintable" << std::endl;
                         }
                         //delete the hitsphere
                         ToonGameWorld::Get()->RemoveHitSphere(i);
