@@ -10,12 +10,12 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) :
 	followTarget(target)
 {
 	requiredRayDistance = defaultRayDistance = 0.35f;
-	pitchOffset = 12.0f;
+	pitchOffset = -2.0f;
 	h = v = 0.0f;
 	radianX = radianY = 0.0f;
-	followOffset = Vector3(0, 0, 10.0f);
+	followOffset = Vector3(0, 2.0f, 0.0f);
 	targetOffset = Vector3(0.0f, 1.0f, 4.0f);
-	aimOffset = Vector3(0.5f, 1.0f, 2.0f);
+	aimOffset = Vector3(0.5f, 1.00f, 2.0f);
 	
 	up = Vector3(0, 1, 0);
 	right = Vector3(1, 0, 0);
@@ -92,20 +92,30 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget->GetRigidbody()->getTransform().getPosition());	
 	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);
 
-	Vector3 localOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
-	Vector3 worldOffset = finalMatrix * Vector4(localOffset, 1.0f);
+	Vector3 targetlocalPosOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
+	Vector3 targetWorldPosOffset = finalMatrix * Vector4(targetlocalPosOffset, 1.0f);
 	
-	Vector3 targetAimLocal = targetLocalPos + Vector3(0.65f, 0.75f, 0);
-	Vector3 targetAimWorld = modelMatrixWithRot * Vector4(targetAimLocal, 1.0f);
+	Vector3 targetAimLookAtLocal = targetLocalPos + Vector3(aimOffset.x, aimOffset.y, 0);
+	Vector3 targetAimLookAtWorld = modelMatrixWithRot * Vector4(targetAimLookAtLocal, 1.0f);
 
-	Debug::DrawBox(targetAimWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::GREEN, 0);
+	//Debug::DrawBox(targetAimLookAtWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::GREEN, 0);
 
-	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, targetWorldPos, up).Inverse();
+	Vector3 targetAimPosLocal = targetLocalPos + aimOffset;
+	Vector3 targetAimPosWorld = finalMatrix * Vector4(targetAimPosLocal, 1.0f);
+
+	//Debug::DrawBox(targetAimPosWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::RED, 0);
+
+	Vector3 FinalLookAt = player->IsAiming() ? targetAimLookAtWorld : targetWorldPos + followOffset;
+	Vector3 FinalPos = player->IsAiming() ? targetAimPosWorld : targetWorldPosOffset;
+
+	//position = FinalPos;
+	position = Lerp(position, FinalPos, dt * 20.0f);
+
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
 	Quaternion q(viewMatrix);
-	pitch = q.ToEuler().x;
+	pitch = q.ToEuler().x + pitchOffset;
 	yaw = q.ToEuler().y;
 
-	position = Lerp(position, worldOffset, dt * 10.0f);
 
 #pragma region From Unity Tutorial
 	/*float cYaw = lookEuler.y;

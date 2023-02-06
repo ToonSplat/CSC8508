@@ -20,7 +20,7 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), 1.0f);
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+	//Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
 	LoadLevel();
 }

@@ -144,7 +144,7 @@ void GameTechRenderer::RenderFrame() {
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	//RenderImGUI();
+	RenderImGUI();
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderImGUI()
