@@ -17,6 +17,10 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         // Get the contact pair 
         CollisionCallback::ContactPair contactPair = callbackData.getContactPair(p);
 
+        // Check item not yet deleted
+        if (!contactPair.getBody1() || !contactPair.getBody2())
+            continue;
+
         // For each contact point of the contact pair 
         for (reactphysics3d::uint c = 0; c < contactPair.getNbContactPoints(); c++) {
 

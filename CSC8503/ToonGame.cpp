@@ -53,6 +53,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	{
 		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
 		accumulator -= timeStep;
+		world->DeleteObjects();
 	}
   
 	levelManager->Update(dt);

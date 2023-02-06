@@ -30,8 +30,11 @@ namespace NCL::CSC8503
 		reactphysics3d::Collider* GetCollider() const { return collider; };
 		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape);
 
-		reactphysics3d::CollisionShape* GetCollisionShape() const { return collisionShape; };
-		void SetCollisionShape(reactphysics3d::CollisionShape* RP3D_CollisionShape) { collisionShape = RP3D_CollisionShape; }
+		reactphysics3d::SphereShape* GetCollisionShapeSphere() const { return collisionShapeSphere; };
+		void SetCollisionShape(reactphysics3d::SphereShape* RP3D_CollisionShape) { collisionShapeSphere = RP3D_CollisionShape; }
+
+		reactphysics3d::BoxShape* GetCollisionShapeBox() const { return collisionShapeBox; };
+		void SetCollisionShape(reactphysics3d::BoxShape* RP3D_CollisionShape) { collisionShapeBox = RP3D_CollisionShape; }
 
 		void SetPosition(const reactphysics3d::Vector3& newPos);
 		void SetPosition(const Vector3& newPos);
@@ -56,7 +59,8 @@ namespace NCL::CSC8503
 		ToonTransform transform;
 		ToonRenderObject* renderObject;
 		reactphysics3d::RigidBody* rigidBody;
-		reactphysics3d::CollisionShape* collisionShape;
+		reactphysics3d::BoxShape* collisionShapeBox;
+		reactphysics3d::SphereShape* collisionShapeSphere;
 		reactphysics3d::Collider* collider;		
 
 	private:
