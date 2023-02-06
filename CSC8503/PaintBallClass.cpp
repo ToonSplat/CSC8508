@@ -71,9 +71,9 @@ void PaintBallClass::Update(float dt) {
 	}
 
 
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT) && isIdle)
+	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
 	{
-		DrawTrajectory(10);
+		DrawTrajectory(10);	//250->10
 	}
 	else
 	{
@@ -91,6 +91,7 @@ void PaintBallClass::DrawTrajectory(float force)
 	float flightDurartion				= (2 * velocity.y) / 9.8;
 	float singlePointTime				= flightDurartion / trajectoryPoints;
 
+	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
 	for (int i = 0; i < trajectoryPoints; i++)
 	{
 		float deltaTime = singlePointTime * i;
@@ -103,11 +104,10 @@ void PaintBallClass::DrawTrajectory(float force)
 
 		if (!bullet[i])
 		{
-			bullet[i] = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.1, 0.1f, team);
+			bullet[i] = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.1f, 2.5f, team);
 			bullet[i]->GetRigidbody()->setIsActive(false);
 		}
 		bullet[i]->SetPosition(position.x, position.y, position.z);
-		bullet[i]->GetRigidbody()->setMass(0.1);
 	}
 }
 
@@ -171,7 +171,6 @@ void PaintBallClass::FireBullet()
 
 	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 2.5f, team);
 	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
-
 }
 
 //void PaintBallClass::CreateBullet()
