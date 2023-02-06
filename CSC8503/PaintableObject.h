@@ -19,8 +19,6 @@ namespace NCL {
 
 		private:
 			std::deque<ImpactPoint> impactPoints;
-			std::deque<int> notImpactPoints;
-			int PLEASE_BE_FIVE;
 		};
 	}
 }

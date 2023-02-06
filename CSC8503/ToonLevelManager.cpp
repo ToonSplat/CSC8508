@@ -174,10 +174,10 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 	cube->SetCollider(cubeBoxShape);
 	cube->GetCollider()->getMaterial().setBounciness(0.1f);
 
-	//cube->GetRigidbody()->setUserData(ToonGameWorld::Get());
+	cube->GetRigidbody()->setUserData(cube);
 
 	ToonGameWorld::Get()->AddGameObject(cube);
-	//ToonGameWorld::Get()->AddPaintableObject(cube);
+	ToonGameWorld::Get()->AddPaintableObject(cube);
 
 	return cube;
 }
