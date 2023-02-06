@@ -110,6 +110,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 
 	//position = FinalPos;
 	position = Lerp(position, FinalPos, dt * 20.0f);
+	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);
 
 	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
 	Quaternion q(viewMatrix);

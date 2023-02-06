@@ -49,6 +49,8 @@ namespace NCL
 			Vector3 _back;
 			Vector3 _right;
 			Vector3 lookEuler;
+
+			Vector3 refVel;
 		};
 	}
 }
