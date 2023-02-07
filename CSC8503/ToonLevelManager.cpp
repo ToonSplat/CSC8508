@@ -5,6 +5,7 @@
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
 #include <reactphysics3d/reactphysics3d.h>
+#include "ToonGameWorld.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -18,6 +19,8 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	if (!LoadAssets()) return;
 
 	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), 1.0f);
+	axisObject->GetRigidbody()->setUserData(axisObject);
+	ToonGameWorld::Get()->AddPaintableObject(axisObject);
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
@@ -37,35 +40,7 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
-	//if (axisObject)
-		//std::cout << "Position: " << axisObject->GetRigidbody()->getTransform().getPosition().x << ", " << axisObject->GetRigidbody()->getTransform().getPosition().y << ", " << axisObject->GetRigidbody()->getTransform().getPosition().z << std::endl;
-
-	if (axisObject)
-	{
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N))
-		{
-			axisObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1000.0f, 0));
-			axisObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
-		}
-
-		static bool scaled = false;
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M))
-		{
-			axisObject->SetPosition(reactphysics3d::Vector3(0, 40, 0));
-			axisObject->SetOrientation(Vector3(0.0f, 0.0f, 0.0f));
-			scaled = !scaled;
-			axisObject->SetScale(scaled ? Vector3(1, 1, 1) : Vector3(4, 1, 1));
-			//axisObject->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(90.0f, 0.0f, 0.0f));
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::B))
-		{
-			Vector3 end = ToonGameWorld::Get()->GetMainCamera()->GetPosition() + ToonGameWorld::Get()->GetMainCamera()->GetForward() * 4.0f;
-			axisObject->SetPosition(end);
-			axisObject->GetRigidbody()->setLinearVelocity(reactphysics3d::Vector3(0, 0, 0));
-		}		
-		//ToonGameWorld::Get()->GetMainCamera()->GetPosition();
-	}
+	
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
@@ -174,9 +149,9 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 }
 
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass)
 {
-	ToonGameObject* cube = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
+	PaintableObject* cube = new PaintableObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -199,7 +174,10 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	cube->SetCollider(cubeBoxShape);
 	cube->GetCollider()->getMaterial().setBounciness(0.1f);
 
+	cube->GetRigidbody()->setUserData(cube);
+
 	ToonGameWorld::Get()->AddGameObject(cube);
+	ToonGameWorld::Get()->AddPaintableObject(cube);
 
 	return cube;
 }
@@ -253,7 +231,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) 
+Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
 	/*Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 
@@ -263,7 +241,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position)
 
 	player->GetRenderObject()->SetMesh(charMesh);*/
 
-	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
+	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 
 	return player;

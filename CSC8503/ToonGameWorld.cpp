@@ -11,6 +11,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+	eventListener = new ToonEventListener(physicsWorld);
 
 	mainCamera = new Camera();
 	instance = this;
@@ -19,11 +20,13 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
+	delete eventListener;
 }
 
 void NCL::CSC8503::ToonGameWorld::Clear()
 {
 	gameObjects.clear();
+	activePaintballs.clear();
 	worldIDCounter = 0;
 	worldStateCounter = 0;
 }
@@ -31,6 +34,9 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
+		delete i;
+	}
+	for (auto& i : activePaintballs) {
 		delete i;
 	}
 	

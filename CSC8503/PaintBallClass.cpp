@@ -10,7 +10,7 @@ using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(){}
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist,
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist,
 	ShaderBase* basicShader, MeshGeometry* sphereMesh) :
 	ammoInUse(_maxAmmoInUse), 
 	ammoHeld(_maxAmmoHeld), 
@@ -64,7 +64,7 @@ void PaintBallClass::Update(float dt) {
 
 void PaintBallClass::Shoot(float dt) {
 	shootTimer += dt;
-	if (shootTimer >= fireRate && ammoInUse > 0) 
+	if (/*shootTimer >= fireRate &&*/ ammoInUse > 0) 
 	{
 		// Shoot Projectile here
 		FireBullet();
@@ -109,8 +109,7 @@ void PaintBallClass::FireBullet()
 	orientation.normalize();
 	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0);
 
-	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 10.0f);
-	bullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
+	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 2.5f, team);
 	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
 
 }

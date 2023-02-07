@@ -4,14 +4,14 @@
 
 using namespace NCL::CSC8503;
 
-PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, const reactphysics3d::Vector3& position,
-	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize) : ToonGameObject(RP3D_World), impactSize(_impactSize)
-{
+PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, const reactphysics3d::Vector3& position, 
+	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* _team) : ToonGameObject(RP3D_World), impactSize(_impactSize), team(_team) {
 	GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(Vector3(radius, radius, radius));
 
 	SetRenderObject(new ToonRenderObject(&GetTransform(), ToonLevelManager::Get()->GetMesh("sphere"), ToonLevelManager::Get()->GetTexture("basic"), ToonLevelManager::Get()->GetShader("basic")));
+	GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1.0f));
 
 	AddRigidbody();
 	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
@@ -24,9 +24,11 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
+	GetRigidbody()->setUserData(this);
+
 	ToonGameWorld::Get()->AddGameObject(this);
+	ToonGameWorld::Get()->AddPaintball(this);
 }
 
-NCL::CSC8503::PaintBallProjectile::~PaintBallProjectile()
-{
+PaintBallProjectile::~PaintBallProjectile(){
 }

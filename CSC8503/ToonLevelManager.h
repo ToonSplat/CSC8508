@@ -22,7 +22,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			Player* AddPlayerToWorld(const Vector3& position);
+			Player* AddPlayerToWorld(const Vector3& position, Team* team);
 			
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
@@ -78,7 +78,7 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			ToonGameObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
+			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, float mass = 1.0f);
 			ToonGameObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex);
 
@@ -90,7 +90,7 @@ namespace NCL
 
 			GameTechRenderer& gameRenderer;			
 
-			ToonGameObject* axisObject;
+			PaintableObject* axisObject;
 
 			static ToonLevelManager* instance;
 		};
