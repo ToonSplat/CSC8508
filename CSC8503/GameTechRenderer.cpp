@@ -37,7 +37,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
-	GenerateMinimapFBO(windowWidth, windowWidth);
+	GenerateMinimapFBO(windowWidth, windowHeight);
 
 	glClearColor(1, 1, 1, 1);
 
@@ -53,11 +53,17 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
 	skyboxMesh->UploadToGPU();
 
-	quad = new OGLMesh();
-	quad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
-	quad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
-	quad->SetVertexIndices({ 0,1,2,2,3,0 });
-	quad->UploadToGPU();
+	fullScreenQuad = new OGLMesh();
+	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
+	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	fullScreenQuad->UploadToGPU();
+	
+	minimapQuad = new OGLMesh();
+	minimapQuad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
+	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	minimapQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	minimapQuad->UploadToGPU();
 	
 
 	LoadSkybox();
@@ -141,8 +147,8 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 	glGenFramebuffers(1, &minimapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
 
-	glGenTextures(1, &minimapTexture);
-	glBindTexture(GL_TEXTURE_2D, minimapTexture);
+	glGenTextures(1, &minimapColourTexture);
+	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
@@ -150,10 +156,24 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapTexture, 0);
-	glObjectLabel(GL_TEXTURE, minimapTexture, -1, "Minimap Texture");
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
+	glObjectLabel(GL_TEXTURE, minimapColourTexture, -1, "Minimap Texture");
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapTexture) {
+	glGenTextures(1, &minimapDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, minimapDepthTexture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, minimapDepthTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, minimapDepthTexture, 0);
+
+	glObjectLabel(GL_TEXTURE, minimapDepthTexture, -1, "Scene Depth Texture");
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapColourTexture || !minimapColourTexture) {
 		return;
 	}
 
@@ -206,11 +226,11 @@ void GameTechRenderer::RenderFrame() {
 	
 
 	DrawMainScene();
-	if (minimapEnabled)
-	{
+	//if (minimapEnabled)
+	//{
 		
 		DrawMinimap();
-	}
+	//}
 	glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 	PresentScene();
 	glPopDebugGroup();
@@ -251,11 +271,11 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
 
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
-
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	//ADD STENCIL BUFFER??
 	RenderMinimap();
 	glDisable(GL_BLEND);
@@ -302,6 +322,11 @@ void GameTechRenderer::PresentScene()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
+	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
+	glDisable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	BindShader(textureShader);
 	Matrix4 identityMatrix = Matrix4();
 	
@@ -316,9 +341,21 @@ void GameTechRenderer::PresentScene()
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
-	BindMesh(quad);
+	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.5,-0.5, 0)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+
+	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+	BindMesh(minimapQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	
 	
 }

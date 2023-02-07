@@ -104,10 +104,12 @@ namespace NCL {
 			void GenerateSceneFBO(int width, int height);
 
 			GLuint minimapFBO;
-			GLuint minimapTexture;
+			GLuint minimapColourTexture;
+			GLuint minimapDepthTexture;
 			void GenerateMinimapFBO(int width, int height);
 
-			OGLMesh* quad;
+			OGLMesh* fullScreenQuad;
+			OGLMesh* minimapQuad;
 		};
 	}
 }
