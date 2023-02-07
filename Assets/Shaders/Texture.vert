@@ -5,7 +5,7 @@ uniform mat4 viewMatrix;
 uniform mat4 projMatrix;
 
 in  vec3 position;
-in  vec2 texCoord;
+layout(location=2) in vec2 texCoord;
 
 out Vertex {
 	vec2 texCoord;

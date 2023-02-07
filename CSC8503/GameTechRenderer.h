@@ -13,7 +13,6 @@ namespace NCL {
 	namespace CSC8503 {
 		class RenderObject;
 		class ToonRenderObject;
-
 		class GameTechRenderer : public OGLRenderer	{
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
@@ -65,6 +64,7 @@ namespace NCL {
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
+			OGLShader* textureShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -99,12 +99,15 @@ namespace NCL {
 			bool minimapEnabled = true;
 
 			GLuint sceneFBO;
-			GLuint sceneTexture;
+			GLuint sceneColourTexture;
+			GLuint sceneDepthTexture;
 			void GenerateSceneFBO(int width, int height);
 
 			GLuint minimapFBO;
 			GLuint minimapTexture;
 			void GenerateMinimapFBO(int width, int height);
+
+			OGLMesh* quad;
 		};
 	}
 }

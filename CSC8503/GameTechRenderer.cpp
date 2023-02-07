@@ -7,6 +7,7 @@
 #include "TextureLoader.h"
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
+
 using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
@@ -32,10 +33,11 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	debugShader = new OGLShader("debug.vert", "debug.frag");
 	shadowShader = new OGLShader("shadow.vert", "shadow.frag");
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
+	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
-	GenerateMinimapFBO(windowWidth / 4, windowWidth / 4);
+	GenerateMinimapFBO(windowWidth, windowWidth);
 
 	glClearColor(1, 1, 1, 1);
 
@@ -50,6 +52,13 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
 	skyboxMesh->UploadToGPU();
+
+	quad = new OGLMesh();
+	quad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
+	quad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	quad->SetVertexIndices({ 0,1,2,2,3,0 });
+	quad->UploadToGPU();
+	
 
 	LoadSkybox();
 
@@ -83,6 +92,72 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
 	glDrawBuffer(GL_NONE);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GameTechRenderer::GenerateSceneFBO(int width, int height)
+{
+	glGenFramebuffers(1, &sceneFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+
+	glGenTextures(1, &sceneColourTexture);
+	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
+	glObjectLabel(GL_TEXTURE, sceneColourTexture, -1, "Scene Colour Texture");
+
+	glGenTextures(1, &sceneDepthTexture);
+	glBindTexture(GL_TEXTURE_2D, sceneDepthTexture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, sceneDepthTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, sceneDepthTexture, 0);
+
+	glObjectLabel(GL_TEXTURE, sceneDepthTexture, -1, "Scene Depth Texture");
+
+
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !sceneColourTexture || !sceneColourTexture) {
+		return;
+	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void GameTechRenderer::GenerateMinimapFBO(int width, int height)
+{
+	glGenFramebuffers(1, &minimapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
+
+	glGenTextures(1, &minimapTexture);
+	glBindTexture(GL_TEXTURE_2D, minimapTexture);
+
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapTexture, 0);
+	glObjectLabel(GL_TEXTURE, minimapTexture, -1, "Minimap Texture");
+
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapTexture) {
+		return;
+	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -128,13 +203,17 @@ void GameTechRenderer::LoadSkybox() {
 }
 
 void GameTechRenderer::RenderFrame() {
+	
 
 	DrawMainScene();
 	if (minimapEnabled)
 	{
+		
 		DrawMinimap();
 	}
+	glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 	PresentScene();
+	glPopDebugGroup();
 	
 
 }
@@ -145,9 +224,10 @@ void GameTechRenderer::RenderFrame() {
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
-
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	BuildObjectList();
 	SortObjectList();
 	RenderShadowMap();
@@ -171,6 +251,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapTexture, 0);
 
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
@@ -217,8 +298,29 @@ void GameTechRenderer::BuildObjectList() {
 
 void GameTechRenderer::PresentScene()
 {
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	BindShader(textureShader);
+	Matrix4 identityMatrix = Matrix4();
+	
+	int projLocation = glGetUniformLocation(textureShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(textureShader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+	BindMesh(quad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	
 }
 
 void GameTechRenderer::SortObjectList() {
@@ -271,7 +373,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	glViewport(0, 0, windowWidth, windowHeight);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 
 	glCullFace(GL_BACK);
 }
@@ -415,8 +517,8 @@ void GameTechRenderer::RenderCamera() {
 void GameTechRenderer::RenderMinimap()
 {
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
 
 	OGLShader* activeShader = minimapShader;
 
@@ -678,52 +780,4 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 	}
 }
 
-void GameTechRenderer::GenerateSceneFBO(int width, int height)
-{
-	glGenFramebuffers(1, &sceneFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 
-	glGenTextures(1, &sceneTexture);
-	glBindTexture(GL_TEXTURE_2D, sceneTexture);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneTexture, 0);
-	glObjectLabel(GL_TEXTURE, sceneTexture, -1, "Scene Texture");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !sceneTexture) {
-		return;
-	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void GameTechRenderer::GenerateMinimapFBO(int width, int height)
-{
-	glGenFramebuffers(1, &minimapFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
-
-	glGenTextures(1, &minimapTexture);
-	glBindTexture(GL_TEXTURE_2D, minimapTexture);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapTexture, 0);
-	glObjectLabel(GL_TEXTURE, minimapTexture, -1, "Scene Texture");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapTexture) {
-		return;
-	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}

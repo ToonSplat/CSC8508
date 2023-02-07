@@ -22,7 +22,8 @@ NCL::CSC8503::ToonGame::ToonGame()
 	
 	followCamera = new ToonFollowCamera(*player);
 	minimapCamera = new ToonMinimapCamera(*player);
-	world->SetMainCamera(minimapCamera);
+	world->SetMainCamera(followCamera);
+	world->SetMinimapCamera(minimapCamera);
 
 	accumulator = 0.0f;
 	showCursor = false;
@@ -46,21 +47,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->GetMainCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 	player->Update(dt);
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M)) {
-
-		bool minimapVisible = renderer->IsMinimapVisible();
-		// this section is not needed!
-		if (minimapVisible) {
-			world->SetMainCamera(followCamera);
-		}
-		else {
-			world->SetMainCamera(minimapCamera);
-		}
-
-		renderer->ShowMinimap(!minimapVisible);
-
-	}
 
 	renderer->Update(dt);
 
