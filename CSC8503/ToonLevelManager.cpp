@@ -22,7 +22,8 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	//Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
-	LoadLevel();
+	//LoadLevel();
+	LoadPrototypeLevel();
 }
 
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
@@ -169,6 +170,42 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(48.0f, 1.5f, -28.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"));
 	
 	AddGridWorld(Axes(XYZ), Vector3(6, 4, 2), 2.0f, Vector3(12.0f, 1.5f, -60.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"));
+
+	return true;
+}
+
+bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
+{
+	Vector3 floorScale = Vector3(40.0f, 0.5f, 40.0f);
+	AddCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(160.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0, 80.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0, -80.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+
+	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 40.0f);
+	Vector3 wallScaleZ = Vector3(40.0f, 20.0f, 0.5f);
+	AddCubeToWorld(Vector3(-40.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(200.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), 0.0f);
+
+	AddCubeToWorld(Vector3(80.0f, 20.0f, 120.0f), Vector3(0, 0, 0), wallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 20.0f, -120.0f), Vector3(0, 0, 0), wallScaleZ, GetTexture("basic"), 0.0f);
+
+	Vector3 wallSmallScaleX = Vector3(0.5f, 10.0f, 40.0f);
+	Vector3 wallSmallScaleZ = Vector3(40.0f, 10.0f, 0.5f);
+	AddCubeToWorld(Vector3(0, 10.0f, -40.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(0, 10.0f, 40.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(160.0f, 10.0f, -40.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(160.0f, 10.0f, 40.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+
+	AddCubeToWorld(Vector3(120.0f, 10.0f, 80.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(40.0f, 10.0f, 80.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(40.0f, 10.0f, -80.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(120.0f, 10.0f, -80.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+
+	Vector3 bridgeScaleX = Vector3(40.0f, 0.5f, 5.0f);
+	Vector3 bridgeScaleZ = Vector3(5.0f, 0.5f, 40.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), 0.0f);
 
 	return true;
 }

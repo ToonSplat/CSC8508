@@ -59,6 +59,7 @@ namespace NCL
 			bool LoadTexture(TextureBase** tex, const std::string& textureFileName, const bool& invert = false);
 			bool LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader);
 			bool LoadLevel();
+			bool LoadPrototypeLevel();
 
 			Axes selectedAxes = Axes::None;
 
