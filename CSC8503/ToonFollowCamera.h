@@ -41,14 +41,9 @@ namespace NCL
 			float requiredRayDistance, defaultRayDistance;
 			Vector3 followOffset, targetOffset, aimOffset;
 			Vector3 up, right;
-			float h, v;
-			float radianX, radianY;
 
-			Matrix4 _originTransform;
-			Quaternion _rotY, _rotX;
-			Vector3 _back;
-			Vector3 _right;
-			Vector3 lookEuler;
+			float h, v;
+			bool hittingWall;
 
 			Vector3 refVel;
 		};

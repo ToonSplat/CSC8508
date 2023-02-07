@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
+#include "Window.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -55,6 +56,20 @@ void NCL::CSC8503::ToonGameWorld::RemoveGameObject(ToonGameObject* o, bool andDe
 
 void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Q))
+	{
+		showCursor = !showCursor;
+		if (showCursor)
+		{
+			Window::GetWindow()->ShowOSPointer(true);
+			Window::GetWindow()->LockMouseToWindow(false);
+		}
+		else
+		{
+			Window::GetWindow()->ShowOSPointer(false);
+			Window::GetWindow()->LockMouseToWindow(true);
+		}
+	}
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)

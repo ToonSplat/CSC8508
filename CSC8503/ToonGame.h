@@ -19,7 +19,7 @@ namespace NCL
 			ToonGame();
 			~ToonGame();
 
-			virtual void UpdateGame(float dt);			
+			virtual void UpdateGame(float dt);
 
 		protected:
 			void UpdateCamera(float dt);

@@ -30,6 +30,8 @@ namespace NCL
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
 
+			bool ShowCursor() const { return showCursor; }
+
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
 
@@ -46,6 +48,7 @@ namespace NCL
 
 		private:
 			static ToonGameWorld* instance;
+			bool showCursor;
 		};
 	}
 }

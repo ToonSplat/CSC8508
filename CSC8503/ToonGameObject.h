@@ -5,6 +5,13 @@
 
 namespace NCL::CSC8503
 {
+	enum ToonCollisionLayer
+	{
+		Nothing = 0,
+		Default = 1,
+		Character = 2
+	};
+
 	class ToonGameObject
 	{
 	public:
@@ -47,6 +54,24 @@ namespace NCL::CSC8503
 
 		void SetWorldID(int newID) { worldID = newID; }
 		int	GetWorldID() const { return worldID; }
+
+		int GetColliderLayer() const 
+		{ 
+			if (collider)
+				return collider->getCollisionCategoryBits();
+
+			return ToonCollisionLayer::Nothing;
+		}
+
+		void SetColliderLayer(ToonCollisionLayer newLayer) 
+		{ 
+			if (collider) collider->setCollisionCategoryBits(newLayer);
+		}
+
+		void SetColliderLayerMask(ToonCollisionLayer newMask)
+		{
+			if (collider) collider->setCollideWithMaskBits(newMask);
+		}
 
 	protected:
 		bool isActive;

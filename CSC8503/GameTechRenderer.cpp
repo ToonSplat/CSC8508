@@ -20,7 +20,7 @@ using namespace CSC8503;
 
 #define SHADOWSIZE 4096
 
-Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
+Matrix4 biasMatrix = Matrix4::Translation(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f));
 ToonFollowCamera* followCamera;
 
 GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
