@@ -1,5 +1,5 @@
 #include "NetworkObject.h"
-#include "./enet/enet.h"
+#include <enet/enet.h>
 using namespace NCL;
 using namespace CSC8503;
 
