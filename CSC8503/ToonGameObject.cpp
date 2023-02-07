@@ -1,5 +1,6 @@
 #include "ToonGameObject.h"
 #include "ToonRenderObject.h"
+#include "ToonGameWorld.h"
 
 NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World) : physicsWorld(RP3D_World)
 {
@@ -8,17 +9,24 @@ NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_
 
 	rigidBody = nullptr;
 	renderObject = nullptr;
-	collisionShape = nullptr;
+	collisionShapeBox = nullptr;
+	collisionShapeSphere = nullptr;
 	collider = nullptr;
 }
 
 NCL::CSC8503::ToonGameObject::~ToonGameObject()
 {
-	physicsWorld.destroyRigidBody(rigidBody);
-
+	if (rigidBody) {
+		if (collider)
+			rigidBody->removeCollider(collider); // Not clear if need to delete Collider seperately, doing for safety
+		physicsWorld.destroyRigidBody(rigidBody);
+	}
+	if(collisionShapeSphere)
+		ToonGameWorld::Get()->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
+	if(collisionShapeBox)
+		ToonGameWorld::Get()->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
+	
 	delete renderObject;
-	delete collisionShape;
-	delete collider;
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()
