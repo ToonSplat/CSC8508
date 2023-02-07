@@ -7,13 +7,14 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
+#include "PushdownState.h"
 
 namespace NCL
 {
 	namespace CSC8503
 	{
 		class ToonFollowCamera;
-		class ToonGame
+		class ToonGame : public PushdownState
 		{
 		public:
 			ToonGame();
@@ -24,6 +25,7 @@ namespace NCL
 		protected:
 			void UpdateCamera(float dt);
 			void UpdateTesting();
+			PushdownState::PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 
 		protected:
 			ToonFollowCamera* followCamera;

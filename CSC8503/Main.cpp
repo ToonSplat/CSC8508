@@ -26,6 +26,7 @@
 #include "BehaviourSelector.h"
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
+#include "ToonMainMenu.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -232,8 +233,8 @@ class IntroScreen : public PushdownState {
 	}
 };
 
-void TestPushdownAutomata(Window* w) {
-	PushdownMachine machine(new IntroScreen());
+void TestPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
+	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (!machine.Update(dt)) {
@@ -264,6 +265,9 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
+
+	ToonMainMenu* mainMenu = new ToonMainMenu(w);
+	TestPushdownAutomata(w, mainMenu);
 
 	//TutorialGame* g = new TutorialGame();
 	ToonGame* g = new ToonGame();

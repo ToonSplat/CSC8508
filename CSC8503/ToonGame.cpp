@@ -30,7 +30,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
-	delete renderer;
+	//delete renderer;	//TODO: - Need to fix. Commented for now in order to stop crash
 	delete baseWeapon;
 	delete levelManager;
 }
@@ -112,4 +112,18 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
 		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
 	}
+}
+
+PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
+		return PushdownResult::Pop;
+	if (dt > 0.1f)
+	{
+		std::cout << "Skipping large time delta" << std::endl;
+		return PushdownResult::NoChange; //must have hit a breakpoint or something to have a 1 second frame time!
+	}
+	UpdateGame(dt);
+
+	return PushdownResult::NoChange;
 }

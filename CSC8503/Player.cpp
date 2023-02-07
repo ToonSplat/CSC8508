@@ -69,8 +69,16 @@ void Player::Update(float dt)
 	
 	Quaternion newRotNCL = Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0);
 	reactphysics3d::Quaternion newRot(newRotNCL.x, newRotNCL.y, newRotNCL.z, newRotNCL.w);
+
+	//if (dt > 0.1f)
+	//{
+	//	std::cout << "Skipping large time delta" << std::endl;
+	//	return; //must have hit a breakpoint or something to have a 1 second frame time!
+	//}
+
 	reactphysics3d::Transform newRotTransform(GetRigidbody()->getTransform().getPosition(), reactphysics3d::Quaternion::slerp(GetRigidbody()->getTransform().getOrientation(), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 	GetRigidbody()->setTransform(newRotTransform);
+
 
 	if (isMoving)
 		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
