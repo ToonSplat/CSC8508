@@ -600,6 +600,7 @@ void GameTechRenderer::RenderMinimap()
 	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
 	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
 	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
+	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
 
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
@@ -613,6 +614,9 @@ void GameTechRenderer::RenderMinimap()
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
+			glUniform3fv(objectPosLocation, 1, objPos.array);
 		
 
 			Quaternion rot;
