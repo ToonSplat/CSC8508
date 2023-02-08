@@ -12,11 +12,10 @@ namespace NCL {
         class PaintBallClass {
         public:
             PaintBallClass();
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, int _fireRate, int _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
             ~PaintBallClass();
 
             void Update (float dt);
-            void UpdateTargetObject(ToonGameObject* targetObject);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
@@ -32,11 +31,17 @@ namespace NCL {
             float fireRate; // time between shot
             float reloadTime; // time between reloads
             float maxShootDistance; // max dist can be shot
+            PaintBallProjectile* bullet[20];    //Trajectory
+            int trajectoryPoints = 20;          //Trajectory
 
             void Shoot(float dt);
             void Reload(float dt);
             void PickUpAmmo(int amt);
-            void CreateBullet();
+            void FireBullet();
+
+            float GetYCoordinate(int x, int initialVelocity);
+            void DrawTrajectory(float force);   //Trajectory
+            void HideTrajectory();              //Trajectory
 
             Team* team;
 
@@ -46,7 +51,6 @@ namespace NCL {
             ShaderBase* m_BasicShader;
             MeshGeometry* m_SphereMesh;
             ToonGameObject* owningObject;
-            ToonGameObject* m_TargetObjet;
 
             enum statusTypes {
                 isFiring,

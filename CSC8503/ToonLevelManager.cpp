@@ -5,6 +5,7 @@
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
 #include <reactphysics3d/reactphysics3d.h>
+#include "ToonGameWorld.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -17,7 +18,9 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	instance = this;
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), basicTexPurple, Vector4(0,0,0,0), 1.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Vector4(0,0,0,0), 1.0f);
+	axisObject->GetRigidbody()->setUserData(axisObject);
+	ToonGameWorld::Get()->AddPaintableObject(axisObject);
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
@@ -27,62 +30,33 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 {
-	delete cubeMesh;
-	delete charMesh;
-	delete sphereMesh;
-	delete checkTex;
-	delete basicTex;
-	delete basicTexPurple;
-	delete basicShader;
+	for (auto& mesh : meshMap)
+		delete mesh.second;
+	for (auto& texture : textureMap)
+		delete texture.second;
+	for (auto& shader : shaderMap)
+		delete shader.second;
 }
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
-	//if (axisObject)
-		//std::cout << "Position: " << axisObject->GetRigidbody()->getTransform().getPosition().x << ", " << axisObject->GetRigidbody()->getTransform().getPosition().y << ", " << axisObject->GetRigidbody()->getTransform().getPosition().z << std::endl;
-
-	if (axisObject)
-	{
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::N))
-		{
-			axisObject->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1000.0f, 0));
-			axisObject->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
-		}
-
-		static bool scaled = false;
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M))
-		{
-			axisObject->SetPosition(reactphysics3d::Vector3(0, 40, 0));
-			axisObject->SetOrientation(Vector3(0.0f, 0.0f, 0.0f));
-			scaled = !scaled;
-			axisObject->SetScale(scaled ? Vector3(1, 1, 1) : Vector3(4, 1, 1));
-			//axisObject->GetTransform().SetOrientation(Quaternion::EulerAnglesToQuaternion(90.0f, 0.0f, 0.0f));
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::B))
-		{
-			Vector3 end = ToonGameWorld::Get()->GetMainCamera()->GetPosition() + ToonGameWorld::Get()->GetMainCamera()->GetForward() * 4.0f;
-			axisObject->SetPosition(end);
-			axisObject->GetRigidbody()->setLinearVelocity(reactphysics3d::Vector3(0, 0, 0));
-		}		
-		//ToonGameWorld::Get()->GetMainCamera()->GetPosition();
-	}
+	
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 {
 	//All Models
-	if (!LoadModel(&cubeMesh, "cube.msh")) return false;
-	if (!LoadModel(&charMesh, "goat.msh")) return false;
-	if (!LoadModel(&sphereMesh, "sphere.msh"));
+	if (!LoadModel(&meshMap["cube"], "cube.msh")) return false;
+	if (!LoadModel(&meshMap["goat"], "goat.msh")) return false;
+	if (!LoadModel(&meshMap["sphere"], "sphere.msh")) return false;
 
 	//All Textures
-	if (!LoadTexture(&checkTex, "checkerboard.png", false)) return false;
-	if (!LoadTexture(&basicTex, "Prefab_Grey50.png", true)) return false;
-	if (!LoadTexture(&basicTexPurple, "Prefab_Purple.png", true)) return false;
+	if (!LoadTexture(&textureMap["mesh"], "checkerboard.png", false)) return false;
+	if (!LoadTexture(&textureMap["basic"], "Prefab_Grey50.png", true)) return false;
+	if (!LoadTexture(&textureMap["basicPurple"], "Prefab_Purple.png", true)) return false;
 
 	//All Shaders
-	if (!LoadShader(&basicShader, "scene.vert", "scene.frag")) return false;
+	if (!LoadShader(&shaderMap["basic"], "scene.vert", "scene.frag")) return false;
 
 	return true;
 }
@@ -131,57 +105,57 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 
 	//Floors
 	Vector4 floorColour = Vector4(0.74, 0.76, 0.76, 1.0);
-	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(-40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, basicTex, floorColour);
-	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, basicTex, floorColour);
-	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, 0), Vector3(2, 0.5f, 2), 0.0f, basicTex, floorColour);
-	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, -80), Vector3(2, 0.5f, 2), 0.0f, basicTex, floorColour);
+	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(-40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
+	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
+	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, 0), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
+	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, -80), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
 
 	Vector4 wallColour = Vector4(0.49, 0.51, 0.51, 1.0);
 	//Walls Big
-	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(78.0f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(-42.5f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(78.0f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(-42.5f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
 
-	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, -82), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, 38), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, -82), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 5, 1), 2, Vector3(0, 2, 38), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
 
 	//Walls Small
-	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, basicTex, wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(-40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -42.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(XY), Vector3(10, 3, 1), 2, Vector3(40.0f, 2, -2.0f), Vector3(2.0f, 2.0f, 0.5f), 0.0f, GetTexture("basic"), wallColour);
 
-	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
-	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, basicTex, wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, -80.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(-2.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
+	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
 	
 	//Bridges
 	Vector4 bridgeColour = Vector4(0.83, 0.34, 0.36, 1.0);
-	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex, bridgeColour);
-	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, basicTex, bridgeColour);
+	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
+	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
 
 	//Boxes
 	Vector4 boxColour = Vector4(0.98, 0.95, 0.79, 1.0);
-	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(20.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
-	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(15.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
-	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(10.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(20.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(15.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(10.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
 
-	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-20.0f, 1.5f, -15.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
-	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-12.0f, 1.5f, -32.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
-	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-32.0f, 1.5f, -22.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-20.0f, 1.5f, -15.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-12.0f, 1.5f, -32.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(-32.0f, 1.5f, -22.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
 	
-	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(70.0f, 1.5f, -12.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
-	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(48.0f, 1.5f, -28.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple, boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(70.0f, 1.5f, -12.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
+	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(48.0f, 1.5f, -28.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
 	
-	AddGridWorld(Axes(XYZ), Vector3(6, 4, 2), 2.0f, Vector3(12.0f, 1.5f, -60.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, basicTexPurple);
+	AddGridWorld(Axes(XYZ), Vector3(6, 4, 2), 2.0f, Vector3(12.0f, 1.5f, -60.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"));
 
 	return true;
 }
 
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
 {
-	ToonGameObject* cube = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
+	PaintableObject* cube = new PaintableObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -193,8 +167,8 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	cube->GetRigidbody()->setMass(mass);
 	cube->GetRigidbody()->setIsAllowedToSleep(true);
-	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), cubeMesh, cubeTex, basicShader));
-	cube->GetRenderObject()->SetColour(minimapColour);
+	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), GetMesh("cube"), cubeTex, GetShader("basic")));
+  cube->GetRenderObject()->SetColour(minimapColour);
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
 	reactphysics3d::BoxShape* cubeBoxShape = ToonGameWorld::Get()->GetPhysicsCommon().createBoxShape(boxExtent);
@@ -205,12 +179,15 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& po
 	cube->SetCollider(cubeBoxShape);
 	cube->GetCollider()->getMaterial().setBounciness(0.1f);
 
+	cube->GetRigidbody()->setUserData(cube);
+
 	ToonGameWorld::Get()->AddGameObject(cube);
+	ToonGameWorld::Get()->AddPaintableObject(cube);
 
 	return cube;
 }
 
-ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass)
 {
 	ToonGameObject* sphere = new ToonGameObject(ToonGameWorld::Get()->GetPhysicsWorld());
 
@@ -223,9 +200,9 @@ ToonGameObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& 
 	sphere->AddRigidbody();
 	sphere->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	sphere->GetRigidbody()->setIsAllowedToSleep(true);
-
-	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), sphereMesh, sphereTex, basicShader));
-	sphere->GetRenderObject()->SetColour(minimapColour);
+	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), GetMesh("sphere"), sphereTex, GetShader("basic")));
+  sphere->GetRenderObject()->SetColour(minimapColour);
+  
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
 	sphere->SetCollisionShape(sphereShape);
 
@@ -259,7 +236,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position) 
+Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
 	/*Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
 
@@ -269,15 +246,8 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position)
 
 	player->GetRenderObject()->SetMesh(charMesh);*/
 
-	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), charMesh, basicTexPurple, basicShader));
+	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 
 	return player;
-}
-
-PaintBallProjectile* ToonLevelManager::MakeBullet(const Vector3& position) {
-	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
-	bullet->SetRenderObject(new ToonRenderObject(&bullet->GetTransform(), sphereMesh, basicTexPurple, basicShader));
-
-	return bullet;
 }

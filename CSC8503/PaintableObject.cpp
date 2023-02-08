@@ -1,7 +1,10 @@
 #include "PaintableObject.h"
 #include "ToonUtils.h"
+#include "ToonGameWorld.h"
 
 using namespace NCL::CSC8503;
+
+static int i = 0;
 
 PaintableObject::PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World) : ToonGameObject(RP3D_World) {
 }
@@ -12,9 +15,6 @@ void PaintableObject::Update(float dt) {
 
 
 void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.
-	Vector3 localPoint = point.GetImpactLocation() - ToonUtils::ConvertToNCLVector3(GetRigidbody()->getTransform().getPosition());
-	point.SetImpactLocation(localPoint);
-	
 	int impactCount = impactPoints.size();
 
 	if (impactCount < 10) {
@@ -23,5 +23,7 @@ void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with wo
 	else {
 		impactPoints.pop_front();
 		impactPoints.push_back(point);
+		
 	}
+	
 }

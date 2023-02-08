@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius) : ToonGameObject(RP3D_World) 
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius, Team* team) : ToonGameObject(RP3D_World), team(team)
 {
 	team = nullptr;
 	isAiming = false;
@@ -32,16 +32,6 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* chosenTeam) : ToonGameObject(RP3D_World) 
-{
-	team = chosenTeam;
-	isAiming = false;
-
-	moveSpeed = 20.0f;
-	rotationSpeed = 6.0f;
-	aimingSpeed = 10.0f;
-}
-
 Player::~Player() {
 	
 }
@@ -65,7 +55,6 @@ void Player::Update(float dt)
 
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
-
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 	

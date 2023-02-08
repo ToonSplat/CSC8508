@@ -15,9 +15,10 @@ NCL::CSC8503::ToonGame::ToonGame()
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
 	
+	testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
 	levelManager = new ToonLevelManager(*renderer);
-	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
-	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetBasicShader(), levelManager->GetSphereMesh());
+	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20), testTeam);
+	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 	player->SetWeapon(baseWeapon);
 	
 	followCamera = new ToonFollowCamera(*player);
@@ -54,8 +55,9 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
-		world->GetPhysicsWorld().update(timeStep);
+		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
 		accumulator -= timeStep;
+		world->DeleteObjects();
 	}
   
 	levelManager->Update(dt);
@@ -114,16 +116,4 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
 		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
 	}
-
-	/*if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::LEFT))
-	{
-		Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//BuildRayFromMouse(*world->GetMainCamera());
-
-		RayCollision closestCollision;
-		/*if (ToonGameWorld::Get()->Raycast(ray, closestCollision, true))
-		{
-			targetObject = (GameObject*)closestCollision.node;
-			Debug::Print("Click Pos: " + std::to_string(closestCollision.collidedAt.x) + ", " + std::to_string(closestCollision.collidedAt.z), Vector2(5, 85));
-		}
-	}*/
 }
