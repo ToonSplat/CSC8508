@@ -106,13 +106,13 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	int XYZ = Axes::X | Axes::Y | Axes::Z;
 
 	//Floors
-	Vector4 floorColour = Vector4(0.74, 0.76, 0.76, 1.0);
+	Vector4 floorColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(-40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(40, 0, -40), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, 0), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
 	AddGridWorld(Axes(XZ), Vector3(10, 1, 10), 2, Vector3(0, 0, -80), Vector3(2, 0.5f, 2), 0.0f, GetTexture("basic"), floorColour);
 
-	Vector4 wallColour = Vector4(0.49, 0.51, 0.51, 1.0);
+	Vector4 wallColour = Vector4(0.49f, 0.51f, 0.51f, 1.0f);
 	//Walls Big
 	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(78.0f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
 	AddGridWorld(Axes(YZ), Vector3(1, 5, 10), 2, Vector3(-42.5f, 2, -40), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
@@ -132,12 +132,12 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	AddGridWorld(Axes(YZ), Vector3(1, 3, 10), 2, Vector3(38.0f, 2, 0.0f), Vector3(0.5f, 2.0f, 2.0f), 0.0f, GetTexture("basic"), wallColour);
 	
 	//Bridges
-	Vector4 bridgeColour = Vector4(0.83, 0.34, 0.36, 1.0);
+	Vector4 bridgeColour = Vector4(0.83f, 0.34f, 0.36f, 1.0f);
 	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
 	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
 
 	//Boxes
-	Vector4 boxColour = Vector4(0.98, 0.95, 0.79, 1.0);
+	Vector4 boxColour = Vector4(0.98f, 0.95f, 0.79f, 1.0f);
 	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(20.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
 	AddGridWorld(Axes(XYZ), Vector3(2, 2, 2), 2.0f, Vector3(15.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
 	AddGridWorld(Axes(XYZ), Vector3(2, 4, 2), 2.0f, Vector3(10.0f, 1.5f, 10.0f), Vector3(1.0f, 1.0f, 1.0f), 0.0f, GetTexture("basicPurple"), boxColour);
@@ -157,7 +157,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 {
 	Vector3 floorScale = Vector3(30.0f, 0.5f, 30.0f);
-	Vector4 floorColour = Vector4(0.74, 0.76, 0.76, 1.0);
+	Vector4 floorColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
 	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
 	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
 	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
@@ -165,7 +165,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 
 	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 30.0f);
 	Vector3 wallScaleZ = Vector3(30.0f, 20.0f, 0.5f);
-	Vector4 wallColour = Vector4(0.49, 0.51, 0.51, 1.0);
+	Vector4 wallColour = Vector4(0.49f, 0.51f, 0.51f, 1.0f);
 	AddCubeToWorld(Vector3(-10.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), wallColour, 0.0f);
 	AddCubeToWorld(Vector3(170.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), wallColour, 0.0f);
 	
@@ -186,14 +186,14 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 
 	Vector3 bridgeScaleX = Vector3(30.0f, 0.5f, 5.0f);
 	Vector3 bridgeScaleZ = Vector3(5.0f, 0.5f, 30.0f);
-	Vector4 bridgeColour = Vector4(0.83, 0.34, 0.36, 1.0);
+	Vector4 bridgeColour = Vector4(0.83f, 0.34f, 0.36f, 1.0f);
 	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), bridgeColour, 0.0f);
 	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), bridgeColour, 0.0f);
 
 	Vector3 containerScaleSmall = Vector3(3.0f, 3.0f, 3.0f);
 	Vector3 containerScaleTall = Vector3(3.0f, 6.0f, 3.0f);
 	Vector3 containerScaleBig = Vector3(10.0f, 6.0f, 4.0f);
-	Vector4 boxColour = Vector4(0.98, 0.95, 0.79, 1.0);
+	Vector4 boxColour = Vector4(0.98f, 0.95f, 0.79f, 1.0f);
 	AddCubeToWorld(Vector3(30.0f, containerScaleSmall.y + 0.5f, -15.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), boxColour, 0.0f);
 	AddCubeToWorld(Vector3(20.0f, containerScaleSmall.y + 0.5f, 15.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), boxColour, 0.0f);
 	AddCubeToWorld(Vector3(5.0f, containerScaleSmall.y + 0.5f, 0.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), boxColour, 0.0f);
