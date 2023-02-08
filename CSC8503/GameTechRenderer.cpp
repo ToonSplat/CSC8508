@@ -73,7 +73,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapQuad->UploadToGPU();
 
 	minimapStencilQuad = new OGLMesh();
-	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5, 0.8,-1), Vector3(-0.5,-0.8,-1) , Vector3(0.5,-0.8,-1) , Vector3(0.5,0.8,-1) });
+	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f) , Vector3(0.5f, -0.8f, -1.0f) , Vector3(0.5f, 0.8f, -1.0f) });
 	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	minimapStencilQuad->UploadToGPU();
 	
@@ -346,6 +346,7 @@ void GameTechRenderer::BuildObjectList() {
 		{
 			if (o->IsActive()) 
 			{
+				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 				/*const ToonRenderObject* g = o->GetRenderObject();
 				if (g) 
@@ -412,7 +413,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glStencilFunc(GL_ALWAYS, 2, ~0);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8, -0.7, 0)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1));
+	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
@@ -457,7 +458,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto&i : activeObjects) 
 	{
-		Quaternion rot;
+		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
 		rot.y = rRot.y;
@@ -470,8 +471,9 @@ void GameTechRenderer::RenderShadowMap() {
 
 			Matrix4(rot) *
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 		BindMesh((*i).GetRenderObject()->GetMesh());
@@ -587,7 +589,7 @@ void GameTechRenderer::RenderCamera() {
 			activeShader = shader;
 		}
 
-		Quaternion rot;
+		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
 		rot.y = rRot.y;
@@ -602,8 +604,9 @@ void GameTechRenderer::RenderCamera() {
 
 			Matrix4(rot) *
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);			
 		
 		Matrix4 fullShadowMat = shadowMatrix * modelMatrix;
@@ -642,47 +645,29 @@ void GameTechRenderer::RenderMinimap()
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
 	BindShader(activeShader);
-	for (const auto& i : activeObjects) {
-			
+	for (const auto& i : activeObjects) 
+	{
+		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
-			BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
+		PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
 
-			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
-
-			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 		
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
-			Quaternion rot;
-			reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
-			rot.x = rRot.x;
-			rot.y = rRot.y;
-			rot.z = rRot.z;
-			rot.w = rRot.w;
+		Vector4 colour = i->GetRenderObject()->GetColour();
+		glUniform4fv(colourLocation, 1, colour.array);
 
-			//std::cout << rot << std::endl;
+		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
 
-			Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
-				(*i).GetRigidbody()->getTransform().getPosition().y,
-				(*i).GetRigidbody()->getTransform().getPosition().z) *
+		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
 
-				Matrix4(rot) *
-
-				Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
-
-			glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
-
-			Vector4 colour = i->GetRenderObject()->GetColour();
-			glUniform4fv(colourLocation, 1, colour.array);
-
-			glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
-
-			glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
-
-			BindMesh((*i).GetRenderObject()->GetMesh());
-			int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-			for (int i = 0; i < layerCount; ++i) {
-				DrawBoundMesh(i);
+		BindMesh((*i).GetRenderObject()->GetMesh());
+		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		for (int i = 0; i < layerCount; ++i) {
+			DrawBoundMesh(i);
 		}
 	}
 }
@@ -696,7 +681,7 @@ void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, 
 
 		std::deque objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-		glUniform1i(impactPointCountLocation, objImpactPoints.size());
+		glUniform1i(impactPointCountLocation, (int)objImpactPoints.size());
 
 		for (GLuint i = 0; i < objImpactPoints.size(); i++) {
 			char buffer[64];
@@ -746,7 +731,7 @@ void GameTechRenderer::NewRenderLines() {
 
 	debugLineData.clear();
 
-	int frameLineCount = lines.size() * 2;
+	int frameLineCount = (int)lines.size() * 2;
 
 	SetDebugLineBufferSizes(frameLineCount);
 

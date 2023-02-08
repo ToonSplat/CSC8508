@@ -35,15 +35,13 @@ namespace NCL
 			ToonGameObject* followTarget;
 			Player* player;
 
-			float pitchOffset;
-
 		private:
 			float requiredRayDistance, defaultRayDistance;
 			Vector3 followOffset, targetOffset, aimOffset;
-			Vector3 up, right;
+			Vector3 up, right, forward;
+			float pitchOffset;
 
 			float h, v;
-			bool hittingWall;
 
 			Vector3 refVel;
 		};

@@ -45,10 +45,9 @@ void Player::Update(float dt)
 {
 	isAiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
 
-	Matrix4 rotation = Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0));
-	Vector3 forward = rotation * Vector3(0, 0, -1.0f);
-	Vector3 right = rotation * Vector3(1, 0, 0);
-	Vector3 up = rotation * Vector3(0, 1, 0);
+	Vector3 forward = ToonGameWorld::Get()->GetMainCamera()->GetForward();
+	Vector3 right = ToonGameWorld::Get()->GetMainCamera()->GetRight();
+	Vector3 up = ToonGameWorld::Get()->GetMainCamera()->GetUp();
 
 	//linearMovement.z = -1.0f;
 		/*targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
@@ -88,8 +87,4 @@ void Player::SetWeapon(PaintBallClass* base) {
 	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
-}
-
-void Player::Shoot() {
-	return;
 }

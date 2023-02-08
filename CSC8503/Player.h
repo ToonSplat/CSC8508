@@ -25,13 +25,12 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	void SetWeapon(PaintBallClass* base);
-
 	bool IsAiming() const { return isAiming; }
 
-protected:
-	void Shoot();
+	PaintBallClass GetWeapon() { return weapon; }
+	void SetWeapon(PaintBallClass* base);
 
+protected:
 	Team* team;
 
 	float moveSpeed;

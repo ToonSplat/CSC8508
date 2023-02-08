@@ -1,6 +1,7 @@
 #pragma once
 #include "ToonTransform.h"
 #include "ToonRenderObject.h"
+#include "ToonUtils.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL::CSC8503
@@ -18,7 +19,7 @@ namespace NCL::CSC8503
 		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World);
 		~ToonGameObject();
 
-		virtual void Update(float dt) { std::cout << "Base class update"; };
+		virtual void Update(float dt) { std::cout << "Base class update\n"; };
 
 		const std::string& GetName() const { return name; }
 
@@ -43,6 +44,10 @@ namespace NCL::CSC8503
 		reactphysics3d::BoxShape* GetCollisionShapeBox() const { return collisionShapeBox; };
 		void SetCollisionShape(reactphysics3d::BoxShape* RP3D_CollisionShape) { collisionShapeBox = RP3D_CollisionShape; }
 
+		Vector3 GetPosition() const;
+		Quaternion GetOrientation() const;
+		Vector3 GetScale() const { return ToonUtils::ConvertToNCLVector3(transform.GetScale()); };
+
 		void SetPosition(const reactphysics3d::Vector3& newPos);
 		void SetPosition(const Vector3& newPos);
 		void SetPosition(const float& x, const float& y, const float& z);
@@ -57,6 +62,10 @@ namespace NCL::CSC8503
 
 		void SetWorldID(int newID) { worldID = newID; }
 		int	GetWorldID() const { return worldID; }
+
+		void CalculateModelMatrix();
+		Matrix4 GetModelMatrix() const { return modelMatrix; }
+		Matrix4 GetModelMatrixNoRotation() const;
 
 		int GetColliderLayer() const 
 		{ 
@@ -86,7 +95,8 @@ namespace NCL::CSC8503
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::BoxShape* collisionShapeBox;
 		reactphysics3d::SphereShape* collisionShapeSphere;
-		reactphysics3d::Collider* collider;		
+		reactphysics3d::Collider* collider;
+		Matrix4 modelMatrix;
 
 	private:
 		reactphysics3d::PhysicsWorld& physicsWorld;

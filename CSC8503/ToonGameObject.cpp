@@ -46,9 +46,26 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 	SetColliderLayerMask(ToonCollisionLayer(everythingMask));
 }
 
+Vector3 NCL::CSC8503::ToonGameObject::GetPosition() const
+{
+	if (rigidBody)
+		return ToonUtils::ConvertToNCLVector3(rigidBody->getTransform().getPosition());
+
+	return Vector3();
+}
+
+Quaternion NCL::CSC8503::ToonGameObject::GetOrientation() const
+{
+	if (rigidBody)
+		return ToonUtils::ConvertToNCLQuaternion(rigidBody->getTransform().getOrientation());
+
+	return Quaternion();
+}
+
 void NCL::CSC8503::ToonGameObject::SetPosition(const reactphysics3d::Vector3& newPos)
 {
-	rigidBody->setTransform(reactphysics3d::Transform(newPos, rigidBody->getTransform().getOrientation()));
+	if(rigidBody)
+		rigidBody->setTransform(reactphysics3d::Transform(newPos, rigidBody->getTransform().getOrientation()));
 }
 
 void NCL::CSC8503::ToonGameObject::SetPosition(const Vector3& newPos)
@@ -73,10 +90,21 @@ void NCL::CSC8503::ToonGameObject::SetOrientation(const Vector3& newRotVec3)
 
 void NCL::CSC8503::ToonGameObject::SetOrientation(const reactphysics3d::Quaternion& newRotQuat)
 {
-	rigidBody->setTransform(reactphysics3d::Transform(rigidBody->getTransform().getPosition(), newRotQuat));
+	if(rigidBody)
+		rigidBody->setTransform(reactphysics3d::Transform(rigidBody->getTransform().getPosition(), newRotQuat));
 }
 
 void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRotQuat)
 {
 	SetOrientation(reactphysics3d::Quaternion(newRotQuat.x, newRotQuat.y, newRotQuat.z, newRotQuat.w));
+}
+
+void NCL::CSC8503::ToonGameObject::CalculateModelMatrix()
+{
+	modelMatrix = Matrix4::Translation(GetPosition()) * Matrix4(GetOrientation()) * Matrix4::Scale(GetScale());
+}
+
+Matrix4 NCL::CSC8503::ToonGameObject::GetModelMatrixNoRotation() const
+{
+	return Matrix4::Translation(GetPosition()) * Matrix4::Scale(GetScale());
 }

@@ -17,8 +17,7 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) :
 	
 	up = Vector3(0, 1, 0);
 	right = Vector3(1, 0, 0);
-
-	hittingWall = false;
+	forward = Vector3(0, 0, -1);
 
 	player = (Player*)followTarget;
 }
@@ -38,33 +37,13 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
 
-	Quaternion rot;
-	reactphysics3d::Quaternion rRot = followTarget->GetRigidbody()->getTransform().getOrientation();
-	rot.x = rRot.x;
-	rot.y = rRot.y;
-	rot.z = rRot.z;
-	rot.w = rRot.w;
+	UpdatePitchAndYaw();
 
-	Matrix4 modelMatrixNoRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
-		followTarget->GetRigidbody()->getTransform().getPosition().y,
-		followTarget->GetRigidbody()->getTransform().getPosition().z) *		
+	Matrix4 modelMatrixNoRot = followTarget->GetModelMatrixNoRotation();
+	Matrix4 modelMatrixWithRot = followTarget->GetModelMatrix();
 
-		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x, 
-						followTarget->GetRenderObject()->GetTransform()->GetScale().y, 
-						followTarget->GetRenderObject()->GetTransform()->GetScale().z);
-
-	Matrix4 modelMatrixWithRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
-		followTarget->GetRigidbody()->getTransform().getPosition().y,
-		followTarget->GetRigidbody()->getTransform().getPosition().z) *
-
-		Matrix4(rot) *
-
-		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x,
-			followTarget->GetRenderObject()->GetTransform()->GetScale().y,
-			followTarget->GetRenderObject()->GetTransform()->GetScale().z);
-
-	Matrix4 rotMatrix = Matrix4::Rotation(h, up) * Matrix4::Rotation(v, right);
-	Matrix4 finalMatrix = modelMatrixNoRot * rotMatrix;
+	Matrix4 rotMatrix = Matrix4::Rotation(yaw, up) * Matrix4::Rotation(pitch, right);
+	Matrix4 finalMatrix = modelMatrixNoRot * rotMatrix;	
 
 	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget->GetRigidbody()->getTransform().getPosition());	
 	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);	
@@ -85,10 +64,14 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	//Debug::DrawBox(targetAimPosWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::RED, 0);
 
 	Vector3 FinalLookAt = player->IsAiming() ? targetAimLookAtWorld : targetWorldPos + followOffset;
-	Vector3 FinalPos = player->IsAiming() ? targetAimPosWorld : targetWorldPosOffset;
+	Vector3 FinalPos = position;
+	if (player->IsAiming())
+		FinalPos = Lerp(FinalPos, targetAimPosWorld, dt * 10.0f);
+	else
+		FinalPos = targetWorldPosOffset;
 
-	//position = FinalPos;
-	position = Lerp(position, FinalPos, dt * 20.0f);
+	position = FinalPos;
+	//position = Lerp(position, FinalPos, dt * 20.0f);
 	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);
 
 	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos), ToonUtils::ConvertToRP3DVector3(position));
@@ -98,15 +81,21 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	if (wallHitData.IsHit())
 		position = wallHitData.GetHitWorldPos();
 
-	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
+	/*Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
 	Quaternion q(viewMatrix);
-	pitch = q.ToEuler().x + pitchOffset;
-	yaw = q.ToEuler().y;
+	Vector3 qEuler = q.ToEuler();
+	pitch = player->IsAiming() ? Lerp(pitch, qEuler.x + pitchOffset, dt * 20.0f) : qEuler.x;
+	yaw = player->IsAiming() ? Lerp(yaw, qEuler.y, dt * 20.0f) : qEuler.y;*/
+	//pitch = q.ToEuler().x + pitchOffset;
+	//yaw = q.ToEuler().y;
+
 
 	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
 	camForward = rotation * Vector3(0, 0, -1);
 	camRight = rotation * Vector3(1, 0, 0);
 	camUp = rotation * Vector3(0, 1, 0);
+
+	//Debug::DrawBox(position + camForward * 50.0f, Vector3(0.1f, 0.1f, 0.1f), Debug::YELLOW, 0);
 	
 #pragma region From Unity Tutorial
 	/*float cYaw = lookEuler.y;
