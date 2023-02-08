@@ -27,6 +27,8 @@ namespace NCL
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
 
+			Player* GetPlayer() { return player; }
+
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
@@ -59,6 +61,7 @@ namespace NCL
 			bool LoadTexture(TextureBase** tex, const std::string& textureFileName, const bool& invert = false);
 			bool LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader);
 			bool LoadLevel();
+			bool LoadPrototypeLevel();
 
 			Axes selectedAxes = Axes::None;
 
@@ -91,6 +94,7 @@ namespace NCL
 			GameTechRenderer& gameRenderer;			
 
 			PaintableObject* axisObject;
+			Player* player = nullptr;
 
 			static ToonLevelManager* instance;
 		};

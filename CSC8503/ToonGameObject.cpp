@@ -40,6 +40,10 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 		return;
 
 	collider = rigidBody->addCollider(RP3D_CollisionShape, reactphysics3d::Transform::identity());
+	SetColliderLayer(ToonCollisionLayer::Default);
+
+	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
+	SetColliderLayerMask(ToonCollisionLayer(everythingMask));
 }
 
 void NCL::CSC8503::ToonGameObject::SetPosition(const reactphysics3d::Vector3& newPos)

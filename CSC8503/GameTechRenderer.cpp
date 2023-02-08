@@ -3,10 +3,16 @@
 #include "ToonGameObject.h"
 #include "RenderObject.h"
 #include "ToonRenderObject.h"
-#include "Camera.h"
+#include "ToonFollowCamera.h"
+#include "ToonLevelManager.h"
+#include "ToonUtils.h"
 #include "TextureLoader.h"
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
+
+#include "../ThirdParty/imgui/imgui.h"
+#include "../ThirdParty/imgui/imgui_impl_opengl3.h"
+#include "../ThirdParty/imgui/imgui_impl_win32.h"
 
 using namespace NCL;
 using namespace Rendering;
@@ -14,10 +20,11 @@ using namespace CSC8503;
 
 #define SHADOWSIZE 4096
 
-Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
+Matrix4 biasMatrix = Matrix4::Translation(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f));
+ToonFollowCamera* followCamera;
 
-
-GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	{
+GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
+{	
 	SetupStuffs();
 }
 
@@ -236,6 +243,8 @@ void GameTechRenderer::RenderFrame() {
 		
 		DrawMinimap();
 	}
+  RenderImGUI();
+  
 	glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 	PresentScene();
 	glPopDebugGroup();
@@ -267,11 +276,8 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 {
@@ -287,6 +293,49 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderImGUI()
+{
+	ImGui_ImplOpenGL3_NewFrame();
+	ImGui_ImplWin32_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::Begin("Debug Window");
+	if (ImGui::CollapsingHeader("Camera"))
+	{
+		if(!followCamera) followCamera = (ToonFollowCamera*)(gameWorld.GetMainCamera());
+
+		Vector3 cPos = gameWorld.GetMainCamera()->GetPosition();
+		Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
+		Vector3 cFollowOffset = followCamera->GetFollowOffset();
+		Vector3 cTargetOffset = followCamera->GetTargetOffset();
+		Vector3 cAimOffset = followCamera->GetAimOffset();
+
+		float distance = followCamera->GetFollowDistance();
+		float cPitchOffset = followCamera->GetPitchOffset();
+
+		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
+		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld.GetMainCamera()->SetPitch(cPos.x);
+		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
+		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
+
+		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
+		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
+		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
+		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
+	}
+	if (ImGui::CollapsingHeader("Player"))
+	{
+		Player* player = ToonLevelManager::Get()->GetPlayer();
+		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(player->GetRigidbody()->getTransform().getPosition());
+
+		ImGui::DragFloat3("Position", (float*)(&playerPos));
+	}
+	ImGui::End();
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void GameTechRenderer::BuildObjectList() {

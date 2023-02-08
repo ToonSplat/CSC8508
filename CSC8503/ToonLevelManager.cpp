@@ -18,14 +18,16 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	instance = this;
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Vector4(0,0,0,0), 1.0f);
+	axisObject = AddCubeToWorld(Vector3(40.0f, 10.0f, -20.0f), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Vector4(0,0,0,0), 1.0f);
 	axisObject->GetRigidbody()->setUserData(axisObject);
 	ToonGameWorld::Get()->AddPaintableObject(axisObject);
+  
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-	Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
+	//Debug::DrawAxisLines(axisObject->GetTransform().GetMatrix(), 2.0f, 100.0f);
 
-	LoadLevel();
+	//LoadLevel();
+	LoadPrototypeLevel();
 }
 
 NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
@@ -152,6 +154,58 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	return true;
 }
 
+bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
+{
+	Vector3 floorScale = Vector3(30.0f, 0.5f, 30.0f);
+	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), 0.0f);
+
+	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 30.0f);
+	Vector3 wallScaleZ = Vector3(30.0f, 20.0f, 0.5f);
+	AddCubeToWorld(Vector3(-10.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(170.0f, 20.0f, 0.0f), Vector3(0, 0, 0), wallScaleX, GetTexture("basic"), 0.0f);
+
+	AddCubeToWorld(Vector3(80.0f, 20.0f, 90.0f), Vector3(0, 0, 0), wallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 20.0f, -90.0f), Vector3(0, 0, 0), wallScaleZ, GetTexture("basic"), 0.0f);
+
+	Vector3 wallSmallScaleX = Vector3(0.5f, 10.0f, 30.0f);
+	Vector3 wallSmallScaleZ = Vector3(30.0f, 10.0f, 0.5f);
+	AddCubeToWorld(Vector3(20.0f, 10.0f, -30.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(20.0f, 10.0f, 30.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(140.0f, 10.0f, -30.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(140.0f, 10.0f, 30.0f), Vector3(0, 0, 0), wallSmallScaleZ, GetTexture("basic"), 0.0f);
+
+	AddCubeToWorld(Vector3(110.0f, 10.0f, 60.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(50.0f, 10.0f, 60.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(50.0f, 10.0f, -60.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(110.0f, 10.0f, -60.0f), Vector3(0, 0, 0), wallSmallScaleX, GetTexture("basic"), 0.0f);
+
+	Vector3 bridgeScaleX = Vector3(30.0f, 0.5f, 5.0f);
+	Vector3 bridgeScaleZ = Vector3(5.0f, 0.5f, 30.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), 0.0f);
+
+	Vector3 containerScaleSmall = Vector3(3.0f, 3.0f, 3.0f);
+	Vector3 containerScaleTall = Vector3(3.0f, 6.0f, 3.0f);
+	Vector3 containerScaleBig = Vector3(10.0f, 6.0f, 4.0f);
+	AddCubeToWorld(Vector3(30.0f, containerScaleSmall.y + 0.5f, -15.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), 0.0f);
+	AddCubeToWorld(Vector3(20.0f, containerScaleSmall.y + 0.5f, 15.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), 0.0f);
+	AddCubeToWorld(Vector3(5.0f, containerScaleSmall.y + 0.5f, 0.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), 0.0f);
+
+	AddCubeToWorld(Vector3(160.0f, containerScaleSmall.y + 0.5f, 20.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), 0.0f);
+	AddCubeToWorld(Vector3(125.0f, containerScaleTall.y + 0.5f, -15.0f), Vector3(0, 0, 0), containerScaleTall, GetTexture("basicPurple"), 0.0f);
+	
+	AddCubeToWorld(Vector3(73.0f, containerScaleTall.y + 0.5f, -45.0f), Vector3(0, 0, 0), containerScaleTall, GetTexture("basicPurple"), 0.0f);
+	AddCubeToWorld(Vector3(80.0f, containerScaleSmall.y + 0.5f, -45.0f), Vector3(0, 0, 0), containerScaleSmall, GetTexture("basicPurple"), 0.0f);
+	AddCubeToWorld(Vector3(87.0f, containerScaleTall.y + 0.5f, -45.0f), Vector3(0, 0, 0), containerScaleTall, GetTexture("basicPurple"), 0.0f);
+
+	AddCubeToWorld(Vector3(80.0f, containerScaleBig.y + 0.5f, 60.0f), Vector3(0, 0, 0), containerScaleBig, GetTexture("basicPurple"), 0.0f);
+
+	return true;
+}
+
 
 PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
 {
@@ -246,7 +300,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 	player->GetRenderObject()->SetMesh(charMesh);*/
 
-	Player* player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
+	player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 
 	return player;

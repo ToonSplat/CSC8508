@@ -173,6 +173,8 @@ namespace NCL::Maths {
 			return o;
 		}
 
+		static Vector3 SmoothDamp(Vector3 current, Vector3 target, Vector3& currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
+
 		inline static float Angle(const Vector3& A, const Vector3& B)
 		{
 			float angle = 0.0f;

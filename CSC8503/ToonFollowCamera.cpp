@@ -3,19 +3,34 @@
 #include "Maths.h"
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
-#include <reactphysics3d/reactphysics3d.h>
 //#include <iostream>
 
-NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject& target) : 
+NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) : 
 	followTarget(target)
 {
-	requiredRayDistance = 10.0f;
-	pitchOffset = 12.0f;
+	requiredRayDistance = defaultRayDistance = 1.0f;
+	pitchOffset = -2.0f;
 	h = v = 0.0f;
+	followOffset = Vector3(0, 2.5f, 0.0f);
+	targetOffset = Vector3(0.0f, 1.0f, 4.0f);
+	aimOffset = Vector3(0.5f, 1.00f, 2.0f);
+	
+	up = Vector3(0, 1, 0);
+	right = Vector3(1, 0, 0);
+
+	hittingWall = false;
+
+	player = (Player*)followTarget;
 }
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 {
+	if ( (ToonGameWorld::Get() != nullptr) && !ToonGameWorld::Get()->ShowCursor())
+	{
+		Window::GetWindow()->ShowOSPointer(false);
+		Window::GetWindow()->LockMouseToWindow(true);
+	}	
+
 	v -= (Window::GetMouse()->GetRelativePosition().y);
 	v = Clamp(v, -80.0f, 80.0f);
 
@@ -23,7 +38,103 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
 
-	Matrix4 yawMat = Matrix4::Rotation(h, Vector3(0, 1, 0));
+	Quaternion rot;
+	reactphysics3d::Quaternion rRot = followTarget->GetRigidbody()->getTransform().getOrientation();
+	rot.x = rRot.x;
+	rot.y = rRot.y;
+	rot.z = rRot.z;
+	rot.w = rRot.w;
+
+	Matrix4 modelMatrixNoRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
+		followTarget->GetRigidbody()->getTransform().getPosition().y,
+		followTarget->GetRigidbody()->getTransform().getPosition().z) *		
+
+		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x, 
+						followTarget->GetRenderObject()->GetTransform()->GetScale().y, 
+						followTarget->GetRenderObject()->GetTransform()->GetScale().z);
+
+	Matrix4 modelMatrixWithRot = Matrix4::Translation(followTarget->GetRigidbody()->getTransform().getPosition().x,
+		followTarget->GetRigidbody()->getTransform().getPosition().y,
+		followTarget->GetRigidbody()->getTransform().getPosition().z) *
+
+		Matrix4(rot) *
+
+		Matrix4::Scale(followTarget->GetRenderObject()->GetTransform()->GetScale().x,
+			followTarget->GetRenderObject()->GetTransform()->GetScale().y,
+			followTarget->GetRenderObject()->GetTransform()->GetScale().z);
+
+	Matrix4 rotMatrix = Matrix4::Rotation(h, up) * Matrix4::Rotation(v, right);
+	Matrix4 finalMatrix = modelMatrixNoRot * rotMatrix;
+
+	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget->GetRigidbody()->getTransform().getPosition());	
+	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);	
+
+	Vector3 targetlocalPosOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
+	targetlocalPosOffset *= requiredRayDistance;
+	Vector3 targetWorldPosOffset = finalMatrix * Vector4(targetlocalPosOffset, 1.0f);
+	
+	Vector3 targetAimLookAtLocal = targetLocalPos + Vector3(aimOffset.x, aimOffset.y, 0);
+	Vector3 targetAimLookAtWorld = modelMatrixWithRot * Vector4(targetAimLookAtLocal, 1.0f);
+
+	//Debug::DrawBox(targetAimLookAtWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::GREEN, 0);
+
+	Vector3 targetAimPosLocal = targetLocalPos + aimOffset;
+	targetAimPosLocal *= requiredRayDistance;
+	Vector3 targetAimPosWorld = finalMatrix * Vector4(targetAimPosLocal, 1.0f);
+
+	//Debug::DrawBox(targetAimPosWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::RED, 0);
+
+	Vector3 FinalLookAt = player->IsAiming() ? targetAimLookAtWorld : targetWorldPos + followOffset;
+	Vector3 FinalPos = player->IsAiming() ? targetAimPosWorld : targetWorldPosOffset;
+
+	//position = FinalPos;
+	position = Lerp(position, FinalPos, dt * 20.0f);
+	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);
+
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos), ToonUtils::ConvertToRP3DVector3(position));
+	ToonRaycastCallback wallHitData;
+	ToonGameWorld::Get()->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
+
+	if (wallHitData.IsHit())
+		position = wallHitData.GetHitWorldPos();
+
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
+	Quaternion q(viewMatrix);
+	pitch = q.ToEuler().x + pitchOffset;
+	yaw = q.ToEuler().y;
+
+	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
+	camForward = rotation * Vector3(0, 0, -1);
+	camRight = rotation * Vector3(1, 0, 0);
+	camUp = rotation * Vector3(0, 1, 0);
+	
+#pragma region From Unity Tutorial
+	/*float cYaw = lookEuler.y;
+float cPitch = lookEuler.x;
+_rotY = Quaternion::RotateTowards(_rotY, Quaternion::AxisAngleToQuaterion(up, cYaw), dt * 400.0f);
+_rotX = Quaternion::RotateTowards(_rotX, Quaternion::AxisAngleToQuaterion(_right, cPitch), dt * 400.0f);
+
+Vector3 offset = targetOffset;
+Vector3 shoulderOffset = _rotY * _originTransform * offset;
+Vector3 armOffset = _rotY * (_rotX * _back * requiredRayDistance);
+
+Vector3 shoulderPosition = targetPos + shoulderOffset;
+position = shoulderPosition + armOffset;
+
+//Debug::DrawLine(shoulderPosition, shoulderPosition + up, Debug::RED);
+
+Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, shoulderPosition, up).Inverse();
+Quaternion q(viewMatrix);
+pitch = q.ToEuler().x;
+yaw = q.ToEuler().y;*/
+#pragma endregion
+
+
+	/*position.x = targetPos.x + followOffset.z * cos(radianY) * cos(radianX) + followOffset.x;
+	position.y = targetPos.y + followOffset.z * sin(radianX) + followOffset.y;
+	position.z = targetPos.z + followOffset.z * sin(radianY) * cos(radianX);*/
+#pragma region OLD
+	/*Matrix4 yawMat = Matrix4::Rotation(h, Vector3(0, 1, 0));
 	Matrix4 pitchMat = Matrix4::Rotation(v, yawMat * Vector3(-1, 0, 0));
 	Matrix4 finalRotMat = pitchMat * yawMat;
 
@@ -31,6 +142,19 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	Vector3 lookDirection = finalRotMat * Vector3(0, 0, -1);
 
 	position = focusPoint - lookDirection * requiredRayDistance;
+
+	//Stare at GOAT!
+	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, focusPoint, Vector3(0, 1, 0)).Inverse();
+	Quaternion q(viewMatrix);
+	pitch = q.ToEuler().x + pitchOffset;
+	yaw = q.ToEuler().y;
+
+	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
+	camForward = rotation * Vector3(0, 0, -1);
+	camRight = rotation * Vector3(1, 0, 0);
+	camUp = rotation * Vector3(0, 1, 0);*/
+#pragma endregion
+
 
 	//Prevent Wall Clipping
 	/*Ray collisionRay = Ray(focusPoint, -lookDirection);
@@ -86,17 +210,5 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	//position = followTarget.GetTransform().GetPosition() + followOffset;
 
 	//float distance = (position - followTarget.GetPosition()).Length();
-	//std::cout << distance << std::endl;
-
-
-	//Stare at GOAT!
-	Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, focusPoint, Vector3(0, 1, 0)).Inverse();
-	Quaternion q(viewMatrix);
-	pitch = q.ToEuler().x + pitchOffset;
-	yaw = q.ToEuler().y;
-
-	Matrix4 rotation = Matrix4::Rotation(yaw, Vector3(0, 1, 0)) * Matrix4::Rotation(pitch, Vector3(1, 0, 0));
-	camForward = rotation * Vector3(0, 0, -1);
-	camRight = rotation * Vector3(1, 0, 0);
-	camUp = rotation * Vector3(0, 1, 0);
+	//std::cout << distance << std::endl;	
 }

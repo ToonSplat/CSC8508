@@ -27,6 +27,8 @@ public:
 
 	void SetWeapon(PaintBallClass* base);
 
+	bool IsAiming() const { return isAiming; }
+
 protected:
 	void Shoot();
 

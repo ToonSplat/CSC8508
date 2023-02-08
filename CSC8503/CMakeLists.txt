@@ -147,6 +147,7 @@ if(MSVC)
         "WIN32_LEAN_AND_MEAN"
         "_WINSOCKAPI_"   
         "_WINSOCK2API_"
+        "_CRT_SECURE_NO_WARNINGS;"
         "_WINSOCK_DEPRECATED_NO_WARNINGS"
     )
 endif()

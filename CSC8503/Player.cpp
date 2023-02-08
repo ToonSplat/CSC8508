@@ -27,6 +27,11 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
+	SetColliderLayer(ToonCollisionLayer::Character);
+
+	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
+	SetColliderLayerMask(ToonCollisionLayer(collisionMask));
+
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
 	ToonGameWorld::Get()->AddGameObject(this);
@@ -80,7 +85,7 @@ void Player::Update(float dt)
 
 void Player::SetWeapon(PaintBallClass* base) {
 	weapon = base->MakeInstance();
-	std::cout << "WEAPON MADE" << std::endl;
+	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
 }
