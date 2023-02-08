@@ -39,7 +39,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : ToonGameWorld::Get()->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                std::cout << "PAINTBALL COLLISION\n";
+                
                 // Make the HitSphere
                 HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
                 // Remove the Paintball
@@ -52,22 +52,18 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         // Check if collision involves HitSpheres 
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
             if (i == body1 || i == body2) {
-                std::cout << "HITSPHERE COLLISION\n";
+                
                 for (PaintableObject* p : ToonGameWorld::Get()->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
-                        std::cout << "WITH PAINTABLE OBJECT\n";
+                        
                         if (p == body1) {
                             p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));                          
                         }
                         else {
                             p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
                         }
-
-                        
                     }
                 }
-                std::cout << "HitSphere Collision" << std::endl;
-                std::cout << "PO: " << ToonGameWorld::Get() << " Body1: " << body1 << " Body2 " << body2 << std::endl;
             }
         }
       
