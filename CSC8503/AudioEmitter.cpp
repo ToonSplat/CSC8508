@@ -17,10 +17,10 @@ void AudioEmitter::Reset() {
 	priority = LOW;
 	Maths::Vector3 position = Maths::Vector3(0, 0, 0);
 	Maths::Vector3 velocity = Maths::Vector3(0, 0, 0);
-	bool isLooping = true;
-	float volume = 1.0f;
-	float radius = 500.0f;
-	float  timeLeft = 0.0f;
+	isLooping = true;
+	volume = 1.0f;
+	radius = 500.0f;
+	timeLeft = 0.0f;
 	currentSource = NULL;
 }
 
@@ -52,6 +52,7 @@ void AudioEmitter::AttachSource(OALSource* s) {
 	alSourcef(currentSource->source, AL_REFERENCE_DISTANCE, radius * 0.2f);
 	alSourcei(currentSource->source, AL_BUFFER, *sound->buffer);
 	alSourcef(currentSource->source, AL_SEC_OFFSET, (sound->length / 1000.0f) - (timeLeft / 1000.0f));
+	cout << "playing sound" << endl;
 	alSourcePlay(currentSource->source);
 }
 

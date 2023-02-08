@@ -19,6 +19,8 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 	//GetRigidbody()->setAngularDamping(0.1);
 	GetRigidbody()->setMass(0.1);
 
+	ConfigureSound();
+
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius);
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
@@ -26,9 +28,17 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 
 	GetRigidbody()->setUserData(this);
 
+
 	ToonGameWorld::Get()->AddGameObject(this);
 	ToonGameWorld::Get()->AddPaintball(this);
 }
 
 PaintBallProjectile::~PaintBallProjectile(){
+	delete speaker;
+}
+
+void PaintBallProjectile::ConfigureSound() {
+	speaker = new AudioEmitter();
+	speaker->SetPriority(SoundPriority::LOW);
+	speaker->SetLooping(false);
 }

@@ -29,6 +29,8 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
+	audiosystem = AudioSystem::GetAudioSystem();
+
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 
@@ -38,6 +40,8 @@ Player::~Player() {
 
 void Player::Update(float dt)
 {
+
+	
 	isAiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
 
 	Matrix4 rotation = Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0));
@@ -74,7 +78,13 @@ void Player::Update(float dt)
 
 	if (isMoving)
 		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
-    
+
+
+    //audio setup
+	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
+	audiosystem->SetMasterVolume(1.0f);
+	audiosystem->Update(dt);
+
     weapon.Update(dt);
 }
 

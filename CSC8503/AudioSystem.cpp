@@ -108,6 +108,7 @@ void AudioSystem::Update(float msec) {
 }
 
 void AudioSystem::CullNodes() {
+
     for (std::vector<AudioEmitter* >::iterator i = frameEmitters.begin();
         i != frameEmitters.end(); ) {
         AudioEmitter* e = (*i);

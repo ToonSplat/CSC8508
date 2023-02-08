@@ -1,6 +1,7 @@
 #pragma once
 #include "ToonGameObject.h"
 #include "Team.h"
+#include "AudioSystem.h"
 
 namespace NCL 
 {
@@ -16,9 +17,16 @@ namespace NCL
 			float GetImpactSize() const { return impactSize; }
 			Team* GetTeam() const { return team; }
 
+			AudioEmitter* GetAudioEmitter() { return speaker; }
+			
+
 		protected:
+			
 			Team* team;
 			float impactSize;
+
+			AudioEmitter* speaker;
+			void ConfigureSound();
 		};
 	}
 }

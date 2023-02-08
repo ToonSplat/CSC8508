@@ -44,11 +44,12 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 
-	int ammoRemaining = 100;
-
 
 	PaintBallClass weapon;
 	bool isAiming, isMoving;
+
+	AudioSystem* audiosystem;
+
 	/*
 	* Future Implementations:
 	*

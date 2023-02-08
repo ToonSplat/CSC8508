@@ -74,12 +74,14 @@ void Audio::AddSound(const char* filename)
         fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filepath, num_frames);
         return;
     }
+
+
     num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
-    float len = sfinfo.frames / sfinfo.samplerate;
+    float len = (float)sfinfo.frames / (float)sfinfo.samplerate;
     /* Buffer the audio data into a new buffer object, then free the data and
      * close the file.
      */
-    buffer = 0;
+
     alGenBuffers(1, buffer);
     alBufferData(*buffer, format, membuf, num_bytes, sfinfo.samplerate);
 

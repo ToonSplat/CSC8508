@@ -42,6 +42,14 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                 std::cout << "PAINTBALL COLLISION\n";
                 // Make the HitSphere
                 HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
+
+                //make an audio play on collision
+                i->GetAudioEmitter()->SetTarget(Maths::Vector3(i->GetRigidbody()->getTransform().getPosition().x, i->GetRigidbody()->getTransform().getPosition().y, i->GetRigidbody()->getTransform().getPosition().z));
+                i->GetAudioEmitter()->SetSound(Audio::GetSound("splatter.wav"));
+                AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+               
+                
+
                 // Remove the Paintball
                 ToonGameWorld::Get()->RemovePaintball(i);
                 ToonGameWorld::Get()->RemoveGameObject(i, false);

@@ -248,6 +248,11 @@ void TestPushdownAutomata(Window* w) {
 	}
 }
 
+void AddAudioFiles() {
+
+	Audio::AddSound("splatter.wav");
+}
+
 /*
 
 The main function should look pretty familar to you!
@@ -269,6 +274,10 @@ int main() {
 	}	
 
 	NCL::CSC8503::AudioSystem::Initialise();
+
+
+
+	AddAudioFiles();
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
