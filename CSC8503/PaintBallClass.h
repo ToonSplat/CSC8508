@@ -31,8 +31,8 @@ namespace NCL {
             float fireRate; // time between shot
             float reloadTime; // time between reloads
             float maxShootDistance; // max dist can be shot
-            PaintBallProjectile* bullet[20];    //Trajectory
-            int trajectoryPoints = 20;          //Trajectory
+            PaintBallProjectile* bullet[50];    //Trajectory
+            int trajectoryPoints = 50;          //Trajectory
 
             void Shoot(float dt);
             void Reload(float dt);

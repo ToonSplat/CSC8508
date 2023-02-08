@@ -73,7 +73,7 @@ void PaintBallClass::Update(float dt) {
 
 	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
 	{
-		DrawTrajectory(10);	//250->10
+		DrawTrajectory(8);	//250->10
 	}
 	else
 	{
@@ -88,7 +88,7 @@ void PaintBallClass::DrawTrajectory(float force)
 	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0);
 	reactphysics3d::Vector3 forceVector = orientation * force;
 	reactphysics3d::Vector3 velocity	= forceVector;
-	float flightDurartion				= (2 * velocity.y) / 9.8;
+	float flightDurartion				= (2 * velocity.y) / 9.81;
 	float singlePointTime				= flightDurartion / trajectoryPoints;
 
 	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
@@ -96,7 +96,7 @@ void PaintBallClass::DrawTrajectory(float force)
 	{
 		float deltaTime = singlePointTime * i;
 		float x			= velocity.x * deltaTime;
-		float y			= velocity.y * deltaTime - (0.5f * 9.8 * deltaTime * deltaTime);
+		float y			= velocity.y * deltaTime - (0.5f * 9.81 * deltaTime * deltaTime);
 		float z		    = velocity.z * deltaTime;
 		position.x	   += x;
 		position.y	   += y;
@@ -167,7 +167,7 @@ void PaintBallClass::FireBullet()
 
 	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 	orientation.normalize();
-	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 0, 0);
+	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0);
 
 	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 2.5f, team);
 	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
