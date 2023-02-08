@@ -20,6 +20,8 @@ uniform vec4	lightColour;
 
 uniform vec3	cameraPos;
 
+uniform vec3 objectPosition;
+
 uniform bool hasTexture;
 
 in Vertex
@@ -29,6 +31,7 @@ in Vertex
 	vec4 shadowProj;
 	vec3 normal;
 	vec3 worldPos;
+	vec4 localPos;
 } IN;
 
 out vec4 fragColor;
@@ -56,17 +59,17 @@ void main(void)
 	 albedo *= texture(mainTex, IN.texCoord);
 	}
 
-
 	
-	if (impactPointCount > 0){
-		for (int i = 0; i < impactPointCount; i++){
-			vec3 impactWorldPos = impactPoints[i].position + IN.worldPos;
-			float distanceBetween = distance(impactWorldPos, impactPoints[i].position);
-			if (distanceBetween <= impactPoints[i].radius){
-				albedo = vec4(impactPoints[i].colour, 1.0);
-			}
+	
+	
+	for (int i = 0; i < impactPointCount; i++){
+		//vec3 impactWorldPos = IN.worldPos - impactPoints[i].position;
+		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
+		if (distanceBetween <= impactPoints[i].radius){
+			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
+	
 	
 	albedo.rgb = pow(albedo.rgb, vec3(2.2));
 	
@@ -79,4 +82,7 @@ void main(void)
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	
 	fragColor.a = albedo.a;
+	
+	//fragColor.rgb = objectPosition;
+	//.rgb = vec3(
 }

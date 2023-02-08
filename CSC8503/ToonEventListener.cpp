@@ -62,16 +62,24 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                         else {
                             p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
                         }
-                        //delete the hitsphere
-                        ToonGameWorld::Get()->RemoveHitSphere(i);
-                        ToonGameWorld::Get()->RemoveGameObject(i, false);
-                        break;
+
+                        
                     }
                 }
-                //std::cout << "HitSphere Collision" << std::endl;
-                //std::cout << "PO: " << ToonGameWorld::Get() << " Body1: " << body1 << " Body2 " << body2 << std::endl;
-                
+                std::cout << "HitSphere Collision" << std::endl;
+                std::cout << "PO: " << ToonGameWorld::Get() << " Body1: " << body1 << " Body2 " << body2 << std::endl;
             }
+        }
+      
+            
+    
+        
+    }
+    for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+        if (i->CheckDelete()) {
+            //delete the hitsphere
+            ToonGameWorld::Get()->RemoveHitSphere(i);
+            ToonGameWorld::Get()->RemoveGameObject(i, false);
         }
     }
 }
