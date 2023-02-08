@@ -5,7 +5,6 @@ using namespace CSC8503;
 
 Player::Player() {
 	team = nullptr;
-	audioSystem = AudioSystem::GetAudioSystem();
 }
 
 Player::Player(Team* chosenTeam) {

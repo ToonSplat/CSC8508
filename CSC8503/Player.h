@@ -36,8 +36,6 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 	int ammoRemaining = 100;
-
-	AudioSystem* audioSystem;
 	/*
 	* Future Implementations:
 	* 

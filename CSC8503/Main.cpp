@@ -268,7 +268,7 @@ int main() {
 		return -1;
 	}	
 
-	AudioSystem::Initialise();
+	NCL::CSC8503::AudioSystem::Initialise();
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
@@ -304,7 +304,7 @@ int main() {
 		g->UpdateGame(dt);
 	}
 	Audio::DeleteSounds();
-	AudioSystem::Destroy();
+	NCL::CSC8503::AudioSystem::Destroy();
 	Window::DestroyGameWindow();
 
 }
