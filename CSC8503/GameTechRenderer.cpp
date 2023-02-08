@@ -649,22 +649,25 @@ void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, 
 
 		glUniform1i(impactPointCountLocation, objImpactPoints.size());
 
-		for (GLuint i = 0; i < objImpactPoints.size(); i++) {
+		GLuint i = 0;
+		for (const ImpactPoint& point : objImpactPoints) {
 			char buffer[64];
 
 			sprintf_s(buffer, "impactPoints[%i].position", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactLocation = objImpactPoints[i].GetImpactLocation();
+			Vector3 impactLocation = point.GetImpactLocation();
 			glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
 
 			sprintf_s(buffer, "impactPoints[%i].colour", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactColour = objImpactPoints[i].GetImpactColour();
+			Vector3 impactColour = point.GetImpactColour();
 			glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
 
 			sprintf_s(buffer, "impactPoints[%i].radius", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			glUniform1f(impactPointsLocation, objImpactPoints[i].GetImpactRadius());
+			glUniform1f(impactPointsLocation, point.GetImpactRadius());
+
+			i++;
 		}
 
 	}
