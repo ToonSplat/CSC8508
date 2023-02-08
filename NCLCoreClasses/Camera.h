@@ -49,7 +49,7 @@ namespace NCL {
 
 		~Camera(void) = default;
 
-		void UpdateCamera(float dt);
+		virtual void UpdateCamera(float dt);
 
 		void UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize);
 
@@ -74,6 +74,8 @@ namespace NCL {
 			farPlane = val;
 			return *this;
 		}
+
+		Vector3 GetForward() const { return camForward; }
 
 		//Builds a view matrix for the current camera variables, suitable for sending straight
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').

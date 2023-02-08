@@ -5,36 +5,55 @@
 #include "OGLMesh.h"
 
 #include "GameWorld.h"
+#include "ToonGameWorld.h"
 
 namespace NCL {
 	class Maths::Vector3;
 	class Maths::Vector4;
 	namespace CSC8503 {
 		class RenderObject;
-
+		class ToonRenderObject;
 		class GameTechRenderer : public OGLRenderer	{
 		public:
-			GameTechRenderer(GameWorld& world);
+			GameTechRenderer(ToonGameWorld& world);			
 			~GameTechRenderer();
 
 			MeshGeometry*	LoadMesh(const string& name);
 			TextureBase*	LoadTexture(const string& name);
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
+			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
+			bool IsMinimapVisible() { return minimapEnabled; }
+
 		protected:
+
+			void SetupStuffs();
+			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 
 			void RenderFrame()	override;
 
+			void PresentScene();
+
+			void DrawMinimapToScreen(int modelLocation);
+
+			void DrawMinimap();
+
+			void DrawMainScene();
+
 			OGLShader*		defaultShader;
 
-			GameWorld&	gameWorld;
+			//GameWorld&	gameWorld;
+			ToonGameWorld&	gameWorld;
 
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera(); 
+			void RenderCamera();
+			void RenderMinimap();
+			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
+
 			void RenderSkybox();
 
 			void LoadSkybox();
@@ -42,10 +61,13 @@ namespace NCL {
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
 
-			vector<const RenderObject*> activeObjects;
+			vector<const ToonGameObject*> activeObjects;
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
+			OGLShader*	minimapShader;
+			OGLShader* textureShader;
+
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
 
@@ -75,6 +97,22 @@ namespace NCL {
 			GLuint textColourVBO;
 			GLuint textTexVBO;
 			size_t textCount;
+
+			bool minimapEnabled = true;
+
+			GLuint sceneFBO;
+			GLuint sceneColourTexture;
+			GLuint sceneDepthTexture;
+			void GenerateSceneFBO(int width, int height);
+
+			GLuint minimapFBO;
+			GLuint minimapColourTexture;
+			GLuint minimapDepthTexture;
+			void GenerateMinimapFBO(int width, int height);
+
+			OGLMesh* fullScreenQuad;
+			OGLMesh* minimapQuad;
+			OGLMesh* minimapStencilQuad;
 		};
 	}
 }

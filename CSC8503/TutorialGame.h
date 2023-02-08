@@ -6,6 +6,7 @@
 #include "PhysicsSystem.h"
 
 #include "StateGameObject.h"
+#include "PaintBallClass.h"
 #include "Player.h"
 
 #include "ToonLevelManager.h"
@@ -61,10 +62,11 @@ namespace NCL {
 			GameObject* AddEnemyToWorld(const Vector3& position);
 			GameObject* AddBonusToWorld(const Vector3& position);
 
-			Player* AddMoveablePlayer(const Vector3& position);
+			GameObject* AddMoveablePlayer(const Vector3& position);
 
 			StateGameObject* AddStateObjToWorld(const Vector3& pos, Vector3 dimensions, float inverseMass);
 			StateGameObject* testStateObj;
+
 
 #ifdef USEVULKAN
 			GameTechVulkanRenderer*	renderer;
@@ -84,7 +86,7 @@ namespace NCL {
 			float sprintMax;
 
 			GameObject* selectionObject = nullptr;
-			Player* cameraTargetObject = nullptr;
+			GameObject* cameraTargetObject = nullptr;
 
 			MeshGeometry*	capsuleMesh = nullptr;
 			MeshGeometry*	cubeMesh	= nullptr;
@@ -110,7 +112,8 @@ namespace NCL {
 
 			bool isGameOver;
 			float timer;
+
+			PaintBallClass* sampleWeapon;
 		};
 	}
 }
-

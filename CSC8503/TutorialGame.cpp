@@ -7,8 +7,6 @@
 #include "PositionConstraint.h"
 #include "OrientationConstraint.h"
 #include "StateGameObject.h"
-
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -17,7 +15,7 @@ TutorialGame::TutorialGame()	{
 #ifdef USEVULKAN
 	renderer	= new GameTechVulkanRenderer(*world);
 #else 
-	renderer = new GameTechRenderer(*world);
+	//renderer = new GameTechRenderer(*world);
 #endif
 
 	physics		= new PhysicsSystem(*world);	
@@ -71,6 +69,11 @@ TutorialGame::~TutorialGame()	{
 }
 
 void TutorialGame::UpdateGame(float dt) {
+#pragma region To Be Changed
+	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
+	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+#pragma endregion
+
 	if (cameraTargetObject)
 	{
 		world->GetMainCamera()->UpdateCamera(dt, cameraTargetObject->GetTransform().GetPosition(), cameraTargetObject->GetTransform().GetScale());
@@ -80,7 +83,7 @@ void TutorialGame::UpdateGame(float dt) {
 		Matrix4 view = world->GetMainCamera()->BuildViewMatrix();
 		Matrix4 cam = view.Inverse();
 		
-		cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
+		//cameraTargetObject->Update(cam, horizontalAngle, verticalAngle, dt);
 		
 		//ObjMovement(dt);
 		/*Matrix4 horizontalRotation = Matrix4::Rotation(horizontalAngle, Vector3(0, 1, 0));
@@ -165,6 +168,13 @@ void TutorialGame::UpdateGame(float dt) {
 		UpdateTimer(dt);
 	else
 		GameOver();
+	
+	//if (cameraTargetObject && !sampleWeapon) { sampleWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, basicShader, sphereMesh, cameraTargetObject); }
+	if (sampleWeapon) 
+	{
+		//sampleWeapon->UpdateTargetObject(selectionObject);
+		sampleWeapon->Update(dt);
+	}
 }
 
 void TutorialGame::UpdateTimer(float dt) {
@@ -207,7 +217,7 @@ void TutorialGame::ObjMovement(float dt) {
 		sprintTimer = max(sprintTimer, sprintMax);
 	}
 
-	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
+	/*if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::W))
 		cameraTargetObject->GetPhysicsObject()->AddForce(fwdAxis * fwdForce);
 
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::A))
@@ -217,7 +227,7 @@ void TutorialGame::ObjMovement(float dt) {
 		cameraTargetObject->GetPhysicsObject()->AddForce(rightAxis * objMovementForce);
 
 	if (Window::GetKeyboard()->KeyHeld(NCL::KeyboardKeys::S))
-		cameraTargetObject->GetPhysicsObject()->AddForce(-fwdAxis * objMovementForce);
+		cameraTargetObject->GetPhysicsObject()->AddForce(-fwdAxis * objMovementForce);*/
 }
 
 void TutorialGame::GameOver() {
@@ -366,6 +376,7 @@ void TutorialGame::InitWorld() {
 	InitGameExamples();
 	InitDefaultFloor();
 
+	/*sampleWeapon = new PaintBallClass(15, 50, 0.5f, 1.0f, 5, world, basicShader, sphereMesh, cameraTargetObject);*/
 	cameraTargetObject = AddMoveablePlayer(Vector3(0, 20, 0));
 }
 
@@ -451,6 +462,7 @@ GameObject* TutorialGame::AddCubeToWorld(const Vector3& position, Vector3 dimens
 }
 
 GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position) {
+	GameObject* player = AddSphereToWorld(position, 2.0f);
 	float meshSize		= 1.0f;
 	float inverseMass	= 0.5f;
 
@@ -474,11 +486,11 @@ GameObject* TutorialGame::AddPlayerToWorld(const Vector3& position) {
 	return character;
 }
 
-Player* TutorialGame::AddMoveablePlayer(const Vector3& position) {
+GameObject* TutorialGame::AddMoveablePlayer(const Vector3& position) {
 	float meshSize = 1.0f;
 	float inverseMass = 0.5f;
 
-	Player* character = new Player();
+	GameObject* character = new GameObject();
 	SphereVolume* volume = new SphereVolume(1.0f);
 
 	character->SetBoundingVolume((CollisionVolume*)volume);
@@ -639,7 +651,7 @@ bool TutorialGame::SelectObject() {
 				selectionObject = nullptr;
 			}
 
-			Ray ray = CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
+			Ray ray = CollisionDetection::BuildRayFromCenter(*world->GetMainCamera());//CollisionDetection::BuildRayFromMouse(*world->GetMainCamera());
 
 			RayCollision closestCollision;
 			if (world->Raycast(ray, closestCollision, true)) {
