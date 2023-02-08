@@ -127,3 +127,8 @@ PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, Pushdow
 
 	return PushdownResult::NoChange;
 }
+
+void NCL::CSC8503::ToonGame::OnAwake()
+{
+	Window::GetWindow()->ShowOSPointer(false);
+}

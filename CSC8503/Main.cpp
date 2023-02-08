@@ -255,6 +255,7 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
+
 int main() {
 	Window*w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	//TestPushdownAutomata(w);
@@ -275,7 +276,6 @@ int main() {
 	//TestBehaviourTree();
 
 	//std::cout << "ANGLE: " << Vector3::Angle(Vector3(1, 0, 0), Vector3(0, 1, 0)) << std::endl;
-
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
 		//TestPathFinding();
 		//DisplayPathFinding();
@@ -297,7 +297,9 @@ int main() {
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-		g->UpdateGame(dt);
+		//DrawMainMenu();
+		
+		//g->UpdateGame(dt);
 	}
 	Window::DestroyGameWindow();
 

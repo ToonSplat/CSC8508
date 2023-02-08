@@ -25,7 +25,8 @@ namespace NCL
 		protected:
 			void UpdateCamera(float dt);
 			void UpdateTesting();
-			PushdownState::PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+			void OnAwake() override;
 
 		protected:
 			ToonFollowCamera* followCamera;

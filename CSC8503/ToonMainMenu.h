@@ -10,28 +10,35 @@ using namespace CSC8503;
 
 class ToonMainMenu : public PushdownState
 {
+	struct MenuCoordinates
+	{
+		Vector2 position;
+		Vector2 size;
+	};
 	struct MenuDataStruct
 	{
-		std::string text;
-		Vector2		xyLocation;
-		bool		isHovered;
-		bool		isSelected;
-		Vector4		colour;
+		std::string		text;
+		MenuCoordinates coordinates;
+		bool			isHovered;
+		bool			isSelected;
+		Vector4			colour;
 	};
 
 	private:
 		Window*						m_Window;
-		ToonGame*					m_Game		   = NULL;
+		Camera*						m_Camera;
+		GameTechRenderer*			m_Renderer;
+		ToonGame*					m_Game		       = NULL;
+		const Vector4				m_HoverColour	   = Debug::GREEN;
+		const Vector4				m_NormalTextColour = Debug::BLUE;
 		std::vector<MenuDataStruct> m_mainMenuData = {
-														MenuDataStruct("Play", Vector2(5, 10), false, false, m_NormalTextColour),
-														MenuDataStruct("Multi Play", Vector2(5, 30), false, false, m_NormalTextColour),
-														MenuDataStruct("Settings", Vector2(5, 50), false, false, m_NormalTextColour),
-														MenuDataStruct("Credits", Vector2(5, 70), false, false, m_NormalTextColour),
-														MenuDataStruct("Quit", Vector2(5, 90), false, false, m_NormalTextColour)
+														MenuDataStruct("Play", MenuCoordinates(Vector2(5, 10), Vector2(80, 20)), false, false, m_NormalTextColour),
+														MenuDataStruct("Multi Play", MenuCoordinates(Vector2(5, 30), Vector2(80, 20)), false, false, m_NormalTextColour),
+														MenuDataStruct("Settings", MenuCoordinates(Vector2(5, 50), Vector2(80, 20)), false, false, m_NormalTextColour),
+														MenuDataStruct("Credits", MenuCoordinates(Vector2(5, 70), Vector2(80, 20)), false, false, m_NormalTextColour),
+														MenuDataStruct("Quit", MenuCoordinates(Vector2(5, 90), Vector2(80, 20)), false, false, m_NormalTextColour)
 													 };
 
-		Vector4				m_HoverColour		   = Debug::GREEN;
-		Vector4				m_NormalTextColour	   = Debug::BLUE;
 
 	public:
 		ToonMainMenu(Window* window);
@@ -40,4 +47,5 @@ class ToonMainMenu : public PushdownState
 		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 		void OnAwake() override;
 		void DrawMainMenu();
+		bool IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenuCoordinates);
 };
