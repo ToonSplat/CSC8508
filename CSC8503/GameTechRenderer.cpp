@@ -226,11 +226,11 @@ void GameTechRenderer::RenderFrame() {
 	
 
 	DrawMainScene();
-	//if (minimapEnabled)
-	//{
+	if (minimapEnabled)
+	{
 		
 		DrawMinimap();
-	//}
+	}
 	glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 	PresentScene();
 	glPopDebugGroup();

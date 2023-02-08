@@ -45,6 +45,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
+	world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 	player->Update(dt);
 
