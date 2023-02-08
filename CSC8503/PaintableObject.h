@@ -13,8 +13,8 @@ namespace NCL {
 
 			void AddImpactPoint(ImpactPoint point);
 
-			std::deque<ImpactPoint> GetImpactPoints() const {
-				return impactPoints;
+			std::deque<ImpactPoint>* GetImpactPoints() {
+				return &impactPoints;
 			}
 
 		private:

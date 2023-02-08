@@ -656,12 +656,14 @@ void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, 
 	if (dynamic_cast<PaintableObject*>(linkedObject)) {
 		PaintableObject* paintedObject = (PaintableObject*)linkedObject;
 
-		std::deque objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
+		std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-		glUniform1i(impactPointCountLocation, objImpactPoints.size());
+		glUniform1i(impactPointCountLocation, objImpactPoints->size());
+
+		if (objImpactPoints->empty()) return;
 
 		GLuint i = 0;
-		for (const ImpactPoint& point : objImpactPoints) {
+		for (const ImpactPoint& point : *objImpactPoints) {
 			char buffer[64];
 
 			sprintf_s(buffer, "impactPoints[%i].position", i);
