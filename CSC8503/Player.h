@@ -8,7 +8,11 @@
 #include "PhysicsObject.h"
 #include "Debug.h"
 #include <vector>
+
+#include "AudioSystem.h"
+
 #include "PaintBallClass.h"
+
 
 using namespace NCL;
 using namespace CSC8503;
@@ -39,6 +43,9 @@ protected:
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
+
+	int ammoRemaining = 100;
+
 
 	PaintBallClass weapon;
 	bool isAiming, isMoving;
