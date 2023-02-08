@@ -4,6 +4,8 @@
 #include "RenderObject.h"
 #include "ToonRenderObject.h"
 #include "ToonFollowCamera.h"
+#include "ToonLevelManager.h"
+#include "ToonUtils.h"
 #include "TextureLoader.h"
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
@@ -176,6 +178,13 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
+	}
+	if (ImGui::CollapsingHeader("Player"))
+	{
+		Player* player = ToonLevelManager::Get()->GetPlayer();
+		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(player->GetRigidbody()->getTransform().getPosition());
+
+		ImGui::DragFloat3("Position", (float*)(&playerPos));
 	}
 	ImGui::End();
 

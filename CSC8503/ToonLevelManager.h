@@ -27,6 +27,8 @@ namespace NCL
 			ToonLevelManager(GameTechRenderer& renderer);
 			~ToonLevelManager();
 
+			Player* GetPlayer() { return player; }
+
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
@@ -92,6 +94,7 @@ namespace NCL
 			GameTechRenderer& gameRenderer;			
 
 			ToonGameObject* axisObject;
+			Player* player = nullptr;
 
 			static ToonLevelManager* instance;
 		};

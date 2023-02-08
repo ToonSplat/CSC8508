@@ -17,7 +17,7 @@ NCL::CSC8503::ToonGame::ToonGame()
 	
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 
-	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20));
+	player = levelManager->AddPlayerToWorld(Vector3(20, 5, 00));
 	player->SetWeapon(baseWeapon);
 	
 	followCamera = new ToonFollowCamera(player);
