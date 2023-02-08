@@ -40,7 +40,7 @@ void main(void)
 	
 	
 	
-	fragColor.rgb = albedo.rgb; //ambient
+	fragColor = albedo;
 	
-	fragColor.a = albedo.a;
+
 }

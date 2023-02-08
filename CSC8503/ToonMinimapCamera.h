@@ -13,7 +13,7 @@ namespace NCL::CSC8503 {
 		void UpdateCamera(float dt) override;
 	protected:
 		ToonGameObject& followTarget;
-		float zoomFactor = 10.0f;
+		float zoomFactor = 15.0f;
 		float distanceFromFocus = 10.0f;
 	};
 }

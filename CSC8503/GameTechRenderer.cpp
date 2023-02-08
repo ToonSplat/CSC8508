@@ -64,6 +64,11 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	minimapQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	minimapQuad->UploadToGPU();
+
+	minimapStencilQuad = new OGLMesh();
+	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5, 0.8,-1), Vector3(-0.5,-0.8,-1) , Vector3(0.5,-0.8,-1) , Vector3(0.5,0.8,-1) });
+	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	minimapStencilQuad->UploadToGPU();
 	
 
 	LoadSkybox();
@@ -276,7 +281,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	//ADD STENCIL BUFFER??
 	RenderMinimap();
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -343,21 +347,41 @@ void GameTechRenderer::PresentScene()
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.5,-0.5, 0)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1));
-	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
+
+	
+	DrawMinimapToScreen(modelLocation);
+
+	
+	
+}
+
+void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
+{
+	glEnable(GL_STENCIL_TEST);
+
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glStencilFunc(GL_ALWAYS, 2, ~0);
+	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8, -0.7, 0)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+	BindMesh(minimapStencilQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 2, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
 	BindMesh(minimapQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	
-	
+	glDisable(GL_STENCIL_TEST);
 }
 
 void GameTechRenderer::SortObjectList() {

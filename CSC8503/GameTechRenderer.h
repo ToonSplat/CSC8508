@@ -36,6 +36,8 @@ namespace NCL {
 
 			void PresentScene();
 
+			void DrawMinimapToScreen(int modelLocation);
+
 			void DrawMinimap();
 
 			void DrawMainScene();
@@ -110,6 +112,7 @@ namespace NCL {
 
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
+			OGLMesh* minimapStencilQuad;
 		};
 	}
 }
