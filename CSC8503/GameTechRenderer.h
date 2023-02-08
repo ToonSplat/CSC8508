@@ -13,7 +13,6 @@ namespace NCL {
 	namespace CSC8503 {
 		class RenderObject;
 		class ToonRenderObject;
-
 		class GameTechRenderer : public OGLRenderer	{
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
@@ -23,13 +22,25 @@ namespace NCL {
 			TextureBase*	LoadTexture(const string& name);
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
+			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
+			bool IsMinimapVisible() { return minimapEnabled; }
+
 		protected:
 
 			void SetupStuffs();
+			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 
 			void RenderFrame()	override;
+
+			void PresentScene();
+
+			void DrawMinimapToScreen(int modelLocation);
+
+			void DrawMinimap();
+
+			void DrawMainScene();
 
 			OGLShader*		defaultShader;
 
@@ -40,6 +51,7 @@ namespace NCL {
 			void SortObjectList();
 			void RenderShadowMap();
 			void RenderCamera();
+			void RenderMinimap();
 			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
 
 			void RenderSkybox();
@@ -53,6 +65,9 @@ namespace NCL {
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
+			OGLShader*	minimapShader;
+			OGLShader* textureShader;
+
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
 
@@ -82,6 +97,22 @@ namespace NCL {
 			GLuint textColourVBO;
 			GLuint textTexVBO;
 			size_t textCount;
+
+			bool minimapEnabled = true;
+
+			GLuint sceneFBO;
+			GLuint sceneColourTexture;
+			GLuint sceneDepthTexture;
+			void GenerateSceneFBO(int width, int height);
+
+			GLuint minimapFBO;
+			GLuint minimapColourTexture;
+			GLuint minimapDepthTexture;
+			void GenerateMinimapFBO(int width, int height);
+
+			OGLMesh* fullScreenQuad;
+			OGLMesh* minimapQuad;
+			OGLMesh* minimapStencilQuad;
 		};
 	}
 }

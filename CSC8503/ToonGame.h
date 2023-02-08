@@ -13,6 +13,7 @@ namespace NCL
 	namespace CSC8503
 	{
 		class ToonFollowCamera;
+		class ToonMinimapCamera;
 		class ToonGame
 		{
 		public:
@@ -27,6 +28,9 @@ namespace NCL
 
 		protected:
 			ToonFollowCamera* followCamera;
+			ToonMinimapCamera* minimapCamera;
+
+
 			Player*	player = nullptr;
 			ToonGameObject* targetObject = nullptr;
 

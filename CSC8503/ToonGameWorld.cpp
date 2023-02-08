@@ -13,7 +13,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	eventListener = new ToonEventListener(physicsWorld);
 
-	mainCamera = new Camera();
+	followCamera = new Camera();
 	instance = this;
 }
 

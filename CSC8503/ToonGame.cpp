@@ -3,6 +3,7 @@
 #include "ToonGame.h"
 #include "ToonUtils.h"
 #include "ToonFollowCamera.h"
+#include "ToonMinimapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 
@@ -21,7 +22,9 @@ NCL::CSC8503::ToonGame::ToonGame()
 	player->SetWeapon(baseWeapon);
 	
 	followCamera = new ToonFollowCamera(*player);
+	minimapCamera = new ToonMinimapCamera(*player);
 	world->SetMainCamera(followCamera);
+	world->SetMinimapCamera(minimapCamera);
 
 	accumulator = 0.0f;
 	showCursor = false;
@@ -43,6 +46,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
+	world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 	player->Update(dt);
 
