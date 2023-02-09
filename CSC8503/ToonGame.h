@@ -17,7 +17,7 @@ namespace NCL
 		class ToonGame
 		{
 		public:
-			ToonGame();
+			ToonGame(bool offline = true);
 			~ToonGame();
 
 			virtual void UpdateGame(float dt);
@@ -41,9 +41,9 @@ namespace NCL
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
-			ToonEventListener* eventListener;
 			Team* testTeam;
 
+			bool offline;
 			bool showCursor;
 			const double timeStep = 1.0 / 60.0;
 			double accumulator;

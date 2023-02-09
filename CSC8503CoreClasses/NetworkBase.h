@@ -12,6 +12,7 @@ enum BasicNetworkMessages {
 	Delta_State,	//1 byte per channel since the last state
 	Full_State,		//Full transform etc
 	Received_State, //received from a client, informs that its received packet n
+	Client_Update,
 	Player_Connected,
 	Player_Disconnected,
 	Shutdown
@@ -22,16 +23,53 @@ struct GamePacket {
 	short type;
 
 	GamePacket() {
-		type		= BasicNetworkMessages::None;
-		size		= 0;
+		type = BasicNetworkMessages::None;
+		size = 0;
 	}
 
 	GamePacket(short type) : GamePacket() {
-		this->type	= type;
+		this->type = type;
 	}
 
 	int GetTotalSize() {
 		return sizeof(GamePacket) + size;
+	}
+};
+
+struct StringPacket : public GamePacket {
+	char stringData[256];
+
+	StringPacket(const std::string& message) {
+		type = BasicNetworkMessages::String_Message;
+		size = (short)message.length();
+
+		memcpy(stringData, message.data(), size);
+	}
+
+	std::string GetStringFromData() {
+		std::string realString(stringData);
+		realString.resize(size);
+		return realString;
+	}
+};
+
+struct ConnectPacket : public GamePacket {
+	int playerID;
+	bool you;
+	ConnectPacket(int playerID, bool you) {
+		type = BasicNetworkMessages::Player_Connected;
+		size = sizeof(ConnectPacket) - sizeof(GamePacket);
+		this->playerID = playerID;
+		this->you = you;
+	}
+};
+
+struct DisconnectPacket : public GamePacket {
+	int playerID;
+	DisconnectPacket(int playerID) {
+		type = BasicNetworkMessages::Player_Disconnected;
+		size = sizeof(DisconnectPacket) - sizeof(GamePacket);
+		this->playerID = playerID;
 	}
 };
 
@@ -40,7 +78,7 @@ public:
 	virtual void ReceivePacket(int type, GamePacket* payload, int source = -1) = 0;
 };
 
-class NetworkBase	{
+class NetworkBase {
 public:
 	static void Initialise();
 	static void Destroy();
@@ -66,8 +104,8 @@ protected:
 		if (range.first == packetHandlers.end()) {
 			return false; //no handlers for this message type!
 		}
-		first	= range.first;
-		last	= range.second;
+		first = range.first;
+		last = range.second;
 		return true;
 	}
 

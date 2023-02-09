@@ -10,9 +10,8 @@
 using namespace NCL;
 using namespace CSC8503;
 
-static bool var = false;
 
-NCL::CSC8503::ToonGame::ToonGame()
+NCL::CSC8503::ToonGame::ToonGame(bool offline) : offline(offline)
 {
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);

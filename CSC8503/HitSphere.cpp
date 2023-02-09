@@ -8,7 +8,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, reactphysics3d::Vector3 position, float radius /*, Weapon* weapon*/) : ToonGameObject(RP3D_World), radius(radius) {
-	lifetime = 1.5f;
+	toDelete = false;
 	teamColour = team->getTeamColour();
 	this->radius = radius;
 
@@ -43,13 +43,12 @@ HitSphere::~HitSphere() {
 
 }
 
-void HitSphere::Update(float dt) {
-	if (lifetime <= 0) {
-		this->isActive = false;
-		ToonGameWorld::Get()->RemoveHitSphere(this);
-		ToonGameWorld::Get()->RemoveGameObject(this, true);
+bool HitSphere::CheckDelete() {
+	if (toDelete == false) {
+		toDelete = true;
+		return false;
 	}
-	lifetime -= dt;
+	return true;
 }
 
 void HitSphere::OnCollisionBegin(ToonGameObject* otherObject) { //Must be changed to onTrigger at some point

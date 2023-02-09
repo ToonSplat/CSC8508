@@ -1,5 +1,5 @@
 #include "NetworkBase.h"
-#include "./enet/enet.h"
+#include <enet/enet.h>
 NetworkBase::NetworkBase()	{
 	netHandle = nullptr;
 }

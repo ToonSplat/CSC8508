@@ -69,6 +69,7 @@ namespace NCL {
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
 			OGLShader* textureShader;
+			OGLShader* sceneShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;

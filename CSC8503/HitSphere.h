@@ -12,7 +12,7 @@ public:
 
 	void OnCollisionBegin(ToonGameObject* otherObject);
 
-	void Update(float dt);
+	bool CheckDelete();
 
 	Vector3 GetTeamColour() const { return teamColour; }
 	float GetRadius() const { return radius; }
@@ -21,7 +21,7 @@ protected:
 	float radius;
 	Vector3 teamColour;
 
-	float lifetime; //Time left before removed from game world.
+	bool toDelete; //Time left before removed from game world.
 
 	/*
 	* Eventually when weapons are added:
