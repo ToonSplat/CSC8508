@@ -184,7 +184,7 @@ void ToonNetworkedGame::UpdateMinimumState() {
 }
 
 Player* ToonNetworkedGame::SpawnPlayer(int playerID) {
-	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(-20, 5, -20), ToonGameWorld::Get()->GetTeamLeastPlayers());
+	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(20, 5, 0), ToonGameWorld::Get()->GetTeamLeastPlayers());
 	return newPlayerCharacter;
 }
 
@@ -213,7 +213,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		if (myID == receivedID) {
 			player = newPlayer;
 			player->SetWeapon(baseWeapon);
-			world->SetMainCamera(new ToonFollowCamera(*player));
+			world->SetMainCamera(new ToonFollowCamera(player));
 			world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
 		if (thisServer) {
