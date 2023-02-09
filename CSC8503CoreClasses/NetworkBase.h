@@ -73,6 +73,18 @@ struct DisconnectPacket : public GamePacket {
 	}
 };
 
+struct MessagePacket : public GamePacket {
+	short messageID;
+	short messageValue;
+
+	MessagePacket(short ID, short value) {
+		type = Message;
+		size = sizeof(short) * 2;
+		this->messageID = ID;
+		this->messageValue = value;
+	}
+};
+
 class PacketReceiver {
 public:
 	virtual void ReceivePacket(int type, GamePacket* payload, int source = -1) = 0;

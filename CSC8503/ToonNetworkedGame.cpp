@@ -6,22 +6,12 @@
 #include "PhysicsObject.h"
 #include "RenderObject.h"
 #include "Player.h"
+#include "ToonFollowCamera.h"
+#include "ToonMinimapCamera.h"
 
 #include <fstream>
 
 #define COLLISION_MSG 30
-
-struct MessagePacket : public GamePacket {
-	short messageID;
-	short messageValue;
-	short messageValueTwo;
-	short highScore;
-
-	MessagePacket() {
-		type = Message;
-		size = sizeof(short) * 4;
-	}
-};
 
 ToonNetworkedGame::ToonNetworkedGame() : ToonGame(false) {
 	thisServer = nullptr;
@@ -54,7 +44,6 @@ void ToonNetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
-	myID = 10000;
 	ServerStartLevel();
 }
 
@@ -73,7 +62,10 @@ void ToonNetworkedGame::StartAsClient(char a, char b, char c, char d) {
 }
 
 void ToonNetworkedGame::UpdateGame(float dt) {
-	Debug::Print("Player ID: " + std::to_string(myID), Vector2(0, 5));
+	if(thisServer)
+		Debug::Print("Server", Vector2(0, 5));
+	else
+		Debug::Print("Player ID: " + std::to_string(myID), Vector2(0, 5));
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
 		if (thisServer) {
@@ -192,7 +184,8 @@ void ToonNetworkedGame::UpdateMinimumState() {
 }
 
 Player* ToonNetworkedGame::SpawnPlayer(int playerID) {
-	return nullptr;
+	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(-20, 5, -20), ToonGameWorld::Get()->GetTeamLeastPlayers());
+	return newPlayerCharacter;
 }
 
 void ToonNetworkedGame::ServerStartLevel() {
@@ -206,16 +199,22 @@ void ToonNetworkedGame::StartLevel() {
 void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 	if (type == Player_Connected) {
 		ConnectPacket* realPacket = (ConnectPacket*)payload;
+		// I am recieving my ID
 		int receivedID = realPacket->playerID;
 		if (realPacket->you) {
 			myID = receivedID;
 			//std::cout << "Recieved my ID, I am" << myID << std::endl;
 			return;
 		}
-		//std::cout << "Recieved message Player Connected, Spawning their goat, they are player ID" << receivedID << std::endl;
-		Player* newGoat = SpawnPlayer(receivedID);
+
+
+		//std::cout << "Recieved message Player Connected, Spawning their player, they are player ID" << receivedID << std::endl;
+		Player* newPlayer = SpawnPlayer(receivedID);
 		if (myID == receivedID) {
-			player = newGoat;
+			player = newPlayer;
+			player->SetWeapon(baseWeapon);
+			world->SetMainCamera(new ToonFollowCamera(*player));
+			world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
 		if (thisServer) {
 			ConnectPacket outPacket(receivedID, false);
@@ -233,9 +232,9 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else if (type == Player_Disconnected) {
 		DisconnectPacket* realPacket = (DisconnectPacket*)payload;
 		int receivedID = realPacket->playerID;
-		//std::cout << "Recieved message Player Disconnected, removing their goat, they are player ID" << receivedID << std::endl;
+		std::cout << "Recieved message Player Disconnected, removing their player, they are player ID" << receivedID << std::endl;
 		Player* removingGoat = serverPlayers.find(receivedID)->second;
-		//world->RemoveGoat((GameObject*)removingGoat, true);
+		world->RemoveGameObject(removingGoat, true);
 		serverPlayers.erase(receivedID);
 		if (thisServer) {
 			delete playerControls.find(receivedID)->second;

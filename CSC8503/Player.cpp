@@ -7,7 +7,7 @@ using namespace CSC8503;
 
 Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius, Team* team) : ToonGameObject(RP3D_World), team(team)
 {
-	team = nullptr;
+	team->AddPlayer();
 	isAiming = false;
 
 	moveSpeed = 1500.0f;

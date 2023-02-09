@@ -67,13 +67,13 @@ void GameServer::UpdateServer() {
 		int peer = p->incomingPeerID;
 
 		if (type == ENetEventType::ENET_EVENT_TYPE_CONNECT) {
-			std::cout << "Server: New client connected" << std::endl;
+			//std::cout << "Server: New client connected" << std::endl;
 			clientCount++;
-			playerMap.emplace(10000 + clientCount, p);
-			ConnectPacket returnPacket(10000 + clientCount, true);
-			SendPacketToClient(returnPacket, 10000 + clientCount);
-			std::cout << "Sent to " << p << " that they are client " << 10000 + clientCount << std::endl;
-			ConnectPacket packet(10000 + clientCount, false);
+			playerMap.emplace(clientCount, p);
+			ConnectPacket returnPacket(clientCount, true);
+			SendPacketToClient(returnPacket, clientCount);
+			//std::cout << "Sent to " << p << " that they are client " << clientCount << std::endl;
+			ConnectPacket packet(clientCount, false);
 			ProcessPacket(&packet);
 		}
 		else if (type == ENetEventType::ENET_EVENT_TYPE_DISCONNECT) {

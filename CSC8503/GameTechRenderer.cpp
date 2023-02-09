@@ -410,6 +410,7 @@ void GameTechRenderer::PresentScene()
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
 {
+	if (!gameWorld.GetMinimapCamera()) return;
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -641,6 +642,7 @@ void GameTechRenderer::RenderCamera() {
 
 void GameTechRenderer::RenderMinimap()
 {
+	if (!gameWorld.GetMinimapCamera()) return;
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);

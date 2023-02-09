@@ -6,11 +6,11 @@
 
 #define COLLISION_MSG 30
 
-struct MessagePacket : public GamePacket {
+struct OldMessagePacket : public GamePacket {
 	short playerID;
 	short messageID;
 
-	MessagePacket() {
+	OldMessagePacket() {
 		type = Message;
 		size = sizeof(short) * 2;
 	}
@@ -157,7 +157,7 @@ void NetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
 
 void NetworkedGame::OnPlayerCollision(NetworkPlayer* a, NetworkPlayer* b) {
 	if (thisServer) { //detected a collision between players!
-		MessagePacket newPacket;
+		OldMessagePacket newPacket;
 		newPacket.messageID = COLLISION_MSG;
 		newPacket.playerID  = a->GetPlayerNum();
 

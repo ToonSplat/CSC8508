@@ -13,8 +13,9 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	eventListener = new ToonEventListener(physicsWorld);
+	teams.insert(new Team("The Green Gulls", Vector3(0, 1.0f, 0)));
+	teams.insert(new Team("The Purple Panthers", Vector3(1.0f, 0, 1.0f)));
 
-	followCamera = new Camera();
 	instance = this;
 }
 
@@ -22,6 +23,10 @@ NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
+	delete mainCamera;
+	delete minimapCamera;
+	for (auto& team : teams)
+		delete team;
 }
 
 void NCL::CSC8503::ToonGameWorld::Clear()
@@ -83,4 +88,17 @@ void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)
 	for (ToonGameObject* g : gameObjects) {
 		f(g);
 	}
+}
+
+Team* NCL::CSC8503::ToonGameWorld::GetTeamLeastPlayers()
+{
+	Team* weakestTeam = *teams.begin();
+	int lowestPlayerCount = weakestTeam->getPlayerCount();
+	for (Team* team : teams) {
+		if (team->getPlayerCount() < lowestPlayerCount) {
+			lowestPlayerCount = team->getPlayerCount();
+			weakestTeam = team;
+		}
+	}
+	return weakestTeam;
 }
