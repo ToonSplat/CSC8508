@@ -62,7 +62,10 @@ namespace NCL
 			static ToonGameWorld* Get() { return instance; }
 
 			Camera* GetMainCamera() const { return mainCamera; }
-			void SetMainCamera(Camera* newCamera) { mainCamera = newCamera; }
+			void SetMainCamera(Camera* newCamera) { 
+				delete mainCamera;
+				mainCamera = newCamera; 
+			}
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
@@ -75,6 +78,8 @@ namespace NCL
 					delete object;
 				objectsToDelete.clear();
 			}
+
+			Team* GetTeamLeastPlayers();
 
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
@@ -91,6 +96,8 @@ namespace NCL
 			std::unordered_set<HitSphere*> activeHitSpheres;
 			std::unordered_set<PaintableObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
+
+			std::set<Team*> teams;
 
 			int		worldIDCounter;
 			int		worldStateCounter;

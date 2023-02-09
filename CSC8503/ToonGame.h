@@ -29,7 +29,6 @@ namespace NCL
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
-			Team* testTeam;
 
 			bool offline;
 			bool showCursor;
