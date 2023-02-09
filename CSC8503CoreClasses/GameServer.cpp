@@ -1,18 +1,20 @@
 #include "GameServer.h"
 #include "GameWorld.h"
-#include <enet/enet.h>
+#include "./enet/enet.h"
 using namespace NCL;
 using namespace CSC8503;
 
-GameServer::GameServer(int onPort, int maxClients)	{
-	port		= onPort;
-	clientMax	= maxClients;
+static std::map<int, ENetPeer*> playerMap;
+
+GameServer::GameServer(int onPort, int maxClients) {
+	port = onPort;
+	clientMax = maxClients;
 	clientCount = 0;
-	netHandle	= nullptr;
+	netHandle = nullptr;
 	Initialise();
 }
 
-GameServer::~GameServer()	{
+GameServer::~GameServer() {
 	Shutdown();
 }
 
@@ -23,20 +25,76 @@ void GameServer::Shutdown() {
 }
 
 bool GameServer::Initialise() {
-	return false;
+	ENetAddress address;
+	address.host = ENET_HOST_ANY;
+	address.port = port;
+
+	netHandle = enet_host_create(&address, clientMax, 1, 0, 0);
+
+	if (!netHandle) {
+		std::cout << __FUNCTION__ << " failed to create network handle!" << std::endl;
+		return false;
+	}
+	return true;
 }
 
 bool GameServer::SendGlobalPacket(int msgID) {
-	return false;
+	GamePacket packet;
+	packet.type = msgID;
+	return SendGlobalPacket(packet);
 }
 
 bool GameServer::SendGlobalPacket(GamePacket& packet) {
-	return false;
+	ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), 0);
+	enet_host_broadcast(netHandle, 0, dataPacket);
+	return true;
+}
+
+bool GameServer::SendPacketToClient(GamePacket& payload, int playerID) {
+	ENetPeer* p = playerMap.find(playerID)->second;
+	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), 0);
+	enet_peer_send(p, 0, dataPacket);
+	return true;
 }
 
 void GameServer::UpdateServer() {
+	if (!netHandle)
+		return;
+	ENetEvent event;
+	while (enet_host_service(netHandle, &event, 0) > 0) {
+		int type = event.type;
+		ENetPeer* p = event.peer;
+		int peer = p->incomingPeerID;
+
+		if (type == ENetEventType::ENET_EVENT_TYPE_CONNECT) {
+			std::cout << "Server: New client connected" << std::endl;
+			clientCount++;
+			playerMap.emplace(10000 + clientCount, p);
+			ConnectPacket returnPacket(10000 + clientCount, true);
+			SendPacketToClient(returnPacket, 10000 + clientCount);
+			std::cout << "Sent to " << p << " that they are client " << 10000 + clientCount << std::endl;
+			ConnectPacket packet(10000 + clientCount, false);
+			ProcessPacket(&packet);
+		}
+		else if (type == ENetEventType::ENET_EVENT_TYPE_DISCONNECT) {
+			std::cout << "Server: A client has disconnected" << std::endl;
+			for (auto i = playerMap.begin(); i != playerMap.end(); i++)
+				if ((*i).second == p) {
+					DisconnectPacket packet((*i).first);
+					ProcessPacket(&packet);
+					playerMap.erase(i);
+					break;
+				}
+		}
+		else if (type == ENetEventType::ENET_EVENT_TYPE_RECEIVE) {
+			//std::cout << "Server: Packet received..." << std::endl;
+			GamePacket* packet = (GamePacket*)event.packet->data;
+			ProcessPacket(packet, peer);
+			enet_packet_destroy(event.packet);
+		}
+	}
 }
 
-void GameServer::SetGameWorld(GameWorld &g) {
+void GameServer::SetGameWorld(GameWorld& g) {
 	gameWorld = &g;
 }

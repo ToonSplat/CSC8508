@@ -17,10 +17,12 @@ namespace NCL::CSC8503 {
 	};
 
 	struct DeltaPacket : public GamePacket {
-		int		fullID		= -1;
-		int		objectID	= -1;
+		int		fullID = -1;
+		int		objectID = -1;
 		char	pos[3];
 		char	orientation[4];
+		//char	vel[3];
+		//char	angVel[3];
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -30,16 +32,19 @@ namespace NCL::CSC8503 {
 
 	struct ClientPacket : public GamePacket {
 		int		lastID;
-		char	buttonstates[8];
+		int		playerID;
+		char	buttonstates[4]; // UP, LEFT, RIGHT, DOWN
+		int		camera[2]; // Pitch, Yaw
 
 		ClientPacket() {
-			size = sizeof(ClientPacket);
+			type = Client_Update;
+			size = sizeof(ClientPacket) - sizeof(GamePacket);
 		}
 	};
 
-	class NetworkObject		{
+	class NetworkObject {
 	public:
-		NetworkObject(GameObject& o, int id);
+		NetworkObject(GameObject* o, int id, int startState = 0);
 		virtual ~NetworkObject();
 
 		//Called by clients
@@ -49,19 +54,23 @@ namespace NCL::CSC8503 {
 
 		void UpdateStateHistory(int minID);
 
+		int GetNetworkID() const { return networkID; }
+
 	protected:
 
 		NetworkState& GetLatestNetworkState();
 
+		void UpdateLastFullState();
+
 		bool GetNetworkState(int frameID, NetworkState& state);
 
-		virtual bool ReadDeltaPacket(DeltaPacket &p);
-		virtual bool ReadFullPacket(FullPacket &p);
+		virtual bool ReadDeltaPacket(DeltaPacket& p);
+		virtual bool ReadFullPacket(FullPacket& p);
 
-		virtual bool WriteDeltaPacket(GamePacket**p, int stateID);
-		virtual bool WriteFullPacket(GamePacket**p);
+		virtual bool WriteDeltaPacket(GamePacket** p, int stateID);
+		virtual bool WriteFullPacket(GamePacket** p);
 
-		GameObject& object;
+		GameObject* object;
 
 		NetworkState lastFullState;
 
