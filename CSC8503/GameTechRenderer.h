@@ -13,6 +13,7 @@ namespace NCL {
 	namespace CSC8503 {
 		class RenderObject;
 		class ToonRenderObject;
+		class ToonFollowCamera;
 		class GameTechRenderer : public OGLRenderer	{
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
@@ -33,6 +34,7 @@ namespace NCL {
 			void NewRenderText();
 
 			void RenderFrame()	override;
+			void RenderImGUI();
 
 			void PresentScene();
 
@@ -45,7 +47,7 @@ namespace NCL {
 			OGLShader*		defaultShader;
 
 			//GameWorld&	gameWorld;
-			ToonGameWorld&	gameWorld;
+			ToonGameWorld&	gameWorld;			
 
 			void BuildObjectList();
 			void SortObjectList();

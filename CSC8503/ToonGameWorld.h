@@ -78,6 +78,8 @@ namespace NCL
 					delete object;
 				objectsToDelete.clear();
 			}
+      
+			bool ShowCursor() const { return showCursor; }
 
 			Team* GetTeamLeastPlayers();
 
@@ -104,6 +106,7 @@ namespace NCL
 
 		private:
 			static ToonGameWorld* instance;
+			bool showCursor;
 		};
 	}
 }

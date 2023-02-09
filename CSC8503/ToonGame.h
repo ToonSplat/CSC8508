@@ -32,8 +32,8 @@ namespace NCL
 
 			bool offline;
 			bool showCursor;
-			const float timeStep = 1.0f / 60.0f;
-			float accumulator;
+			const double timeStep = 1.0 / 60.0;
+			double accumulator;
 		};
 	}
 }

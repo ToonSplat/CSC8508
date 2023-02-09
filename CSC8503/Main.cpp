@@ -1,4 +1,5 @@
 #include "Window.h"
+#include "Win32Window.h"
 
 #include "Debug.h"
 
@@ -26,6 +27,10 @@
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
 
+#include "../ThirdParty/imgui/imgui.h"
+#include "../ThirdParty/imgui/imgui_impl_opengl3.h"
+#include "../ThirdParty/imgui/imgui_impl_win32.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -45,6 +50,7 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
+
 int main() {
 	Window*w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 
@@ -54,25 +60,36 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-
-	ToonGame* g;
-	std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
-	int choice;
-	std::cin >> choice;
-	switch (choice) {
-	case(1):
-		g = new ToonGame();
-		break;
-	case(2):
-		g = new ToonNetworkedGame();
-		break;
-	case(3):
-		g = new ToonNetworkedGame(127, 0, 0, 1); // Hardcoded for now
-		break;
-	default:
-		return 0;
-	}
+  
+	ToonGame* g = new ToonGame();
+	//ToonGame* g;
+	//std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
+	//int choice;
+	//std::cin >> choice;
+	//switch (choice) {
+	//case(1):
+	//	g = new ToonGame();
+	//	break;
+	//case(2):
+	//	g = new ToonNetworkedGame();
+	//	break;
+	//case(3):
+	//	g = new ToonNetworkedGame(127, 0, 0, 1); // Hardcoded for now
+	//	break;
+	//default:
+	//	return 0;
+	//}
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+  
+	//-----------------------------------------------------------
+	//Imgui 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
+	ImGui_ImplOpenGL3_Init();
+	//-----------------------------------------------------------
 
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -95,6 +112,14 @@ int main() {
 
 		g->UpdateGame(dt);
 	}
+
+	//-----------------------------------------------------------
+	//Imgui 
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplWin32_Shutdown();
+	ImGui::DestroyContext();
+	//-----------------------------------------------------------
+
 	Window::DestroyGameWindow();
 	delete g;
 }
