@@ -44,7 +44,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                 HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
 
                 //make an audio play on collision
-                i->GetAudioEmitter()->SetTarget(Maths::Vector3(i->GetRigidbody()->getTransform().getPosition().x, i->GetRigidbody()->getTransform().getPosition().y, i->GetRigidbody()->getTransform().getPosition().z));
+                i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
                 i->GetAudioEmitter()->SetSound(Audio::GetSound("splatter.wav"));
                 AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
                
