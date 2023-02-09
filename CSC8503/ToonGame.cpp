@@ -39,7 +39,8 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+		Debug::Print("[]", Vector2(48.5, 50), Debug::RED);
+	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);

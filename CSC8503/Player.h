@@ -32,6 +32,7 @@ protected:
 
 	void DisplayDebug(float dt);
 	bool isDebug;
+	bool isDebugToggle;
 
 	Team* team;
 
