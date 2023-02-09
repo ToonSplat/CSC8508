@@ -54,24 +54,25 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-
-	ToonGame* g;
-	std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
-	int choice;
-	std::cin >> choice;
-	switch (choice) {
-	case(1):
-		g = new ToonGame();
-		break;
-	case(2):
-		g = new ToonNetworkedGame();
-		break;
-	case(3):
-		g = new ToonNetworkedGame(127, 0, 0, 1); // Hardcoded for now
-		break;
-	default:
-		return 0;
-	}
+	
+	ToonGame* g = new ToonGame();
+	//ToonGame* g;
+	//std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
+	//int choice;
+	//std::cin >> choice;
+	//switch (choice) {
+	//case(1):
+	//	g = new ToonGame();
+	//	break;
+	//case(2):
+	//	g = new ToonNetworkedGame();
+	//	break;
+	//case(3):
+	//	g = new ToonNetworkedGame(127, 0, 0, 1); // Hardcoded for now
+	//	break;
+	//default:
+	//	return 0;
+	//}
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
