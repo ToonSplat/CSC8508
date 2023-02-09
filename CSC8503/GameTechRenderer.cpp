@@ -359,6 +359,7 @@ void GameTechRenderer::PresentScene()
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
 {
+	if (!gameWorld.GetMinimapCamera()) return;
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
