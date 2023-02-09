@@ -39,6 +39,7 @@ namespace NCL {
 			void DrawMinimapToScreen(int modelLocation);
 
 			void DrawMinimap();
+			void DrawScoreBar();
 
 			void DrawMainScene();
 
@@ -68,6 +69,7 @@ namespace NCL {
 			OGLShader*	minimapShader;
 			OGLShader* textureShader;
 			OGLShader* sceneShader;
+			OGLShader* scoreBarShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -114,6 +116,7 @@ namespace NCL {
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
+			OGLMesh* scoreQuad;
 		};
 	}
 }

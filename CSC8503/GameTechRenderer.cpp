@@ -36,6 +36,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 	sceneShader = new OGLShader("scene.vert", "scene.frag");
+	scoreBarShader = new OGLShader("ScoreBar.vert", "ScoreBar.frag");
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
@@ -71,8 +72,13 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5, 0.8,-1), Vector3(-0.5,-0.8,-1) , Vector3(0.5,-0.8,-1) , Vector3(0.5,0.8,-1) });
 	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	minimapStencilQuad->UploadToGPU();
-	
 
+	scoreQuad = new OGLMesh();
+	scoreQuad->SetVertexPositions({ Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1) });
+	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	scoreQuad->UploadToGPU();
+	
 	LoadSkybox();
 
 	glGenVertexArrays(1, &lineVAO);
@@ -349,12 +355,31 @@ void GameTechRenderer::PresentScene()
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-
-	
 	DrawMinimapToScreen(modelLocation);
+	DrawScoreBar();
+	
+}
 
-	
-	
+void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
+	BindShader(scoreBarShader);
+
+	Matrix4 identityMatrix = Matrix4();
+
+	int projLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "modelMatrix");
+
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
+
+	glDisable(GL_DEPTH_TEST);
+	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85, 0)) * Matrix4::Scale(Vector3(0.4, 0.035, 1));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&scoreBarModelMatrix);
+
+	BindMesh(scoreQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
