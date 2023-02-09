@@ -23,8 +23,8 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) :
 	h = v = 0.0f;
 	smoothness = 0.1f;
 
-	distanceThresholdMoving = 50.0f;
-	distanceThresholdStanding = 2.0f;	
+	distanceThresholdMoving = 100.0f;
+	distanceThresholdStanding = 10.0f;	
 
 	reached = false;
 }
@@ -70,7 +70,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 
 	//Debug::DrawBox(targetAimPosWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::RED, 0);
 
-	distanceThresholdMoving = player->IsMoving() ? player->GetRigidbody()->getLinearVelocity().length() * 0.2f : 50.0f;
+	distanceThresholdMoving = player->IsMoving() ? player->GetRigidbody()->getLinearVelocity().length() * 0.2f : 100.0f;
 	float FinalThreshold = player->IsMoving() ? distanceThresholdMoving : distanceThresholdStanding;
 	Vector3 FinalLookAt = player->IsAiming() ? targetAimLookAtWorld : targetWorldPos + followOffset;
 	Vector3 FinalPos = position;
@@ -82,7 +82,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	else if (!reached)
 	{
 		float distance = abs(targetWorldPosOffset.LengthSquared() - FinalPos.LengthSquared());		
-		reached = distance <= FinalThreshold;
+		reached = distance <= std::pow(FinalThreshold, 4.0f);
 	}
 
 	if (reached)
