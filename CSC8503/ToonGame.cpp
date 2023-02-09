@@ -10,6 +10,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
+
 NCL::CSC8503::ToonGame::ToonGame(bool offline) : offline(offline)
 {
 	world = new ToonGameWorld();	
@@ -17,12 +18,15 @@ NCL::CSC8503::ToonGame::ToonGame(bool offline) : offline(offline)
 	
 	testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
 	levelManager = new ToonLevelManager(*renderer);
-	player = levelManager->AddPlayerToWorld(Vector3(-20, 5, -20), testTeam);
+
+	player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), testTeam);
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 	player->SetWeapon(baseWeapon);
+	//player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0));
 	
-	followCamera = new ToonFollowCamera(*player);
+	followCamera = new ToonFollowCamera(player);
 	minimapCamera = new ToonMinimapCamera(*player);
+
 	world->SetMainCamera(followCamera);
 	world->SetMinimapCamera(minimapCamera);
 
@@ -40,9 +44,12 @@ NCL::CSC8503::ToonGame::~ToonGame()
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
+	var = Window::GetKeyboard()->KeyDown(KeyboardKeys::C);
+
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5, 50), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	if(var)
+		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
@@ -59,13 +66,15 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		accumulator -= timeStep;
 		world->DeleteObjects();
 	}
+
+	//world->GetPhysicsWorld().update();
   
-	levelManager->Update(dt);
+	//levelManager->Update(dt);
 
 	renderer->Render();
-	//Debug::UpdateRenderables(dt);
+	Debug::UpdateRenderables(dt);
 
-	//UpdateTesting();
+	UpdateTesting();
 }
 
 void NCL::CSC8503::ToonGame::UpdateCamera(float dt)
@@ -98,7 +107,7 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 		}
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
+	/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P))
 	{
 		player->GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(10.0f, 1000.0f, -10.0f));
 		player->GetRigidbody()->applyLocalTorque(reactphysics3d::Vector3(50.0f, 40.0f, -90.0f));
@@ -115,5 +124,5 @@ void NCL::CSC8503::ToonGame::UpdateTesting()
 
 		Debug::DrawLine(world->GetMainCamera()->GetPosition(), rayCallback.GetHitWorldPos(), Debug::YELLOW, 10.0f);
 		Debug::DrawLine(rayCallback.GetHitWorldPos(), rayCallback.GetHitWorldPos() + rayCallback.GetHitNormal(), Debug::RED, 10.0f);
-	}
+	}*/
 }

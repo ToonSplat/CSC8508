@@ -13,4 +13,14 @@ namespace ToonUtils
 	{
 		return NCL::Maths::Vector3(v.x, v.y, v.z);
 	}
+
+	static NCL::Maths::Quaternion ConvertToNCLQuaternion(const reactphysics3d::Quaternion& q)
+	{
+		return NCL::Maths::Quaternion(q.x, q.y, q.z, q.w);
+	}
+
+	static reactphysics3d::Quaternion ConvertToRP3DQuaternion(const NCL::Maths::Quaternion& q)
+	{
+		return reactphysics3d::Quaternion(q.x, q.y, q.z, q.w);
+	}
 }

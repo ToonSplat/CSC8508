@@ -51,6 +51,8 @@ namespace NCL::Maths {
 
 		static Quaternion EulerAnglesToQuaternion(float pitch, float yaw, float roll);
 		static Quaternion AxisAngleToQuaterion(const Vector3& vector, float degrees);
+		static Quaternion AxisAngleToQuaterion(float degrees, const Vector3& axis);
+		static Quaternion RotateTowards(const Quaternion& from, const Quaternion& to, float maxDegrees);
 
 		inline bool  operator ==(const Quaternion &from)	const {
 			if (x != from.x || y != from.y || z != from.z || w != from.w) {

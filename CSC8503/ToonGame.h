@@ -20,7 +20,7 @@ namespace NCL
 			ToonGame(bool offline = true);
 			~ToonGame();
 
-			virtual void UpdateGame(float dt);			
+			virtual void UpdateGame(float dt);
 
 		protected:
 			void UpdateCamera(float dt);
@@ -30,9 +30,9 @@ namespace NCL
 			ToonFollowCamera* followCamera;
 			ToonMinimapCamera* minimapCamera;
 
-
 			Player*	player = nullptr;
 			ToonGameObject* targetObject = nullptr;
+			PaintBallClass* sampleWeapon;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
@@ -45,8 +45,8 @@ namespace NCL
 
 			bool offline;
 			bool showCursor;
-			const float timeStep = 1.0f / 60.0f;
-			float accumulator;
+			const double timeStep = 1.0 / 60.0;
+			double accumulator;
 		};
 	}
 }

@@ -8,7 +8,7 @@
 
 namespace NCL {
     namespace CSC8503 {
-        class Team;
+        class Team;        
         class PaintBallClass {
         public:
             PaintBallClass();
@@ -33,6 +33,7 @@ namespace NCL {
             float maxShootDistance; // max dist can be shot
             PaintBallProjectile* bullet[20];    //Trajectory
             int trajectoryPoints = 20;          //Trajectory
+            Vector3 bulletVelocity;
 
             void Shoot(float dt);
             void Reload(float dt);
@@ -40,12 +41,14 @@ namespace NCL {
             void FireBullet();
 
             float GetYCoordinate(int x, int initialVelocity);
-            void DrawTrajectory(float force);   //Trajectory
+            Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
+            void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
             void HideTrajectory();              //Trajectory
 
             Team* team;
 
             //Variables
+            bool trajectoryDetected;
             float shootTimer;
             float reloadTimer;
             ShaderBase* m_BasicShader;

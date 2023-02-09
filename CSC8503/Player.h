@@ -15,7 +15,7 @@ using namespace CSC8503;
 
 class Player : public ToonGameObject {
 public:
-	Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius, Team* team);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World, const NCL::Maths::Vector3& position, const NCL::Maths::Vector3& rotationEuler, const float& radius, Team* team);
 	~Player();
 
 	void Update(float dt) override;
@@ -25,12 +25,15 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
+	bool IsAiming() const { return isAiming; }
+	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
+
+	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
 protected:
-	void Shoot();
-
 	Team* team;
+	Camera* camera;
 
 	float moveSpeed;
 	float rotationSpeed;
