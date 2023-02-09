@@ -7,6 +7,7 @@
 #include "TextureLoader.h"
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
+#include "ToonUtils.h"
 
 using namespace NCL;
 using namespace Rendering;
@@ -34,6 +35,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	shadowShader = new OGLShader("shadow.vert", "shadow.frag");
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
+	sceneShader = new OGLShader("scene.vert", "scene.frag");
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
@@ -236,9 +238,8 @@ void GameTechRenderer::RenderFrame() {
 		
 		DrawMinimap();
 	}
-	glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 	PresentScene();
-	glPopDebugGroup();
+	
 	
 
 }
@@ -492,38 +493,48 @@ void GameTechRenderer::RenderCamera() {
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = 0;
 
+	int objectPosLocation = 0;
+
 	//TODO - PUT IN FUNCTION
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
 
 	for (const auto&i : activeObjects) {
 		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
-		BindShader(shader);
+		BindShader(sceneShader);
 
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
-		if (activeShader != shader) {
-			projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-			viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-			modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-			shadowLocation = glGetUniformLocation(shader->GetProgramID(), "shadowMatrix");
-			colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-			hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
-			hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
+		//if (activeShader != shader) {
+			projLocation = glGetUniformLocation(sceneShader->GetProgramID(), "projMatrix");
+			viewLocation = glGetUniformLocation(sceneShader->GetProgramID(), "viewMatrix");
+			modelLocation = glGetUniformLocation(sceneShader->GetProgramID(), "modelMatrix");
+			shadowLocation = glGetUniformLocation(sceneShader->GetProgramID(), "shadowMatrix");
+			colourLocation = glGetUniformLocation(sceneShader->GetProgramID(), "objectColour");
+			hasVColLocation = glGetUniformLocation(sceneShader->GetProgramID(), "hasVertexColours");
+			hasTexLocation = glGetUniformLocation(sceneShader->GetProgramID(), "hasTexture");
 
-			lightPosLocation = glGetUniformLocation(shader->GetProgramID(), "lightPos");
-			lightColourLocation = glGetUniformLocation(shader->GetProgramID(), "lightColour");
-			lightRadiusLocation = glGetUniformLocation(shader->GetProgramID(), "lightRadius");
+			lightPosLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightPos");
+			lightColourLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightColour");
+			lightRadiusLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightRadius");
 
-			cameraLocation = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
+			cameraLocation = glGetUniformLocation(sceneShader->GetProgramID(), "cameraPos");
 
+			objectPosLocation = glGetUniformLocation(sceneShader->GetProgramID(), "objectPosition");
 
-			impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
+			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 20, "Passing Impact Points");
+
+			impactPointCountLocation = glGetUniformLocation(sceneShader->GetProgramID(), "impactPointCount");
 
 			Vector3 camPos = gameWorld.GetMainCamera()->GetPosition();
 			glUniform3fv(cameraLocation, 1, camPos.array);
 
-			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, shader);
+			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
+			glUniform3fv(objectPosLocation, 1, objPos.array);
+
+			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, sceneShader);
+			glPopDebugGroup();
+			
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
@@ -532,11 +543,11 @@ void GameTechRenderer::RenderCamera() {
 			glUniform4fv(lightColourLocation, 1, (float*)&lightColour);
 			glUniform1f(lightRadiusLocation, lightRadius);
 
-			int shadowTexLocation = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
+			int shadowTexLocation = glGetUniformLocation(sceneShader->GetProgramID(), "shadowTex");
 			glUniform1i(shadowTexLocation, 1);
 
 			activeShader = shader;
-		}
+		//}
 
 		Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
@@ -589,6 +600,7 @@ void GameTechRenderer::RenderMinimap()
 	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
 	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
 	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
+	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
 
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
@@ -602,6 +614,9 @@ void GameTechRenderer::RenderMinimap()
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
+			glUniform3fv(objectPosLocation, 1, objPos.array);
 		
 
 			Quaternion rot;
@@ -645,26 +660,31 @@ void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, 
 	if (dynamic_cast<PaintableObject*>(linkedObject)) {
 		PaintableObject* paintedObject = (PaintableObject*)linkedObject;
 
-		std::deque objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
+		std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-		glUniform1i(impactPointCountLocation, objImpactPoints.size());
+		glUniform1i(impactPointCountLocation, objImpactPoints->size());
 
-		for (GLuint i = 0; i < objImpactPoints.size(); i++) {
+		if (objImpactPoints->empty()) return;
+
+		GLuint i = 0;
+		for (const ImpactPoint& point : *objImpactPoints) {
 			char buffer[64];
 
 			sprintf_s(buffer, "impactPoints[%i].position", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactLocation = objImpactPoints[i].GetImpactLocation();
+			Vector3 impactLocation = point.GetImpactLocation();
 			glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
 
 			sprintf_s(buffer, "impactPoints[%i].colour", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactColour = objImpactPoints[i].GetImpactColour();
+			Vector3 impactColour = point.GetImpactColour();
 			glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
 
 			sprintf_s(buffer, "impactPoints[%i].radius", i);
 			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			glUniform1f(impactPointsLocation, objImpactPoints[i].GetImpactRadius());
+			glUniform1f(impactPointsLocation, point.GetImpactRadius());
+
+			i++;
 		}
 
 	}

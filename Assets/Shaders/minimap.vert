@@ -14,11 +14,14 @@ uniform vec4 		objectColour = vec4(1,1,1,1);
 
 uniform bool hasVertexColours = false;
 
+
+
 out Vertex
 {
 	vec4 colour;
 	vec2 texCoord;
 	vec3 worldPos;
+	vec4 localPos;
 } OUT;
 
 void main(void)
@@ -27,7 +30,7 @@ void main(void)
 	mat3 normalMatrix = transpose ( inverse ( mat3 ( modelMatrix )));
 
 	OUT.worldPos 	= ( modelMatrix * vec4 ( position ,1)). xyz ;
-	
+	OUT.localPos =  modelMatrix * vec4(position, 1.0);
 	OUT.texCoord	= texCoord;
 	OUT.colour		= objectColour;
 
