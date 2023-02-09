@@ -4,6 +4,8 @@
 #include "ToonGameObject.h"
 #include "Player.h"
 
+#include <thread>
+
 namespace NCL
 {
 	namespace CSC8503
@@ -31,19 +33,27 @@ namespace NCL
 			Vector3 GetAimOffset() const { return aimOffset; }
 			void SetAimOffset(const Vector3& newOffset) { aimOffset = newOffset; }
 
+			float GetSmoothness() const { return smoothness; }
+			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
+
 		protected:
 			ToonGameObject* followTarget;
 			Player* player;
 
 		private:
-			float requiredRayDistance, defaultRayDistance;
 			Vector3 followOffset, targetOffset, aimOffset;
-			Vector3 up, right, forward;
-			float pitchOffset;
-
-			float h, v;
-
 			Vector3 refVel;
+			Vector3 up, right, forward;
+			
+			float requiredRayDistance, defaultRayDistance;
+			float pitchOffset;
+			float h, v;
+			float smoothness;
+			float distanceThresholdMoving, distanceThresholdStanding;
+
+			std::thread first;
+
+			bool reached;
 		};
 	}
 }

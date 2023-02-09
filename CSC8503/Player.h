@@ -26,12 +26,14 @@ public:
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
 	bool IsAiming() const { return isAiming; }
+	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
 protected:
 	Team* team;
+	Camera* camera;
 
 	float moveSpeed;
 	float rotationSpeed;

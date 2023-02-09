@@ -313,6 +313,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		Vector3 cAimOffset = followCamera->GetAimOffset();
 
 		float distance = followCamera->GetFollowDistance();
+		float smoothness = followCamera->GetSmoothness();
 		float cPitchOffset = followCamera->GetPitchOffset();
 
 		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
@@ -321,6 +322,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
+		if (ImGui::DragFloat("Follow Smoothness", (float*)&smoothness)) followCamera->SetSmoothness(smoothness);
 		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);

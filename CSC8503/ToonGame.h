@@ -30,14 +30,13 @@ namespace NCL
 			ToonFollowCamera* followCamera;
 			ToonMinimapCamera* minimapCamera;
 
-
 			Player*	player = nullptr;
 			ToonGameObject* targetObject = nullptr;
+			PaintBallClass* sampleWeapon;
 
 			PaintableZone* mainZone;
 			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 
-			PaintBallClass* sampleWeapon;
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
@@ -46,8 +45,8 @@ namespace NCL
 			Team* testTeam;
 
 			bool showCursor;
-			const float timeStep = 1.0f / 60.0f;
-			float accumulator;
+			const double timeStep = 1.0 / 60.0;
+			double accumulator;
 		};
 	}
 }

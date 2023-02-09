@@ -1,16 +1,15 @@
 #include "ToonFollowCamera.h"
-#include "Window.h"
 #include "Maths.h"
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
+#include "../ThirdParty/imgui/imgui.h"
 //#include <iostream>
 
 NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) : 
 	followTarget(target)
 {
-	requiredRayDistance = defaultRayDistance = 1.0f;
-	pitchOffset = -2.0f;
-	h = v = 0.0f;
+	player = (Player*)followTarget;
+
 	followOffset = Vector3(0, 2.5f, 0.0f);
 	targetOffset = Vector3(0.0f, 1.0f, 4.0f);
 	aimOffset = Vector3(0.5f, 1.00f, 2.0f);
@@ -19,7 +18,15 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) :
 	right = Vector3(1, 0, 0);
 	forward = Vector3(0, 0, -1);
 
-	player = (Player*)followTarget;
+	requiredRayDistance = defaultRayDistance = 1.0f;
+	pitchOffset = -2.0f;
+	h = v = 0.0f;
+	smoothness = 0.1f;
+
+	distanceThresholdMoving = 50.0f;
+	distanceThresholdStanding = 2.0f;	
+
+	reached = false;
 }
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
@@ -28,7 +35,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	{
 		Window::GetWindow()->ShowOSPointer(false);
 		Window::GetWindow()->LockMouseToWindow(true);
-	}	
+	}
 
 	v -= (Window::GetMouse()->GetRelativePosition().y);
 	v = Clamp(v, -80.0f, 80.0f);
@@ -36,7 +43,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	h -= (Window::GetMouse()->GetRelativePosition().x);
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
-
+	
 	UpdatePitchAndYaw();
 
 	Matrix4 modelMatrixNoRot = followTarget->GetModelMatrixNoRotation();
@@ -63,12 +70,25 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 
 	//Debug::DrawBox(targetAimPosWorld, Vector3(0.1f, 0.1f, 0.1f), Debug::RED, 0);
 
+	distanceThresholdMoving = player->IsMoving() ? player->GetRigidbody()->getLinearVelocity().length() * 0.2f : 50.0f;
+	float FinalThreshold = player->IsMoving() ? distanceThresholdMoving : distanceThresholdStanding;
 	Vector3 FinalLookAt = player->IsAiming() ? targetAimLookAtWorld : targetWorldPos + followOffset;
 	Vector3 FinalPos = position;
 	if (player->IsAiming())
-		FinalPos = Lerp(FinalPos, targetAimPosWorld, dt * 10.0f);
+	{
+		FinalPos = Vector3::SmoothDamp(FinalPos, targetAimPosWorld, refVel, smoothness, FLT_MAX, dt);
+		reached = false;
+	}
+	else if (!reached)
+	{
+		float distance = abs(targetWorldPosOffset.LengthSquared() - FinalPos.LengthSquared());		
+		reached = distance <= FinalThreshold;
+	}
+
+	if (reached)
+		FinalPos = Vector3::SmoothDamp(FinalPos, targetWorldPosOffset, refVel, 0.02f, FLT_MAX, dt);
 	else
-		FinalPos = targetWorldPosOffset;
+		FinalPos = Vector3::SmoothDamp(FinalPos, targetWorldPosOffset, refVel, smoothness, FLT_MAX, dt);
 
 	position = FinalPos;
 	//position = Lerp(position, FinalPos, dt * 20.0f);

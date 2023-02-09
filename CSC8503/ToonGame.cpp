@@ -10,6 +10,8 @@
 using namespace NCL;
 using namespace CSC8503;
 
+static bool var = false;
+
 NCL::CSC8503::ToonGame::ToonGame()
 {
 	world = new ToonGameWorld();	
@@ -43,9 +45,12 @@ NCL::CSC8503::ToonGame::~ToonGame()
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
+	var = Window::GetKeyboard()->KeyDown(KeyboardKeys::C);
+
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	if(var)
+		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
@@ -62,11 +67,13 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		accumulator -= timeStep;
 		world->DeleteObjects();
 	}
+
+	//world->GetPhysicsWorld().update();
   
-	levelManager->Update(dt);
+	//levelManager->Update(dt);
 
 	renderer->Render();
-	//Debug::UpdateRenderables(dt);
+	Debug::UpdateRenderables(dt);
 
 	UpdateTesting();
 }

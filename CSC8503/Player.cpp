@@ -10,19 +10,19 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	team = nullptr;
 	isAiming = false;
 
-	moveSpeed = 30.0f;
+	moveSpeed = 1500.0f;
 	rotationSpeed = 6.0f;
 	aimingSpeed = 10.0f;
 
-	GetTransform().SetPosition(position).
+	transform.SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(Vector3(radius, radius, radius));
 
 	AddRigidbody();
-	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-	GetRigidbody()->setLinearDamping(0.8f);
-	GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
-	GetRigidbody()->setIsAllowedToSleep(true);
+	rigidBody->setType(reactphysics3d::BodyType::DYNAMIC);
+	rigidBody->setLinearDamping(0.8f);
+	rigidBody->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
+	rigidBody->setIsAllowedToSleep(true);
 
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
 	SetCollisionShape(sphereShape);
@@ -32,13 +32,14 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
 	SetColliderLayerMask(ToonCollisionLayer(collisionMask));
 
-	GetCollider()->getMaterial().setBounciness(0.1f);
+	collider->getMaterial().setBounciness(0.1f);
 
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 
-Player::~Player() {
-	
+Player::~Player() 
+{
+	delete team;
 }
 
 void Player::Update(float dt)
@@ -74,10 +75,10 @@ void Player::Update(float dt)
 	Quaternion newRotNCL = Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0);
 	reactphysics3d::Quaternion newRot(newRotNCL.x, newRotNCL.y, newRotNCL.z, newRotNCL.w);
 	reactphysics3d::Transform newRotTransform(GetRigidbody()->getTransform().getPosition(), reactphysics3d::Quaternion::slerp(GetRigidbody()->getTransform().getOrientation(), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
-	GetRigidbody()->setTransform(newRotTransform);
+	rigidBody->setTransform(newRotTransform);
 
 	if (isMoving)
-		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
+		rigidBody->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed * dt);
     
     weapon.Update(dt);
 }

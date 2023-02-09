@@ -27,7 +27,7 @@ set(Header_Files
     "ToonRaycastCallback.h"
     "ToonUtils.h"
     "ToonFollowCamera.h"
-    "ToonMinimapCamera.h"
+    "ToonMinimapCamera.h"    
 )
 source_group("Header Files" FILES ${Header_Files})
 
