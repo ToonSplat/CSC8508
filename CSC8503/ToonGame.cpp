@@ -44,12 +44,10 @@ NCL::CSC8503::ToonGame::~ToonGame()
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
-	var = Window::GetKeyboard()->KeyDown(KeyboardKeys::C);
 
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	if(var)
-		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);

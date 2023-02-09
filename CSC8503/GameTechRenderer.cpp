@@ -697,7 +697,7 @@ void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, 
 
 		std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-		glUniform1i(impactPointCountLocation, (int)objImpactPoints.size());
+		glUniform1i(impactPointCountLocation, (int)objImpactPoints->size());
 
 		if (objImpactPoints->empty()) return;
 
