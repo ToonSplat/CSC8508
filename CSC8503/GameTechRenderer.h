@@ -111,6 +111,12 @@ namespace NCL {
 			GLuint minimapDepthTexture;
 			void GenerateMinimapFBO(int width, int height);
 
+			GLuint mapFBO;
+			GLuint mapColourTexture;
+			GLuint mapScoreTexture;
+			GLuint mapDepthTexture;
+			void GenerateMapFBO(int width, int height);
+
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;

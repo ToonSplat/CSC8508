@@ -14,6 +14,7 @@ namespace NCL
 	{
 		class ToonFollowCamera;
 		class ToonMinimapCamera;
+		class ToonMapCamera;
 		class ToonGame
 		{
 		public:
@@ -29,7 +30,7 @@ namespace NCL
 		protected:
 			ToonFollowCamera* followCamera;
 			ToonMinimapCamera* minimapCamera;
-
+			ToonMapCamera* mapCamera;
 
 			Player*	player = nullptr;
 			ToonGameObject* targetObject = nullptr;
