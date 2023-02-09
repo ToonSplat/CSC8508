@@ -20,22 +20,10 @@ namespace NCL
 			ToonGame(bool offline = true);
 			~ToonGame();
 
-			virtual void UpdateGame(float dt);			
+			virtual void UpdateGame(float dt);
 
 		protected:
-			void UpdateCamera(float dt);
-			void UpdateTesting();
-
-		protected:
-			ToonFollowCamera* followCamera;
-			ToonMinimapCamera* minimapCamera;
-
-
 			Player*	player = nullptr;
-			ToonGameObject* targetObject = nullptr;
-
-			PaintableZone* mainZone;
-			std::vector<PaintableZone*>* subZones; // TODO: This can maybe be stored better.... only doing as vector for easy delete
 
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;

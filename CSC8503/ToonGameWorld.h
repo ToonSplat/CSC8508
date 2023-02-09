@@ -61,8 +61,8 @@ namespace NCL
 
 			static ToonGameWorld* Get() { return instance; }
 
-			Camera* GetMainCamera() const { return followCamera; }
-			void SetMainCamera(Camera* newCamera) { followCamera = newCamera; }
+			Camera* GetMainCamera() const { return mainCamera; }
+			void SetMainCamera(Camera* newCamera) { mainCamera = newCamera; }
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
@@ -80,7 +80,7 @@ namespace NCL
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
 
 		protected:
-			Camera* followCamera;
+			Camera* mainCamera;
 			Camera* minimapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;

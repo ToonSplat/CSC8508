@@ -588,6 +588,7 @@ void GameTechRenderer::RenderCamera() {
 
 void GameTechRenderer::RenderMinimap()
 {
+	if (!gameWorld.GetMinimapCamera()) return;
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
