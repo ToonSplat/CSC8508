@@ -30,6 +30,9 @@ public:
 protected:
 	void Shoot();
 
+	void DisplayDebug(float dt);
+	bool isDebug;
+
 	Team* team;
 
 	float moveSpeed;

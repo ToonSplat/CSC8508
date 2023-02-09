@@ -76,6 +76,11 @@ void Player::Update(float dt)
 		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
     
     weapon.Update(dt);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3))
+		isDebug = !isDebug;
+	if (isDebug)
+		DisplayDebug(dt);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
@@ -87,4 +92,42 @@ void Player::SetWeapon(PaintBallClass* base) {
 
 void Player::Shoot() {
 	return;
+}
+
+#include "windows.h"
+#include "psapi.h"
+
+void Player::DisplayDebug(float dt) {
+	std::cout << "DEBUGGING" << std::endl;
+	float fps = 1.0 / dt;
+	
+	MEMORYSTATUSEX memInfo;
+	memInfo.dwLength = sizeof(MEMORYSTATUSEX);
+	GlobalMemoryStatusEx(&memInfo);
+	
+	DWORDLONG totalVirtualmem = memInfo.ullTotalPageFile;
+	DWORDLONG usedVirtualmem = memInfo.ullTotalPageFile - memInfo.ullAvailPageFile;
+
+	PROCESS_MEMORY_COUNTERS_EX pmc;
+	GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
+	SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
+
+	DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
+	DWORDLONG usedPhysMem = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
+	SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
+
+	std::cout << "FPS -  " << fps << std::endl << "Virtual Memory - " << usedVirtualmem << "/" << totalVirtualmem << std::endl << "Physical Memory - " << usedPhysMem << "/" << totalPhysMem << std::endl;
+	std::cout << "virtual used by me - " << virtualMemUsedByMe << std::endl << "physcial used by me - " << physMemUsedByMe << std::endl;
+
+	ToonGameWorld::Get()->GetPhysicsWorld().setIsDebugRenderingEnabled(true);
+	reactphysics3d::DebugRenderer &dbr = ToonGameWorld::Get()->GetPhysicsWorld().getDebugRenderer();
+	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, true);
+	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_BROADPHASE_AABB, true);
+	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_AABB, true);
+	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
+	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
+
+	for (int i = 0; i < dbr.getNbLines(); i++){
+		Debug::DrawLine(Vector3(dbr.getLinesArray()->point1.x, dbr.getLinesArray()->point1.y, dbr.getLinesArray()->point1.z), Vector3(dbr.getLinesArray()->point2.x, dbr.getLinesArray()->point2.y, dbr.getLinesArray()->point2.z), Debug::RED);
+	}
 }
