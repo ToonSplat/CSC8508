@@ -1,5 +1,3 @@
-// Ryan was here
-
 #include "Window.h"
 
 #include "Debug.h"
@@ -16,6 +14,7 @@
 
 #include "TutorialGame.h"
 #include "ToonGame.h"
+#include "ToonNetworkedGame.h"
 #include "NetworkedGame.h"
 
 #include "PushdownMachine.h"
@@ -34,214 +33,6 @@ using namespace CSC8503;
 #include <thread>
 #include <sstream>
 
-vector<Vector3> testNodes;
-void TestPathFinding() {
-	NavigationGrid grid("TestGrid1.txt");
-
-	NavigationPath outPath;
-
-	testNodes.clear();
-	Vector3 startPos(80, 0, 10);
-	Vector3 endPos(80, 0, 80);
-
-	bool found = grid.FindPath(startPos, endPos, outPath);
-
-	Vector3 pos;
-	while (outPath.PopWaypoint(pos)) {
-		testNodes.push_back(pos);
-	}
-}
-
-void DisplayPathFinding() {
-	for (int i = 1; i < testNodes.size(); ++i) {
-		Vector3 a = testNodes[i - 1];
-		Vector3 b = testNodes[i];
-
-		Debug::DrawLine(a, b, Vector4(0, 1, 0, 1));
-	}
-}
-
-void TestBehaviourTree() {
-	float behaviourTimer;
-	float distanceToTarget;
-	BehaviourAction* findKey = new BehaviourAction("Find Key", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for a key" << std::endl;
-			behaviourTimer = rand() % 100;
-			state = Ongoing;
-		}
-		else if (state == Ongoing) {
-			behaviourTimer -= dt;
-			if (behaviourTimer <= 0.0f) {
-				std::cout << "Found a key!" << std::endl;
-				return Success;
-			}
-		}
-		return state; // will return ongoing until timer runs out then return success
-		}
-	);
-
-	BehaviourAction* goToRoom = new BehaviourAction("Go To Room", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Going to room!" << std::endl;
-			state = Ongoing;
-		}
-		else if (state == Ongoing) {
-			distanceToTarget -= dt;
-			if (distanceToTarget <= 0.0f) {
-				std::cout << "Reached Room!" << std::endl;
-				return Success;
-			}
-		}
-		return state; // will return ongoing until reaches the room then return success
-		}
-	);
-
-	BehaviourAction* openDoor = new BehaviourAction("Open Door", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Opening Door!" << std::endl;
-			return Success;
-		}
-		return state; // will return ongoing until reaches the room then return success
-		}
-	);
-
-	BehaviourAction* lookForTreasure = new BehaviourAction("Look For Treasure", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for treasure!" << std::endl;
-			state = Ongoing;
-		}
-		else if (state == Ongoing) {
-			bool found = rand() % 2;
-			if (found) {
-				std::cout << "Found some treasure!" << std::endl;
-				return Success;
-			}
-			std::cout << "No treasure here!" << std::endl;
-			return Failure;
-		}
-		return state;
-		}
-	);
-
-	BehaviourAction* lookForItems = new BehaviourAction("Look For Items", [&](float dt, BehaviourState state)->BehaviourState {
-		if (state == Initialise) {
-			std::cout << "Looking for items!" << std::endl;
-			state = Ongoing;
-		}
-		else if (state == Ongoing) {
-			bool found = rand() % 2;
-			if (found) {
-				std::cout << "Found some items!" << std::endl;
-				return Success;
-			}
-			std::cout << "No items here!" << std::endl;
-			return Failure;
-		}
-		return state;
-		}
-	);
-
-	BehaviourSequence* seq = new BehaviourSequence("Room Sequence");
-	seq->AddChild(findKey);
-	seq->AddChild(goToRoom);
-	seq->AddChild(openDoor);
-
-	BehaviourSelector* sel = new BehaviourSelector("Loot Selection");
-	sel->AddChild(lookForTreasure);
-	sel->AddChild(lookForItems);
-
-	BehaviourSequence* rootSeq = new BehaviourSequence("Root Sequence");
-	rootSeq->AddChild(seq);
-	rootSeq->AddChild(sel);
-
-	for (int i = 0; i < 5; ++i) {
-		rootSeq->Reset();
-		behaviourTimer = 0.0f;
-		distanceToTarget = rand() % 250;
-		BehaviourState state = Ongoing;
-		std::cout << "Were going on a wounderful adventure!" << std::endl;
-		while (state == Ongoing) {
-			state = rootSeq->Execute(1.0f); // fake dt
-		}
-		if (state == Success) {
-			std::cout << "That was a successful adventure!" << std::endl;
-		}
-		else if (state == Failure) {
-			std::cout << "A complete waste of time!" << std::endl;
-		}
-	}
-	std::cout << "All Done!" << std::endl;
-}
-
-class PauseScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::U))
-			return PushdownResult::Pop;
-		return PushdownResult::NoChange;
-	}
-	void OnAwake() override {
-		std::cout << "Press U to unpause game!" << std::endl;
-	}
-};
-
-class GameScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		pauseReminder -= dt;
-		if (pauseReminder < 0) {
-			std::cout << "Coins mined: " << coinsMined << std::endl;
-			std::cout << "Press P to pause game, or F1 to return to main menu!" << std::endl;
-				pauseReminder += 1.0f;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::P)) {
-			*newState = new PauseScreen();
-			return PushdownResult::Push;
-		}
-		if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F1)) {
-			std::cout << "Returning to main menu!\n";
-			return PushdownResult::Pop;
-		}
-		if (rand() % 7 == 0) 
-			coinsMined++;
-		
-		return PushdownResult::NoChange;
-	};
-	void OnAwake() override {
-		std::cout << "Preparing to mine coins!\n";
-	}
-protected:
-	int coinsMined = 0;
-	float pauseReminder = 1;
-};
-
-class IntroScreen : public PushdownState {
-	PushdownResult OnUpdate(float dt, PushdownState** newState) override {
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) {
-			*newState = new GameScreen();
-			return PushdownResult::Push;
-		}
-
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) 
-			return PushdownResult::Pop;
-
-		return PushdownResult::NoChange;
-	};
-	void OnAwake() override {
-		std::cout << "Welcome to a really awesome game!\n";
-		std::cout << "Press Space To Begin or escape to quit!\n";
-	}
-};
-
-void TestPushdownAutomata(Window* w) {
-	PushdownMachine machine(new IntroScreen());
-	while (w->UpdateWindow()) {
-		float dt = w->GetTimer()->GetTimeDeltaSeconds();
-		if (!machine.Update(dt)) {
-			return;
-		}
-	}
-}
-
 /*
 
 The main function should look pretty familar to you!
@@ -256,7 +47,6 @@ hide or show the
 */
 int main() {
 	Window*w = Window::CreateGameWindow("ToonSplat", 1280, 720);
-	//TestPushdownAutomata(w);
 
 	if (!w->HasInitialised()) {
 		return -1;
@@ -265,16 +55,26 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	//TutorialGame* g = new TutorialGame();
-	ToonGame* g = new ToonGame();
+	ToonGame* g;
+	std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
+	int choice;
+	std::cin >> choice;
+	switch (choice) {
+	case(1):
+		g = new ToonGame();
+		break;
+	case(2):
+		g = new ToonNetworkedGame();
+		break;
+	case(3):
+		g = new ToonNetworkedGame(127, 0, 0, 1); // Hardcoded for now
+		break;
+	default:
+		return 0;
+	}
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
-	//TestBehaviourTree();
-
-	//std::cout << "ANGLE: " << Vector3::Angle(Vector3(1, 0, 0), Vector3(0, 1, 0)) << std::endl;
 
 	while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
-		//TestPathFinding();
-		//DisplayPathFinding();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
@@ -296,32 +96,5 @@ int main() {
 		g->UpdateGame(dt);
 	}
 	Window::DestroyGameWindow();
-
-}
-
-void TestStateMachine() {
-	StateMachine* testMachine = new StateMachine();
-	int data = 0;
-
-	//Create the different states
-	State* A = new State([&](float dt)->void {
-		std::cout << "Current State - A" << std::endl;
-		data++;
-		});
-
-	State* B = new State([&](float dt)->void {
-		std::cout << "Current State - B	" << std::endl;
-		data--;
-		});
-
-	StateTransition* stateAB = new StateTransition(A, B, [&](void)->bool { return data > 10; }); // Go from state A to state B
-	StateTransition* stateBA = new StateTransition(A, B, [&](void)->bool { return data < 0; }); // Go from state B to state A
-
-	testMachine->AddState(A);
-	testMachine->AddState(B);
-	testMachine->AddTransition(stateAB);
-	testMachine->AddTransition(stateBA);
-
-	for (int i = 0; i < 100; ++i)
-		testMachine->Update(1.0f);
+	delete g;
 }

@@ -55,6 +55,13 @@ set(Source_Files
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
 )
+source_group("Source Files" FILES ${Source_Files})
+
+set(Networking_Files
+    "ToonNetworkedGame.h"
+    "ToonNetworkedGame.cpp"
+)
+source_group("Networking Files" FILES ${Networking_Files})
 
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
@@ -64,11 +71,10 @@ file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 
 endif()
 
-source_group("Source Files" FILES ${Source_Files})
-
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Networking_Files}
 )
 
 if(USE_VULKAN)
