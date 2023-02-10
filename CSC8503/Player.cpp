@@ -90,7 +90,7 @@ void Player::Update(float dt)
 
 
     //audio setup
-	musicPlayer->SetTarget(Maths::Vector3(GetTransform().GetPosition().x, GetTransform().GetPosition().y, GetTransform().GetPosition().z));
+	musicPlayer->SetTarget(ToonUtils::ConvertToNCLVector3(GetTransform().GetPosition()));
 	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
 	audiosystem->SetMasterVolume(1.0f);
 	audiosystem->Update(dt);
