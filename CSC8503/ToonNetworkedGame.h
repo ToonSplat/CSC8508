@@ -10,18 +10,7 @@ namespace NCL {
 		class GameClient;
 		class NetworkPlayer;
 
-		struct PlayerControl {
-			float	direction[3]; // X, Y, Z
-			int		camera[2]; // Pitch, Yaw
-
-			PlayerControl() {
-				direction[0] = 0;
-				direction[1] = 0;
-				direction[2] = 0;
-				camera[0] = 0;
-				camera[1] = 0;
-			}
-		};
+		
 
 		class ToonNetworkedGame : public ToonGame, public PacketReceiver {
 		public:

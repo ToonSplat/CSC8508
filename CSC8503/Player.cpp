@@ -44,43 +44,26 @@ Player::~Player()
 
 void Player::Update(float dt)
 {
-	isAiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
+    weapon.Update(dt);
+}
 
-	Vector3 forward = ToonGameWorld::Get()->GetMainCamera()->GetForward();
-	Vector3 right = ToonGameWorld::Get()->GetMainCamera()->GetRight();
-	Vector3 up = ToonGameWorld::Get()->GetMainCamera()->GetUp();
+void Player::MovementUpdate(float dt, PlayerControl* controls) {
+	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0], controls->direction[1], controls->direction[2]);
+	linearMovement.normalize();
 
-	//linearMovement.z = -1.0f;
-		/*targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
-		if (!isAiming) targetAngle -= 90.0f;*/
+	isAiming = controls->aiming;
+	isMoving = linearMovement.length() >= 0.1f;
 
-	Vector3 linearMovement;	
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W)) linearMovement += forward;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S)) linearMovement -= forward;
+	if (controls->aiming)
+		targetAngle = controls->camera[1];
+	else if (isMoving)
+		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE)) GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
-	
-	isMoving = linearMovement.Length() >= 0.1f;
-	if (isAiming) targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
-
-	//targetAngle = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
-	if (!isAiming && isMoving) targetAngle = RadiansToDegrees(atan2(-linearMovement.Normalised().x, -linearMovement.Normalised().z));
-
-	//else if (!isAiming && isMoving)
-		//targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z)) + ToonGameWorld::Get()->GetMainCamera()->GetYaw();
-	
-	Quaternion newRotNCL = Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0);
-	reactphysics3d::Quaternion newRot(newRotNCL.x, newRotNCL.y, newRotNCL.z, newRotNCL.w);
-	reactphysics3d::Transform newRotTransform(GetRigidbody()->getTransform().getPosition(), reactphysics3d::Quaternion::slerp(GetRigidbody()->getTransform().getOrientation(), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
-	rigidBody->setTransform(newRotTransform);
+	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
+	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
 
 	if (isMoving)
-		rigidBody->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed * dt);
-    
-    weapon.Update(dt);
+		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

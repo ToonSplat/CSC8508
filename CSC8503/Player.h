@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include <vector>
 #include "PaintBallClass.h"
+#include "PlayerControl.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -19,6 +20,8 @@ public:
 	~Player();
 
 	void Update(float dt) override;
+	void SetControls(PlayerControl* controls);
+	void MovementUpdate(float dt, PlayerControl* controls);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
