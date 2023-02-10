@@ -36,6 +36,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 	sceneShader = new OGLShader("scene.vert", "scene.frag");
+	mapShader = new OGLShader("map.vert", "map.frag");
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
@@ -347,6 +348,23 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::DrawMap()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
+
+	glEnable(GL_CULL_FACE);
+	glClearColor(1, 1, 1, 1);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	RenderMap();
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+
 void GameTechRenderer::BuildObjectList() {
 	activeObjects.clear();
 
@@ -529,8 +547,8 @@ void GameTechRenderer::RenderSkybox() {
 
 void GameTechRenderer::RenderCamera() {
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 	OGLShader* activeShader = nullptr;
 	int projLocation = 0;
@@ -706,6 +724,80 @@ void GameTechRenderer::RenderMinimap()
 			int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 			for (int i = 0; i < layerCount; ++i) {
 				DrawBoundMesh(i);
+		}
+	}
+}
+
+void GameTechRenderer::RenderMap()
+{
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
+
+	OGLShader* activeShader = minimapShader;
+
+	int projLocation = glGetUniformLocation(activeShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(activeShader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(activeShader->GetProgramID(), "modelMatrix");
+	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
+	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
+	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
+	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
+
+	int impactPointsLocation = 0;
+	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
+	BindShader(activeShader);
+	for (const auto& i : activeObjects) {
+
+
+		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
+
+		PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
+
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
+		glUniform3fv(objectPosLocation, 1, objPos.array);
+
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<PaintableObject*>(linkedObject) && activeShader == mapShader) {
+			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
+			int isFloorLocation = glGetUniformLocation(activeShader->GetProgramID(), "isFloor");
+			glUniform1i(hasTexLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
+		}
+
+
+		Quaternion rot;
+		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
+		rot.x = rRot.x;
+		rot.y = rRot.y;
+		rot.z = rRot.z;
+		rot.w = rRot.w;
+
+		//std::cout << rot << std::endl;
+
+		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
+			(*i).GetRigidbody()->getTransform().getPosition().y,
+			(*i).GetRigidbody()->getTransform().getPosition().z) *
+
+			Matrix4(rot) *
+
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
+
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		Vector4 colour = i->GetRenderObject()->GetColour();
+		glUniform4fv(colourLocation, 1, colour.array);
+
+		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
+
+		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
+
+		BindMesh((*i).GetRenderObject()->GetMesh());
+		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		for (int i = 0; i < layerCount; ++i) {
+			DrawBoundMesh(i);
 		}
 	}
 }

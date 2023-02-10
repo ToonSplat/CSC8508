@@ -40,6 +40,8 @@ namespace NCL {
 
 			void DrawMinimap();
 
+			void DrawMap();
+
 			void DrawMainScene();
 
 			OGLShader*		defaultShader;
@@ -52,6 +54,7 @@ namespace NCL {
 			void RenderShadowMap();
 			void RenderCamera();
 			void RenderMinimap();
+			void RenderMap();
 			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
 
 			void RenderSkybox();
@@ -66,8 +69,9 @@ namespace NCL {
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
-			OGLShader* textureShader;
-			OGLShader* sceneShader;
+			OGLShader*  mapShader;
+			OGLShader*  textureShader;
+			OGLShader*  sceneShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
