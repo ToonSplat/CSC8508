@@ -1,7 +1,7 @@
 #pragma once
 struct PlayerControl {
-	float	direction[3]; // X, Y, Z
-	int		camera[2]; // Pitch, Yaw
+	short	direction[3]; // X, Y, Z
+	short	camera[2]; // Pitch, Yaw
 	bool	aiming;
 	bool	shooting;
 	bool	jumping;

@@ -98,36 +98,15 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 void ToonNetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
 
-	//ClientPacket newPacket;
-	//newPacket.playerID = myID;
-	//newPacket.lastID = myState;
+	if (!player) return;
+	
+	UpdateControls(playerControl);
 
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::UP)) {
-	//	//fire button pressed!
-	//	newPacket.buttonstates[0] = 1;
-	//}
-	//else
-	//	newPacket.buttonstates[0] = 0;
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::DOWN)) {
-	//	//fire button pressed!
-	//	newPacket.buttonstates[1] = 1;
-	//}
-	//else
-	//	newPacket.buttonstates[1] = 0;
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::LEFT)) {
-	//	//fire button pressed!
-	//	newPacket.buttonstates[2] = 1;
-	//}
-	//else
-	//	newPacket.buttonstates[2] = 0;
-	//if (Window::GetKeyboard()->KeyDown(KeyboardKeys::RIGHT)) {
-	//	//fire button pressed!
-	//	newPacket.buttonstates[3] = 1;
-	//}
-	//else
-	//	newPacket.buttonstates[3] = 0;
-	//newPacket.camera = (int)world->GetMainCamera()->GetYaw();
-	//thisClient->SendPacket(newPacket);
+	ClientPacket newPacket;
+	newPacket.playerID = myID;
+	newPacket.lastID = myState;
+	newPacket.controls = *playerControl;
+	thisClient->SendPacket(newPacket);
 }
 
 void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
@@ -217,6 +196,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		Player* newPlayer = SpawnPlayer(receivedID);
 		if (myID == receivedID) {
 			player = newPlayer;
+			playerControl = new PlayerControl();
 			world->SetMainCamera(new ToonFollowCamera(player));
 			world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
@@ -251,18 +231,21 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else if (type == Client_Update) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		int receivedID = realPacket->playerID;
-		//std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
+		std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
 		if (receivedID <= 0) {
-			//std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
+			std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
 			return;
 		}
 		stateIDs.find(receivedID)->second = realPacket->lastID;
 		PlayerControl* playersControls = playerControls.find(receivedID)->second;
-		playersControls->direction[0] = realPacket->direction[0];
-		playersControls->direction[1] = realPacket->direction[1];
-		playersControls->direction[2] = realPacket->direction[2];
-		playersControls->camera[0] = realPacket->camera[0];
-		playersControls->camera[1] = realPacket->camera[1];
+		playersControls->direction[0] =	realPacket->controls.direction[0];
+		playersControls->direction[1] =	realPacket->controls.direction[1];
+		playersControls->direction[2] =	realPacket->controls.direction[2];
+		playersControls->camera[0] =	realPacket->controls.camera[0];
+		playersControls->camera[1] =	realPacket->controls.camera[1];
+		playersControls->aiming =		realPacket->controls.aiming;
+		playersControls->jumping =		realPacket->controls.jumping;
+		playersControls->shooting =		realPacket->controls.shooting;
 	}
 	else std::cout << "Recieved unknown packet\n";
 }

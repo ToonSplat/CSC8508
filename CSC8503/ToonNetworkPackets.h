@@ -1,6 +1,7 @@
 #pragma once
 #include "NetworkBase.h"
 #include "ToonObjectState.h"
+#include "PlayerControl.h"
 
 namespace NCL::CSC8503 {
 
@@ -31,8 +32,7 @@ namespace NCL::CSC8503 {
 	struct ClientPacket : public GamePacket {
 		int		lastID;
 		int		playerID;
-		float	direction[3]; // X, Y, Z
-		int		camera[2]; // Pitch, Yaw
+		PlayerControl controls;
 
 		ClientPacket() {
 			type = Client_Update;

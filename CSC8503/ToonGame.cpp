@@ -73,6 +73,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	}
 
 	renderer->Render();
+	Debug::UpdateRenderables(dt);
 }
 
 void ToonGame::UpdateControls(PlayerControl* controls) {
@@ -87,9 +88,9 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
 
-	controls->direction[0] = linearMovement.x;
-	controls->direction[1] = linearMovement.y;
-	controls->direction[2] = linearMovement.z;
+	controls->direction[0] = short(linearMovement.x * 1000);
+	controls->direction[1] = short(linearMovement.y * 1000);
+	controls->direction[2] = short(linearMovement.z * 1000);
 
 	controls->camera[0] = ToonGameWorld::Get()->GetMainCamera()->GetPitch();
 	controls->camera[1] = ToonGameWorld::Get()->GetMainCamera()->GetYaw();

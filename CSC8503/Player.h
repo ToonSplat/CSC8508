@@ -41,7 +41,7 @@ protected:
 	float moveSpeed;
 	float rotationSpeed;
 	float aimingSpeed;
-	float targetAngle = 0.0f;
+	float targetAngle = 0.1f;
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
