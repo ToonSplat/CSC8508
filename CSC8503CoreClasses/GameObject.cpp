@@ -2,7 +2,6 @@
 #include "CollisionDetection.h"
 #include "PhysicsObject.h"
 #include "RenderObject.h"
-#include "NetworkObject.h"
 
 using namespace NCL::CSC8503;
 
@@ -13,14 +12,12 @@ GameObject::GameObject(string objectName)	{
 	boundingVolume	= nullptr;
 	physicsObject	= nullptr;
 	renderObject	= nullptr;
-	networkObject	= nullptr;
 }
 
 GameObject::~GameObject()	{
 	delete boundingVolume;
 	delete physicsObject;
 	delete renderObject;
-	delete networkObject;
 }
 
 bool GameObject::GetBroadphaseAABB(Vector3&outSize) const {

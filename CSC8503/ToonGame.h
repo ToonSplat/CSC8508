@@ -1,12 +1,11 @@
 #pragma once
 
 #include "GameTechRenderer.h"
-#include "PhysicsSystem.h"
 
 #include "ToonLevelManager.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
-#include "ToonEventListener.h"
+#include "PlayerControl.h"
 
 namespace NCL
 {
@@ -23,7 +22,9 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
+			void UpdateControls(PlayerControl* controls);
 			Player*	player = nullptr;
+			PlayerControl* playerControl = nullptr;
 
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;

@@ -1,6 +1,7 @@
 #pragma once
 #include "ToonTransform.h"
 #include "ToonRenderObject.h"
+#include "ToonNetworkObject.h"
 #include "ToonUtils.h"
 #include <reactphysics3d/reactphysics3d.h>
 
@@ -30,6 +31,9 @@ namespace NCL::CSC8503
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
 		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; newRenderObject->SetGameObject(this); }
+
+		ToonNetworkObject* GetNetworkObject() const { return networkObject; }
+		void SetNetworkObject(ToonNetworkObject* newNetworkObject) { networkObject = newNetworkObject; newNetworkObject; }
 
 		reactphysics3d::RigidBody* GetRigidbody() const { return rigidBody; }
 		void SetRigidbody(reactphysics3d::RigidBody* RP3D_Rigidbody) { rigidBody = RP3D_Rigidbody; }
@@ -92,6 +96,8 @@ namespace NCL::CSC8503
 
 		ToonTransform transform;
 		ToonRenderObject* renderObject;
+		ToonNetworkObject* networkObject;
+
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::BoxShape* collisionShapeBox;
 		reactphysics3d::SphereShape* collisionShapeSphere;

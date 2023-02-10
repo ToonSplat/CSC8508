@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include <vector>
 #include "PaintBallClass.h"
+#include "PlayerControl.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -19,6 +20,8 @@ public:
 	~Player();
 
 	void Update(float dt) override;
+	void SetControls(PlayerControl* controls);
+	void MovementUpdate(float dt, PlayerControl* controls);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
@@ -38,7 +41,7 @@ protected:
 	float moveSpeed;
 	float rotationSpeed;
 	float aimingSpeed;
-	float targetAngle = 0.0f;
+	float targetAngle = 0.1f;
 	float sprintMax = 2.5f;
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
