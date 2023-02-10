@@ -54,8 +54,6 @@ void AudioEmitter::AttachSource(OALSource* s) {
 	alSourcei(currentSource->source, AL_BUFFER, *sound->buffer);
 
 	Play();
-	//alSourcef(currentSource->source, AL_SEC_OFFSET, (sound->length / 1000.0f) - (timeLeft / 1000.0f));
-	//alSourcePlay(currentSource->source);
 }
 
 void AudioEmitter::DetachSource() {

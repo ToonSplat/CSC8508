@@ -30,14 +30,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
 	audiosystem = AudioSystem::GetAudioSystem();
-	//music test
-	musicPlayer = new AudioEmitter();
-	musicPlayer->SetLooping(true);
-	musicPlayer->SetPriority(SoundPriority::ALWAYS);
-	musicPlayer->SetSound(Audio::GetSound("tune.wav"));
-	musicPlayer->SetVolume(1.0f);
-	musicPlayer->SetRadius(10000.0f);
-	audiosystem->AddSoundEmitter(musicPlayer);
+	MusicInitTest();
 	
 
 	ToonGameWorld::Get()->AddGameObject(this);
@@ -88,18 +81,9 @@ void Player::Update(float dt)
 	if (isMoving)
 		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
 
-
-    //audio setup
-	musicPlayer->SetTarget(ToonUtils::ConvertToNCLVector3(GetTransform().GetPosition()));
-	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
-	audiosystem->SetMasterVolume(1.0f);
 	audiosystem->Update(dt);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
-		musicPlayer->Play();
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
-		musicPlayer->Pause();
-	}
+	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
+	MusicUpdateTest();
 
 
     weapon.Update(dt);
@@ -114,4 +98,23 @@ void Player::SetWeapon(PaintBallClass* base) {
 
 void Player::Shoot() {
 	return;
+}
+
+void Player::MusicUpdateTest() {
+	musicPlayer->SetTarget(ToonUtils::ConvertToNCLVector3(GetTransform().GetPosition()));
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
+		musicPlayer->Play();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
+		musicPlayer->Pause();
+	}
+}
+
+void Player::MusicInitTest() {
+	musicPlayer = new AudioEmitter();
+	musicPlayer->SetLooping(true);
+	musicPlayer->SetPriority(SoundPriority::ALWAYS);
+	musicPlayer->SetSound(Audio::GetSound("tune.wav"));
+	musicPlayer->SetVolume(1.0f);
+	audiosystem->AddSoundEmitter(musicPlayer);
 }

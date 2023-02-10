@@ -50,6 +50,8 @@ protected:
 
 	AudioSystem* audiosystem;
 	AudioEmitter* musicPlayer;
+	void MusicInitTest();
+	void MusicUpdateTest();
 
 	/*
 	* Future Implementations:
