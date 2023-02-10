@@ -1,20 +1,18 @@
-#include "NetworkObject.h"
-#include "PhysicsObject.h"
-#include "./enet/enet.h"
+#include "ToonNetworkObject.h"
+#include "ToonGameObject.h"
 using namespace NCL;
 using namespace CSC8503;
 
-NetworkObject::NetworkObject(GameObject* o, int id, int startState) : object(o) {
-	deltaErrors = 0;
-	fullErrors = 0;
+ToonNetworkObject::ToonNetworkObject(ToonGameObject* o, int id, int startState) : object(o) {
+	o->SetNetworkObject(this);
 	lastFullState.stateID = startState;
 	networkID = id;
 }
 
-NetworkObject::~NetworkObject() {
+ToonNetworkObject::~ToonNetworkObject() {
 }
 
-bool NetworkObject::ReadPacket(GamePacket& p) {
+bool ToonNetworkObject::ReadPacket(GamePacket& p) {
 	if (p.type == Delta_State)
 		return ReadDeltaPacket((DeltaPacket&)p);
 	if (p.type == Full_State)
@@ -22,7 +20,7 @@ bool NetworkObject::ReadPacket(GamePacket& p) {
 	return false; //this isn't a packet we care about!
 }
 
-bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
+bool ToonNetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 	UpdateLastFullState();
 	if (deltaFrame) {
 		if (!WriteDeltaPacket(p, stateID)) {
@@ -34,22 +32,22 @@ bool NetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID) {
 		return WriteFullPacket(p);
 }
 
-void NetworkObject::UpdateLastFullState() {
+void ToonNetworkObject::UpdateLastFullState() {
 	lastFullState.stateID++;
-	lastFullState.position = object->GetTransform().GetPosition();
-	lastFullState.orientation = object->GetTransform().GetOrientation();
+	lastFullState.position = ToonUtils::ConvertToRP3DVector3(object->GetPosition());
+	lastFullState.orientation = ToonUtils::ConvertToRP3DQuaternion(object->GetOrientation());
 }
 
 //Client objects recieve these packets
-bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
-	NetworkState state;
+bool ToonNetworkObject::ReadDeltaPacket(DeltaPacket& p) {
+	ToonObjectState state;
 	if (!GetNetworkState(p.fullID, state)) {
 		return false; // Can't delta if no existing state
 	}
 	UpdateStateHistory(p.fullID);
 
-	Vector3 fullPos = state.position;
-	Quaternion fullOrientation = state.orientation;
+	reactphysics3d::Vector3 fullPos = state.position;
+	reactphysics3d::Quaternion fullOrientation = state.orientation;
 
 	fullPos.x += ((float)p.pos[0] / 10.0f);
 	fullPos.y += ((float)p.pos[1] / 10.0f);
@@ -60,36 +58,36 @@ bool NetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	fullOrientation.z += ((float)p.orientation[2]) / 127.0f;
 	fullOrientation.w += ((float)p.orientation[3]) / 127.0f;
 
-	object->GetTransform().SetPosition(fullPos);
-	object->GetTransform().SetOrientation(fullOrientation);
+	object->SetPosition(fullPos);
+	object->SetOrientation(fullOrientation);
 
 	return true;
 }
 
-bool NetworkObject::ReadFullPacket(FullPacket& p) {
+bool ToonNetworkObject::ReadFullPacket(FullPacket& p) {
 	if (p.fullState.stateID < lastFullState.stateID)
 		return false; // Received old packet
 	lastFullState = p.fullState;
 
-	object->GetTransform().SetPosition(lastFullState.position);
-	object->GetTransform().SetOrientation(lastFullState.orientation);
+	object->SetPosition(lastFullState.position);
+	object->SetOrientation(lastFullState.orientation);
 
 	stateHistory.emplace_back(lastFullState);
 
 	return true;
 }
 
-bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
+bool ToonNetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	DeltaPacket* dp = new DeltaPacket();
-	NetworkState state;
+	ToonObjectState state;
 	if (!GetNetworkState(stateID, state)) {
 		return false; // Can't delta if no existing state
 	}
 	dp->fullID = stateID;
 	dp->objectID = networkID;
 
-	Vector3 currentPos = lastFullState.position;
-	Quaternion currentOrientation = lastFullState.orientation;
+	reactphysics3d::Vector3 currentPos = lastFullState.position;
+	reactphysics3d::Quaternion currentOrientation = lastFullState.orientation;
 	currentPos -= state.position;
 	currentOrientation -= state.orientation;
 
@@ -109,7 +107,7 @@ bool NetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	return true;
 }
 
-bool NetworkObject::WriteFullPacket(GamePacket** p) {
+bool ToonNetworkObject::WriteFullPacket(GamePacket** p) {
 	FullPacket* fp = new FullPacket();
 
 	fp->objectID = networkID;
@@ -122,11 +120,11 @@ bool NetworkObject::WriteFullPacket(GamePacket** p) {
 	return true;
 }
 
-NetworkState& NetworkObject::GetLatestNetworkState() {
+ToonObjectState& ToonNetworkObject::GetLatestNetworkState() {
 	return lastFullState;
 }
 
-bool NetworkObject::GetNetworkState(int stateID, NetworkState& state) {
+bool ToonNetworkObject::GetNetworkState(int stateID, ToonObjectState& state) {
 	for (auto i = stateHistory.begin(); i < stateHistory.end(); i++) {
 		if ((*i).stateID == stateID) {
 			state = (*i);
@@ -136,7 +134,7 @@ bool NetworkObject::GetNetworkState(int stateID, NetworkState& state) {
 	return false;
 }
 
-void NetworkObject::UpdateStateHistory(int minID) {
+void ToonNetworkObject::UpdateStateHistory(int minID) {
 	for (auto i = stateHistory.begin(); i < stateHistory.end();) {
 		if ((*i).stateID < minID)
 			i = stateHistory.erase(i);

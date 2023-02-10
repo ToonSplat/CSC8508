@@ -1,6 +1,7 @@
 #include "ToonNetworkedGame.h"
 #include "NetworkPlayer.h"
-#include "NetworkObject.h"
+#include "ToonNetworkPackets.h"
+#include "ToonNetworkObject.h"
 #include "GameServer.h"
 #include "GameClient.h"
 #include "PhysicsObject.h"
@@ -184,7 +185,11 @@ void ToonNetworkedGame::UpdateMinimumState() {
 }
 
 Player* ToonNetworkedGame::SpawnPlayer(int playerID) {
-	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(-20, 5, -20), ToonGameWorld::Get()->GetTeamLeastPlayers());
+	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(20, 5, 0), ToonGameWorld::Get()->GetTeamLeastPlayers());
+	ToonNetworkObject* netO = new ToonNetworkObject(newPlayerCharacter, playerID, myState);
+	newPlayerCharacter->SetWeapon(baseWeapon);
+	serverPlayers.emplace(playerID, newPlayerCharacter);
+	networkObjects.push_back(netO);
 	return newPlayerCharacter;
 }
 
@@ -212,8 +217,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		Player* newPlayer = SpawnPlayer(receivedID);
 		if (myID == receivedID) {
 			player = newPlayer;
-			player->SetWeapon(baseWeapon);
-			world->SetMainCamera(new ToonFollowCamera(*player));
+			world->SetMainCamera(new ToonFollowCamera(player));
 			world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
 		if (thisServer) {
@@ -248,28 +252,15 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		int receivedID = realPacket->playerID;
 		//std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
-		if (receivedID < 10000) {
+		if (receivedID <= 0) {
 			//std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
 			return;
 		}
 		stateIDs.find(receivedID)->second = realPacket->lastID;
 		PlayerControl* playersControls = playerControls.find(receivedID)->second;
-		if (playersControls->buttonstates[0] != realPacket->buttonstates[0]) {
-			playersControls->buttonstates[0] = realPacket->buttonstates[0];
-			//std::cout << "Client " << receivedID << ": CHANGE IN UP KEY\n";
-		}
-		if (playersControls->buttonstates[1] != realPacket->buttonstates[1]) {
-			playersControls->buttonstates[1] = realPacket->buttonstates[1];
-			//std::cout << "Client " << receivedID << ": CHANGE IN DOWN KEY\n";
-		}
-		if (playersControls->buttonstates[2] != realPacket->buttonstates[2]) {
-			playersControls->buttonstates[2] = realPacket->buttonstates[2];
-			//std::cout << "Client " << receivedID << ": CHANGE IN LEFT KEY\n";
-		}
-		if (playersControls->buttonstates[3] != realPacket->buttonstates[3]) {
-			playersControls->buttonstates[3] = realPacket->buttonstates[3];
-			//std::cout << "Client " << receivedID << ": CHANGE IN RIGHT KEY\n";
-		}
+		playersControls->direction[0] = realPacket->direction[0];
+		playersControls->direction[1] = realPacket->direction[1];
+		playersControls->direction[2] = realPacket->direction[2];
 		playersControls->camera[0] = realPacket->camera[0];
 		playersControls->camera[1] = realPacket->camera[1];
 	}

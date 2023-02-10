@@ -8,7 +8,6 @@ set(Header_Files
     "NetworkedGame.h"
     "NetworkPlayer.h"
     "PaintableObject.h"
-    "PaintableZone.h"
     "StateGameObject.h"
     "Team.h"
     "TutorialGame.h"
@@ -37,7 +36,6 @@ set(Source_Files
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
     "PaintableObject.cpp"
-    "PaintableZone.cpp"
     "StateGameObject.cpp"
     "Team.cpp"
     "TutorialGame.cpp"
@@ -60,6 +58,10 @@ source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
     "ToonNetworkedGame.h"
     "ToonNetworkedGame.cpp"
+    "ToonNetworkObject.h"
+    "ToonNetworkObject.cpp"
+    "ToonObjectState.h"
+    "ToonNetworkPackets.h"
 )
 source_group("Networking Files" FILES ${Networking_Files})
 

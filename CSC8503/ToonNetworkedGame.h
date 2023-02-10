@@ -10,15 +10,14 @@ namespace NCL {
 		class GameClient;
 		class NetworkPlayer;
 
-		struct PlayerControl { // TODO: Update to PS4 precise direction, change to 3f?
-			char	buttonstates[4]; // UP, LEFT, RIGHT, DOWN
+		struct PlayerControl {
+			float	direction[3]; // X, Y, Z
 			int		camera[2]; // Pitch, Yaw
 
 			PlayerControl() {
-				buttonstates[0] = 0;
-				buttonstates[1] = 0;
-				buttonstates[2] = 0;
-				buttonstates[3] = 0;
+				direction[0] = 0;
+				direction[1] = 0;
+				direction[2] = 0;
 				camera[0] = 0;
 				camera[1] = 0;
 			}
@@ -58,7 +57,7 @@ namespace NCL {
 			int winner;
 			int myState;
 
-			std::vector<NetworkObject*> networkObjects;
+			std::vector<ToonNetworkObject*> networkObjects;
 
 			std::map<int, Player*> serverPlayers;
 			std::map<int, PlayerControl*> playerControls;
