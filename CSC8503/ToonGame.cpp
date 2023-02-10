@@ -11,7 +11,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 
-NCL::CSC8503::ToonGame::ToonGame(bool offline) : offline(offline)
+ToonGame::ToonGame(bool offline) : offline(offline)
 {
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
@@ -54,6 +54,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	if(world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
+
 	if (offline) {
 		UpdateControls(playerControl);
 	}
