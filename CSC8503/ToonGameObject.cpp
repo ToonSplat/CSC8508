@@ -101,7 +101,19 @@ void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRotQuat)
 
 void NCL::CSC8503::ToonGameObject::CalculateModelMatrix()
 {
-	modelMatrix = Matrix4::Translation(GetPosition()) * Matrix4(GetOrientation()) * Matrix4::Scale(GetScale());
+	if (rigidBody)
+	{
+		reactphysics3d::Transform currTransform = rigidBody->getTransform();
+		reactphysics3d::Transform interpolated = reactphysics3d::Transform::interpolateTransforms(prevTransform, currTransform, ToonGameWorld::Get()->interpolationFactor);
+		prevTransform = currTransform;
+
+		float matrix[16];
+		interpolated.getOpenGLMatrix(matrix);
+
+		modelMatrix = Matrix4(matrix) * Matrix4::Scale(GetScale());
+	}
+
+	//modelMatrix = Matrix4::Translation(GetPosition()) * Matrix4(GetOrientation()) * Matrix4::Scale(GetScale());
 }
 
 Matrix4 NCL::CSC8503::ToonGameObject::GetModelMatrixNoRotation() const

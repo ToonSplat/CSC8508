@@ -15,7 +15,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	aimingSpeed = 10.0f;
 
 	transform.SetPosition(position).
-		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetOrientation(NCL::Maths::Quaternion::EulerAnglesToQuaternion(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(Vector3(radius, radius, radius));
 
 	AddRigidbody();

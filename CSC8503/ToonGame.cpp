@@ -49,19 +49,21 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
-	if(world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt);
+	if(world->GetMinimapCamera()) world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
-	if(player)
-		player->Update(dt);
+	
+	if(player) player->Update(dt);
 
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
-		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
+		world->GetPhysicsWorld().update(timeStep);
 		accumulator -= timeStep;
 		world->DeleteObjects();
 	}
 
+	world->interpolationFactor = float(accumulator / timeStep);
+
 	renderer->Render();
+	Debug::UpdateRenderables(dt);
 }

@@ -10,6 +10,8 @@ ToonGameWorld* ToonGameWorld::instance = nullptr;
 
 NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
+	interpolationFactor = 0.0f;
+
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	eventListener = new ToonEventListener(physicsWorld);

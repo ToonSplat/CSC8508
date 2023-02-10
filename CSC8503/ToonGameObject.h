@@ -27,6 +27,7 @@ namespace NCL::CSC8503
 		void SetActive(const bool& status) { isActive = status; }
 
 		ToonTransform& GetTransform() { return transform; }
+		reactphysics3d::Transform prevTransform;
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
 		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; newRenderObject->SetGameObject(this); }

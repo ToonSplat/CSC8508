@@ -1,8 +1,9 @@
 #pragma once
 #include <vector>
 #include <reactphysics3d/reactphysics3d.h>
-#include "ToonEventListener.h"
 #include <unordered_set>
+
+#include "ToonEventListener.h"
 #include "PaintBallProjectile.h"
 
 namespace NCL
@@ -85,6 +86,8 @@ namespace NCL
 
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
+
+			float interpolationFactor;
 
 		protected:
 			Camera* mainCamera;

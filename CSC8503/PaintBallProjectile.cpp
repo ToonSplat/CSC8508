@@ -17,7 +17,7 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 	GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	//GetRigidbody()->setLinearDamping(0.66);
 	//GetRigidbody()->setAngularDamping(0.1);
-	GetRigidbody()->setMass(0.1);
+	GetRigidbody()->setMass(0.1f);
 
 	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius);
 	SetCollisionShape(sphereShape);

@@ -48,7 +48,7 @@ PaintBallClass PaintBallClass::MakeInstance() {
 
 float PaintBallClass::GetYCoordinate(int x, int initialVelocity)
 {
-	return (x * tan(ToonGameWorld::Get()->GetMainCamera()->GetPitch()) - ((9.8 * x * x) / (2 * initialVelocity * initialVelocity * cos(ToonGameWorld::Get()->GetMainCamera()->GetPitch()))));
+	return (x * tan(ToonGameWorld::Get()->GetMainCamera()->GetPitch()) - ((9.8f * x * x) / (2.0f * initialVelocity * initialVelocity * cos(ToonGameWorld::Get()->GetMainCamera()->GetPitch()))));
 }
 
 NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::Maths::Vector3 target, NCL::Maths::Vector3 origin, float t)
