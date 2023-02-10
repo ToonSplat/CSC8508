@@ -291,6 +291,7 @@ void GameTechRenderer::RenderFrame() {
 	
 
 	DrawMainScene();
+	DrawMap();
 	if (minimapEnabled)
 	{
 		
@@ -313,10 +314,14 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	BuildObjectList();
-	SortObjectList();
 	RenderShadowMap();
 	RenderSkybox();
-	RenderCamera();
+
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	RenderScene(sceneShader, viewMatrix, projMatrix);
+
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
@@ -340,7 +345,10 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	RenderMinimap();
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
+	RenderScene(minimapShader, viewMatrix, projMatrix);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -351,12 +359,16 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 void NCL::CSC8503::GameTechRenderer::DrawMap()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
 
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	RenderMap();
+
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
+	RenderScene(mapShader, viewMatrix, projMatrix);
+
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -374,25 +386,9 @@ void GameTechRenderer::BuildObjectList() {
 			if (o->IsActive()) 
 			{
 				activeObjects.emplace_back(o);
-				/*const ToonRenderObject* g = o->GetRenderObject();
-				if (g) 
-				{
-					activeObjects.emplace_back(g);
-				}*/
 			}
 		}
 	);
-
-	/*gameWorld.OperateOnContents(
-		[&](GameObject* o) {
-			if (o->IsActive()) {
-				const RenderObject* g = o->GetRenderObject();
-				if (g) {
-					activeObjects.emplace_back(g);
-				}
-			}
-		}
-	);*/
 }
 
 
@@ -418,21 +414,23 @@ void GameTechRenderer::PresentScene()
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
-	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
-	BindMesh(fullScreenQuad);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-
-	
-	DrawMinimapToScreen(modelLocation);
+	PresentGameScene();
+	PresentMinimap(modelLocation);
 
 	
 	
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
+void NCL::CSC8503::GameTechRenderer::PresentGameScene()
+{
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+	BindMesh(fullScreenQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
 {
 	glEnable(GL_STENCIL_TEST);
 
@@ -545,214 +543,29 @@ void GameTechRenderer::RenderSkybox() {
 	glEnable(GL_DEPTH_TEST);
 }
 
-void GameTechRenderer::RenderCamera() {
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)
+{
+	int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+	int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+	int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
+	int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
+	int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
 
-	OGLShader* activeShader = nullptr;
-	int projLocation = 0;
-	int viewLocation = 0;
-	int modelLocation = 0;
-	int colourLocation = 0;
-	int hasVColLocation = 0;
-	int hasTexLocation = 0;
-	int shadowLocation = 0;
-
-	int lightPosLocation = 0;
-	int lightColourLocation = 0;
-	int lightRadiusLocation = 0;
-
-	int cameraLocation = 0;
-
-	int impactPointsLocation = 0;
-	int impactPointCountLocation = 0;
-
-	int objectPosLocation = 0;
-
-	//TODO - PUT IN FUNCTION
-	glActiveTexture(GL_TEXTURE0 + 1);
-	glBindTexture(GL_TEXTURE_2D, shadowTex);
-
-	for (const auto&i : activeObjects) {
-		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
-		BindShader(sceneShader);
-
+	
+	BindShader(shader);
+	for (const auto& i : activeObjects) {
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
-		//if (activeShader != shader) {
-			projLocation = glGetUniformLocation(sceneShader->GetProgramID(), "projMatrix");
-			viewLocation = glGetUniformLocation(sceneShader->GetProgramID(), "viewMatrix");
-			modelLocation = glGetUniformLocation(sceneShader->GetProgramID(), "modelMatrix");
-			shadowLocation = glGetUniformLocation(sceneShader->GetProgramID(), "shadowMatrix");
-			colourLocation = glGetUniformLocation(sceneShader->GetProgramID(), "objectColour");
-			hasVColLocation = glGetUniformLocation(sceneShader->GetProgramID(), "hasVertexColours");
-			hasTexLocation = glGetUniformLocation(sceneShader->GetProgramID(), "hasTexture");
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<PaintableObject*>(linkedObject)) {
 
-			lightPosLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightPos");
-			lightColourLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightColour");
-			lightRadiusLocation = glGetUniformLocation(sceneShader->GetProgramID(), "lightRadius");
-
-			cameraLocation = glGetUniformLocation(sceneShader->GetProgramID(), "cameraPos");
-
-			objectPosLocation = glGetUniformLocation(sceneShader->GetProgramID(), "objectPosition");
-
-			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 20, "Passing Impact Points");
-
-			impactPointCountLocation = glGetUniformLocation(sceneShader->GetProgramID(), "impactPointCount");
-
-			Vector3 camPos = gameWorld.GetMainCamera()->GetPosition();
-			glUniform3fv(cameraLocation, 1, camPos.array);
-
-			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
-			glUniform3fv(objectPosLocation, 1, objPos.array);
-
-			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, sceneShader);
-			glPopDebugGroup();
-			
-
-			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-			glUniform3fv(lightPosLocation, 1, (float*)&lightPosition);
-			glUniform4fv(lightColourLocation, 1, (float*)&lightColour);
-			glUniform1f(lightRadiusLocation, lightRadius);
-
-			int shadowTexLocation = glGetUniformLocation(sceneShader->GetProgramID(), "shadowTex");
-			glUniform1i(shadowTexLocation, 1);
-
-			activeShader = shader;
-		//}
-
-		Quaternion rot;
-		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
-		rot.x = rRot.x;
-		rot.y = rRot.y;
-		rot.z = rRot.z;
-		rot.w = rRot.w;
-
-		//std::cout << rot << std::endl;
-
-		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
-			(*i).GetRigidbody()->getTransform().getPosition().y,
-			(*i).GetRigidbody()->getTransform().getPosition().z) *
-
-			Matrix4(rot) *
-
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
-
-		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);			
-		
-		Matrix4 fullShadowMat = shadowMatrix * modelMatrix;
-		glUniformMatrix4fv(shadowLocation, 1, false, (float*)&fullShadowMat);
-
-		Vector4 colour = i->GetRenderObject()->GetColour();
-		glUniform4fv(colourLocation, 1, colour.array);
-
-		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
-
-		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
-
-		BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-		for (int i = 0; i < layerCount; ++i) {
-			DrawBoundMesh(i);
+			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
+			int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
+			glUniform1i(hasTexLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
+			PassImpactPointDetails(paintedObject, shader);
 		}
-	}
-}
-
-void GameTechRenderer::RenderMinimap()
-{
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
-
-	OGLShader* activeShader = minimapShader;
-
-	int projLocation = glGetUniformLocation(activeShader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(activeShader->GetProgramID(), "viewMatrix");
-	int modelLocation = glGetUniformLocation(activeShader->GetProgramID(), "modelMatrix");
-	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
-	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
-	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
-	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
-
-	int impactPointsLocation = 0;
-	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
-	BindShader(activeShader);
-	for (const auto& i : activeObjects) {
-			
-
-			BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
-
-			PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
-
-			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
-			glUniform3fv(objectPosLocation, 1, objPos.array);
-		
-
-			Quaternion rot;
-			reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
-			rot.x = rRot.x;
-			rot.y = rRot.y;
-			rot.z = rRot.z;
-			rot.w = rRot.w;
-
-			//std::cout << rot << std::endl;
-
-			Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
-				(*i).GetRigidbody()->getTransform().getPosition().y,
-				(*i).GetRigidbody()->getTransform().getPosition().z) *
-
-				Matrix4(rot) *
-
-				Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
-
-			glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
-
-			Vector4 colour = i->GetRenderObject()->GetColour();
-			glUniform4fv(colourLocation, 1, colour.array);
-
-			glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
-
-			glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
-
-			BindMesh((*i).GetRenderObject()->GetMesh());
-			int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-			for (int i = 0; i < layerCount; ++i) {
-				DrawBoundMesh(i);
-		}
-	}
-}
-
-void GameTechRenderer::RenderMap()
-{
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
-
-	OGLShader* activeShader = minimapShader;
-
-	int projLocation = glGetUniformLocation(activeShader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(activeShader->GetProgramID(), "viewMatrix");
-	int modelLocation = glGetUniformLocation(activeShader->GetProgramID(), "modelMatrix");
-	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
-	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
-	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
-	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
-
-	int impactPointsLocation = 0;
-	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
-	BindShader(activeShader);
-	for (const auto& i : activeObjects) {
-
-
-		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
-
-		PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
 
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
@@ -760,13 +573,6 @@ void GameTechRenderer::RenderMap()
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
-		if (dynamic_cast<PaintableObject*>(linkedObject) && activeShader == mapShader) {
-			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
-			int isFloorLocation = glGetUniformLocation(activeShader->GetProgramID(), "isFloor");
-			glUniform1i(hasTexLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
-		}
-
 
 		Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
@@ -774,8 +580,6 @@ void GameTechRenderer::RenderMap()
 		rot.y = rRot.y;
 		rot.z = rRot.z;
 		rot.w = rRot.w;
-
-		//std::cout << rot << std::endl;
 
 		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
 			(*i).GetRigidbody()->getTransform().getPosition().y,
@@ -802,41 +606,39 @@ void GameTechRenderer::RenderMap()
 	}
 }
 
-void GameTechRenderer::PassImpactPointDetails(const ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, OGLShader* shader)
+void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader)
 {
-	ToonGameObject* linkedObject = (*i).GetGameObject();
+	int impactPointsLocation = 0;
+	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
 
-	if (dynamic_cast<PaintableObject*>(linkedObject)) {
-		PaintableObject* paintedObject = (PaintableObject*)linkedObject;
+	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-		std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
+	glUniform1i(impactPointCountLocation, objImpactPoints->size());
 
-		glUniform1i(impactPointCountLocation, objImpactPoints->size());
+	if (objImpactPoints->empty()) return;
 
-		if (objImpactPoints->empty()) return;
+	GLuint i = 0;
+	for (const ImpactPoint& point : *objImpactPoints) {
+		char buffer[64];
 
-		GLuint i = 0;
-		for (const ImpactPoint& point : *objImpactPoints) {
-			char buffer[64];
+		sprintf_s(buffer, "impactPoints[%i].position", i);
+		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+		Vector3 impactLocation = point.GetImpactLocation();
+		glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
 
-			sprintf_s(buffer, "impactPoints[%i].position", i);
-			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactLocation = point.GetImpactLocation();
-			glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
+		sprintf_s(buffer, "impactPoints[%i].colour", i);
+		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+		Vector3 impactColour = point.GetImpactColour();
+		glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
 
-			sprintf_s(buffer, "impactPoints[%i].colour", i);
-			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			Vector3 impactColour = point.GetImpactColour();
-			glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
+		sprintf_s(buffer, "impactPoints[%i].radius", i);
+		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+		glUniform1f(impactPointsLocation, point.GetImpactRadius());
 
-			sprintf_s(buffer, "impactPoints[%i].radius", i);
-			impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-			glUniform1f(impactPointsLocation, point.GetImpactRadius());
-
-			i++;
-		}
-
+		i++;
 	}
+
+	
 }
 
 MeshGeometry* GameTechRenderer::LoadMesh(const string& name) {

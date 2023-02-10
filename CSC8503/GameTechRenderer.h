@@ -36,7 +36,9 @@ namespace NCL {
 
 			void PresentScene();
 
-			void DrawMinimapToScreen(int modelLocation);
+			void PresentGameScene();
+
+			void PresentMinimap(int modelLocation);
 
 			void DrawMinimap();
 
@@ -55,7 +57,9 @@ namespace NCL {
 			void RenderCamera();
 			void RenderMinimap();
 			void RenderMap();
-			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
+
+			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
+			void PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader);
 
 			void RenderSkybox();
 
