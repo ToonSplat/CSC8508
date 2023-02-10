@@ -30,12 +30,21 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	GetCollider()->getMaterial().setBounciness(0.1f);
 
 	audiosystem = AudioSystem::GetAudioSystem();
+	//music test
+	musicPlayer = new AudioEmitter();
+	musicPlayer->SetLooping(true);
+	musicPlayer->SetPriority(SoundPriority::ALWAYS);
+	musicPlayer->SetSound(Audio::GetSound("tune.wav"));
+	musicPlayer->SetVolume(1.0f);
+	musicPlayer->SetRadius(10000.0f);
+	audiosystem->AddSoundEmitter(musicPlayer);
+	
 
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 
 Player::~Player() {
-	
+	delete musicPlayer;
 }
 
 void Player::Update(float dt)
@@ -81,9 +90,17 @@ void Player::Update(float dt)
 
 
     //audio setup
+	musicPlayer->SetTarget(Maths::Vector3(GetTransform().GetPosition().x, GetTransform().GetPosition().y, GetTransform().GetPosition().z));
 	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
 	audiosystem->SetMasterVolume(1.0f);
 	audiosystem->Update(dt);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
+		musicPlayer->Play();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
+		musicPlayer->Pause();
+	}
+
 
     weapon.Update(dt);
 }

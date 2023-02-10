@@ -49,6 +49,7 @@ protected:
 	bool isAiming, isMoving;
 
 	AudioSystem* audiosystem;
+	AudioEmitter* musicPlayer;
 
 	/*
 	* Future Implementations:

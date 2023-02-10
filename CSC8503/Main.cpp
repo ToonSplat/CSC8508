@@ -249,8 +249,8 @@ void TestPushdownAutomata(Window* w) {
 }
 
 void AddAudioFiles() {
-
 	Audio::AddSound("splatter.wav");
+	Audio::AddSound("tune.wav");
 }
 
 /*
@@ -276,8 +276,9 @@ int main() {
 	NCL::CSC8503::AudioSystem::Initialise();
 
 
-
 	AddAudioFiles();
+
+
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);

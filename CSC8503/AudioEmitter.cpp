@@ -13,6 +13,7 @@ NCL::CSC8503::AudioEmitter::AudioEmitter(Sound* sound) {
 }
 
 void AudioEmitter::Reset() {
+	paused = false;
 	sound = NULL;
 	priority = LOW;
 	Maths::Vector3 position = Maths::Vector3(0, 0, 0);
@@ -51,9 +52,10 @@ void AudioEmitter::AttachSource(OALSource* s) {
 	alSourcef(currentSource->source, AL_MAX_DISTANCE, radius);
 	alSourcef(currentSource->source, AL_REFERENCE_DISTANCE, radius * 0.2f);
 	alSourcei(currentSource->source, AL_BUFFER, *sound->buffer);
-	alSourcef(currentSource->source, AL_SEC_OFFSET, (sound->length / 1000.0f) - (timeLeft / 1000.0f));
-	cout << "playing sound" << endl;
-	alSourcePlay(currentSource->source);
+
+	Play();
+	//alSourcef(currentSource->source, AL_SEC_OFFSET, (sound->length / 1000.0f) - (timeLeft / 1000.0f));
+	//alSourcePlay(currentSource->source);
 }
 
 void AudioEmitter::DetachSource() {
@@ -68,7 +70,8 @@ void AudioEmitter::DetachSource() {
 }
 
 void AudioEmitter::Update(float msec) {
-	timeLeft -= msec;
+	if(!paused)
+		timeLeft -= msec;
 	while (isLooping && timeLeft < 0.0f )
 		timeLeft += sound->length;
 	if (currentSource) {
@@ -78,5 +81,20 @@ void AudioEmitter::Update(float msec) {
 		alSourcef(currentSource->source, AL_GAIN, volume);
 		alSourcei(currentSource->source, AL_LOOPING, isLooping ? 1 : 0);
 		alSourcef(currentSource->source, AL_REFERENCE_DISTANCE, radius * 0.2f);
+	}
+}
+
+void  AudioEmitter::Play() {
+	if (currentSource) {
+		paused = false;
+		alSourcef(currentSource->source, AL_SEC_OFFSET, sound->length  - timeLeft );
+		alSourcePlay(currentSource->source);
+	}
+}
+
+void  AudioEmitter::Pause() {
+	if (currentSource) {
+		alSourcePause(currentSource->source);
+		paused = true;
 	}
 }

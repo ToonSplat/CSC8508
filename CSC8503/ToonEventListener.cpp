@@ -45,7 +45,6 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
 
                 //make an audio play on collision
                 i->GetAudioEmitter()->SetTarget(Maths::Vector3(i->GetRigidbody()->getTransform().getPosition().x, i->GetRigidbody()->getTransform().getPosition().y, i->GetRigidbody()->getTransform().getPosition().z));
-                i->GetAudioEmitter()->SetSound(Audio::GetSound("splatter.wav"));
                 AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
                
                 

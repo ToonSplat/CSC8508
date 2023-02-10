@@ -35,6 +35,7 @@ namespace NCL
 			Maths::Vector3 position;
 			Maths::Vector3 velocity;
 			bool isLooping;
+			bool paused;
 			float volume;
 			float radius;
 			float  timeLeft;
@@ -47,7 +48,13 @@ namespace NCL
 			AudioEmitter(Sound* sound);
 			~AudioEmitter();
 
+			void Play();
+			void Pause();
+
+
 			void Reset();
+
+			bool GetStatus() { return paused; }
 
 			void SetSound(Sound* s);
 			inline Sound* GetSound() { return sound; };

@@ -41,4 +41,5 @@ void PaintBallProjectile::ConfigureSound() {
 	speaker = new AudioEmitter();
 	speaker->SetPriority(SoundPriority::LOW);
 	speaker->SetLooping(false);
+	speaker->SetSound(Audio::GetSound("splatter.wav"));
 }
