@@ -131,8 +131,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadLevel()
 	
 	//Bridges
 	Vector4 bridgeColour = Vector4(0.83, 0.34, 0.36, 1.0);
-	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
-	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour);
+	AddGridWorld(Axes::X, Vector3(10, 1, 1), 2, Vector3(0.0f, 0.5f, -22.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour, true);
+	AddGridWorld(Axes::Z, Vector3(1, 1, 10), 2, Vector3(18.0f, 0, -40.0f), Vector3(2.0f, 0.5f, 2.0f), 0.0f, GetTexture("basic"), bridgeColour, true);
 
 	//Boxes
 	Vector4 boxColour = Vector4(0.98, 0.95, 0.79, 1.0);

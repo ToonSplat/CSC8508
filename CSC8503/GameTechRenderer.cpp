@@ -41,6 +41,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
+	GenerateMapFBO(windowWidth, windowHeight);
 
 	glClearColor(1, 1, 1, 1);
 
@@ -191,7 +192,7 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 void GameTechRenderer::GenerateMapFBO(int width, int height)
 {
 	glGenFramebuffers(1, &mapFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glGenTextures(1, &mapColourTexture);
 	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
@@ -204,6 +205,7 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mapColourTexture, 0);
 	glObjectLabel(GL_TEXTURE, mapColourTexture, -1, "Mainmap Colour Texture");
+
 
 	glGenTextures(1, &mapDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, mapDepthTexture);
@@ -227,7 +229,7 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapScoreTexture, 0);
 
@@ -238,7 +240,7 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glDrawBuffers(2, attachments);
 
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapColourTexture || !minimapColourTexture) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapScoreTexture) {
 		return;
 	}
 
@@ -303,9 +305,6 @@ void GameTechRenderer::RenderFrame() {
 
 }
 
-
-
-
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
@@ -334,8 +333,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 {
@@ -556,6 +553,8 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 	
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
+
+		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader ) continue;
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
@@ -563,7 +562,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
 			int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
-			glUniform1i(hasTexLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
+			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
 			PassImpactPointDetails(paintedObject, shader);
 		}
 

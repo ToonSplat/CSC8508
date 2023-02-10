@@ -54,9 +54,6 @@ namespace NCL {
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera();
-			void RenderMinimap();
-			void RenderMap();
 
 			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader);
