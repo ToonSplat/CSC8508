@@ -29,6 +29,7 @@ public:
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
 	bool IsAiming() const { return isAiming; }
+	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
 	PaintBallClass GetWeapon() { return weapon; }

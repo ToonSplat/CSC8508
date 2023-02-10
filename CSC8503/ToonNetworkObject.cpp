@@ -34,8 +34,10 @@ bool ToonNetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID
 
 void ToonNetworkObject::UpdateLastFullState() {
 	lastFullState.stateID++;
-	lastFullState.position = ToonUtils::ConvertToRP3DVector3(object->GetPosition());
-	lastFullState.orientation = ToonUtils::ConvertToRP3DQuaternion(object->GetOrientation());
+	lastFullState.position = object->GetRigidbody()->getTransform().getPosition();
+	lastFullState.orientation = object->GetRigidbody()->getTransform().getOrientation();
+	lastFullState.linVelocity = object->GetRigidbody()->getLinearVelocity();
+	lastFullState.angVelocity = object->GetRigidbody()->getAngularVelocity();
 }
 
 //Client objects recieve these packets
@@ -71,6 +73,8 @@ bool ToonNetworkObject::ReadFullPacket(FullPacket& p) {
 
 	object->SetPosition(lastFullState.position);
 	object->SetOrientation(lastFullState.orientation);
+	object->GetRigidbody()->setLinearVelocity(lastFullState.linVelocity);
+	object->GetRigidbody()->setAngularVelocity(lastFullState.angVelocity);
 
 	stateHistory.emplace_back(lastFullState);
 

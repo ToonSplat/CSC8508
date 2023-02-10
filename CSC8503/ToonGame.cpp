@@ -63,6 +63,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		if (offline) {
 			player->MovementUpdate(dt, playerControl);
 		}
+		// This next line is an abomination and should be refactored by Ryan
+		else {
+			player->SetAiming(playerControl->aiming);
+		}
 	}
 
 	accumulator += dt;
