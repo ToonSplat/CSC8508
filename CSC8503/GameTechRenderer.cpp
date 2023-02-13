@@ -15,6 +15,8 @@ using namespace CSC8503;
 
 #define SHADOWSIZE 4096
 
+
+
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 
@@ -42,7 +44,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
-
+	GenerateAtomicBuffer();
 	glClearColor(1, 1, 1, 1);
 
 	//Set up the light properties
@@ -732,6 +734,44 @@ void GameTechRenderer::NewRenderText() {
 	glBindVertexArray(textVAO);
 	glDrawArrays(GL_TRIANGLES, 0, frameVertCount);
 	glBindVertexArray(0);
+}
+
+void NCL::CSC8503::GameTechRenderer::GenerateAtomicBuffer()
+{
+	GLuint atomicsBuffer;
+	glGenBuffers(1, &atomicsBuffer);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::ResetAtomicBuffer()
+{
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+
+	GLuint a[ATOMIC_COUNT];
+	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
+	{
+		a[i] = 0;
+	}
+	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+}
+
+void GameTechRenderer::RetrieveAtomicValues()
+{
+	GLuint pixelCount[ATOMIC_COUNT];
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	totalPixelCount = pixelCount[0];
+	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
+	{
+		teamPixelCount[i - 1] = pixelCount[i];
+	}
+
+	// then go on to create percentages
+
 }
 
 

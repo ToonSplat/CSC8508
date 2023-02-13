@@ -14,6 +14,7 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class GameTechRenderer : public OGLRenderer	{
+		#define ATOMIC_COUNT 5
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
 			~GameTechRenderer();
@@ -31,6 +32,7 @@ namespace NCL {
 			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
+
 
 			void RenderFrame()	override;
 
@@ -122,9 +124,18 @@ namespace NCL {
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
+			GLuint atomicsBuffer;
+			void GenerateAtomicBuffer();
+			void ResetAtomicBuffer();
+			void RetrieveAtomicValues();
+			GLuint teamPixelCount[ATOMIC_COUNT - 1];
+			GLuint totalPixelCount;
+
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
+
+			
 		};
 	}
 }
