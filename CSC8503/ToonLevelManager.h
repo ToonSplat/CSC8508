@@ -1,10 +1,10 @@
 #pragma once
 #include "GameTechRenderer.h"
-#include "PaintableZone.h"
 #include "PaintableObject.h"
-
+#include "ToonGameWorld.h"
 #include "Player.h"
 #include "PaintBallProjectile.h"
+#include "HitSphere.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL
@@ -22,10 +22,13 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			Player* AddPlayerToWorld(const Vector3& position, Team* team);
-			
-			ToonLevelManager(GameTechRenderer& renderer);
+			ToonLevelManager(GameTechRenderer* renderer, ToonGameWorld* gameWorld);
 			~ToonLevelManager();
+
+			Player* AddPlayerToWorld(const Vector3& position, Team* team);
+			//
+			//
+			HitSphere* AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team);
 
 			Player* GetPlayer() { return player; }
 
@@ -91,7 +94,8 @@ namespace NCL
 			std::map<std::string, TextureBase*> textureMap;
 			std::map<std::string, ShaderBase*> shaderMap;
 
-			GameTechRenderer& gameRenderer;			
+			GameTechRenderer* gameRenderer;		
+			ToonGameWorld* gameWorld;
 
 			PaintableObject* axisObject;
 			Player* player = nullptr;

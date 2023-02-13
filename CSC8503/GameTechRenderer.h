@@ -16,8 +16,7 @@ namespace NCL {
 		class ToonFollowCamera;
 		class GameTechRenderer : public OGLRenderer	{
 		public:
-			GameTechRenderer();
-			GameTechRenderer(ToonGameWorld* world);			
+			GameTechRenderer();		
 			~GameTechRenderer();
 
 			MeshGeometry*	LoadMesh(const string& name);

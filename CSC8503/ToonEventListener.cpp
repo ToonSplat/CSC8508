@@ -2,10 +2,16 @@
 #include "ToonGameWorld.h"
 #include "PaintBallProjectile.h"
 #include "ToonUtils.h"
+#include "PaintableObject.h"
+#include "ImpactPoint.h"
+#include "HitSphere.h"
+#include "ToonLevelManager.h"
+#include "ToonGameWorld.h"
 
 using namespace NCL::CSC8503;
 
-ToonEventListener::ToonEventListener(reactphysics3d::PhysicsWorld* physicsWorld) : physicsWorld(physicsWorld) {
+ToonEventListener::ToonEventListener(reactphysics3d::PhysicsWorld* physicsWorld, ToonGameWorld* gameWorld, ToonLevelManager* levelManager) : 
+    physicsWorld(physicsWorld), gameWorld(gameWorld), levelManager(levelManager) {
 	physicsWorld->setEventListener(this);
 }
 
@@ -37,30 +43,29 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         // Check if impact involves a paintball
         void* body1 = contactPair.getBody1()->getUserData();
         void* body2 = contactPair.getBody2()->getUserData();
-        for (PaintBallProjectile* i : ToonGameWorld::Get()->GetPaintballs()) {
+        for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                
                 // Make the HitSphere
-                HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
+                levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
                 // Remove the Paintball
-                ToonGameWorld::Get()->RemovePaintball(i);
-                ToonGameWorld::Get()->RemoveGameObject(i, false);
+                gameWorld->RemovePaintball(i);
+                gameWorld->RemoveGameObject(i, false);
                 break;
             }
         }
 
         // Check if collision involves HitSpheres 
-        for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+        for (HitSphere* i : gameWorld->GetHitSpheres()) {
             if (i == body1 || i == body2) {
-                
-                for (PaintableObject* p : ToonGameWorld::Get()->GetPaintableObjects()) {
+                for (PaintableObject* p : gameWorld->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
-                        
                         if (p == body1) {
-                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));                          
+                            Vector3 localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition());
+                            p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeamColour(), i->GetRadius()));                          
                         }
                         else {
-                            p->AddImpactPoint(ImpactPoint(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition()), i->GetTeamColour(), i->GetRadius()));
+                            Vector3 localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition());
+                            p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeamColour(), i->GetRadius()));
                         }
                     }
                 }
@@ -71,11 +76,11 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
     
         
     }
-    for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+    for (HitSphere* i : gameWorld->GetHitSpheres()) {
         if (i->CheckDelete()) {
             //delete the hitsphere
-            ToonGameWorld::Get()->RemoveHitSphere(i);
-            ToonGameWorld::Get()->RemoveGameObject(i, false);
+            gameWorld->RemoveHitSphere(i);
+            gameWorld->RemoveGameObject(i, false);
         }
     }
 }
@@ -88,13 +93,13 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
         reactphysics3d::OverlapCallback::OverlapPair overlapPair = callbackData.getOverlappingPair(p);
 
         
-        std::cout << "HitSphere collisions" << std::endl;
+        std::cout << "TRIGGER HitSphere collisions" << std::endl;
         
         void* body1 = overlapPair.getBody1()->getUserData();
         void* body2 = overlapPair.getBody2()->getUserData();
-        for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
+        for (HitSphere* i : gameWorld->GetHitSpheres()) {
             if (i == body1 || i == body2) {
-                std::cout << "HITSPHERE COLLISION\n";
+                std::cout << "TRIGGER HITSPHERE COLLISION\n";
                 break;
             }
         }

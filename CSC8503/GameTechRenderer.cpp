@@ -29,11 +29,6 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	SetupStuffs();
 }
 
-GameTechRenderer::GameTechRenderer(ToonGameWorld* world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
-{	
-	SetupStuffs();
-}
-
 GameTechRenderer::~GameTechRenderer()	{
 	glDeleteTextures(1, &shadowTex);
 	glDeleteFramebuffers(1, &shadowFBO);

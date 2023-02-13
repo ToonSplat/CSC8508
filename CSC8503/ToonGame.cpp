@@ -6,6 +6,7 @@
 #include "ToonMinimapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
+#include "ToonEventListener.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -16,7 +17,8 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	world = new ToonGameWorld();
 	renderer->SetWorld(world);
 
-	levelManager = new ToonLevelManager(*renderer);
+	levelManager = new ToonLevelManager(renderer, world);
+	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5);
 	if (offline) {
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
@@ -73,9 +75,8 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	{
 		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
 		accumulator -= timeStep;
-		world->DeleteObjects();
+		world->DeleteMarkedObjects();
 	}
-
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }

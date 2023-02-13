@@ -12,8 +12,8 @@ using namespace CSC8503;
 
 ToonLevelManager* ToonLevelManager::instance = nullptr;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
-	gameRenderer(renderer)
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer* renderer, ToonGameWorld* gameWorld) :
+	gameRenderer(renderer), gameWorld(gameWorld)
 {
 	instance = this;
 	if (!LoadAssets()) return;
@@ -65,7 +65,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 bool NCL::CSC8503::ToonLevelManager::LoadModel(MeshGeometry** mesh, const std::string& meshFileName)
 {
-	*mesh = gameRenderer.LoadMesh(meshFileName);
+	*mesh = gameRenderer->LoadMesh(meshFileName);
 	if (mesh == nullptr)
 		return false;
 
@@ -77,11 +77,11 @@ bool NCL::CSC8503::ToonLevelManager::LoadTexture(TextureBase** tex, const std::s
 	if (invert)
 	{
 		stbi_set_flip_vertically_on_load(true);
-		*tex = gameRenderer.LoadTexture(textureFileName);
+		*tex = gameRenderer->LoadTexture(textureFileName);
 		stbi_set_flip_vertically_on_load(false);
 	}
 	else
-		*tex = gameRenderer.LoadTexture(textureFileName);
+		*tex = gameRenderer->LoadTexture(textureFileName);
 
 	if (*tex == nullptr)
 		return false;
@@ -91,7 +91,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadTexture(TextureBase** tex, const std::s
 
 bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader)
 {
-	*shader = gameRenderer.LoadShader(shaderVertexShader, shaderFragmentShader);
+	*shader = gameRenderer->LoadShader(shaderVertexShader, shaderFragmentShader);
 	if (*shader == nullptr)
 		return false;
 
@@ -296,17 +296,35 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
-	/*Player* player = (Player*)AddSphereToWorld(position, Vector3(0, 0, 0), 2.0f, basicTexPurple);
-
-	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-	player->GetRigidbody()->setLinearDamping(0.8f);
-	player->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
-
-	player->GetRenderObject()->SetMesh(charMesh);*/
-
 	player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
 
 	return player;
+}
+
+HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team) {
+	HitSphere* hitSphere = new HitSphere(gameWorld->GetPhysicsWorld(), team, radius);
+	hitSphere->AddRigidbody();
+	hitSphere->SetPosition(position);
+	hitSphere->GetTransform().SetScale(Vector3(radius, radius, radius));
+
+	hitSphere->SetRenderObject(new ToonRenderObject(&hitSphere->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
+	hitSphere->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 0.0f));
+
+	hitSphere->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+
+	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius);
+	hitSphere->SetCollisionShape(sphereShape);
+	hitSphere->SetCollider(sphereShape);
+	hitSphere->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	//GetCollider()->setIsTrigger(true);
+
+
+	hitSphere->GetRigidbody()->setUserData(hitSphere);
+
+	ToonGameWorld::Get()->AddGameObject(hitSphere);
+	ToonGameWorld::Get()->AddHitSphere(hitSphere);
+	return hitSphere;
 }

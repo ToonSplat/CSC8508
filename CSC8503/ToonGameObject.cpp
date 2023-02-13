@@ -21,10 +21,12 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 			rigidBody->removeCollider(collider); // Not clear if need to delete Collider seperately, doing for safety
 		physicsWorld.destroyRigidBody(rigidBody);
 	}
+	/*
+	* TODO: To delete the collisionShapes before ToonGameWorld deletion is a massive pain of adding GameWorld or PhysicsCommon to every TGO and children... it can be done though probably
 	if(collisionShapeSphere)
 		ToonGameWorld::Get()->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
 	if(collisionShapeBox)
-		ToonGameWorld::Get()->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
+		ToonGameWorld::Get()->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);*/
 	
 	delete renderObject;
 }

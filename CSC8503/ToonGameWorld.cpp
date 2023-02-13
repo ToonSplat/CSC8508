@@ -2,6 +2,8 @@
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
 #include "Window.h"
+#include "PaintableObject.h"
+#include "PaintBallProjectile.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -12,7 +14,6 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
-	eventListener = new ToonEventListener(physicsWorld);
 	teams.insert(new Team("The Green Gulls", Vector3(0, 1.0f, 0)));
 	teams.insert(new Team("The Purple Panthers", Vector3(1.0f, 0, 1.0f)));
 
@@ -63,6 +64,41 @@ void NCL::CSC8503::ToonGameWorld::RemoveGameObject(ToonGameObject* o, bool andDe
 		delete o;
 	}
 	worldStateCounter++;
+}
+
+void ToonGameWorld::AddPaintball(PaintBallProjectile* paintball) {
+	activePaintballs.emplace(paintball);
+}
+void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {
+	activePaintballs.erase(paintball);
+	objectsToDelete.insert(paintball);
+}
+
+void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
+	activeHitSpheres.emplace(hitSphere);
+}
+void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
+	activeHitSpheres.erase(hitSphere);
+	objectsToDelete.insert(hitSphere);
+}
+
+void ToonGameWorld::AddPaintableObject(PaintableObject* paintableObject) {
+	paintableObjects.emplace(paintableObject);
+}
+void ToonGameWorld::RemovePaintableObject(PaintableObject* paintableObject) {
+	paintableObjects.erase(paintableObject);
+	objectsToDelete.insert(paintableObject);
+}
+
+void ToonGameWorld::GetGameObjects(void) const {
+	for (auto& object : gameObjects)
+		std::cout << object->GetRigidbody()->getUserData() << std::endl;
+}
+
+void ToonGameWorld::DeleteMarkedObjects() {
+	for (auto& object : objectsToDelete)
+		delete object;
+	objectsToDelete.clear();
 }
 
 void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
