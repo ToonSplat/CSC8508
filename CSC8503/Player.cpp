@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position, const Vector3& rotationEuler, const float& radius, Team* team) : ToonGameObject(RP3D_World), team(team)
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team) : ToonGameObject(RP3D_World), team(team)
 {
 	team->AddPlayer();
 	isAiming = false;
@@ -13,28 +13,6 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	moveSpeed = 1500.0f;
 	rotationSpeed = 6.0f;
 	aimingSpeed = 10.0f;
-
-	transform.SetPosition(position).
-		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
-		SetScale(Vector3(radius, radius, radius));
-
-	AddRigidbody();
-	rigidBody->setType(reactphysics3d::BodyType::DYNAMIC);
-	rigidBody->setLinearDamping(0.8f);
-	rigidBody->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
-	rigidBody->setIsAllowedToSleep(true);
-
-	reactphysics3d::SphereShape* sphereShape = ToonGameWorld::Get()->GetPhysicsCommon().createSphereShape(radius * 0.85f);
-	SetCollisionShape(sphereShape);
-	SetCollider(sphereShape);
-	SetColliderLayer(ToonCollisionLayer::Character);
-
-	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
-	SetColliderLayerMask(ToonCollisionLayer(collisionMask));
-
-	collider->getMaterial().setBounciness(0.1f);
-
-	ToonGameWorld::Get()->AddGameObject(this);
 }
 
 Player::~Player() 

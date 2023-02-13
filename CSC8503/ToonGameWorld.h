@@ -46,8 +46,6 @@ namespace NCL
 
 			void GetGameObjects(void) const;
 
-			static ToonGameWorld* Get() { return instance; }
-
 			Camera* GetMainCamera() const { return mainCamera; }
 			void SetMainCamera(Camera* newCamera) { 
 				delete mainCamera;

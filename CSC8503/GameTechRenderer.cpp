@@ -327,13 +327,13 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
 	}
-	if (ImGui::CollapsingHeader("Player"))
+	/*if (ImGui::CollapsingHeader("Player"))
 	{
 		Player* player = ToonLevelManager::Get()->GetPlayer();
 		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(player->GetRigidbody()->getTransform().getPosition());
 
 		ImGui::DragFloat3("Position", (float*)(&playerPos));
-	}
+	}*/
 	ImGui::End();
 
 	ImGui::Render();

@@ -26,7 +26,6 @@ namespace NCL
 			~ToonLevelManager();
 
 			Player* AddPlayerToWorld(const Vector3& position, Team* team);
-			//
 			PaintBallProjectile* AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
 				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team);
 			HitSphere* AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team);
@@ -54,8 +53,6 @@ namespace NCL
 				}
 				else return shaderMap.at(shaderName);
 			}
-
-			static ToonLevelManager* Get() { return instance; }
 
 			void Update(float dt);
 

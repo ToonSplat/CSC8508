@@ -10,12 +10,9 @@
 using namespace NCL;
 using namespace CSC8503;
 
-ToonLevelManager* ToonLevelManager::instance = nullptr;
-
 NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer* renderer, ToonGameWorld* gameWorld) :
 	gameRenderer(renderer), gameWorld(gameWorld)
 {
-	instance = this;
 	if (!LoadAssets()) return;
 
 	axisObject = AddCubeToWorld(Vector3(40.0f, 10.0f, -20.0f), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Debug::WHITE, 1.0f);
@@ -293,7 +290,31 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
-	player = new Player(gameWorld->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
+	const float PLAYER_RADIUS = 2.0f;
+	player = new Player(gameWorld->GetPhysicsWorld(), team);
+	player->AddRigidbody();
+
+	player->SetPosition(position);
+	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS));
+
+	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	player->GetRigidbody()->setLinearDamping(0.8f);
+	player->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
+	player->GetRigidbody()->setIsAllowedToSleep(true);
+
+	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(PLAYER_RADIUS * 0.85f);
+	player->SetCollisionShape(sphereShape);
+	player->SetCollider(sphereShape);
+	player->SetColliderLayer(ToonCollisionLayer::Character);
+
+	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
+	player->SetColliderLayerMask(ToonCollisionLayer(collisionMask));
+
+	player->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	player->GetRigidbody()->setUserData(player);
+
+	gameWorld->AddGameObject(player);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
 
