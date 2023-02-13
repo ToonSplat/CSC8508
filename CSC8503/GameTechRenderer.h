@@ -124,6 +124,12 @@ namespace NCL {
 			float team2Percentage;
 			float team3Percentage;
 			float team4Percentage;
+
+			Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+			Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
+			Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
+			Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
+			Vector3 team4Colour = Vector3(0.98, 0, 0.79);
 		};
 	}
 }

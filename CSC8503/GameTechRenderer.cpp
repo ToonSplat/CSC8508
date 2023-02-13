@@ -368,12 +368,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
 	CalculatePercentages(100, 25, 50, 15, 10);
-	
-	Vector3 defaultColour = Vector3(0.5, 0.5, 0.5); // Change to be team1->GetColour()
-	Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
-	Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
-	Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
-	Vector3 team4Colour = Vector3(0.98, 0, 0.79);
+
 	
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
