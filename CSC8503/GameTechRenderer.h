@@ -6,6 +6,7 @@
 
 #include "GameWorld.h"
 #include "ToonGameWorld.h"
+#include "ToonDebugManager.h"
 
 namespace NCL {
 	class Maths::Vector3;
@@ -14,6 +15,7 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class ToonFollowCamera;
+		class ToonDebugManager;
 		class GameTechRenderer : public OGLRenderer	{
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
@@ -47,7 +49,9 @@ namespace NCL {
 			OGLShader*		defaultShader;
 
 			//GameWorld&	gameWorld;
-			ToonGameWorld&	gameWorld;			
+			ToonGameWorld&	gameWorld;	
+
+			ToonDebugManager* toonDebugManager;
 
 			void BuildObjectList();
 			void SortObjectList();

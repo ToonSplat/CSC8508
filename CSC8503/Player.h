@@ -36,9 +36,9 @@ public:
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
-	void SetDebugManager(ToonDebugManager* tdm) {
-		toonDebugManager = tdm;
-	}
+	void SetDebugManager(ToonDebugManager* tdm) { toonDebugManager = tdm; }
+
+	ToonDebugManager* GetDebugManager() { if (toonDebugManager == nullptr) { return nullptr; } else { return toonDebugManager; } }
 
 protected:
 	ToonDebugManager* toonDebugManager;

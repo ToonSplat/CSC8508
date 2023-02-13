@@ -22,6 +22,10 @@ namespace NCL
 
 			virtual void UpdateGame(float dt);
 
+			ToonDebugManager* GetDebugManager() {
+				return toonDebugManager;
+			}
+
 		protected:
 			void UpdateControls(PlayerControl* controls);
 			Player*	player = nullptr;

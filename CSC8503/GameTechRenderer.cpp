@@ -26,6 +26,7 @@ ToonFollowCamera* followCamera;
 
 GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
 {	
+	toonDebugManager = nullptr;
 	SetupStuffs();
 }
 
@@ -297,47 +298,116 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 
 void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 {
-	ImGui_ImplOpenGL3_NewFrame();
-	ImGui_ImplWin32_NewFrame();
-	ImGui::NewFrame();
-
-	ImGui::Begin("Debug Window");
-	if (ImGui::CollapsingHeader("Camera"))
-	{
-		if(!followCamera) followCamera = (ToonFollowCamera*)(gameWorld.GetMainCamera());
-
-		Vector3 cPos = gameWorld.GetMainCamera()->GetPosition();
-		Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
-		Vector3 cFollowOffset = followCamera->GetFollowOffset();
-		Vector3 cTargetOffset = followCamera->GetTargetOffset();
-		Vector3 cAimOffset = followCamera->GetAimOffset();
-
-		float distance = followCamera->GetFollowDistance();
-		float smoothness = followCamera->GetSmoothness();
-		float cPitchOffset = followCamera->GetPitchOffset();
-
-		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
-		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld.GetMainCamera()->SetPitch(cPos.x);
-		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
-		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
-
-		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
-		if (ImGui::DragFloat("Follow Smoothness", (float*)&smoothness)) followCamera->SetSmoothness(smoothness);
-		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
-		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
-		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
-	}
-	if (ImGui::CollapsingHeader("Player"))
-	{
+	if (toonDebugManager == nullptr) {
 		Player* player = ToonLevelManager::Get()->GetPlayer();
-		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(player->GetRigidbody()->getTransform().getPosition());
-
-		ImGui::DragFloat3("Position", (float*)(&playerPos));
+		toonDebugManager = player->GetDebugManager();
 	}
-	ImGui::End();
 
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	if (toonDebugManager->GetIsDebugging()) {
+
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplWin32_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::Begin("Debug Window");
+		if (ImGui::CollapsingHeader("Camera"))
+		{
+			if (!followCamera) followCamera = (ToonFollowCamera*)(gameWorld.GetMainCamera());
+
+			Vector3 cPos = gameWorld.GetMainCamera()->GetPosition();
+			Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
+			Vector3 cFollowOffset = followCamera->GetFollowOffset();
+			Vector3 cTargetOffset = followCamera->GetTargetOffset();
+			Vector3 cAimOffset = followCamera->GetAimOffset();
+
+			float distance = followCamera->GetFollowDistance();
+			float smoothness = followCamera->GetSmoothness();
+			float cPitchOffset = followCamera->GetPitchOffset();
+
+			if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
+			if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld.GetMainCamera()->SetPitch(cPos.x);
+			if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
+			if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
+
+			if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
+			if (ImGui::DragFloat("Follow Smoothness", (float*)&smoothness)) followCamera->SetSmoothness(smoothness);
+			if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
+			if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
+			if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
+		}
+		if (ImGui::CollapsingHeader("Player"))
+		{
+			Player* player = ToonLevelManager::Get()->GetPlayer();
+			Vector3 playerPos = ToonUtils::ConvertToNCLVector3(player->GetRigidbody()->getTransform().getPosition());
+
+			ImGui::DragFloat3("Position", (float*)(&playerPos));
+		}
+		ImGui::End();
+
+		ImGui::Begin("Performance Window");
+		if (ImGui::CollapsingHeader("Memory Usage")) {
+			ImGui::BeginTable("Memory Usage Table", 2);
+
+			string virtualMemoryUsage = toonDebugManager->GetVirtualMemoryUsage();
+			string virutalUsageByProgram = toonDebugManager->GetVirutalUsageByProgram();
+			string physicalMemoryUsage = toonDebugManager->GetPhysicalMemoryUsage();
+			string physicalUsgaebyProgram = toonDebugManager->GetPhysicalUsgaebyProgram();
+
+			ImGui::TableNextColumn();
+			ImGui::Text("Virtual Memory");
+			ImGui::TableNextColumn();
+			ImGui::Text(virtualMemoryUsage.c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Virtual Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(virutalUsageByProgram.c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory");
+			ImGui::TableNextColumn();
+			ImGui::Text(physicalMemoryUsage.c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(physicalUsgaebyProgram.c_str());
+
+			ImGui::EndTable();
+
+		}
+		if (ImGui::CollapsingHeader("Update Times")) {
+			ImGui::BeginTable("Memory Usage Table", 2);
+
+			string frameTimeTaken = toonDebugManager->GetFrameTimeTaken();
+			string physicsTimeTaken = toonDebugManager->GetPhysicsTimeTaken();
+			string graphicsTimnTaken = toonDebugManager->GetGraphicsTimnTaken();
+
+			ImGui::TableNextColumn();
+			ImGui::Text("Frame Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(frameTimeTaken.c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physics Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(physicsTimeTaken.c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Graphics Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(graphicsTimnTaken.c_str());
+			ImGui::EndTable();
+		}
+		ImGui::End();
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+	}
 }
 
 void GameTechRenderer::BuildObjectList() {

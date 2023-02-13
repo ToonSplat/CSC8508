@@ -16,13 +16,16 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
 	
-	testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
+	toonDebugManager = new ToonDebugManager();
+
+	//testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
 	levelManager = new ToonLevelManager(*renderer);
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 	if (offline) {
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
 		player->SetWeapon(baseWeapon);
+		player->SetDebugManager(toonDebugManager);
 		world->SetMainCamera(new ToonFollowCamera(player));
 		world->SetMinimapCamera(new ToonMinimapCamera(*player));
 	}
@@ -32,9 +35,6 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 
 	accumulator = 0.0f;
 	showCursor = false;
-
-	toonDebugManager = new ToonDebugManager();
-	player->SetDebugManager(toonDebugManager);
 
 	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
@@ -114,6 +114,12 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3))
+		toonDebugManager->ToggleDebug();
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F4))
+		toonDebugManager->ToggleCollisionDisplay();
 
 	controls->direction[0] = short(linearMovement.x * 1000);
 	controls->direction[1] = short(linearMovement.y * 1000);

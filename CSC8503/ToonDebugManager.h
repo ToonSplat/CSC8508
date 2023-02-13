@@ -21,46 +21,48 @@ namespace NCL
 
 			virtual void Update(float dt);
 
-			void ToggleDebug() {
-				isDebugging = !isDebugging;
-				std::cout << isDebugging << std::endl;
-			}
+			void ToggleDebug() { isDebugging = !isDebugging; }
 
-			void SetPhysicsUpdateTime(auto start, auto end) {
-				physicsTimeTaken = ConvertTimeTaken(start, end);
-			}
-
-			void SetGraphicsUpdateTime(auto start, auto end) {
-				graphicsTimeTaken = ConvertTimeTaken(start, end);
-			}
-
-			void SetFrameUpdateTime(auto start, auto end) {
-				frameTimeTaken = ConvertTimeTaken(start, end);
-			}
+			void SetPhysicsUpdateTime(auto start, auto end) { physicsTimeTaken = ConvertTimeTaken(start, end); }
+			void SetGraphicsUpdateTime(auto start, auto end) { graphicsTimeTaken = ConvertTimeTaken(start, end); }
+			void SetFrameUpdateTime(auto start, auto end) { frameTimeTaken = ConvertTimeTaken(start, end); }
 
 			double ConvertTimeTaken(auto start, auto end) {
 				auto timeTaken = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
 				return timeTaken.count();
 			}
 
+			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem) + "/" + std::to_string(totalVirtualMem); }
+			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram); }
+			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem) + "/" + std::to_string(totalPhysMem); }
+			string GetPhysicalUsgaebyProgram() { return std::to_string(physMemUsedByProgram); }
+			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken) + "ms"; }
+			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken) + "ms"; }
+			string GetGraphicsTimnTaken() { return std::to_string(graphicsTimeTaken) + "ms"; }
+
+			bool GetIsDebugging() { return isDebugging; }
+
+			void ToggleCollisionDisplay();
+
 		protected:
 			void DisplayCollisionBoxes(float dt);
 			void CalculateMemoryUsage();
-			void CalculateMemoryUsageByThis();
+			void CalculateMemoryUsageByProgram();
 
 			DWORDLONG totalVirtualMem;
 			DWORDLONG usedVirtualMem;
-			SIZE_T virtualMemUsedByMe;
+			SIZE_T virtualMemUsedByProgram;
 
 			DWORDLONG totalPhysMem;
 			DWORDLONG usedPhysMem;
-			SIZE_T physMemUsedByMe;
+			SIZE_T physMemUsedByProgram;
 
 			double physicsTimeTaken;
 			double graphicsTimeTaken;
 			double frameTimeTaken;
 
 			bool isDebugging;
+			bool isCollisionDisplayToggled;
 			bool isDebugToggled;
 		};
 	}
