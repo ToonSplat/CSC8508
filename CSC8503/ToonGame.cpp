@@ -24,7 +24,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
 		player->SetWeapon(baseWeapon);
-		world->SetMainCamera(new ToonFollowCamera(player));
+		world->SetMainCamera(new ToonFollowCamera(world, player));
 		world->SetMinimapCamera(new ToonMinimapCamera(*player));
 	}
 	else {

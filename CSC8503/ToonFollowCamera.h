@@ -10,10 +10,11 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		class ToonGameWorld;
 		class ToonFollowCamera : public Camera
 		{
 		public:
-			ToonFollowCamera(ToonGameObject* target);
+			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target);
 			~ToonFollowCamera() {};
 
 			virtual void UpdateCamera(float dt) override;
@@ -37,6 +38,7 @@ namespace NCL
 			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
 
 		protected:
+			ToonGameWorld* gameWorld;
 			ToonGameObject* followTarget;
 			Player* player;
 
