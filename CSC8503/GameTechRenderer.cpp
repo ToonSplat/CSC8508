@@ -479,11 +479,19 @@ void GameTechRenderer::RenderShadowMap() {
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
+
+		BindMesh((*i).GetRenderObject()->GetMesh());
+		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		for (int j = 0; j < layerCount; ++j) {
+			i->Draw(j);
+		}
+
+		/*Jainesh - Moved to ToonGameObject.h Draw() func
 		BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}
+		}*/
 	}
 
 	glViewport(0, 0, windowWidth, windowHeight);
@@ -634,9 +642,16 @@ void GameTechRenderer::RenderCamera() {
 
 		BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		for (int j = 0; j < layerCount; ++j) {
+			i->Draw(j);
+		}
+
+		/*Jainesh - Moved to ToonGameObject.h Draw() func
+		BindMesh((*i).GetRenderObject()->GetMesh());
+		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}
+		}*/
 	}
 }
 

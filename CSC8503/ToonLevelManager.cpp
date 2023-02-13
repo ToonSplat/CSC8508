@@ -43,13 +43,14 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 {
 	//All Models
 	if (!LoadModel(&meshMap["cube"], "cube.msh")) return false;
-	if (!LoadModel(&meshMap["goat"], "goat.msh")) return false;
+	if (!LoadModel(&meshMap["player"], "Character_Boss.msh")) return false;
 	if (!LoadModel(&meshMap["sphere"], "sphere.msh")) return false;
 
 	//All Textures
 	if (!LoadTexture(&textureMap["mesh"], "checkerboard.png", false)) return false;
 	if (!LoadTexture(&textureMap["basic"], "Prefab_Grey50.png", true)) return false;
 	if (!LoadTexture(&textureMap["basicPurple"], "Prefab_Purple.png", true)) return false;
+	if (!LoadTexture(&textureMap["boss_player"], "Boss_diffuse.png", true)) return false;
 
 	//All Shaders
 	if (!LoadShader(&shaderMap["basic"], "scene.vert", "scene.frag")) return false;
@@ -315,7 +316,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	gameWorld->AddGameObject(player);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("boss_player"), GetShader("basic")));
 	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
 
 	return player;

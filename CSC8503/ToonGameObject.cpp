@@ -1,6 +1,7 @@
 #include "ToonGameObject.h"
 #include "ToonRenderObject.h"
 #include "ToonGameWorld.h"
+#include "OGLMesh.h"
 
 NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : physicsWorld(RP3D_World), gameWorld(gameWorld)
 {
@@ -28,6 +29,48 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
 	
 	delete renderObject;
+}
+
+void NCL::CSC8503::ToonGameObject::Draw(int subLayer)
+{
+	if (!renderObject || !renderObject->GetMesh())
+		return;
+
+	OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
+
+	GLuint	mode = 0;
+	int		count = 0;
+	int		offset = 0;
+
+	if (boundMesh->GetSubMeshCount() == 0) {
+		if (boundMesh->GetIndexCount() > 0) {
+			count = boundMesh->GetIndexCount();
+		}
+		else {
+			count = boundMesh->GetVertexCount();
+		}
+	}
+	else {
+		const SubMesh* m = boundMesh->GetSubMesh(subLayer);
+		offset = m->start;
+		count = m->count;
+	}
+
+	switch (boundMesh->GetPrimitiveType()) {
+	case GeometryPrimitive::Triangles:		mode = GL_TRIANGLES;		break;
+	case GeometryPrimitive::Points:			mode = GL_POINTS;			break;
+	case GeometryPrimitive::Lines:			mode = GL_LINES;			break;
+	case GeometryPrimitive::TriangleFan:	mode = GL_TRIANGLE_FAN;		break;
+	case GeometryPrimitive::TriangleStrip:	mode = GL_TRIANGLE_STRIP;	break;
+	case GeometryPrimitive::Patches:		mode = GL_PATCHES;			break;
+	}
+
+	if (boundMesh->GetIndexCount() > 0) {
+		glDrawElements(mode, count, GL_UNSIGNED_INT, (const GLvoid*)(offset * sizeof(unsigned int)));
+	}
+	else {
+		glDrawArrays(mode, 0, count);
+	}
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()

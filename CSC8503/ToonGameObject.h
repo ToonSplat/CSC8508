@@ -22,6 +22,7 @@ namespace NCL::CSC8503
 		~ToonGameObject();
 
 		virtual void Update(float dt) { std::cout << "Base class update\n"; };
+		virtual void Draw(int subLayer);
 
 		const std::string& GetName() const { return name; }
 
