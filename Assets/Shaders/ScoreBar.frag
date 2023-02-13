@@ -19,11 +19,6 @@ in Vertex {
 
 out vec4 fragColour;
 
-//vec3 defaultGray = vec3(0.5, 0.5, 0.5);
-//vec3 team1Colour = vec3(0.0, 0.0, 0.9);
-//vec3 team2Colour = vec3(0.0, 0.9, 0.0);
-//vec3 team3Colour = vec3(0.9, 0.0, 0.0);
-//vec3 team4Colour = vec3(0.98, 0, 0.79);
 
 float sdPlane( vec2 samplePos, vec2 halfSize)
 {
