@@ -20,6 +20,10 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 
 GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	{
 	SetupStuffs();
+	team1Percentage = 0;
+	team2Percentage = 0;
+	team3Percentage = 0;
+	team4Percentage = 0;
 }
 
 GameTechRenderer::~GameTechRenderer()	{
@@ -363,10 +367,7 @@ void GameTechRenderer::PresentScene()
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	float team1Percentage = 0.2f; // Eventually change to actual percent values.
-	float team2Percentage = 0.3;
-	float team3Percentage = 0;
-	float team4Percentage = 0;
+	CalculatePercentages(100, 25, 50, 15, 10);
 	
 	Vector3 defaultColour = Vector3(0.5, 0.5, 0.5); // Change to be team1->GetColour()
 	Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
@@ -404,6 +405,13 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+}
+
+void NCL::CSC8503::GameTechRenderer::CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels) {
+	team1Percentage = (float)team1Pixels / (float)totalPixels;
+	team2Percentage = (float)team2Pixels / (float)totalPixels;
+	team3Percentage = (float)team3Pixels / (float)totalPixels;
+	team4Percentage = (float)team4Pixels / (float)totalPixels;
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)

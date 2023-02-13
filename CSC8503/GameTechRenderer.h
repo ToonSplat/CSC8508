@@ -41,6 +41,8 @@ namespace NCL {
 			void DrawMinimap();
 			void DrawScoreBar();
 
+			void CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels);
+
 			void DrawMainScene();
 
 			OGLShader*		defaultShader;
@@ -117,6 +119,11 @@ namespace NCL {
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
 			OGLMesh* scoreQuad;
+
+			float team1Percentage;
+			float team2Percentage;
+			float team3Percentage;
+			float team4Percentage;
 		};
 	}
 }
