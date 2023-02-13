@@ -365,13 +365,26 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 
 	float team1Percentage = 0.2f; // Eventually change to actual percent values.
 	float team2Percentage = 0;
-	float team3Percentage = 0.5f;
+	float team3Percentage = 0;
 	float team4Percentage = 0.3f;
+	
+	Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+	Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
+	Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
+	Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
+	Vector3 team4Colour = Vector3(0.98, 0, 0.79);
+	
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
 
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, team1Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, team2Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, team3Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, team4Colour.array);
+	
 	Matrix4 identityMatrix = Matrix4();
 
 	int projLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "projMatrix");
