@@ -55,6 +55,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 	renderer->Update(dt);
 
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) {
+		renderer->RetrieveAtomicValues();
+	}
+
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{

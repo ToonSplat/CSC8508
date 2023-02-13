@@ -25,7 +25,7 @@ namespace NCL {
 
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
-
+			void RetrieveAtomicValues();
 		protected:
 
 			void SetupStuffs();
@@ -127,9 +127,10 @@ namespace NCL {
 			GLuint atomicsBuffer;
 			void GenerateAtomicBuffer();
 			void ResetAtomicBuffer();
-			void RetrieveAtomicValues();
+			
 			GLuint teamPixelCount[ATOMIC_COUNT - 1];
 			GLuint totalPixelCount;
+			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;

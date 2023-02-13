@@ -1,4 +1,10 @@
-#version 400 core
+#version 420
+
+layout (binding = 0, offset = 0) uniform atomic_uint atFloor;
+layout (binding = 0, offset = 4) uniform atomic_uint atTeam1;
+layout (binding = 0, offset = 8) uniform atomic_uint atTeam2;
+layout (binding = 0, offset = 12) uniform atomic_uint atTeam3;
+layout (binding = 0, offset = 16) uniform atomic_uint atTeam4;
 
 struct ImpactPoint{
 	vec3 position;
@@ -72,6 +78,8 @@ void main(void)
 	
 	if (isFloor){
 		gScore = albedo;
+		atomicCounterIncrement(atFloor);
+		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(atTeam1);
 	}
 	
 

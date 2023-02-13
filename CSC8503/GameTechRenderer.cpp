@@ -8,6 +8,7 @@
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
 #include "ToonUtils.h"
+#include <iostream>
 
 using namespace NCL;
 using namespace Rendering;
@@ -414,6 +415,7 @@ void GameTechRenderer::PresentScene()
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
 	PresentGameScene();
+	
 	PresentMinimap(modelLocation);
 
 	
@@ -736,42 +738,50 @@ void GameTechRenderer::NewRenderText() {
 	glBindVertexArray(0);
 }
 
-void NCL::CSC8503::GameTechRenderer::GenerateAtomicBuffer()
+void GameTechRenderer::GenerateAtomicBuffer()
 {
-	GLuint atomicsBuffer;
 	glGenBuffers(1, &atomicsBuffer);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::ResetAtomicBuffer()
+void GameTechRenderer::ResetAtomicBuffer()
 {
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
-
+	//glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 	GLuint a[ATOMIC_COUNT];
 	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
 	{
 		a[i] = 0;
 	}
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	//glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 }
 
 void GameTechRenderer::RetrieveAtomicValues()
 {
 	GLuint pixelCount[ATOMIC_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
+
 	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
+
+	//
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	totalPixelCount = pixelCount[0];
+	std::cout << "total pixel count: " << totalPixelCount << std::endl;
 	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
 	{
 		teamPixelCount[i - 1] = pixelCount[i];
+		std::cout << "Team " << i << " pixel count: " << teamPixelCount[i - 1] << std::endl;
 	}
+	
+	
 
-	// then go on to create percentages
-
+	
 }
 
 
