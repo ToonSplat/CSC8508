@@ -10,6 +10,7 @@ layout(location=2) in vec2 texCoord;
 out Vertex {
 	vec2 texCoord;
     vec3 fragWorldPos;
+    vec3 position;
 } OUT;
 
 void main(void)		{
@@ -17,4 +18,5 @@ void main(void)		{
     gl_Position = mvp * vec4(position, 1.0);
     OUT.fragWorldPos = (projMatrix * vec4(position, 1.0)).xyz;
     OUT.texCoord = texCoord;
+    OUT.position = position;
 }

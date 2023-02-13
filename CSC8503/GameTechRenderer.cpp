@@ -363,6 +363,15 @@ void GameTechRenderer::PresentScene()
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
+	float team1Percentage = 0.2f; // Eventually change to actual percent values.
+	float team2Percentage = 0;
+	float team3Percentage = 0.5f;
+	float team4Percentage = 0.3f;
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
+
 	Matrix4 identityMatrix = Matrix4();
 
 	int projLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "projMatrix");
@@ -374,12 +383,14 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
 	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
 	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85, 0)) * Matrix4::Scale(Vector3(0.4, 0.035, 1));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&scoreBarModelMatrix);
 
 	BindMesh(scoreQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
