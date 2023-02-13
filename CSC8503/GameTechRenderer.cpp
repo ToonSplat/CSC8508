@@ -364,11 +364,11 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
 	float team1Percentage = 0.2f; // Eventually change to actual percent values.
-	float team2Percentage = 0;
+	float team2Percentage = 0.3;
 	float team3Percentage = 0;
-	float team4Percentage = 0.3f;
+	float team4Percentage = 0;
 	
-	Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+	Vector3 defaultColour = Vector3(0.5, 0.5, 0.5); // Change to be team1->GetColour()
 	Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
 	Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
 	Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
