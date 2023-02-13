@@ -11,6 +11,7 @@ set(Header_Files
     "StateGameObject.h"
     "Team.h"
     "TutorialGame.h"
+
     "PaintBallClass.h"
     "PaintBallProjectile.h"
     "Player.h"
@@ -27,6 +28,9 @@ set(Header_Files
     "ToonUtils.h"
     "ToonFollowCamera.h"
     "ToonMinimapCamera.h"    
+
+    "Light.h"
+
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -39,6 +43,7 @@ set(Source_Files
     "StateGameObject.cpp"
     "Team.cpp"
     "TutorialGame.cpp"
+
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"
@@ -52,6 +57,9 @@ set(Source_Files
     "ToonRenderObject.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
+
+   
+
 )
 source_group("Source Files" FILES ${Source_Files})
 

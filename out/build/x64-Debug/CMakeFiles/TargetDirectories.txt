@@ -1,0 +1,14 @@
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/NCLCoreClasses.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/edit_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/NCLCoreClasses/CMakeFiles/rebuild_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/CSC8503CoreClasses.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/edit_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503CoreClasses/CMakeFiles/rebuild_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/OpenGLRendering/CMakeFiles/OpenGLRendering.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/OpenGLRendering/CMakeFiles/edit_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/OpenGLRendering/CMakeFiles/rebuild_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503/CMakeFiles/edit_cache.dir
+C:/Users/max-e/source/repos/CSC8508-1/out/build/x64-Debug/CSC8503/CMakeFiles/rebuild_cache.dir
