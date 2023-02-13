@@ -14,7 +14,7 @@
 
 #define COLLISION_MSG 30
 
-ToonNetworkedGame::ToonNetworkedGame() : ToonGame(false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer) : ToonGame(renderer, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -24,7 +24,7 @@ ToonNetworkedGame::ToonNetworkedGame() : ToonGame(false) {
 	StartAsServer();
 }
 
-ToonNetworkedGame::ToonNetworkedGame(int a, int b, int c, int d) : ToonGame(false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, int c, int d) : ToonGame(renderer, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 

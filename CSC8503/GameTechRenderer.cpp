@@ -24,7 +24,12 @@ using namespace CSC8503;
 Matrix4 biasMatrix = Matrix4::Translation(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(NCL::Maths::Vector3(0.5f, 0.5f, 0.5f));
 ToonFollowCamera* followCamera;
 
-GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
+{
+	SetupStuffs();
+}
+
+GameTechRenderer::GameTechRenderer(ToonGameWorld* world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	
 {	
 	SetupStuffs();
 }
@@ -237,7 +242,7 @@ void GameTechRenderer::LoadSkybox() {
 }
 
 void GameTechRenderer::RenderFrame() {
-	
+	if (!gameWorld) return; // Safety Check
 
 	DrawMainScene();
 	if (minimapEnabled)
@@ -304,10 +309,10 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 	ImGui::Begin("Debug Window");
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		if(!followCamera) followCamera = (ToonFollowCamera*)(gameWorld.GetMainCamera());
+		if(!followCamera) followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera());
 
-		Vector3 cPos = gameWorld.GetMainCamera()->GetPosition();
-		Vector3 cRot(gameWorld.GetMainCamera()->GetPitch(), gameWorld.GetMainCamera()->GetYaw(), 0);
+		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
+		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
 		Vector3 cAimOffset = followCamera->GetAimOffset();
@@ -316,9 +321,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		float smoothness = followCamera->GetSmoothness();
 		float cPitchOffset = followCamera->GetPitchOffset();
 
-		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld.GetMainCamera()->SetPosition(cPos);
-		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld.GetMainCamera()->SetPitch(cPos.x);
-		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld.GetMainCamera()->SetYaw(cPos.y);
+		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld->GetMainCamera()->SetPosition(cPos);
+		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld->GetMainCamera()->SetPitch(cPos.x);
+		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld->GetMainCamera()->SetYaw(cPos.y);
 		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
@@ -343,7 +348,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 void GameTechRenderer::BuildObjectList() {
 	activeObjects.clear();
 
-	gameWorld.OperateOnContents(
+	gameWorld->OperateOnContents(
 		[&](ToonGameObject* o) 
 		{
 			if (o->IsActive()) 
@@ -410,7 +415,7 @@ void GameTechRenderer::PresentScene()
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimapToScreen(int modelLocation)
 {
-	if (!gameWorld.GetMinimapCamera()) return;
+	if (!gameWorld->GetMinimapCamera()) return;
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -499,8 +504,8 @@ void GameTechRenderer::RenderSkybox() {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 	BindShader(skyboxShader);
 
@@ -525,8 +530,8 @@ void GameTechRenderer::RenderSkybox() {
 
 void GameTechRenderer::RenderCamera() {
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 	OGLShader* activeShader = nullptr;
 	int projLocation = 0;
@@ -579,7 +584,7 @@ void GameTechRenderer::RenderCamera() {
 
 			impactPointCountLocation = glGetUniformLocation(sceneShader->GetProgramID(), "impactPointCount");
 
-			Vector3 camPos = gameWorld.GetMainCamera()->GetPosition();
+			Vector3 camPos = gameWorld->GetMainCamera()->GetPosition();
 			glUniform3fv(cameraLocation, 1, camPos.array);
 
 			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
@@ -642,10 +647,10 @@ void GameTechRenderer::RenderCamera() {
 
 void GameTechRenderer::RenderMinimap()
 {
-	if (!gameWorld.GetMinimapCamera()) return;
+	if (!gameWorld->GetMinimapCamera()) return;
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
 
 	OGLShader* activeShader = minimapShader;
 
@@ -740,8 +745,8 @@ void GameTechRenderer::NewRenderLines() {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 

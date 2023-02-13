@@ -14,8 +14,8 @@ namespace NCL {
 
 		class ToonNetworkedGame : public ToonGame, public PacketReceiver {
 		public:
-			ToonNetworkedGame();
-			ToonNetworkedGame(int a, int b, int c, int d);
+			ToonNetworkedGame(GameTechRenderer* renderer);
+			ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, int c, int d);
 			~ToonNetworkedGame();
 
 			void StartAsServer();

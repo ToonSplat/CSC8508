@@ -11,11 +11,11 @@ using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(bool offline) : offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
 {
-	world = new ToonGameWorld();	
-	renderer = new GameTechRenderer(*world);
-	
+	world = new ToonGameWorld();
+	renderer->SetWorld(world);
+
 	levelManager = new ToonLevelManager(*renderer);
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 	if (offline) {
@@ -36,7 +36,6 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
-	delete renderer;
 	delete baseWeapon;
 	delete levelManager;
 	delete playerControl;
