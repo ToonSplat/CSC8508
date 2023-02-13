@@ -7,12 +7,18 @@ namespace NCL {
 		using namespace NCL::Maths;
 		class Team {
 		public:
-			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) {}
+			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) {
+				playerCount = 0;
+			}
 			~Team(void) = default;
 
+			void AddPlayer(void) { playerCount++; }
+			void RemovePlayer(void) { playerCount--; }
+			int getPlayerCount(void) const { return playerCount; }
 			string getTeamName(void) const { return teamName; }
 			Vector3 getTeamColour(void) const { return teamColour; }
 		private:
+			int playerCount;
 			string teamName;
 			Vector3 teamColour;
 		};

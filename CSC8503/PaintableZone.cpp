@@ -5,8 +5,16 @@ using namespace NCL::CSC8503;
 
 PaintableZone::PaintableZone(void) {
 	owner = nullptr;
+	parent = nullptr;
 	unownedObjects = 0;
 	teamObjectsOwned.clear();
+}
+
+PaintableZone::PaintableZone(PaintableZone* parent) : parent(parent) {
+	owner = nullptr;
+	unownedObjects = 0;
+	teamObjectsOwned.clear();
+	parent->AddObject();
 }
 
 void PaintableZone::AddObject(void) {
@@ -51,6 +59,24 @@ void PaintableZone::CheckZoneOwner(void) {
 			currentOwner = team.first;
 			ownerScore = team.second;
 		}
-	owner = currentOwner;
+	if (currentOwner != owner) {
+		if (parent)
+			parent->ChangeChildOwner(owner, currentOwner);
+		owner = currentOwner;
+	}
 	// TODO: Resolve Ties better
+}
+
+int PaintableZone::GetTotalObjects(void) {
+	int count = unownedObjects;
+	for (auto& team : teamObjectsOwned)
+		count += team.second;
+	return count;
+}
+
+void PaintableZone::PrintOwnership(void) {
+	std::cout << "Ownership of Zone " << this << std::endl;
+	std::cout << "No Team: " << unownedObjects << std::endl;
+	for (auto& team : teamObjectsOwned)
+		std::cout << team.first->getTeamName() << ": " << team.second << std::endl;
 }

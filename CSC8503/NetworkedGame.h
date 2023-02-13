@@ -39,7 +39,7 @@ namespace NCL {
 			float timeToNextPacket;
 			int packetsToSnapshot;
 
-			std::vector<NetworkObject*> networkObjects;
+			//std::vector<NetworkObject*> networkObjects;
 
 			std::map<int, GameObject*> serverPlayers;
 			GameObject* localPlayer;

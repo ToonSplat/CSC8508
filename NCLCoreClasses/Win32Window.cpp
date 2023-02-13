@@ -4,6 +4,11 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <io.h>
+
+#include <imgui.h>
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
+
 using namespace NCL;
 using namespace Win32Code;
 
@@ -210,6 +215,8 @@ void Win32Window::CheckMessages(MSG &msg)	{
 
 LRESULT CALLBACK Win32Window::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)	{
 	Win32Window* thisWindow = (Win32Window*)window;
+
+	ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam);
 
 	bool applyResize = false;
 

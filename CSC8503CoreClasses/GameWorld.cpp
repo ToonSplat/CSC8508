@@ -8,6 +8,8 @@
 using namespace NCL;
 using namespace NCL::CSC8503;
 
+GameWorld* GameWorld::instance = nullptr;
+
 GameWorld::GameWorld()	{
 	mainCamera = new Camera();
 
@@ -15,6 +17,8 @@ GameWorld::GameWorld()	{
 	shuffleObjects		= false;
 	worldIDCounter		= 0;
 	worldStateCounter	= 0;
+
+	instance = this;
 }
 
 GameWorld::~GameWorld()	{

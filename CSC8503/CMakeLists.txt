@@ -8,11 +8,29 @@ set(Header_Files
     "NetworkedGame.h"
     "NetworkPlayer.h"
     "PaintableObject.h"
-    "PaintableZone.h"
     "StateGameObject.h"
     "Team.h"
     "TutorialGame.h"
+
+    "PaintBallClass.h"
+    "PaintBallProjectile.h"
+    "Player.h"
+    "ImpactPoint.h"
+    "ToonLevelManager.h"
+    "ToonGame.h"
+    "HitSphere.h"
+    "ToonGameObject.h"
+    "ToonEventListener.h"
+    "ToonTransform.h"
+    "ToonGameWorld.h"
+    "ToonRenderObject.h"
+    "ToonRaycastCallback.h"
+    "ToonUtils.h"
+    "ToonFollowCamera.h"
+    "ToonMinimapCamera.h"    
+
     "Light.h"
+
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -22,28 +40,51 @@ set(Source_Files
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
     "PaintableObject.cpp"
-    "PaintableZone.cpp"
     "StateGameObject.cpp"
     "Team.cpp"
     "TutorialGame.cpp"
+
+    "PaintBallClass.cpp"
+    "PaintBallProjectile.cpp"
+    "Player.cpp"
+    "ToonLevelManager.cpp"
+    "ToonGame.cpp"
+    "HitSphere.cpp"
+    "ToonGameObject.cpp"
+    "ToonEventListener.cpp"
+    "ToonTransform.cpp"
+    "ToonGameWorld.cpp"
+    "ToonRenderObject.cpp"
+    "ToonFollowCamera.cpp"
+    "ToonMinimapCamera.cpp"
+
    
+
 )
+source_group("Source Files" FILES ${Source_Files})
+
+set(Networking_Files
+    "ToonNetworkedGame.h"
+    "ToonNetworkedGame.cpp"
+    "ToonNetworkObject.h"
+    "ToonNetworkObject.cpp"
+    "ToonObjectState.h"
+    "ToonNetworkPackets.h"
+)
+source_group("Networking Files" FILES ${Networking_Files})
 
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
 list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
 
-
-
 file(GLOB SHADER_FILES ${ASSET_ROOT}/Shaders/VK/*.*)
 
 endif()
 
-source_group("Source Files" FILES ${Source_Files})
-
 set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
+    ${Networking_Files}
 )
 
 if(USE_VULKAN)
@@ -117,10 +158,12 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 if(MSVC)
     target_compile_definitions(${PROJECT_NAME} PRIVATE
         "UNICODE;"
-        "_UNICODE" 
+        "_UNICODE"
+        "NOMINMAX"
         "WIN32_LEAN_AND_MEAN"
         "_WINSOCKAPI_"   
         "_WINSOCK2API_"
+        "_CRT_SECURE_NO_WARNINGS;"
         "_WINSOCK_DEPRECATED_NO_WARNINGS"
     )
 endif()
@@ -192,6 +235,18 @@ if(MSVC)
     )
 endif()
 
+if(WIN32) 
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../ReactPhysics3D") 
+endif() 
+
+#Import the ReactPhysics3D library 
+find_package(ReactPhysics3D REQUIRED)
+
+set(ADDITIONAL_LIBRARY_DEPENDENCIES
+    "ReactPhysics3D::ReactPhysics3D"
+)
+
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 ################################################################################
 # Dependencies
 ################################################################################

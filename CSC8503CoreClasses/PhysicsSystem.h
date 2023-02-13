@@ -58,6 +58,9 @@ namespace NCL {
 			bool useBroadPhase		= true;
 			int numCollisionFrames	= 5;
 
+			int treeDepth;
+			int treeSize;
+
 			//Added
 			float linearDamping;
 		};

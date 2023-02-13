@@ -30,7 +30,7 @@ namespace NCL {
 
 			fov			= 45.0f;
 			nearPlane	= 1.0f;
-			farPlane	= 100.0f;
+			farPlane	= 1000.0f;
 
 			camType		= CameraType::Perspective;
 		};
@@ -42,14 +42,14 @@ namespace NCL {
 
 			this->fov		= 45.0f;
 			this->nearPlane = 1.0f;
-			this->farPlane	= 100.0f;
+			this->farPlane	= 1000.0f;
 
 			this->camType	= CameraType::Perspective;
 		}
 
 		~Camera(void) = default;
 
-		void UpdateCamera(float dt);
+		virtual void UpdateCamera(float dt);
 
 		void UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize);
 
@@ -74,6 +74,10 @@ namespace NCL {
 			farPlane = val;
 			return *this;
 		}
+
+		Vector3 GetUp() const { return camUp; }
+		Vector3 GetForward() const { return camForward; }
+		Vector3 GetRight() const { return camRight; }
 
 		//Builds a view matrix for the current camera variables, suitable for sending straight
 		//to a vertex shader (i.e it's already an 'inverse camera matrix').
@@ -115,5 +119,9 @@ namespace NCL {
 		float	pitch;
 		Vector3 position;
 		Vector3 lastTargetPosition;
+
+		Vector3 camForward;
+		Vector3 camUp;
+		Vector3 camRight;
 	};
 }

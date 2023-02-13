@@ -64,8 +64,6 @@ set(Networking
     "GameServer.cpp"
     "NetworkBase.h"
     "NetworkBase.cpp"
-    "NetworkObject.h"
-    "NetworkObject.cpp"
     "NetworkState.h"
     "NetworkState.cpp"
 )

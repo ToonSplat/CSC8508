@@ -85,6 +85,26 @@ set(Windowing_and_Input__Win32
 )
 source_group("Windowing and Input\\Win32" FILES ${Windowing_and_Input__Win32})
 
+set(Imgui_Files
+    "../ThirdParty/imgui/imconfig.h"
+    "../ThirdParty/imgui/imgui.h"
+    "../ThirdParty/imgui/imgui.cpp"
+    "../ThirdParty/imgui/imgui_demo.cpp"
+    "../ThirdParty/imgui/imgui_draw.cpp"
+    "../ThirdParty/imgui/imgui_impl_opengl3.h"
+    "../ThirdParty/imgui/imgui_impl_opengl3.cpp"
+    "../ThirdParty/imgui/imgui_impl_opengl3_loader.h"
+    "../ThirdParty/imgui/imgui_impl_win32.h"
+    "../ThirdParty/imgui/imgui_impl_win32.cpp"
+    "../ThirdParty/imgui/imgui_internal.h"
+    "../ThirdParty/imgui/imgui_tables.cpp"
+    "../ThirdParty/imgui/imgui_widgets.cpp"
+    "../ThirdParty/imgui/imstb_rectpack.h"
+    "../ThirdParty/imgui/imstb_textedit.h"
+    "../ThirdParty/imgui/imstb_truetype.h"
+)
+source_group("Imgui Files" FILES ${Imgui_Files})
+
 set(ALL_FILES
     ${Asset_Handling}
     ${Header_Files}
@@ -93,6 +113,7 @@ set(ALL_FILES
     ${Source_Files}
     ${Windowing_and_Input}
     ${Windowing_and_Input__Win32}
+    ${Imgui_Files}
 )
 
 ################################################################################
@@ -142,3 +163,4 @@ if(MSVC)
     )
 endif()
 
+include_directories("../ThirdParty/imgui/")

@@ -1,11 +1,11 @@
 #pragma once
 #include "Transform.h"
 #include "CollisionVolume.h"
+#include "RenderObject.h"
 
 using std::vector;
 
 namespace NCL::CSC8503 {
-	class NetworkObject;
 	class RenderObject;
 	class PhysicsObject;
 
@@ -38,12 +38,9 @@ namespace NCL::CSC8503 {
 			return physicsObject;
 		}
 
-		NetworkObject* GetNetworkObject() const {
-			return networkObject;
-		}
-
 		void SetRenderObject(RenderObject* newObject) {
 			renderObject = newObject;
+			renderObject->SetGameObject(this);
 		}
 
 		void SetPhysicsObject(PhysicsObject* newObject) {
@@ -80,7 +77,6 @@ namespace NCL::CSC8503 {
 		CollisionVolume*	boundingVolume;
 		PhysicsObject*		physicsObject;
 		RenderObject*		renderObject;
-		NetworkObject*		networkObject;
 
 		bool		isActive;
 		int			worldID;
