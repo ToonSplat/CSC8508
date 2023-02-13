@@ -27,7 +27,7 @@ namespace NCL::CSC8503
 
 		bool IsActive() const { return isActive; }
 		void SetActive(const bool& status) { isActive = status; }
-
+		
 		ToonTransform& GetTransform() { return transform; }
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
@@ -95,6 +95,7 @@ namespace NCL::CSC8503
 		int worldID;
 		std::string	name;
 
+		reactphysics3d::Transform prevTransform;
 		ToonTransform transform;
 		ToonRenderObject* renderObject;
 		ToonNetworkObject* networkObject;

@@ -77,6 +77,8 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		accumulator -= timeStep;
 		world->DeleteMarkedObjects();
 	}
+	world->interpolationFactor = float(accumulator / timeStep);
+
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }
