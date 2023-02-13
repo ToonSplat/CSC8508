@@ -20,7 +20,7 @@ bool PushdownMachine::Update(float dt) {
 		switch (result) {
 			case PushdownState::Pop: {
 				activeState->OnSleep();
-				delete activeState;
+				//delete activeState;
 				stateStack.pop();
 				if (stateStack.empty()) {
 					return false;

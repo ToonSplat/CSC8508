@@ -8,13 +8,14 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_Window = win;
 }
 
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, Window* win)
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
 {
 	m_Renderer = renderer;
 	m_mainMenuData = menuData;
 	m_BaseCurrentSelectdIndex = baseCurrentSelectedIndex;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
+	m_World = world;
 }
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
@@ -78,7 +79,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
 		*newState = m_Game;
-		m_mainMenuData[0].text = "Resume";
+		//m_mainMenuData[0].text = "Resume";
 		break;
 	case MULTIPLAY:
 		*newState = GetSubMenuSceenObject();
@@ -103,7 +104,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 
 ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 {
-	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_Window); }
+	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window); }
 	return m_SubMenuScreenObject;
 }
 
