@@ -192,47 +192,6 @@ void PaintBallClass::HideTrajectory()
 	}
 }
 
-void PaintBallClass::DrawTrajectory(float force)
-{
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
-	orientation.normalize();
-	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 5 + reactphysics3d::Vector3(0, 1, 0);
-	reactphysics3d::Vector3 forceVector = orientation * force;
-	reactphysics3d::Vector3 velocity	= forceVector;
-	float flightDurartion				= (2 * velocity.y) / 9.8;
-	float singlePointTime				= flightDurartion / trajectoryPoints;
-
-	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
-	for (int i = 0; i < trajectoryPoints; i++)
-	{
-		float deltaTime = singlePointTime * i;
-		float x			= velocity.x * deltaTime;
-		float y			= velocity.y * deltaTime - (0.5f * 9.8 * deltaTime * deltaTime);
-		float z		    = velocity.z * deltaTime;
-		position.x	   += x;
-		position.y	   += y;
-		position.z	   += z;
-
-		if (!bullet[i])
-		{
-			bullet[i] = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.1f, 2.5f, team);
-			bullet[i]->GetRigidbody()->setIsActive(false);
-		}
-		bullet[i]->SetPosition(position.x, position.y, position.z);
-	}
-}
-
-void PaintBallClass::HideTrajectory()
-{
-	for (int i = 0; i < trajectoryPoints; i++)
-	{
-		if (bullet[i])
-		{
-			bullet[i]->SetPosition(Vector3(-100, -100, -100));
-		}
-	}
-}
-
 void PaintBallClass::Shoot(float dt) {
 	shootTimer += dt;
 	if (/*shootTimer >= fireRate &&*/ ammoInUse > 0) 

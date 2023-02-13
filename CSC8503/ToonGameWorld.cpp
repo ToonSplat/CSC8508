@@ -14,6 +14,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
 	teams.insert(new Team("The Green Gulls", Vector3(0, 1.0f, 0)));
 	teams.insert(new Team("The Purple Panthers", Vector3(1.0f, 0, 1.0f)));
+	mainCamera = new Camera();
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()

@@ -1,59 +1,152 @@
 #include "ToonMainMenu.h"
 
-ToonMainMenu::ToonMainMenu(Window* window)
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
-	m_Window			 = window;
-	m_Camera			 = new Camera();
-	ToonGameWorld* world = new ToonGameWorld();
-	m_Renderer			 = new GameTechRenderer(*world);
-	Window::GetWindow()->ShowOSPointer(true);
-	Window::GetWindow()->LockMouseToWindow(false);
+	m_Renderer = renderer;
+	m_World = world;
+	m_CurrentSelectedIndex = 0;
+	m_Window = win;
+}
+
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, Window* win)
+{
+	m_Renderer = renderer;
+	m_mainMenuData = menuData;
+	m_BaseCurrentSelectdIndex = baseCurrentSelectedIndex;
+	m_CurrentSelectedIndex = 0;
+	m_Window = win;
 }
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
-	DrawMainMenu();
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
 	{
-		*newState = m_Game;
-		return PushdownResult::Push;
+		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
+		UpdateMosePointerState(false);
+		m_CurrentSelectedIndex = (m_CurrentSelectedIndex + 1) % m_mainMenuData.size();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP))
+	{
+		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
+		UpdateMosePointerState(false);
+		m_CurrentSelectedIndex -= 1;
+		if (m_CurrentSelectedIndex < 0) { m_CurrentSelectedIndex = (int)(m_mainMenuData.size()) - 1; }
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
-		return PushdownResult::Pop;
+	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { return PushdownResult::Pop; }	//Keeping it to quit game on escape key press
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+	{
+		return NavigateToScreen(newState);
+	}
+
+	m_Renderer->SetWorld(m_World);
+	m_Renderer->Update(dt);
 	m_Renderer->Render();
+	Debug::UpdateRenderables(dt);
+	DrawMainMenu();
 	return PushdownResult::NoChange;
 }
 
 void ToonMainMenu::OnAwake()
 {
-	m_Game = new ToonGame();
-	std::cout << "Welcome to a really awesome game!\n";
-	std::cout << "Press Space To Begin or escape to quit!\n";
+	UpdateMosePointerState(true);
+	Window::GetWindow()->LockMouseToWindow(true);
+	delete m_SubMenuScreenObject;
+	m_SubMenuScreenObject = NULL;
+}
+
+void ToonMainMenu::OnSleep()
+{
+
 }
 
 bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenuCoordinates)
 {
-	int widthConstraint  = singleMenuCoordinates.position.x + singleMenuCoordinates.size.x;
-	int heightConstraint = singleMenuCoordinates.position.y + singleMenuCoordinates.size.y;
-	if (mouseCoordinates.x >= singleMenuCoordinates.position.x && mouseCoordinates.x <= widthConstraint && mouseCoordinates.y >= singleMenuCoordinates.position.y && mouseCoordinates.y <= heightConstraint)
-	{
-		std::cout << "Is Inside" << std::endl;
-	}
+	float widthConstraint = singleMenuCoordinates.position.x + singleMenuCoordinates.size.x;
+	float heightConstraint = singleMenuCoordinates.position.y + singleMenuCoordinates.size.y;
 	return (mouseCoordinates.x >= singleMenuCoordinates.position.x && mouseCoordinates.x <= widthConstraint && mouseCoordinates.y >= singleMenuCoordinates.position.y && mouseCoordinates.y <= heightConstraint);
+}
+
+
+PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** newState)
+{
+	switch (m_CurrentSelectedIndex + m_BaseCurrentSelectdIndex)
+	{
+	case PLAY:
+		m_Game = new ToonGame(m_Renderer);
+		*newState = m_Game;
+		m_mainMenuData[0].text = "Resume";
+		break;
+	case MULTIPLAY:
+		*newState = GetSubMenuSceenObject();
+		break;
+	case SETTINGS:
+		return PushdownResult::NoChange;
+	case CREDITS:
+		return PushdownResult::NoChange;
+	case QUIT:
+		return PushdownResult::Pop;
+	case LAUNCHASSERVER:
+		return PushdownResult::NoChange;
+	case LAUNCHASCLIENT:
+		return PushdownResult::NoChange;
+	case SETSERVERIP:
+		return PushdownResult::NoChange;
+	case BACK:
+		return PushdownResult::Pop;
+	}
+	return PushdownResult::Push;
+}
+
+ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
+{
+	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_Window); }
+	return m_SubMenuScreenObject;
+}
+
+void ToonMainMenu::UpdateMosePointerState(bool isVisible)
+{
+	Window::GetWindow()->ShowOSPointer(isVisible);
+	m_IsMousePointerVisible = isVisible;
+}
+
+void ToonMainMenu::WakeMouseOnMovement()
+{
+	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
+	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
+	m_MouseLastPosition = currentMousePosition;
 }
 
 void ToonMainMenu::DrawMainMenu()
 {
-	Ray r = CollisionDetection::BuildRayFromMouse(*m_Camera);
-	Vector2 mousePosition = r.GetPosition();//Window::GetMouse()->GetWindowPosition();
-	std::string str = std::to_string(mousePosition.x) + ", " + std::to_string(mousePosition.y);
-	std::cout << mousePosition << std::endl;
-	Debug::Print(str, Vector2(50, 50), Debug::RED);
-	for (auto data : m_mainMenuData)
+	if (!m_IsMousePointerVisible)
 	{
-		data.colour = IsInside(mousePosition, data.coordinates) ? m_HoverColour : m_NormalTextColour;
-		Debug::Print(data.text, data.coordinates.position, data.colour);
+		int index = 0;
+		for (auto data : m_mainMenuData)
+		{
+			data.colour = m_CurrentSelectedIndex == index ? m_HoverColour : m_NormalTextColour;
+			Debug::Print(data.text, data.coordinates.position, data.colour);
+			index++;
+		}
+	}
+	else
+	{
+		Vector2 mousePosition = Window::GetMouse()->GetWindowPosition();
+		Vector2 windowSize = m_Window->GetWindow()->GetScreenSize();
+		float y = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
+		float x = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
+		Vector2 mousePositionWithinBounds = Vector2(x, y);
+		int index = 0;
+		for (auto data : m_mainMenuData)
+		{
+			data.colour = m_NormalTextColour;
+			m_CurrentSelectedIndex = IsInside(mousePositionWithinBounds, data.coordinates) ? index : m_CurrentSelectedIndex;
+			data.colour = index == m_CurrentSelectedIndex ? m_HoverColour : m_NormalTextColour;
+			Debug::Print(data.text, data.coordinates.position, data.colour);
+			index++;
+		}
 	}
 }

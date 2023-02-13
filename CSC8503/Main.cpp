@@ -52,9 +52,46 @@ hide or show the
 
 */
 
+void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
+	PushdownMachine machine(mainMenu);
+	while (w->UpdateWindow()) {
+		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		if (dt > 0.1f) {
+			std::cout << "Skipping large time delta" << std::endl;
+			continue; //must have hit a breakpoint or something to have a 1 second frame time!
+		}
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::PRIOR)) {
+			w->ShowConsole(true);
+		}
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NEXT)) {
+			w->ShowConsole(false);
+		}
+
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
+			w->SetWindowPosition(0, 0);
+		}
+
+		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		if (!machine.Update(dt)) {
+			return;
+		}
+	}
+}
+
 int main() {
 	Window*w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	GameTechRenderer* renderer = new GameTechRenderer();
+	//-----------------------------------------------------------
+	//Imgui 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
+	ImGui_ImplOpenGL3_Init();
+	//-----------------------------------------------------------
+	ToonGameWorld* world = new ToonGameWorld();
+	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, world, w);
 
 	if (!w->HasInitialised()) {
 		return -1;
@@ -63,23 +100,11 @@ int main() {
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
 
-	ToonMainMenu* mainMenu = new ToonMainMenu(w);
-	TestPushdownAutomata(w, mainMenu);
-
-	//TutorialGame* g = new TutorialGame();
-	ToonGame* g = new ToonGame();
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+	StartPushdownAutomata(w, mainMenu);
 	//TestBehaviourTree();
 
-		//-----------------------------------------------------------
-		//Imgui 
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGuiIO& io = ImGui::GetIO(); (void)io;
-		ImGui::StyleColorsDark();
-		ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
-		ImGui_ImplOpenGL3_Init();
-		//-----------------------------------------------------------
+		
 
 		while (w->UpdateWindow() && !Window::GetKeyboard()->KeyDown(KeyboardKeys::ESCAPE)) {
 			float dt = w->GetTimer()->GetTimeDeltaSeconds();
@@ -104,19 +129,13 @@ int main() {
 		
 		//g->UpdateGame(dt);
 	}
-	Window::DestroyGameWindow();
-
-}
-
 		//-----------------------------------------------------------
 		//Imgui 
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplWin32_Shutdown();
 		ImGui::DestroyContext();
 		//-----------------------------------------------------------
-
-		delete g;
-	}
-	delete renderer;
 	Window::DestroyGameWindow();
+	delete renderer;
+
 }
