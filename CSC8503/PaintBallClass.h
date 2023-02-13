@@ -12,7 +12,7 @@ namespace NCL {
         class PaintBallClass {
         public:
             PaintBallClass();
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, ShaderBase* basicShader, MeshGeometry* sphereMesh);
+            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             void Update (float dt);
@@ -51,8 +51,6 @@ namespace NCL {
             bool trajectoryDetected;
             float shootTimer;
             float reloadTimer;
-            ShaderBase* m_BasicShader;
-            MeshGeometry* m_SphereMesh;
             ToonGameObject* owningObject;
 
             enum statusTypes {

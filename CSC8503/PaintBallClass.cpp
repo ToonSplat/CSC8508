@@ -12,17 +12,14 @@ using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(){}
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist,
-	ShaderBase* basicShader, MeshGeometry* sphereMesh) :
+PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist) :
 	ammoInUse(_maxAmmoInUse), 
 	ammoHeld(_maxAmmoHeld), 
 	maxAmmoInUse(_maxAmmoInUse), 
 	maxAmmoHeld(_maxAmmoHeld),
 	fireRate(_fireRate), 
 	reloadTime(_reloadTime), 
-	maxShootDistance(_maxShootDist), 
-	m_BasicShader(basicShader), 
-	m_SphereMesh(sphereMesh) 
+	maxShootDistance(_maxShootDist)
 {
 	owningObject = nullptr;
 	team = nullptr;
@@ -43,7 +40,7 @@ PaintBallClass::~PaintBallClass()
 }
 
 PaintBallClass PaintBallClass::MakeInstance() {
-	return PaintBallClass(maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance, m_BasicShader, m_SphereMesh);
+	return PaintBallClass(maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance);
 }
 
 float PaintBallClass::GetYCoordinate(int x, int initialVelocity)
