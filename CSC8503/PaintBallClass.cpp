@@ -6,13 +6,17 @@
 #include "ToonRenderObject.h"
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
+#include "ToonGameWorld.h"
+#include "ToonLevelManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(){}
 
-PaintBallClass::PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist) :
+PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist) :
+	gameWorld(gameWorld),
+	levelManager(levelManager),
 	ammoInUse(_maxAmmoInUse), 
 	ammoHeld(_maxAmmoHeld), 
 	maxAmmoInUse(_maxAmmoInUse), 
@@ -40,12 +44,12 @@ PaintBallClass::~PaintBallClass()
 }
 
 PaintBallClass PaintBallClass::MakeInstance() {
-	return PaintBallClass(maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance);
+	return PaintBallClass(gameWorld, levelManager, maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance);
 }
 
 float PaintBallClass::GetYCoordinate(int x, int initialVelocity)
 {
-	return (x * tan(ToonGameWorld::Get()->GetMainCamera()->GetPitch()) - ((9.8 * x * x) / (2 * initialVelocity * initialVelocity * cos(ToonGameWorld::Get()->GetMainCamera()->GetPitch()))));
+	return (x * tan(gameWorld->GetMainCamera()->GetPitch()) - ((9.8 * x * x) / (2 * initialVelocity * initialVelocity * cos(gameWorld->GetMainCamera()->GetPitch()))));
 }
 
 NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::Maths::Vector3 target, NCL::Maths::Vector3 origin, float t)
@@ -58,7 +62,7 @@ NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::M
 	float sXZ = distanceXZ.Length();
 
 	float VxZ = sXZ * t;
-	float Vy = (sY / t) + (0.5f * abs(ToonGameWorld::Get()->GetPhysicsWorld().getGravity().y) * t);
+	float Vy = (sY / t) + (0.5f * abs(gameWorld->GetPhysicsWorld().getGravity().y) * t);
 
 	Vector3 result = distanceXZ.Normalised();
 	result *= VxZ;
@@ -98,13 +102,13 @@ void PaintBallClass::Update(float dt) {
 		Quaternion nRot(pRot.x, pRot.y, pRot.z, pRot.w);
 		Matrix4 owningMat = Matrix4(nRot);
 
-		Vector3 forward = ToonGameWorld::Get()->GetMainCamera()->GetForward();
-		Vector3 startRay = ToonGameWorld::Get()->GetMainCamera()->GetPosition();
+		Vector3 forward = gameWorld->GetMainCamera()->GetForward();
+		Vector3 startRay = gameWorld->GetMainCamera()->GetPosition();
 		Vector3 endRay = startRay + forward * 500.0f;
 
 		reactphysics3d::Ray shootRay(ToonUtils::ConvertToRP3DVector3(startRay), ToonUtils::ConvertToRP3DVector3(endRay));
 		ToonRaycastCallback shootRayCallback;
-		ToonGameWorld::Get()->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
+		gameWorld->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
 
 		trajectoryDetected = shootRayCallback.IsHit();
 		if (trajectoryDetected)
@@ -128,13 +132,13 @@ void PaintBallClass::Update(float dt) {
 	//	Quaternion nRot(pRot.x, pRot.y, pRot.z, pRot.w);
 	//	Matrix4 owningMat = Matrix4(nRot);
 
-	//	Vector3 forward = ToonGameWorld::Get()->GetMainCamera()->GetForward();
-	//	Vector3 startRay = ToonGameWorld::Get()->GetMainCamera()->GetPosition();
+	//	Vector3 forward = gameWorld->GetMainCamera()->GetForward();
+	//	Vector3 startRay = gameWorld->GetMainCamera()->GetPosition();
 	//	Vector3 endRay = startRay + forward * 500.0f;
 	//	
 	//	reactphysics3d::Ray shootRay(ToonUtils::ConvertToRP3DVector3(startRay), ToonUtils::ConvertToRP3DVector3(endRay));
 	//	ToonRaycastCallback shootRayCallback;
-	//	ToonGameWorld::Get()->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
+	//	gameWorld->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
 
 	//	trajectoryDetected = shootRayCallback.IsHit();
 	//	if (trajectoryDetected)
@@ -147,12 +151,14 @@ void PaintBallClass::Update(float dt) {
 
 void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
 {
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
+	const float PAINTBALL_RADIUS = 0.25f;
+	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
 	orientation.normalize();
 	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 1, 0);
 	//reactphysics3d::Vector3 forceVector = orientation * force;
 	reactphysics3d::Vector3 velocity	= ToonUtils::ConvertToRP3DVector3(force);
-	float flightDurartion				= (velocity.y) / -ToonGameWorld::Get()->GetPhysicsWorld().getGravity().y;
+	float flightDurartion				= (velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
 	float singlePointTime				= flightDurartion / trajectoryPoints;
 
 	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
@@ -160,7 +166,7 @@ void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
 	{
 		float deltaTime = singlePointTime * i;
 		float x			= velocity.x * deltaTime;
-		float y			= velocity.y * deltaTime - (0.5f * -ToonGameWorld::Get()->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
+		float y			= velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
 		float z		    = velocity.z * deltaTime;
 		position.x	   += x;
 		position.y	   += y;
@@ -168,7 +174,7 @@ void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
 
 		if (!bullet[i])
 		{
-			bullet[i] = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.1f, 2.5f, team);
+			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 			bullet[i]->GetRigidbody()->setIsActive(false);
 		}
 		bullet[i]->SetPosition(position.x, position.y, position.z);
@@ -226,14 +232,16 @@ void PaintBallClass::PickUpAmmo(int amt) {
 
 void PaintBallClass::FireBullet() 
 {
+	const float PAINTBALL_RADIUS = 0.25f;
+	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
 	if (owningObject == nullptr)
 		return;
 
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((ToonGameWorld::Get()->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 	orientation.normalize();
 	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 0, 0);
 
-	PaintBallProjectile* bullet = new PaintBallProjectile(ToonGameWorld::Get()->GetPhysicsWorld(), position, orientation, 0.25f, 2.5f, team);
+	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));
 	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
 }
@@ -253,14 +261,14 @@ void PaintBallClass::FireBullet()
 //	sphereBullet->GetPhysicsObject()->SetInverseMass(100.0f);
 //	sphereBullet->GetRenderObject()->SetColour(Vector4(0.0f, 1.0f, 1.0f, 1.0f));
 //	sphereBullet->GetPhysicsObject()->InitSphereInertia();
-//	//ToonGameWorld::Get()->AddGameObject(sphereBullet);
+//	//gameWorld->AddGameObject(sphereBullet);
 //
 //
 //	Vector3 position = owningObject->GetTransform().GetPosition();
-//	Vector3 direction = (Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(ToonGameWorld::Get()->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
+//	Vector3 direction = (Matrix4::Rotation(gameWorld->GetMainCamera()->GetYaw(), Vector3(0, 1, 0)) * Matrix4::Rotation(gameWorld->GetMainCamera()->GetPitch(), Vector3(1, 0, 0)) * Vector3(0, 0, -1)) + Vector3(0, 0.05f, 0);
 //	sphereBullet->GetTransform().SetPosition(Vector3(position.x, position.y, position.z) + (direction * 5));
 //
-//	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*ToonGameWorld::Get()->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
+//	//Vector3 direction = CollisionDetection::BuildRayFromCenter(*gameWorld->GetMainCamera()).GetDirection() + Vector3(0, 0.03f, 0);
 //	Vector3 forceInDirection = direction * 100.0f;
 //	sphereBullet->GetPhysicsObject()->AddForce(forceInDirection);
 //}

@@ -300,6 +300,32 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	return player;
 }
 
+PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
+	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team) {
+	PaintBallProjectile* paintball = new PaintBallProjectile(gameWorld->GetPhysicsWorld(), _impactSize, team);
+	paintball->AddRigidbody();
+	paintball->SetPosition(position);
+	paintball->SetOrientation(rotationEuler);
+	paintball->GetTransform().SetScale(Vector3(radius, radius, radius));
+
+	paintball->SetRenderObject(new ToonRenderObject(&paintball->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
+	paintball->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1.0f));
+
+	paintball->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	paintball->GetRigidbody()->setMass(reactphysics3d::decimal(0.1));
+
+	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius);
+	paintball->SetCollisionShape(sphereShape);
+	paintball->SetCollider(sphereShape);
+	paintball->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	paintball->GetRigidbody()->setUserData(paintball);
+
+	gameWorld->AddGameObject(paintball);
+	gameWorld->AddPaintball(paintball);
+	return paintball;
+}
+
 HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team) {
 	HitSphere* hitSphere = new HitSphere(gameWorld->GetPhysicsWorld(), team, radius);
 	hitSphere->AddRigidbody();
@@ -317,7 +343,6 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 	hitSphere->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	//GetCollider()->setIsTrigger(true);
-
 
 	hitSphere->GetRigidbody()->setUserData(hitSphere);
 

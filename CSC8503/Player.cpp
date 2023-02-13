@@ -52,9 +52,11 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	linearMovement.normalize();
 
 	isMoving = linearMovement.length() >= 0.1f;
+	isAiming = controls->aiming;
 
-	if (controls->aiming)
+	if (isAiming) {
 		targetAngle = controls->camera[1];
+	}
 	else if (isMoving)
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 

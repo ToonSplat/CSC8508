@@ -8,11 +8,13 @@
 
 namespace NCL {
     namespace CSC8503 {
-        class Team;        
+        class Team;
+        class ToonGameWorld;
+        class ToonLevelManager;
         class PaintBallClass {
         public:
             PaintBallClass();
-            PaintBallClass(int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
+            PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             void Update (float dt);
@@ -46,6 +48,8 @@ namespace NCL {
             void HideTrajectory();              //Trajectory
 
             Team* team;
+            ToonGameWorld* gameWorld;
+            ToonLevelManager* levelManager;
 
             //Variables
             bool trajectoryDetected;

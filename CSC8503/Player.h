@@ -20,7 +20,6 @@ public:
 	~Player();
 
 	void Update(float dt) override;
-	void SetControls(PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }

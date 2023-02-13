@@ -19,7 +19,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 
 	levelManager = new ToonLevelManager(renderer, world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
-	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5);
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	if (offline) {
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
