@@ -207,7 +207,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 
 PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
 {
-	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld());
+	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -241,7 +241,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 
 PaintableObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass)
 {
-	PaintableObject* sphere = new PaintableObject(gameWorld->GetPhysicsWorld());
+	PaintableObject* sphere = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 
 	sphere->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -291,7 +291,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
 	const float PLAYER_RADIUS = 2.0f;
-	player = new Player(gameWorld->GetPhysicsWorld(), team);
+	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
 	player->SetPosition(position);
@@ -323,7 +323,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
 	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team) {
-	PaintBallProjectile* paintball = new PaintBallProjectile(gameWorld->GetPhysicsWorld(), _impactSize, team);
+	PaintBallProjectile* paintball = new PaintBallProjectile(gameWorld->GetPhysicsWorld(), gameWorld, _impactSize, team);
 	paintball->AddRigidbody();
 	paintball->SetPosition(position);
 	paintball->SetOrientation(rotationEuler);
@@ -348,7 +348,7 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 }
 
 HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team) {
-	HitSphere* hitSphere = new HitSphere(gameWorld->GetPhysicsWorld(), team, radius);
+	HitSphere* hitSphere = new HitSphere(gameWorld->GetPhysicsWorld(), gameWorld, team, radius);
 	hitSphere->AddRigidbody();
 	hitSphere->SetPosition(position);
 	hitSphere->GetTransform().SetScale(Vector3(radius, radius, radius));
