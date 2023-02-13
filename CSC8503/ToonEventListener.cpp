@@ -39,7 +39,6 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : ToonGameWorld::Get()->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                
                 // Make the HitSphere
                 HitSphere* hitSphere = new HitSphere(*physicsWorld, i->GetTeam(), i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize());
                 // Remove the Paintball
@@ -51,8 +50,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
 
         // Check if collision involves HitSpheres 
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
-            if (i == body1 || i == body2) {
-                
+            if (i == body1 || i == body2) {                
                 for (PaintableObject* p : ToonGameWorld::Get()->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
                         
@@ -91,6 +89,7 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
         std::cout << "HitSphere collisions" << std::endl;
         
         void* body1 = overlapPair.getBody1()->getUserData();
+
         void* body2 = overlapPair.getBody2()->getUserData();
         for (HitSphere* i : ToonGameWorld::Get()->GetHitSpheres()) {
             if (i == body1 || i == body2) {

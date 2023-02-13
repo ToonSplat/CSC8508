@@ -1,7 +1,6 @@
 #include "Player.h"
 #include "Maths.h"
 #include "ToonUtils.h"
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -37,8 +36,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	ToonGameWorld::Get()->AddGameObject(this);
 }
 
-Player::~Player() 
-{
+Player::~Player() {
 	delete team;
 }
 

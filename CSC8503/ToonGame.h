@@ -6,6 +6,7 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
 #include "PlayerControl.h"
+#include "ToonDebugManager.h"
 
 namespace NCL
 {
@@ -31,10 +32,15 @@ namespace NCL
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
 
+
 			bool offline;
 			bool showCursor;
-			const double timeStep = 1.0 / 60.0;
+
+      const double timeStep = 1.0 / 60.0;
 			double accumulator;
+
+			ToonDebugManager* toonDebugManager;
+			std::chrono::steady_clock::time_point lastFrameTime;
 		};
 	}
 }

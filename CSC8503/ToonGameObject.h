@@ -52,6 +52,7 @@ namespace NCL::CSC8503
 		Quaternion GetOrientation() const;
 		Vector3 GetScale() const { return ToonUtils::ConvertToNCLVector3(transform.GetScale()); };
 
+
 		void SetPosition(const reactphysics3d::Vector3& newPos);
 		void SetPosition(const Vector3& newPos);
 		void SetPosition(const float& x, const float& y, const float& z);
@@ -103,7 +104,7 @@ namespace NCL::CSC8503
 		reactphysics3d::SphereShape* collisionShapeSphere;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
-
+    
 	private:
 		reactphysics3d::PhysicsWorld& physicsWorld;
 	};

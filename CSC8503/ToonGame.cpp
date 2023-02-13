@@ -16,6 +16,7 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 	world = new ToonGameWorld();	
 	renderer = new GameTechRenderer(*world);
 	
+	testTeam = new Team("The Blue Wave", Vector3(0, 0, 1.0f));
 	levelManager = new ToonLevelManager(*renderer);
 	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
 	if (offline) {
@@ -31,6 +32,11 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 
 	accumulator = 0.0f;
 	showCursor = false;
+
+	toonDebugManager = new ToonDebugManager();
+	player->SetDebugManager(toonDebugManager);
+
+	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
@@ -42,12 +48,15 @@ NCL::CSC8503::ToonGame::~ToonGame()
 	delete playerControl;
 }
 
-void NCL::CSC8503::ToonGame::UpdateGame(float dt)
-{
+void NCL::CSC8503::ToonGame::UpdateGame(float dt) {
 
+	toonDebugManager->SetFrameUpdateTime(lastFrameTime, std::chrono::high_resolution_clock::now());
+	
+	lastFrameTime = std::chrono::high_resolution_clock::now();
+  
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later
 #pragma endregion
 
 	world->GetMainCamera()->UpdateCamera(dt);
@@ -69,6 +78,14 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 
+  auto start = std::chrono::high_resolution_clock::now();
+	renderer->Update(dt);
+	auto end = std::chrono::high_resolution_clock::now();
+  
+	toonDebugManager->SetGraphicsUpdateTime(start, end);
+
+	start = std::chrono::high_resolution_clock::now();
+
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
@@ -76,6 +93,11 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		accumulator -= timeStep;
 		world->DeleteObjects();
 	}
+
+	end = std::chrono::high_resolution_clock::now();
+	toonDebugManager->SetPhysicsUpdateTime(start, end);
+
+	toonDebugManager->Update(dt);
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);

@@ -42,7 +42,7 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
-	
+
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
@@ -305,6 +305,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRenderObject()->SetMesh(charMesh);*/
 
 	player = new Player(ToonGameWorld::Get()->GetPhysicsWorld(), position, Vector3(0, 0, 0), 2.0f, team);
+
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
 	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
 

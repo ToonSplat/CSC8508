@@ -10,6 +10,7 @@
 #include <vector>
 #include "PaintBallClass.h"
 #include "PlayerControl.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -35,7 +36,13 @@ public:
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
+	void SetDebugManager(ToonDebugManager* tdm) {
+		toonDebugManager = tdm;
+	}
+
 protected:
+	ToonDebugManager* toonDebugManager;
+  
 	Team* team;
 	Camera* camera;
 

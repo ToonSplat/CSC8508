@@ -28,7 +28,6 @@ HitSphere::HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, react
 
 	//GetCollider()->setIsTrigger(true);
 
-
 	GetRigidbody()->setUserData(this);
 
 	ToonGameWorld::Get()->AddGameObject(this);
