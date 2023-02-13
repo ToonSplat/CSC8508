@@ -9,6 +9,7 @@
 #include "Debug.h"
 #include <vector>
 #include "PaintBallClass.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -27,12 +28,14 @@ public:
 
 	void SetWeapon(PaintBallClass* base);
 
-protected:
-	void Shoot();
+	void SetDebugManager(ToonDebugManager* tdm) {
+		toonDebugManager = tdm;
+	}
 
-	void DisplayDebug(float dt);
-	bool isDebug;
-	bool isDebugToggle;
+protected:
+	ToonDebugManager* toonDebugManager;
+
+	void Shoot();
 
 	Team* team;
 

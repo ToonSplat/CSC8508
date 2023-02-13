@@ -7,6 +7,7 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
+#include "ToonDebugManager.h"
 
 namespace NCL
 {
@@ -44,6 +45,9 @@ namespace NCL
 			bool showCursor;
 			const float timeStep = 1.0f / 60.0f;
 			float accumulator;
+
+			ToonDebugManager* toonDebugManager;
+			std::chrono::steady_clock::time_point lastFrameTime;
 		};
 	}
 }

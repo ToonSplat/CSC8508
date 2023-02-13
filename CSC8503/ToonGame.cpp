@@ -25,6 +25,11 @@ NCL::CSC8503::ToonGame::ToonGame()
 
 	accumulator = 0.0f;
 	showCursor = false;
+
+	toonDebugManager = new ToonDebugManager();
+	player->SetDebugManager(toonDebugManager);
+
+	lastFrameTime = std::chrono::high_resolution_clock::now();
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
@@ -35,8 +40,11 @@ NCL::CSC8503::ToonGame::~ToonGame()
 	delete levelManager;
 }
 
-void NCL::CSC8503::ToonGame::UpdateGame(float dt)
-{
+void NCL::CSC8503::ToonGame::UpdateGame(float dt) {
+	toonDebugManager->SetFrameUpdateTime(lastFrameTime, std::chrono::high_resolution_clock::now());
+	
+	lastFrameTime = std::chrono::high_resolution_clock::now();
+
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 		Debug::Print("[]", Vector2(48.5, 50), Debug::RED);
@@ -47,7 +55,14 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 	player->Update(dt);
 
+	auto start = std::chrono::high_resolution_clock::now();
 	renderer->Update(dt);
+	auto end = std::chrono::high_resolution_clock::now();
+	toonDebugManager->SetPhysicsUpdateTime(start, end);
+	toonDebugManager->SetGraphicsUpdateTime(start, end);
+
+
+	start = std::chrono::high_resolution_clock::now();
 
 	accumulator += dt;
 	while (accumulator >= timeStep)
@@ -59,8 +74,12 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
   
 	levelManager->Update(dt);
 
+	end = std::chrono::high_resolution_clock::now();
+	toonDebugManager->SetPhysicsUpdateTime(start, end);
+	
+	toonDebugManager->Update(dt);
+
 	renderer->Render();
-	//Debug::UpdateRenderables(dt);
 
 	//UpdateTesting();
 }

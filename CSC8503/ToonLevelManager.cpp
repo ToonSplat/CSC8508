@@ -37,7 +37,6 @@ NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
 {
-	
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()

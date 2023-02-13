@@ -1,7 +1,6 @@
 #include "Player.h"
 #include "Maths.h"
 #include "ToonUtils.h"
-
 using namespace NCL;
 using namespace CSC8503;
 
@@ -28,9 +27,6 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, const Vector3& position
 	SetCollisionShape(sphereShape);
 	SetCollider(sphereShape);
 	GetCollider()->getMaterial().setBounciness(0.1f);
-
-	isDebug = false;
-	isDebugToggle = false;
 
 	ToonGameWorld::Get()->AddGameObject(this);
 }
@@ -80,7 +76,8 @@ void Player::Update(float dt)
     
     weapon.Update(dt);
 
-	DisplayDebug(dt);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3))
+		toonDebugManager->ToggleDebug();
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
@@ -92,65 +89,4 @@ void Player::SetWeapon(PaintBallClass* base) {
 
 void Player::Shoot() {
 	return;
-}
-
-#include "windows.h"
-#include "psapi.h"
-
-void Player::DisplayDebug(float dt) {
-// TOTAL TIME BETWEEN PHYSICS UPDATE
-// TOTAL TIME BETWEEN RENDERING UPDATE
-// TOTAL TIME BETWEEN FRAMES
-
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3))
-		isDebug = !isDebug;
-	if (isDebug) {
-		isDebugToggle = true;
-		float fps = 1.0 / dt;
-
-		MEMORYSTATUSEX memInfo;
-		memInfo.dwLength = sizeof(MEMORYSTATUSEX);
-		GlobalMemoryStatusEx(&memInfo);
-
-		DWORDLONG totalVirtualmem = memInfo.ullTotalPageFile;
-		DWORDLONG usedVirtualmem = memInfo.ullTotalPageFile - memInfo.ullAvailPageFile;
-
-		PROCESS_MEMORY_COUNTERS_EX pmc;
-		GetProcessMemoryInfo(GetCurrentProcess(), (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc));
-		SIZE_T virtualMemUsedByMe = pmc.PrivateUsage;
-
-		DWORDLONG totalPhysMem = memInfo.ullTotalPhys;
-		DWORDLONG usedPhysMem = memInfo.ullTotalPhys - memInfo.ullAvailPhys;
-		SIZE_T physMemUsedByMe = pmc.WorkingSetSize;
-
-		std::cout << "FPS -  " << fps << std::endl << "Virtual Memory - " << usedVirtualmem << "/" << totalVirtualmem << std::endl << "Physical Memory - " << usedPhysMem << "/" << totalPhysMem << std::endl;
-		std::cout << "virtual used by me - " << virtualMemUsedByMe << std::endl << "physcial used by me - " << physMemUsedByMe << std::endl;
-
-		//	if (debugTimer <= 0.0f) {
-		ToonGameWorld::Get()->GetPhysicsWorld().setIsDebugRenderingEnabled(true);
-		reactphysics3d::DebugRenderer& dbr = ToonGameWorld::Get()->GetPhysicsWorld().getDebugRenderer();
-		dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLISION_SHAPE, true);
-		dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_BROADPHASE_AABB, true);
-		dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::COLLIDER_AABB, true);
-		dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
-		dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
-
-		for (int i = 0; i < dbr.getNbLines(); i++) {
-			Debug::DrawLine(Vector3(dbr.getLines()[i].point1.x, dbr.getLines()[i].point1.y, dbr.getLines()[i].point1.z), Vector3(dbr.getLines()[i].point2.x, dbr.getLines()[i].point2.y, dbr.getLines()[i].point2.z), Debug::RED, dt);
-			//Debug::DrawLine(Vector3(dbr.getLinesArray()->point1.x, dbr.getLinesArray()->point1.y, dbr.getLinesArray()->point1.z), Vector3(dbr.getLinesArray()->point2.x, dbr.getLinesArray()->point2.y, dbr.getLinesArray()->point2.z), Debug::RED);
-		}
-		dbr.reset();
-
-		//	debugTimer = 0.5f;
-		//}
-		//else {
-		//	debugTimer -= dt;
-		//}
-		Debug::UpdateRenderables(dt);
-	}
-	else if (!isDebug && isDebugToggle) {
-		Debug::UpdateRenderables(dt);
-		ToonGameWorld::Get()->GetPhysicsWorld().setIsDebugRenderingEnabled(false);
-		isDebugToggle = false;
-	}
 }
