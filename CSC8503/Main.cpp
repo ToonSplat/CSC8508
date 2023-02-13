@@ -26,6 +26,7 @@
 #include "BehaviourSelector.h"
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
+#include "ToonMainMenu.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -61,27 +62,14 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
-  
-	//ToonGame* g = new ToonGame();
-	ToonGame* g;
-	while (true) {
-		std::cout << "Ryan's Crappy Menu\n1) Start Local Game\n2) Start Server\n3) Start Client\nChoose Option: ";
-		int choice;
-		std::cin >> choice;
-		switch (choice) {
-		case(1):
-			g = new ToonGame(renderer);
-			break;
-		case(2):
-			g = new ToonNetworkedGame(renderer);
-			break;
-		case(3):
-			g = new ToonNetworkedGame(renderer, 127, 0, 0, 1); // Hardcoded for now
-			break;
-		default:
-			return 0;
-		}
-		w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+
+	ToonMainMenu* mainMenu = new ToonMainMenu(w);
+	TestPushdownAutomata(w, mainMenu);
+
+	//TutorialGame* g = new TutorialGame();
+	ToonGame* g = new ToonGame();
+	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
+	//TestBehaviourTree();
 
 		//-----------------------------------------------------------
 		//Imgui 
@@ -112,8 +100,13 @@ int main() {
 
 			w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
 
-			g->UpdateGame(dt);
-		}
+		//DrawMainMenu();
+		
+		//g->UpdateGame(dt);
+	}
+	Window::DestroyGameWindow();
+
+}
 
 		//-----------------------------------------------------------
 		//Imgui 

@@ -41,6 +41,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
 
+
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 	if (controls->jumping) {

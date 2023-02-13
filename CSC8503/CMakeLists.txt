@@ -26,6 +26,7 @@ set(Header_Files
     "ToonRaycastCallback.h"
     "ToonUtils.h"
     "ToonFollowCamera.h"
+    "ToonMainMenu.h"
     "ToonMinimapCamera.h"    
 )
 source_group("Header Files" FILES ${Header_Files})
@@ -52,6 +53,7 @@ set(Source_Files
     "ToonRenderObject.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
+    "ToonMainMenu.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 
