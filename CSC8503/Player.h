@@ -16,7 +16,7 @@ using namespace CSC8503;
 
 class Player : public ToonGameObject {
 public:
-	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 
 	void Update(float dt) override;

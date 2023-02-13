@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team) : ToonGameObject(RP3D_World), team(team)
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : ToonGameObject(RP3D_World, gameWorld), team(team)
 {
 	team->AddPlayer();
 	isAiming = false;
