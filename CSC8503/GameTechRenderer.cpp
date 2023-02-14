@@ -345,6 +345,13 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		ImGui::End();
 
 		ImGui::Begin("Performance Window");
+		ImGui::BeginTable("FPS Table", 2);
+		ImGui::TableNextColumn();
+		ImGui::Text("FPS");
+		ImGui::TableNextColumn();
+		ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
+		ImGui::EndTable();
+
 		if (ImGui::CollapsingHeader("Memory Usage")) {
 			ImGui::BeginTable("Memory Usage Table", 2);
 

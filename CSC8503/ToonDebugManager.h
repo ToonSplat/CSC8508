@@ -28,7 +28,7 @@ namespace NCL
 			void SetFrameUpdateTime(auto start, auto end) { frameTimeTaken = ConvertTimeTaken(start, end); }
 
 			double ConvertTimeTaken(auto start, auto end) {
-				auto timeTaken = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+				auto timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 				return timeTaken.count();
 			}
 
@@ -36,10 +36,10 @@ namespace NCL
 			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram); }
 			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem) + "/" + std::to_string(totalPhysMem); }
 			string GetPhysicalUsgaebyProgram() { return std::to_string(physMemUsedByProgram); }
-			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken) + "ms"; }
-			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken) + "ms"; }
-			string GetGraphicsTimnTaken() { return std::to_string(graphicsTimeTaken) + "ms"; }
-
+			string GetFrameTimeTaken() { return std::to_string(trunc(frameTimeTaken)) + " microseconds"; }
+			string GetPhysicsTimeTaken() { return std::to_string(trunc(physicsTimeTaken)) + " microseconds"; }
+			string GetGraphicsTimnTaken() { return std::to_string(trunc(graphicsTimeTaken)) + " microseconds"; }
+			
 			bool GetIsDebugging() { return isDebugging; }
 
 			void ToggleCollisionDisplay();

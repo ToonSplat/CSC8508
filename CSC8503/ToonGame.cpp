@@ -78,13 +78,9 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt) {
 		}
 	}
 
-  auto start = std::chrono::high_resolution_clock::now();
-	renderer->Update(dt);
-	auto end = std::chrono::high_resolution_clock::now();
-  
-	toonDebugManager->SetGraphicsUpdateTime(start, end);
+	renderer->Update(dt);  
 
-	start = std::chrono::high_resolution_clock::now();
+	auto start = std::chrono::high_resolution_clock::now();
 
 	accumulator += dt;
 	while (accumulator >= timeStep)
@@ -94,12 +90,17 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt) {
 		world->DeleteObjects();
 	}
 
-	end = std::chrono::high_resolution_clock::now();
+	auto end = std::chrono::high_resolution_clock::now();
 	toonDebugManager->SetPhysicsUpdateTime(start, end);
 
 	toonDebugManager->Update(dt);
-
+	
+	start = std::chrono::high_resolution_clock::now();
 	renderer->Render();
+	end = std::chrono::high_resolution_clock::now();
+
+	toonDebugManager->SetGraphicsUpdateTime(start, end);
+
 	Debug::UpdateRenderables(dt);
 }
 
