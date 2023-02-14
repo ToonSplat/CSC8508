@@ -39,6 +39,18 @@ void Debug::Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vec
 	orthographicViewLineEntries.emplace_back(newEntry);
 }
 
+void Debug::DrawQuad(const Vector2& origin, const Vector2& size, const Vector4& colour)
+{
+	const Vector2& topRightPoint	= Vector2(origin.x + size.x, origin.y);
+	const Vector2& bottomRightPoint = Vector2(origin.x + size.x, origin.y + size.y);
+	const Vector2& bottomLeftPoint	= Vector2(origin.x, origin.y + size.y);
+	
+	Draw2DLine(origin,			topRightPoint,	  colour);//Top
+	Draw2DLine(topRightPoint,	bottomRightPoint, colour);//Right
+	Draw2DLine(bottomLeftPoint, bottomRightPoint, colour);//Bottom
+	Draw2DLine(origin,			bottomLeftPoint,  colour);//Left
+}
+
 void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour, float time) {
 	DebugLineEntry newEntry;
 

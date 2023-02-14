@@ -44,7 +44,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 		return NavigateToScreen(newState);
 	}
 
-	Debug::Draw2DLine(Vector2(50, 20), Vector2(80, 20), Debug::RED);
+	Debug::DrawQuad(Vector2(50, 20), Vector2(30, 20), Debug::BLUE);
 
 
 	m_Renderer->SetWorld(m_World);
