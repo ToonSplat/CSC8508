@@ -29,6 +29,8 @@ namespace NCL {
 		static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 		static void DrawBox(const Vector3& boxCenter, const Vector3& boxSize, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 
+		static void Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vector4& colour = Vector4(1, 1, 1, 1));
+
 		static void DrawAxisLines(const Matrix4& modelMatrix, float scaleBoost = 1.0f, float time = 0.0f);
 
 		static void UpdateRenderables(float dt);
@@ -37,6 +39,7 @@ namespace NCL {
 
 		static const std::vector<DebugStringEntry>& GetDebugStrings();
 		static const std::vector<DebugLineEntry>& GetDebugLines();
+		static const std::vector<DebugLineEntry>& GetOrthographicViewLines();
 
 
 		static const Vector4 RED;
@@ -56,6 +59,7 @@ namespace NCL {
 
 		static std::vector<DebugStringEntry>	stringEntries;
 		static std::vector<DebugLineEntry>		lineEntries;
+		static std::vector<DebugLineEntry>		orthographicViewLineEntries;
 
 		static SimpleFont* debugFont;
 	};

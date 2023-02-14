@@ -33,6 +33,7 @@ namespace NCL {
 			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
+			void NewRenderLinesOnOrthographicView();
 
 			void RenderFrame()	override;
 			void RenderImGUI();

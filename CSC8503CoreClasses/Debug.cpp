@@ -3,6 +3,7 @@ using namespace NCL;
 
 std::vector<Debug::DebugStringEntry>	Debug::stringEntries;
 std::vector<Debug::DebugLineEntry>		Debug::lineEntries;
+std::vector<Debug::DebugLineEntry>		Debug::orthographicViewLineEntries;
 
 SimpleFont* Debug::debugFont = nullptr;
 
@@ -25,6 +26,17 @@ void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& co
 	newEntry.colour = colour;
 
 	stringEntries.emplace_back(newEntry);
+}
+
+void Debug::Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vector4& colour)
+{
+	DebugLineEntry newEntry;
+
+	newEntry.start	 = startPos;
+	newEntry.end	 = endPos;
+	newEntry.colourA = colour;
+	newEntry.colourB = colour;
+	orthographicViewLineEntries.emplace_back(newEntry);
 }
 
 void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour, float time) {
@@ -116,3 +128,5 @@ const std::vector<Debug::DebugStringEntry>& Debug::GetDebugStrings() {
 const std::vector<Debug::DebugLineEntry>& Debug::GetDebugLines() {
 	return lineEntries;
 }
+
+const std::vector<Debug::DebugLineEntry>& Debug::GetOrthographicViewLines() { return orthographicViewLineEntries; }

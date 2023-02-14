@@ -20,6 +20,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
+	//Debug::Print("------", Vector2(50, 20), Debug::CYAN);
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
 	{
 		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
@@ -42,6 +43,9 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 	{
 		return NavigateToScreen(newState);
 	}
+
+	Debug::Draw2DLine(Vector2(50, 20), Vector2(80, 20), Debug::RED);
+
 
 	m_Renderer->SetWorld(m_World);
 	m_Renderer->Update(dt);
