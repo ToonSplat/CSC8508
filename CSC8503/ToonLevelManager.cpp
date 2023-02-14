@@ -18,7 +18,7 @@ NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer& renderer) :
 	instance = this;
 	if (!LoadAssets()) return;
 
-	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Vector4(0,0,0,0), 1.0f);
+	axisObject = AddCubeToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("mesh"), Vector4(0,0,0,0), 1.0f);
 	axisObject->GetRigidbody()->setUserData(axisObject);
 	ToonGameWorld::Get()->AddPaintableObject(axisObject);
 	//axisObject = AddSphereToWorld(Vector3(0, 10, 0), Vector3(0, 0, 0), 2.0f, basicTexPurple, 1.0f);

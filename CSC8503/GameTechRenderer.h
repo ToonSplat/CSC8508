@@ -43,6 +43,9 @@ namespace NCL {
 			void PresentMinimap(int modelLocation);
 
 			void DrawMinimap();
+			void DrawScoreBar();
+
+			void CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels);
 
 			void DrawMap();
 
@@ -72,9 +75,11 @@ namespace NCL {
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
+			OGLShader* scoreBarShader;
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
+
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -135,6 +140,20 @@ namespace NCL {
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
+
+			OGLMesh* scoreQuad;
+
+			float team1Percentage;
+			float team2Percentage;
+			float team3Percentage;
+			float team4Percentage;
+
+			Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+			Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
+			Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
+			Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
+			Vector3 team4Colour = Vector3(0.98, 0, 0.79);
+
 
 			int currentAtomicCPU;
 			int currentAtomicGPU;

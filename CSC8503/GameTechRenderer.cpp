@@ -24,6 +24,10 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 
 GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::GetWindow()), gameWorld(world)	{
 	SetupStuffs();
+	team1Percentage = 0;
+	team2Percentage = 0;
+	team3Percentage = 0;
+	team4Percentage = 0;
 }
 
 GameTechRenderer::~GameTechRenderer()	{
@@ -40,6 +44,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 	sceneShader = new OGLShader("scene.vert", "scene.frag");
+	scoreBarShader = new OGLShader("ScoreBar.vert", "ScoreBar.frag");
 	mapShader = new OGLShader("map.vert", "map.frag");
 
 	GenerateShadowFBO();
@@ -77,8 +82,13 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5, 0.8,-1), Vector3(-0.5,-0.8,-1) , Vector3(0.5,-0.8,-1) , Vector3(0.5,0.8,-1) });
 	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	minimapStencilQuad->UploadToGPU();
-	
 
+	scoreQuad = new OGLMesh();
+	scoreQuad->SetVertexPositions({ Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1) });
+	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	scoreQuad->UploadToGPU();
+	
 	LoadSkybox();
 
 	glGenVertexArrays(1, &lineVAO);
@@ -440,6 +450,54 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	DrawMinimapToScreen(modelLocation);
+	DrawScoreBar();
+	
+}
+
+void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
+	BindShader(scoreBarShader);
+
+	CalculatePercentages(100, 25, 50, 15, 10);
+
+	
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
+	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
+
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, team1Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, team2Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, team3Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, team4Colour.array);
+	
+	Matrix4 identityMatrix = Matrix4();
+
+	int projLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "viewMatrix");
+	int modelLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "modelMatrix");
+
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
+
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85, 0)) * Matrix4::Scale(Vector3(0.4, 0.035, 1));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&scoreBarModelMatrix);
+
+	BindMesh(scoreQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_BLEND);
+}
+
+void NCL::CSC8503::GameTechRenderer::CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels) {
+	team1Percentage = (float)team1Pixels / (float)totalPixels;
+	team2Percentage = (float)team2Pixels / (float)totalPixels;
+	team3Percentage = (float)team3Pixels / (float)totalPixels;
+	team4Percentage = (float)team4Pixels / (float)totalPixels;
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
