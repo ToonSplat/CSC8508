@@ -18,8 +18,8 @@ namespace NCL::CSC8503 {
 	struct DeltaPacket : public GamePacket {
 		int		fullID = -1;
 		int		objectID = -1;
-		char	pos[3];
-		char	orientation[4];
+		short	pos[3];
+		short	orientation[4];
 		//char	vel[3];
 		//char	angVel[3];
 

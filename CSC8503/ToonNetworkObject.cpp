@@ -34,10 +34,26 @@ bool ToonNetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID
 
 void ToonNetworkObject::UpdateLastFullState() {
 	lastFullState.stateID++;
-	lastFullState.position = object->GetRigidbody()->getTransform().getPosition();
-	lastFullState.orientation = object->GetRigidbody()->getTransform().getOrientation();
-	lastFullState.linVelocity = object->GetRigidbody()->getLinearVelocity();
-	lastFullState.angVelocity = object->GetRigidbody()->getAngularVelocity();
+	reactphysics3d::Vector3 position = object->GetRigidbody()->getTransform().getPosition();
+	lastFullState.position[0] = position.x * 1000;
+	lastFullState.position[1] = position.y * 1000;
+	lastFullState.position[2] = position.z * 1000;
+
+	reactphysics3d::Quaternion orientation = object->GetRigidbody()->getTransform().getOrientation();
+	lastFullState.orientation[0] = orientation.x * 1000;
+	lastFullState.orientation[1] = orientation.y * 1000;
+	lastFullState.orientation[2] = orientation.z * 1000;
+	lastFullState.orientation[3] = orientation.w * 1000;
+
+	reactphysics3d::Vector3 linVelocity = object->GetRigidbody()->getLinearVelocity();
+	lastFullState.linVelocity[0] = linVelocity.x * 1000;
+	lastFullState.linVelocity[1] = linVelocity.y * 1000;
+	lastFullState.linVelocity[2] = linVelocity.z * 1000;
+
+	reactphysics3d::Vector3 angVelocity = object->GetRigidbody()->getAngularVelocity();
+	lastFullState.angVelocity[0] = angVelocity.x * 1000;
+	lastFullState.angVelocity[1] = angVelocity.y * 1000;
+	lastFullState.angVelocity[2] = angVelocity.z * 1000;
 }
 
 //Client objects recieve these packets
@@ -48,17 +64,19 @@ bool ToonNetworkObject::ReadDeltaPacket(DeltaPacket& p) {
 	}
 	UpdateStateHistory(p.fullID);
 
-	reactphysics3d::Vector3 fullPos = state.position;
-	reactphysics3d::Quaternion fullOrientation = state.orientation;
+	reactphysics3d::Vector3 fullPos = 
+		reactphysics3d::Vector3(state.position[0] / 1000.0f, state.position[1] / 1000.0f, state.position[2] / 1000.0f);
+	reactphysics3d::Quaternion fullOrientation =
+		reactphysics3d::Quaternion(state.orientation[0] / 1000.0f, state.orientation[1] / 1000.0f, state.orientation[2] / 1000.0f, state.orientation[3] / 1000.0f);
 
-	fullPos.x += ((float)p.pos[0] / 10.0f);
-	fullPos.y += ((float)p.pos[1] / 10.0f);
-	fullPos.z += ((float)p.pos[2] / 10.0f);
+	fullPos.x += (p.pos[0] / 1000.0f);
+	fullPos.y += (p.pos[1] / 1000.0f);
+	fullPos.z += (p.pos[2] / 1000.0f);
 
-	fullOrientation.x += ((float)p.orientation[0]) / 127.0f;
-	fullOrientation.y += ((float)p.orientation[1]) / 127.0f;
-	fullOrientation.z += ((float)p.orientation[2]) / 127.0f;
-	fullOrientation.w += ((float)p.orientation[3]) / 127.0f;
+	fullOrientation.x += (p.orientation[0] / 1000.0f);
+	fullOrientation.y += (p.orientation[1] / 1000.0f);
+	fullOrientation.z += (p.orientation[2] / 1000.0f);
+	fullOrientation.w += (p.orientation[3] / 1000.0f);
 
 	object->SetPosition(fullPos);
 	object->SetOrientation(fullOrientation);
@@ -71,10 +89,15 @@ bool ToonNetworkObject::ReadFullPacket(FullPacket& p) {
 		return false; // Received old packet
 	lastFullState = p.fullState;
 
-	object->SetPosition(lastFullState.position);
-	object->SetOrientation(lastFullState.orientation);
-	object->GetRigidbody()->setLinearVelocity(lastFullState.linVelocity);
-	object->GetRigidbody()->setAngularVelocity(lastFullState.angVelocity);
+	object->SetPosition(
+		reactphysics3d::Vector3(lastFullState.position[0] / 1000.0f, lastFullState.position[1] / 1000.0f, lastFullState.position[2] / 1000.0f));
+	object->SetOrientation(
+		reactphysics3d::Quaternion(lastFullState.orientation[0] / 1000.0f, lastFullState.orientation[1] / 1000.0f,
+			lastFullState.orientation[2] / 1000.0f, lastFullState.orientation[3] / 1000.0f));
+	object->GetRigidbody()->setLinearVelocity(
+		reactphysics3d::Vector3(lastFullState.linVelocity[0] / 1000.0f, lastFullState.linVelocity[1] / 1000.0f, lastFullState.linVelocity[2] / 1000.0f));
+	object->GetRigidbody()->setAngularVelocity(
+		reactphysics3d::Vector3(lastFullState.angVelocity[0] / 1000.0f, lastFullState.angVelocity[1] / 1000.0f, lastFullState.angVelocity[2] / 1000.0f));
 
 	stateHistory.emplace_back(lastFullState);
 
@@ -90,19 +113,28 @@ bool ToonNetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	dp->fullID = stateID;
 	dp->objectID = networkID;
 
-	reactphysics3d::Vector3 currentPos = lastFullState.position;
-	reactphysics3d::Quaternion currentOrientation = lastFullState.orientation;
-	currentPos -= state.position;
-	currentOrientation -= state.orientation;
+	reactphysics3d::Vector3 currentPos = 
+		reactphysics3d::Vector3(lastFullState.position[0] / 1000.0f, lastFullState.position[1] / 1000.0f, lastFullState.position[2] / 1000.0f);
+	reactphysics3d::Quaternion currentOrientation =
+		reactphysics3d::Quaternion(lastFullState.orientation[0] / 1000.0f, lastFullState.orientation[1] / 1000.0f,
+			lastFullState.orientation[2] / 1000.0f, lastFullState.orientation[3] / 1000.0f);
 
-	dp->pos[0] = (char)(currentPos.x * 10.0f);
-	dp->pos[1] = (char)(currentPos.y * 10.0f);
-	dp->pos[2] = (char)(currentPos.z * 10.0f);
+	currentPos.x -= state.position[0] / 1000.0f;
+	currentPos.y -= state.position[1] / 1000.0f;
+	currentPos.z -= state.position[2] / 1000.0f;
+	currentOrientation.x -= state.orientation[0] / 1000.0f;
+	currentOrientation.y -= state.orientation[1] / 1000.0f;
+	currentOrientation.z -= state.orientation[2] / 1000.0f;
+	currentOrientation.w -= state.orientation[3] / 1000.0f;
 
-	dp->orientation[0] = (char)(currentOrientation.x * 127.0f);
-	dp->orientation[1] = (char)(currentOrientation.y * 127.0f);
-	dp->orientation[2] = (char)(currentOrientation.z * 127.0f);
-	dp->orientation[3] = (char)(currentOrientation.w * 127.0f);
+	dp->pos[0] = (short)(currentPos.x * 1000.0f);
+	dp->pos[1] = (short)(currentPos.y * 1000.0f);
+	dp->pos[2] = (short)(currentPos.z * 1000.0f);
+
+	dp->orientation[0] = (short)(currentOrientation.x * 1000.0f);
+	dp->orientation[1] = (short)(currentOrientation.x * 1000.0f);
+	dp->orientation[2] = (short)(currentOrientation.x * 1000.0f);
+	dp->orientation[3] = (short)(currentOrientation.x * 1000.0f);
 
 	stateHistory.emplace_back(lastFullState);
 

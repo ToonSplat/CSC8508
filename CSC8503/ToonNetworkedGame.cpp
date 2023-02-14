@@ -76,7 +76,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 60.0f; //60hz server/client update
+		timeToNextPacket += 1.0f / 30.0f; //60hz server/client update
 	}
 
 	if (thisServer) {
