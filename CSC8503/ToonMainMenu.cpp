@@ -1,5 +1,7 @@
 #include "ToonMainMenu.h"
 
+#include "ToonTextInput.h"	//For Testing
+
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
 	m_Renderer = renderer;
@@ -18,6 +20,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_World = world;
 }
 
+ToonTextInput ip(Coordinates(Vector2(50, 40), Vector2(30, 20)));//Test
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
 	//Debug::Print("------", Vector2(50, 20), Debug::CYAN);
@@ -44,7 +47,9 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 		return NavigateToScreen(newState);
 	}
 
+	// Testing
 	Debug::DrawQuad(Vector2(50, 20), Vector2(30, 20), Debug::BLUE);
+	ip.Update();
 
 
 	m_Renderer->SetWorld(m_World);

@@ -14,6 +14,8 @@ struct Coordinates
 {
 	Vector2 origin;
 	Vector2 size;
+
+	Coordinates(Vector2 org, Vector2 siz) : origin(org), size(siz) {}
 };
 
 class ToonTextInput
@@ -30,4 +32,8 @@ class ToonTextInput
 		~ToonTextInput();
 		void Update();
 		void UpdatePosition(Coordinates newCoordinates);
+
+	private:
+		void DrawVirtualKeyboard();	//TODO: - To be drawn in a separate class.
+		void DrawKeyboardKey(Coordinates coordinate, std::string key, Vector4 keyColour);
 };
