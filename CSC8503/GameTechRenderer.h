@@ -124,7 +124,7 @@ namespace NCL {
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
-			GLuint atomicsBuffer;
+			GLuint atomicsBuffer[3];
 			void GenerateAtomicBuffer();
 			void ResetAtomicBuffer();
 			
@@ -135,6 +135,10 @@ namespace NCL {
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
+
+			int currentAtomicCPU;
+			int currentAtomicGPU;
+			int curretAtomicReset;
 
 			
 		};

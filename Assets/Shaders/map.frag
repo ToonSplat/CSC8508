@@ -1,10 +1,9 @@
 #version 420
 
-layout (binding = 0, offset = 0) uniform atomic_uint atFloor;
-layout (binding = 0, offset = 4) uniform atomic_uint atTeam1;
-layout (binding = 0, offset = 8) uniform atomic_uint atTeam2;
-layout (binding = 0, offset = 12) uniform atomic_uint atTeam3;
-layout (binding = 0, offset = 16) uniform atomic_uint atTeam4;
+layout (binding = 0, offset = 0) uniform atomic_uint scoreCount1[5];
+layout (binding = 1, offset = 0) uniform atomic_uint scoreCount2[5];
+layout (binding = 2, offset = 0) uniform atomic_uint scoreCount3[5];
+
 
 struct ImpactPoint{
 	vec3 position;
@@ -24,6 +23,8 @@ uniform bool hasTexture;
 uniform vec3 objectPosition;
 
 uniform bool isFloor;
+
+uniform int currentAtomicTarget;
 
 in Vertex
 {
@@ -76,11 +77,26 @@ void main(void)
 	
 	gColour = albedo;
 	
-	if (isFloor){
-		gScore = albedo;
-		atomicCounterIncrement(atFloor);
-		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(atTeam1);
+	if (!isFloor) return;
+	
+	gScore = albedo;
+
+	if (currentAtomicTarget == 0)
+	{
+		atomicCounterIncrement(scoreCount1[0]);
+		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount1[1]);
 	}
+	else if (currentAtomicTarget == 1)
+	{
+		atomicCounterIncrement(scoreCount2[0]);
+		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount2[1]);
+	}
+	else
+	{
+		atomicCounterIncrement(scoreCount3[0]);
+		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount3[1]);
+	}
+	
 	
 
 }

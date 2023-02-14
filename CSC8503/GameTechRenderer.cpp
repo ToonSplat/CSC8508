@@ -9,6 +9,7 @@
 #include "PaintableObject.h"
 #include "ToonUtils.h"
 #include <iostream>
+#include <algorithm>
 
 using namespace NCL;
 using namespace Rendering;
@@ -367,7 +368,17 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
+
+	
+
 	RenderScene(mapShader, viewMatrix, projMatrix);
+
+	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
+	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
+	curretAtomicReset = ((curretAtomicReset + 1) % 3);
+	
+	RetrieveAtomicValues();
+
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -569,7 +580,13 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
 			PassImpactPointDetails(paintedObject, shader);
 		}
-
+		if (shader == mapShader) {
+			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
+			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
+			glUniform1i(atomicLocation, currentAtomicGPU);
+			glPopDebugGroup();
+		}
+		
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
@@ -740,36 +757,48 @@ void GameTechRenderer::NewRenderText() {
 
 void GameTechRenderer::GenerateAtomicBuffer()
 {
-	glGenBuffers(1, &atomicsBuffer);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
+	glGenBuffers(1, &atomicsBuffer[0]);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
 	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+
+	glGenBuffers(1, &atomicsBuffer[1]);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	
+	glGenBuffers(1, &atomicsBuffer[2]);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	
+	/*glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	*/
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
-}
+	
 
-void GameTechRenderer::ResetAtomicBuffer()
-{
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
-	//glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
-	GLuint a[ATOMIC_COUNT];
-	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
-	{
-		a[i] = 0;
-	}
-	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
-	//glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
+	currentAtomicCPU = 0;
+	curretAtomicReset = 1;
+	currentAtomicGPU = 2;
 }
+	
+	
+
+
 
 void GameTechRenderer::RetrieveAtomicValues()
 {
 	GLuint pixelCount[ATOMIC_COUNT];
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
 
 	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
 
-	//
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	totalPixelCount = pixelCount[0];
 	std::cout << "total pixel count: " << totalPixelCount << std::endl;
@@ -779,9 +808,23 @@ void GameTechRenderer::RetrieveAtomicValues()
 		std::cout << "Team " << i << " pixel count: " << teamPixelCount[i - 1] << std::endl;
 	}
 	
-	
+	ResetAtomicBuffer();
+	//glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 
 	
+}
+
+void GameTechRenderer::ResetAtomicBuffer()
+{
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
+	GLuint a[ATOMIC_COUNT];
+	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
+	{
+		a[i] = 0;
+	}
+	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
+
 }
 
 
