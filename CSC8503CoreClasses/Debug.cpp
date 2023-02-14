@@ -124,6 +124,7 @@ void Debug::UpdateRenderables(float dt) {
 	}
 	lineEntries.resize(lineEntries.size() - trim);
 	stringEntries.clear();
+	orthographicViewLineEntries.clear();
 }
 
 SimpleFont* Debug::GetDebugFont() {

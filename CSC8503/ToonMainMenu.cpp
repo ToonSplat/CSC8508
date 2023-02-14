@@ -23,7 +23,6 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 ToonTextInput ip(Coordinates(Vector2(50, 40), Vector2(30, 20)));//Test
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
-	//Debug::Print("------", Vector2(50, 20), Debug::CYAN);
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
 	{
 		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();

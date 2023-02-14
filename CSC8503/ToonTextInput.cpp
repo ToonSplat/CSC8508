@@ -30,7 +30,8 @@ void ToonTextInput::DrawVirtualKeyboard()
 			startX  = m_Coordinates.origin.x;
 			startY += buttonSize;
 		}
-		std::string keyString	  = "A";
+		std::string keyString	  = "";
+		keyString				 += i;
 		Coordinates keyCoordinate = Coordinates(Vector2(startX, startY), Vector2(buttonSize, buttonSize));
 		DrawKeyboardKey(keyCoordinate, keyString, Debug::GREEN);
 		startX += buttonSize;
