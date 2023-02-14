@@ -3,10 +3,11 @@
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
 #include "../ThirdParty/imgui/imgui.h"
+#include "ToonGameWorld.h"
 //#include <iostream>
 
-NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) : 
-	followTarget(target)
+NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target) : 
+	gameWorld(gameWorld), followTarget(target)
 {
 	player = (Player*)followTarget;
 
@@ -31,7 +32,7 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameObject* target) :
 
 void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 {
-	if ( (ToonGameWorld::Get() != nullptr) && !ToonGameWorld::Get()->ShowCursor())
+	if ( (gameWorld != nullptr) && !gameWorld->ShowCursor())
 	{
 		Window::GetWindow()->ShowOSPointer(false);
 		Window::GetWindow()->LockMouseToWindow(true);
@@ -96,7 +97,7 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 
 	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos), ToonUtils::ConvertToRP3DVector3(position));
 	ToonRaycastCallback wallHitData;
-	ToonGameWorld::Get()->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
+	gameWorld->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
 
 	if (wallHitData.IsHit())
 		position = wallHitData.GetHitWorldPos();

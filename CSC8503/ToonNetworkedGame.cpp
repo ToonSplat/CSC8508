@@ -14,7 +14,7 @@
 
 #define COLLISION_MSG 30
 
-ToonNetworkedGame::ToonNetworkedGame() : ToonGame(false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer) : ToonGame(renderer, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -24,7 +24,7 @@ ToonNetworkedGame::ToonNetworkedGame() : ToonGame(false) {
 	StartAsServer();
 }
 
-ToonNetworkedGame::ToonNetworkedGame(int a, int b, int c, int d) : ToonGame(false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, int c, int d) : ToonGame(renderer, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -45,6 +45,7 @@ void ToonNetworkedGame::StartAsServer() {
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
 	thisServer->RegisterPacketHandler(Player_Disconnected, this);
+	thisServer->RegisterPacketHandler(Client_Update, this);
 	ServerStartLevel();
 }
 
@@ -78,6 +79,13 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
 	}
 
+	if (thisServer) {
+		for (auto& player : serverPlayers) {
+			PlayerControl* playersControl = playerControls.find(player.first)->second;
+			player.second->MovementUpdate(dt, playersControl);
+		}
+	}
+
 	ToonGame::UpdateGame(dt);
 }
 
@@ -91,6 +99,7 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 		packetsToSnapshot = 5;
 	}
 	else {
+		//BroadcastSnapshot(true); Not handling Deltas yet
 		BroadcastSnapshot(true);
 	}
 }
@@ -110,6 +119,13 @@ void ToonNetworkedGame::UpdateAsClient(float dt) {
 }
 
 void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
+	for (auto& object : networkObjects) {
+		GamePacket* newPacket = nullptr;
+		if (object->WritePacket(&newPacket, deltaFrame, 0)) {
+			thisServer->SendGlobalPacket(*newPacket);
+			delete newPacket;
+		}
+	}
 	/*std::vector<GameObject*>::const_iterator first;
 	std::vector<GameObject*>::const_iterator last;
 
@@ -164,7 +180,7 @@ void ToonNetworkedGame::UpdateMinimumState() {
 }
 
 Player* ToonNetworkedGame::SpawnPlayer(int playerID) {
-	Player* newPlayerCharacter = ToonLevelManager::Get()->AddPlayerToWorld(Vector3(20, 5, 0), ToonGameWorld::Get()->GetTeamLeastPlayers());
+	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 	ToonNetworkObject* netO = new ToonNetworkObject(newPlayerCharacter, playerID, myState);
 	newPlayerCharacter->SetWeapon(baseWeapon);
 	serverPlayers.emplace(playerID, newPlayerCharacter);
@@ -197,7 +213,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		if (myID == receivedID) {
 			player = newPlayer;
 			playerControl = new PlayerControl();
-			world->SetMainCamera(new ToonFollowCamera(player));
+			world->SetMainCamera(new ToonFollowCamera(world, player));
 			world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
 		if (thisServer) {
@@ -217,8 +233,14 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		DisconnectPacket* realPacket = (DisconnectPacket*)payload;
 		int receivedID = realPacket->playerID;
 		std::cout << "Recieved message Player Disconnected, removing their player, they are player ID" << receivedID << std::endl;
-		Player* removingGoat = serverPlayers.find(receivedID)->second;
-		world->RemoveGameObject(removingGoat, true);
+		Player* removingPlayer = serverPlayers.find(receivedID)->second;
+		for (auto i = networkObjects.begin(); i != networkObjects.end(); i++) {
+			if (removingPlayer->GetNetworkObject() == (*i)) {
+				networkObjects.erase(i);
+				break;
+			}
+		}
+		world->RemoveGameObject(removingPlayer, true);
 		serverPlayers.erase(receivedID);
 		if (thisServer) {
 			delete playerControls.find(receivedID)->second;
@@ -231,9 +253,9 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else if (type == Client_Update) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		int receivedID = realPacket->playerID;
-		std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
+		//std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
 		if (receivedID <= 0) {
-			std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
+			//std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
 			return;
 		}
 		stateIDs.find(receivedID)->second = realPacket->lastID;
@@ -246,6 +268,16 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		playersControls->aiming =		realPacket->controls.aiming;
 		playersControls->jumping =		realPacket->controls.jumping;
 		playersControls->shooting =		realPacket->controls.shooting;
+	}
+	else if (type == Full_State) {
+		FullPacket* realPacket = (FullPacket*)payload;
+		std::cout << "Recieved FullPacket for object " << realPacket->objectID << " at object state " << realPacket->fullState.stateID << std::endl;
+		myState = max(myState, realPacket->fullState.stateID);
+		for (auto i : networkObjects)
+			if (i->GetNetworkID() == realPacket->objectID) {
+				i->ReadPacket(*realPacket);
+				break;
+			}
 	}
 	else std::cout << "Recieved unknown packet\n";
 }

@@ -16,7 +16,7 @@ namespace NCL
 		class ToonGame
 		{
 		public:
-			ToonGame(bool offline = true);
+			ToonGame(GameTechRenderer* renderer, bool offline = true);
 			~ToonGame();
 
 			virtual void UpdateGame(float dt);

@@ -6,23 +6,25 @@
 #include "ToonMinimapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
+#include "ToonEventListener.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(bool offline) : offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
 {
-	world = new ToonGameWorld();	
-	renderer = new GameTechRenderer(*world);
-	
-	levelManager = new ToonLevelManager(*renderer);
-	baseWeapon = new PaintBallClass(15, 500, 0.5f, 1.0f, 5, levelManager->GetShader("basic"), levelManager->GetMesh("sphere"));
+	world = new ToonGameWorld();
+	renderer->SetWorld(world);
+
+	levelManager = new ToonLevelManager(renderer, world);
+	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	if (offline) {
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
 		player->SetWeapon(baseWeapon);
-		world->SetMainCamera(new ToonFollowCamera(player));
+		world->SetMainCamera(new ToonFollowCamera(world, player));
 		world->SetMinimapCamera(new ToonMinimapCamera(*player));
 	}
 	else {
@@ -36,7 +38,6 @@ ToonGame::ToonGame(bool offline) : offline(offline)
 NCL::CSC8503::ToonGame::~ToonGame()
 {
 	delete world;
-	delete renderer;
 	delete baseWeapon;
 	delete levelManager;
 	delete playerControl;
@@ -63,6 +64,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		if (offline) {
 			player->MovementUpdate(dt, playerControl);
 		}
+		// This next line is an abomination and should be refactored by Ryan
+		else {
+			player->SetAiming(playerControl->aiming);
+		}
 	}
 
 	accumulator += dt;
@@ -70,17 +75,16 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	{
 		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
 		accumulator -= timeStep;
-		world->DeleteObjects();
+		world->DeleteMarkedObjects();
 	}
-
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }
 
 void ToonGame::UpdateControls(PlayerControl* controls) {
-	Vector3 forward = ToonGameWorld::Get()->GetMainCamera()->GetForward();
-	Vector3 right = ToonGameWorld::Get()->GetMainCamera()->GetRight();
-	Vector3 up = ToonGameWorld::Get()->GetMainCamera()->GetUp();
+	Vector3 forward = world->GetMainCamera()->GetForward();
+	Vector3 right = world->GetMainCamera()->GetRight();
+	Vector3 up = world->GetMainCamera()->GetUp();
 
 	Vector3 linearMovement;
 	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W)) linearMovement += forward;
@@ -93,8 +97,8 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->direction[1] = short(linearMovement.y * 1000);
 	controls->direction[2] = short(linearMovement.z * 1000);
 
-	controls->camera[0] = ToonGameWorld::Get()->GetMainCamera()->GetPitch();
-	controls->camera[1] = ToonGameWorld::Get()->GetMainCamera()->GetYaw();
+	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
+	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();
 
 	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
 	controls->shooting = Window::GetMouse()->ButtonHeld(MouseButtons::LEFT);

@@ -7,10 +7,8 @@ using namespace CSC8503;
 
 class HitSphere : public ToonGameObject {
 public:
-	HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, Team* team, reactphysics3d::Vector3 position, float radius /*, Weapon weapon*/);
+	HitSphere(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team, float radius);
 	~HitSphere();
-
-	void OnCollisionBegin(ToonGameObject* otherObject);
 
 	bool CheckDelete();
 
@@ -21,11 +19,5 @@ protected:
 	float radius;
 	Vector3 teamColour;
 
-	bool toDelete; //Time left before removed from game world.
-
-	/*
-	* Eventually when weapons are added:
-	* 
-	* float weaponRadius
-	*/
+	bool toDelete;
 };
