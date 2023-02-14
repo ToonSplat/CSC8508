@@ -1,5 +1,5 @@
 #pragma once
-#include "ToonGameObject.h"
+#include "ToonGameObjectAnim.h"
 #include "Team.h"
 #include "Matrix4.h"
 #include "Vector4.h"
@@ -14,7 +14,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public ToonGameObject {
+class Player : public ToonGameObjectAnim {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();

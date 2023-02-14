@@ -4,6 +4,7 @@
 #include "ToonNetworkObject.h"
 #include "ToonUtils.h"
 #include <reactphysics3d/reactphysics3d.h>
+#include "OGLRenderer.h"
 
 namespace NCL::CSC8503
 {
@@ -22,7 +23,7 @@ namespace NCL::CSC8503
 		~ToonGameObject();
 
 		virtual void Update(float dt) { std::cout << "Base class update\n"; };
-		virtual void Draw(int subLayer);
+		virtual void Draw(OGLRenderer& r);
 
 		const std::string& GetName() const { return name; }
 
@@ -49,6 +50,9 @@ namespace NCL::CSC8503
 
 		reactphysics3d::BoxShape* GetCollisionShapeBox() const { return collisionShapeBox; };
 		void SetCollisionShape(reactphysics3d::BoxShape* RP3D_CollisionShape) { collisionShapeBox = RP3D_CollisionShape; }
+
+		reactphysics3d::CapsuleShape* GetCollisionShapeCapsule() const { return collisionShapeCapsule; };
+		void SetCollisionShape(reactphysics3d::CapsuleShape* RP3D_CollisionShape) { collisionShapeCapsule = RP3D_CollisionShape; }
 
 		Vector3 GetPosition() const;
 		Quaternion GetOrientation() const;
@@ -104,6 +108,7 @@ namespace NCL::CSC8503
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::BoxShape* collisionShapeBox;
 		reactphysics3d::SphereShape* collisionShapeSphere;
+		reactphysics3d::CapsuleShape* collisionShapeCapsule;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
 

@@ -54,6 +54,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 	//All Shaders
 	if (!LoadShader(&shaderMap["basic"], "scene.vert", "scene.frag")) return false;
+	if (!LoadShader(&shaderMap["animated"], "sceneSkin.vert", "scene.frag")) return false;
 
 	return true;
 }
@@ -292,20 +293,22 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
 {
 	const float PLAYER_RADIUS = 2.0f;
+	const float PLAYER_HEIGHT = 0.38f;
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
 	player->SetPosition(position);
-	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS, PLAYER_RADIUS, PLAYER_RADIUS));
+	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	player->GetRigidbody()->setLinearDamping(0.8f);
 	player->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
 	player->GetRigidbody()->setIsAllowedToSleep(true);
 
-	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(PLAYER_RADIUS * 0.85f);
-	player->SetCollisionShape(sphereShape);
-	player->SetCollider(sphereShape);
+	//reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(PLAYER_RADIUS * 0.85f);
+	reactphysics3d::CapsuleShape* capsuleShape = gameWorld->GetPhysicsCommon().createCapsuleShape(PLAYER_RADIUS, PLAYER_HEIGHT);
+	player->SetCollisionShape(capsuleShape);
+	player->SetCollider(capsuleShape);
 	player->SetColliderLayer(ToonCollisionLayer::Character);
 
 	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
@@ -316,7 +319,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	gameWorld->AddGameObject(player);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("boss_player"), GetShader("basic")));
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("boss_player"), GetShader("animated")));
 	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
 
 	return player;

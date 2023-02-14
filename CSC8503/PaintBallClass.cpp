@@ -94,7 +94,7 @@ void PaintBallClass::Update(float dt) {
 	}
 
 
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
+	/*if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
 	{
 		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(owningObject->GetRigidbody()->getTransform().getPosition());
 
@@ -122,7 +122,7 @@ void PaintBallClass::Update(float dt) {
 	else
 	{
 		HideTrajectory();
-	}
+	}*/
 
 	//if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
 	//{

@@ -480,11 +480,12 @@ void GameTechRenderer::RenderShadowMap() {
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 
-		BindMesh((*i).GetRenderObject()->GetMesh());
+		(*i).Draw(*this);
+		/*BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int j = 0; j < layerCount; ++j) {
 			i->Draw(j);
-		}
+		}*/
 
 		/*Jainesh - Moved to ToonGameObject.h Draw() func
 		BindMesh((*i).GetRenderObject()->GetMesh());
@@ -561,7 +562,7 @@ void GameTechRenderer::RenderCamera() {
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
 
 	for (const auto&i : activeObjects) {
-		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
+		OGLShader* sceneShader = (OGLShader*)(*i).GetRenderObject()->GetShader();
 		BindShader(sceneShader);
 
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
@@ -607,7 +608,7 @@ void GameTechRenderer::RenderCamera() {
 			int shadowTexLocation = glGetUniformLocation(sceneShader->GetProgramID(), "shadowTex");
 			glUniform1i(shadowTexLocation, 1);
 
-			activeShader = shader;
+			activeShader = sceneShader;
 		//}
 
 		/*Quaternion rot;
@@ -640,11 +641,13 @@ void GameTechRenderer::RenderCamera() {
 
 		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
 
-		BindMesh((*i).GetRenderObject()->GetMesh());
+		/*BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int j = 0; j < layerCount; ++j) {
 			i->Draw(j);
-		}
+		}*/
+
+		(*i).Draw(*this);
 
 		/*Jainesh - Moved to ToonGameObject.h Draw() func
 		BindMesh((*i).GetRenderObject()->GetMesh());
