@@ -4,6 +4,7 @@
 #include "ToonUtils.h"
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
+#include "ToonMapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 
@@ -23,8 +24,10 @@ NCL::CSC8503::ToonGame::ToonGame()
 	
 	followCamera = new ToonFollowCamera(*player);
 	minimapCamera = new ToonMinimapCamera(*player);
+	mapCamera = new ToonMapCamera();
 	world->SetMainCamera(followCamera);
 	world->SetMinimapCamera(minimapCamera);
+	world->SetMapCamera(mapCamera);
 
 	accumulator = 0.0f;
 	showCursor = false;
@@ -51,6 +54,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	player->Update(dt);
 
 	renderer->Update(dt);
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) {
+		renderer->RetrieveAtomicValues();
+	}
 
 	accumulator += dt;
 	while (accumulator >= timeStep)

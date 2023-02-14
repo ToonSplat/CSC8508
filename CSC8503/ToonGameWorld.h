@@ -66,6 +66,11 @@ namespace NCL
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
+			
+			Camera* GetMapCamera() const { return mapCamera; }
+			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
+
+
 
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
@@ -82,6 +87,7 @@ namespace NCL
 		protected:
 			Camera* followCamera;
 			Camera* minimapCamera;
+			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
 			ToonEventListener* eventListener;

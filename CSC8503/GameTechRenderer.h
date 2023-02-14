@@ -14,6 +14,7 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class GameTechRenderer : public OGLRenderer	{
+		#define ATOMIC_COUNT 5
 		public:
 			GameTechRenderer(ToonGameWorld& world);			
 			~GameTechRenderer();
@@ -24,7 +25,7 @@ namespace NCL {
 
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
-
+			void RetrieveAtomicValues();
 		protected:
 
 			void SetupStuffs();
@@ -32,16 +33,21 @@ namespace NCL {
 			void NewRenderLines();
 			void NewRenderText();
 
+
 			void RenderFrame()	override;
 
 			void PresentScene();
 
-			void DrawMinimapToScreen(int modelLocation);
+			void PresentGameScene();
+
+			void PresentMinimap(int modelLocation);
 
 			void DrawMinimap();
 			void DrawScoreBar();
 
 			void CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels);
+
+			void DrawMap();
 
 			void DrawMainScene();
 
@@ -53,9 +59,9 @@ namespace NCL {
 			void BuildObjectList();
 			void SortObjectList();
 			void RenderShadowMap();
-			void RenderCamera();
-			void RenderMinimap();
-			void PassImpactPointDetails(const NCL::CSC8503::ToonRenderObject* const& i, int impactPointCountLocation, int& impactPointsLocation, NCL::Rendering::OGLShader* shader);
+
+			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
+			void PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader);
 
 			void RenderSkybox();
 
@@ -69,9 +75,11 @@ namespace NCL {
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
-			OGLShader* textureShader;
-			OGLShader* sceneShader;
 			OGLShader* scoreBarShader;
+			OGLShader*  mapShader;
+			OGLShader*  textureShader;
+			OGLShader*  sceneShader;
+
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -115,9 +123,24 @@ namespace NCL {
 			GLuint minimapDepthTexture;
 			void GenerateMinimapFBO(int width, int height);
 
+			GLuint mapFBO;
+			GLuint mapColourTexture;
+			GLuint mapScoreTexture;
+			GLuint mapDepthTexture;
+			void GenerateMapFBO(int width, int height);
+
+			GLuint atomicsBuffer[3];
+			void GenerateAtomicBuffer();
+			void ResetAtomicBuffer();
+			
+			GLuint teamPixelCount[ATOMIC_COUNT - 1];
+			GLuint totalPixelCount;
+			GLuint maxPixelCount;
+
 			OGLMesh* fullScreenQuad;
 			OGLMesh* minimapQuad;
 			OGLMesh* minimapStencilQuad;
+
 			OGLMesh* scoreQuad;
 
 			float team1Percentage;
@@ -130,6 +153,13 @@ namespace NCL {
 			Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
 			Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
 			Vector3 team4Colour = Vector3(0.98, 0, 0.79);
+
+
+			int currentAtomicCPU;
+			int currentAtomicGPU;
+			int curretAtomicReset;
+
+			
 		};
 	}
 }
