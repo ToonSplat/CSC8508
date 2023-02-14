@@ -155,9 +155,9 @@ namespace NCL {
 			Vector3 team4Colour = Vector3(0.98, 0, 0.79);
 
 
-			int currentAtomicCPU;
-			int currentAtomicGPU;
-			int curretAtomicReset;
+			GLuint currentAtomicCPU;
+			GLuint currentAtomicGPU;
+			GLuint curretAtomicReset;
 
 			
 		};

@@ -387,7 +387,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
 	curretAtomicReset = ((curretAtomicReset + 1) % 3);
 	
-	RetrieveAtomicValues();
+	
 
 
 	glDisable(GL_BLEND);
@@ -438,7 +438,7 @@ void GameTechRenderer::PresentScene()
 	PresentGameScene();
 	
 	PresentMinimap(modelLocation);
-
+	DrawScoreBar();
 	
 	
 }
@@ -450,15 +450,13 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-	DrawMinimapToScreen(modelLocation);
-	DrawScoreBar();
-	
+
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	CalculatePercentages(100, 25, 50, 15, 10);
+	RetrieveAtomicValues();
 
 	
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
@@ -518,7 +516,7 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glStencilFunc(GL_EQUAL, 2, ~0);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-
+	glDisable(GL_DEPTH_TEST);
 	BindMesh(minimapQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -639,10 +637,8 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			PassImpactPointDetails(paintedObject, shader);
 		}
 		if (shader == mapShader) {
-			glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, 3, "123");
 			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
 			glUniform1i(atomicLocation, currentAtomicGPU);
-			glPopDebugGroup();
 		}
 		
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
@@ -859,17 +855,14 @@ void GameTechRenderer::RetrieveAtomicValues()
 
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	totalPixelCount = pixelCount[0];
-	std::cout << "total pixel count: " << totalPixelCount << std::endl;
 	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
 	{
 		teamPixelCount[i - 1] = pixelCount[i];
-		std::cout << "Team " << i << " pixel count: " << teamPixelCount[i - 1] << std::endl;
 	}
 	
-	ResetAtomicBuffer();
-	//glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
+	CalculatePercentages(totalPixelCount, teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
 
-	
+	ResetAtomicBuffer();
 }
 
 void GameTechRenderer::ResetAtomicBuffer()
