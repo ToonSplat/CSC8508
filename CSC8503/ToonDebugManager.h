@@ -34,9 +34,9 @@ namespace NCL
 
 			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem) + "/" + std::to_string(totalVirtualMem); }
 			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram); }
-			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem) + "/" + std::to_string(totalPhysMem); }
+			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem) + "/" + std::to_string(totalPhysMem); } // Convert from byte to mb
 			string GetPhysicalUsgaebyProgram() { return std::to_string(physMemUsedByProgram); }
-			string GetFrameTimeTaken() { return std::to_string(trunc(frameTimeTaken)) + " microseconds"; }
+			string GetFrameTimeTaken() { return std::to_string(trunc(frameTimeTaken)) + " microseconds"; } // Remove .00000 after number
 			string GetPhysicsTimeTaken() { return std::to_string(trunc(physicsTimeTaken)) + " microseconds"; }
 			string GetGraphicsTimnTaken() { return std::to_string(trunc(graphicsTimeTaken)) + " microseconds"; }
 			
