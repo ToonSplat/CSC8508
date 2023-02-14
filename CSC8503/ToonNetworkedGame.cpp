@@ -76,7 +76,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 30.0f; //60hz server/client update
+		timeToNextPacket += 1.0f / 60.0f; //60hz server/client update
 	}
 
 	if (thisServer) {
@@ -103,8 +103,7 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 		packetsToSnapshot = 5;
 	}
 	else {
-		//BroadcastSnapshot(true); Not handling Deltas yet
-		BroadcastSnapshot(false);
+		BroadcastSnapshot(true);
 	}
 }
 
@@ -122,9 +121,16 @@ void ToonNetworkedGame::UpdateAsClient(float dt) {
 }
 
 void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
+	int minID = INT_MAX;
+
+	for (auto i : stateIDs) {
+		minID = min(minID, i.second);
+	}
+
+
 	for (auto& object : networkObjects) {
 		GamePacket* newPacket = nullptr;
-		if (object->WritePacket(&newPacket, deltaFrame, 0)) {
+		if (object->WritePacket(&newPacket, deltaFrame, minID)) {
 			thisServer->SendGlobalPacket(*newPacket);
 			delete newPacket;
 		}
@@ -157,16 +163,14 @@ void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 }
 
 void ToonNetworkedGame::UpdateMinimumState() {
-	////Periodically remove old data from the server
-	//int minID = INT_MAX;
-	//int maxID = 0; //we could use this to see if a player is lagging behind?
+	//Periodically remove old data from the server
+	int minID = INT_MAX;
 
-	//for (auto i : stateIDs) {
-	//	minID = min(minID, i.second);
-	//	maxID = max(maxID, i.second);
-	//}
-	//if (minID = INT_MAX)
-	//	minID = myState - 10;
+	for (auto i : stateIDs) 
+		minID = min(minID, i.second);
+	
+	if (minID == INT_MAX)
+		minID = myState - 10;
 	////every client has acknowledged reaching at least state minID
 	////so we can get rid of any old states!
 	//std::vector<GameObject*>::const_iterator first;
@@ -256,7 +260,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else if (type == Client_Update) {
 		ClientPacket* realPacket = (ClientPacket*)payload;
 		int receivedID = realPacket->playerID;
-		//std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
+		std::cout << "Recieved message Client Update, adjusting their controls, they are player ID" << receivedID << " and in State " << realPacket->lastID << std::endl;
 		if (receivedID <= 0) {
 			//std::cout << "The client doesnt seem to have their ID/goat yet, ignoring\n";
 			return;
@@ -276,6 +280,15 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		FullPacket* realPacket = (FullPacket*)payload;
 		std::cout << "Recieved FullPacket for object " << realPacket->objectID << " at object state " << realPacket->fullState.stateID << std::endl;
 		myState = max(myState, realPacket->fullState.stateID);
+		for (auto i : networkObjects)
+			if (i->GetNetworkID() == realPacket->objectID) {
+				i->ReadPacket(*realPacket);
+				break;
+			}
+	}
+	else if (type == Delta_State) {
+		DeltaPacket* realPacket = (DeltaPacket*)payload;
+		std::cout << "Recieved DeltaPacket for object " << realPacket->objectID << " at object state " << realPacket->fullID << std::endl;
 		for (auto i : networkObjects)
 			if (i->GetNetworkID() == realPacket->objectID) {
 				i->ReadPacket(*realPacket);

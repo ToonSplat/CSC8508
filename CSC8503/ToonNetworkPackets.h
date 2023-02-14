@@ -20,8 +20,8 @@ namespace NCL::CSC8503 {
 		int		objectID = -1;
 		short	pos[3];
 		short	orientation[4];
-		//char	vel[3];
-		//char	angVel[3];
+		short	linVel[3];
+		short	angVel[3];
 
 		DeltaPacket() {
 			type = Delta_State;
