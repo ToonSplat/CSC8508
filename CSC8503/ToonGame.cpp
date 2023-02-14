@@ -102,5 +102,5 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 
 	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
 	controls->shooting = Window::GetMouse()->ButtonHeld(MouseButtons::LEFT);
-	controls->jumping = Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
+	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }

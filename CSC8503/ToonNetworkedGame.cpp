@@ -76,7 +76,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		else if (thisClient) {
 			UpdateAsClient(dt);
 		}
-		timeToNextPacket += 1.0f / 20.0f; //20hz server/client update
+		timeToNextPacket += 1.0f / 60.0f; //60hz server/client update
 	}
 
 	if (thisServer) {
@@ -84,6 +84,10 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			PlayerControl* playersControl = playerControls.find(player.first)->second;
 			player.second->MovementUpdate(dt, playersControl);
 		}
+	}
+	else {
+		if(player)
+			UpdateControls(playerControl);
 	}
 
 	ToonGame::UpdateGame(dt);
@@ -100,7 +104,7 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 	}
 	else {
 		//BroadcastSnapshot(true); Not handling Deltas yet
-		BroadcastSnapshot(true);
+		BroadcastSnapshot(false);
 	}
 }
 
@@ -108,14 +112,13 @@ void ToonNetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
 
 	if (!player) return;
-	
-	UpdateControls(playerControl);
 
 	ClientPacket newPacket;
 	newPacket.playerID = myID;
 	newPacket.lastID = myState;
 	newPacket.controls = *playerControl;
 	thisClient->SendPacket(newPacket);
+	playerControl->jumping = false;
 }
 
 void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
