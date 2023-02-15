@@ -6,7 +6,7 @@ namespace NCL {
 	namespace CSC8503 {
 		class PaintableObject : public ToonGameObject {
 		public:
-			PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World);
+			PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld);
 			~PaintableObject(void) = default;
 
 			void Update(float dt) override;

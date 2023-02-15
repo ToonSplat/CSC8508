@@ -44,15 +44,15 @@ bool GameServer::SendGlobalPacket(int msgID) {
 	return SendGlobalPacket(packet);
 }
 
-bool GameServer::SendGlobalPacket(GamePacket& packet) {
-	ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), 0);
+bool GameServer::SendGlobalPacket(GamePacket& packet, bool reliable) {
+	ENetPacket* dataPacket = enet_packet_create(&packet, packet.GetTotalSize(), (reliable ? ENET_PACKET_FLAG_RELIABLE : 0));
 	enet_host_broadcast(netHandle, 0, dataPacket);
 	return true;
 }
 
-bool GameServer::SendPacketToClient(GamePacket& payload, int playerID) {
+bool GameServer::SendPacketToClient(GamePacket& payload, int playerID, bool reliable) {
 	ENetPeer* p = playerMap.find(playerID)->second;
-	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), 0);
+	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), (reliable ? ENET_PACKET_FLAG_RELIABLE : 0));
 	enet_peer_send(p, 0, dataPacket);
 	return true;
 }
@@ -71,7 +71,7 @@ void GameServer::UpdateServer() {
 			clientCount++;
 			playerMap.emplace(clientCount, p);
 			ConnectPacket returnPacket(clientCount, true);
-			SendPacketToClient(returnPacket, clientCount);
+			SendPacketToClient(returnPacket, clientCount, true);
 			//std::cout << "Sent to " << p << " that they are client " << clientCount << std::endl;
 			ConnectPacket packet(clientCount, false);
 			ProcessPacket(&packet);

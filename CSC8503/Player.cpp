@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team) : ToonGameObject(RP3D_World), team(team)
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : ToonGameObject(RP3D_World, gameWorld), team(team)
 {
 	team->AddPlayer();
 	isAiming = false;
@@ -20,13 +20,13 @@ Player::~Player()
 	delete team;
 }
 
-void Player::Update(float dt)
+bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    weapon.Update(dt);
+    return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
-	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, controls->direction[1] / 1000.0f, controls->direction[2] / 1000.0f);
+	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 10000.0f, controls->direction[1] / 10000.0f, controls->direction[2] / 10000.0f);
 	linearMovement.normalize();
 
 	isMoving = linearMovement.length() >= 0.1f;

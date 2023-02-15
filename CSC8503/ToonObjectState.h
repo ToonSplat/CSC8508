@@ -14,11 +14,11 @@ namespace NCL {
 
 			// TODO: Replace with shorts, Vecs/Quats use floating points and are big!
 
-			reactphysics3d::Vector3		position;
-			reactphysics3d::Quaternion	orientation;
+			int	position[3];
+			int	orientation[4];
 
-			reactphysics3d::Vector3		linVelocity;
-			reactphysics3d::Vector3		angVelocity;
+			int	linVelocity[3];
+			int	angVelocity[3];
 			int							stateID;
 		};
 	}

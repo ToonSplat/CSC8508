@@ -28,6 +28,9 @@ namespace NCL {
 			void ServerStartLevel();
 			void StartLevel();
 
+			bool IsServer() { return thisServer; }
+			bool IsClient() { return thisClient; }
+
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
 		protected:

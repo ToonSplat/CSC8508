@@ -18,10 +18,10 @@ namespace NCL::CSC8503 {
 	struct DeltaPacket : public GamePacket {
 		int		fullID = -1;
 		int		objectID = -1;
-		char	pos[3];
-		char	orientation[4];
-		//char	vel[3];
-		//char	angVel[3];
+		short	pos[3];
+		short	orientation[4];
+		short	linVel[3];
+		short	angVel[3];
 
 		DeltaPacket() {
 			type = Delta_State;
@@ -37,6 +37,17 @@ namespace NCL::CSC8503 {
 		ClientPacket() {
 			type = Client_Update;
 			size = sizeof(ClientPacket) - sizeof(GamePacket);
+		}
+	};
+
+	struct ShootPacket : public GamePacket {
+		int		playerID;
+		int		position[3];
+		int		orientation[3];
+
+		ShootPacket() {
+			type = Shoot;
+			size = sizeof(ShootPacket) - sizeof(GamePacket);
 		}
 	};
 }

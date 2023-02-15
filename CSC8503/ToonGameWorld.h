@@ -14,6 +14,14 @@ namespace NCL
 		class PaintBallProjectile;
 		class PaintableObject;
 		class Team;
+
+		enum NetworkingStatus
+		{
+			Offline = 0,
+			Server = 1,
+			Client = 2
+		};
+
 		typedef std::function<void(ToonGameObject*)> ToonGameObjectFunc;
 
 		class ToonGameWorld
@@ -62,6 +70,9 @@ namespace NCL
 
 			Team* GetTeamLeastPlayers();
 
+			NetworkingStatus GetNetworkStatus() const { return networkStatus; }
+			void SetNetworkStatus(NetworkingStatus status) { networkStatus = status;; }
+
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
 
@@ -80,11 +91,12 @@ namespace NCL
 
 			std::set<Team*> teams;
 
+			NetworkingStatus networkStatus;
+
 			int		worldIDCounter;
 			int		worldStateCounter;
 
 		private:
-			static ToonGameWorld* instance;
 			bool showCursor;
 		};
 	}

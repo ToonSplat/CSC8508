@@ -91,9 +91,13 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-		return PushdownResult::NoChange;
+		m_Game = new ToonNetworkedGame(m_Renderer);
+		*newState = m_Game;
+		break;
 	case LAUNCHASCLIENT:
-		return PushdownResult::NoChange;
+		m_Game = new ToonNetworkedGame(m_Renderer, 127, 0, 0, 1);
+		*newState = m_Game;
+		break;
 	case SETSERVERIP:
 		return PushdownResult::NoChange;
 	case BACK:

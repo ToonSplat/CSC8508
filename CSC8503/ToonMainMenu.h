@@ -4,6 +4,7 @@
 #include "PushdownMachine.h"
 #include "PushdownState.h"
 #include "ToonGame.h"
+#include "ToonNetworkedGame.h"
 #include "ToonGameWorld.h"
 
 using namespace NCL;
