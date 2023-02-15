@@ -39,6 +39,8 @@ class ToonVirtualKeyboard
 		Vector4			  m_FocusColour;
 		Vector4			  m_UnfocusColour;
 		Vector2			  m_WindowSize;
+		bool			  m_IsMousePointerVisible = true;
+		Vector2			  m_MouseLastPosition	  = Vector2(0.0f, 0.0f);
 
 		struct KeyData
 		{
@@ -64,4 +66,7 @@ class ToonVirtualKeyboard
 		void InitializeIPAddressKeyboard();
 		void DrawKeyboard();
 		void DrawSingleKey(std::string keyText, Coordinates coordinate, int index);
+		void UpdateMosePointerState(bool isVisible);
+		void WakeMouseOnMovement();
+		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
 };
