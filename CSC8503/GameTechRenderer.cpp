@@ -391,7 +391,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 
 
 	glDisable(GL_BLEND);
-	//glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -816,27 +815,18 @@ void GameTechRenderer::GenerateAtomicBuffer()
 	glGenBuffers(1, &atomicsBuffer[0]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
-	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 
 	glGenBuffers(1, &atomicsBuffer[1]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
-	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	glGenBuffers(1, &atomicsBuffer[2]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
-	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
-	/*glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
-	
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
-	*/
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 	
@@ -847,9 +837,6 @@ void GameTechRenderer::GenerateAtomicBuffer()
 }
 	
 	
-
-
-
 void GameTechRenderer::RetrieveAtomicValues()
 {
 	GLuint pixelCount[ATOMIC_COUNT];
