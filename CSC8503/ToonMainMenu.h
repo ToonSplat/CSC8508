@@ -5,6 +5,7 @@
 #include "PushdownState.h"
 #include "ToonGame.h"
 #include "ToonGameWorld.h"
+#include "ToonTextInput.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -61,6 +62,8 @@ private:
 																MenuDataStruct("Back",			   MenuCoordinates(Vector2(5, 65), Vector2(80, 10)), m_NormalTextColour)
 	};
 	int							m_CurrentSelectedIndex = 0;
+
+	ToonTextInput ip;	//Test
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);

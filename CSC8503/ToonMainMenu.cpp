@@ -1,8 +1,6 @@
 #include "ToonMainMenu.h"
 
-#include "ToonTextInput.h"
-
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win) : ip(ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 10)), win->GetScreenSize()))
 {
 	m_Renderer			   = renderer;
 	m_World				   = world;
@@ -10,7 +8,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_Window			   = win;
 }
 
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win) : ip(ToonTextInput(Coordinates(Vector2(50, 20), Vector2(30, 10)), win->GetScreenSize()))
 {
 	m_Renderer				  = renderer;
 	m_mainMenuData			  = menuData;
@@ -20,7 +18,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_World					  = world;
 }
 
-ToonTextInput ip(Coordinates(Vector2(50, 40), Vector2(30, 20)));//Test
+
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
@@ -47,7 +45,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 	}
 
 	// Testing
-	Debug::DrawQuad(Vector2(50, 20), Vector2(30, 10), Debug::BLUE);
+	//Debug::DrawQuad(Vector2(50, 20), Vector2(30, 10), Debug::BLUE);
 	ip.Update();
 
 

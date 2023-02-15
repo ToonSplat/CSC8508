@@ -18,10 +18,11 @@ class ToonTextInput
 		Vector4								   m_UnfocusColour;
 		std::string							   m_InputText;
 		ToonVirtualKeyboard::KeyboardInputType m_InputType;
-
+		Vector2								   m_WindowSize;
+		ToonVirtualKeyboard*				   m_VirtualKeyboard;
 
 	public:
-		ToonTextInput(Coordinates coordinates, ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress, Vector4 focusColour = Debug::BLUE, Vector4 unfocusColour = Debug::WHITE);
+		ToonTextInput(Coordinates coordinates, Vector2 windowSize, ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress, Vector4 focusColour = Debug::BLUE, Vector4 unfocusColour = Debug::WHITE);
 		~ToonTextInput();
 		void Update();
 		void UpdatePosition(Coordinates newCoordinates);

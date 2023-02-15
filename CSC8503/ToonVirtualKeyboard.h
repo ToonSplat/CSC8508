@@ -9,7 +9,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 #define KEY_BUTTON_DEFAULT_SIZE 5.0f
-#define BACKSPACE_BUTTON_WIDTH  8.0f
+#define BACKSPACE_BUTTON_WIDTH  20.0f
 
 //TODO: Use this in Main Menu screen
 struct Coordinates
@@ -38,6 +38,7 @@ class ToonVirtualKeyboard
 		int				  m_CurrentSelectedKeyIndex;
 		Vector4			  m_FocusColour;
 		Vector4			  m_UnfocusColour;
+		Vector2			  m_WindowSize;
 
 		struct KeyData
 		{
@@ -50,7 +51,7 @@ class ToonVirtualKeyboard
 		std::vector<KeyData> keys;
 
 	public:
-		ToonVirtualKeyboard(Coordinates coordinates, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
+		ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
 		std::string GetUserInputText();
 		void UpdateAndHandleInputEvents();
 
