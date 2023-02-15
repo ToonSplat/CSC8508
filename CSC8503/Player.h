@@ -19,7 +19,8 @@ public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 
-	void Update(float dt) override;
+	void Update(float dt) {}
+	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }

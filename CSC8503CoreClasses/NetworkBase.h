@@ -15,6 +15,8 @@ enum BasicNetworkMessages {
 	Client_Update,
 	Player_Connected,
 	Player_Disconnected,
+	Shoot,
+	Impact,
 	Shutdown
 };
 

@@ -1,4 +1,3 @@
-#include "GameWorld.h"
 #include "Camera.h"
 #include "ToonGame.h"
 #include "ToonUtils.h"
@@ -21,6 +20,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	if (offline) {
+		world->SetNetworkStatus(NetworkingStatus::Offline);
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
 		player->SetWeapon(baseWeapon);
@@ -58,16 +58,14 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 	if (offline) {
 		UpdateControls(playerControl);
-	}
-	if (player) {
-		player->Update(dt); 
-		if (offline) {
+		if (player) {
 			player->MovementUpdate(dt, playerControl);
+			player->WeaponUpdate(dt, playerControl);
 		}
-		// This next line is an abomination and should be refactored by Ryan
-		else {
-			player->SetAiming(playerControl->aiming);
-		}
+	}
+	// This next line is an abomination and should be refactored by Ryan
+	else if(player) {
+		player->SetAiming(playerControl->aiming);
 	}
 
 	accumulator += dt;
@@ -101,6 +99,6 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();
 
 	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
-	controls->shooting = Window::GetMouse()->ButtonHeld(MouseButtons::LEFT);
+	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
 	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }

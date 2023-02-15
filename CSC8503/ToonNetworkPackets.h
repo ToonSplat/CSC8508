@@ -39,4 +39,15 @@ namespace NCL::CSC8503 {
 			size = sizeof(ClientPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct ShootPacket : public GamePacket {
+		int		playerID;
+		int		position[3];
+		int		orientation[3];
+
+		ShootPacket() {
+			type = Shoot;
+			size = sizeof(ShootPacket) - sizeof(GamePacket);
+		}
+	};
 }

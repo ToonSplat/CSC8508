@@ -20,9 +20,9 @@ Player::~Player()
 	delete team;
 }
 
-void Player::Update(float dt)
+bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    weapon.Update(dt);
+    return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
