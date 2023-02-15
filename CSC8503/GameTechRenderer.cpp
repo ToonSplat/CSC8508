@@ -491,7 +491,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glDisable(GL_BLEND);
 }
 
-void NCL::CSC8503::GameTechRenderer::CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels) {
+void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
 	team1Percentage = (float)team1Pixels / (float)totalPixels;
 	team2Percentage = (float)team2Pixels / (float)totalPixels;
 	team3Percentage = (float)team3Pixels / (float)totalPixels;
@@ -816,17 +816,20 @@ void GameTechRenderer::GenerateAtomicBuffer()
 	glGenBuffers(1, &atomicsBuffer[0]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 
 	glGenBuffers(1, &atomicsBuffer[1]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	glGenBuffers(1, &atomicsBuffer[2]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	//glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	/*glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer);
 	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);

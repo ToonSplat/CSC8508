@@ -45,7 +45,7 @@ namespace NCL {
 			void DrawMinimap();
 			void DrawScoreBar();
 
-			void CalculatePercentages(int totalPixels, int team1Pixels, int team2Pixels, int team3Pixels, int team4Pixels);
+			void CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
 
 			void DrawMap();
 
