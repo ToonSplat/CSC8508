@@ -17,7 +17,7 @@ void PaintableObject::Update(float dt) {
 void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.
 	int impactCount = impactPoints.size();
 
-	if (impactCount < 1000) { // change max value from hardcoded
+	if (impactCount < 350) { // change max value from hardcoded
 		impactPoints.push_back(point);
 	}
 	else {

@@ -10,7 +10,7 @@ struct ImpactPoint{
 	vec3 colour;
 	float radius;
 };
-#define MAX_IMPACT_POINTS 1000
+#define MAX_IMPACT_POINTS 300
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
