@@ -316,7 +316,10 @@ void GameTechRenderer::RenderFrame() {
 	if (!gameWorld) return; // Safety Check
 
 	DrawMainScene();
-	DrawMap();
+	if (gameWorld->GetMapCamera()) {
+		DrawMap();
+
+	}
 	if (gameWorld->GetMinimapCamera())
 	{
 		
@@ -490,7 +493,11 @@ void GameTechRenderer::PresentScene()
 	PresentGameScene();
 	
 	PresentMinimap(modelLocation);
-	DrawScoreBar();
+
+	if (gameWorld->GetMapCamera()) {
+		DrawScoreBar();
+
+	}
 	
 	
 }
