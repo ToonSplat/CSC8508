@@ -66,6 +66,5 @@ void main(void)
 	
 	
 	fragColor = albedo;
-	
 
 }

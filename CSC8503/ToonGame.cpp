@@ -3,6 +3,7 @@
 #include "ToonUtils.h"
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
+#include "ToonMapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"

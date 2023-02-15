@@ -209,6 +209,8 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 {
 	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 
+	if (isFloor) cube->SetAsFloor();
+
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(scale * 2.0f);
@@ -235,6 +237,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 
 	gameWorld->AddGameObject(cube);
 	gameWorld->AddPaintableObject(cube);
+
 
 	return cube;
 }
@@ -268,7 +271,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3&
 	return sphere;
 }
 
-void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, Vector4 minimapColour)
+void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, Vector4 minimapColour, bool isFloor)
 {
 	SetSelectedAxes(axes);
 	for (int x = 0; x < gridSize.x && (gridSize.x > 0); x++)
@@ -282,7 +285,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 				newPos.y = (IsYSelected() ? y * gridSpacing * cubeScale.y : 0.0f) + gridPosition.y;
 				newPos.z = (IsZSelected() ? z * gridSpacing * cubeScale.z : 0.0f) + gridPosition.z;
 
-				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, minimapColour, 0.0f);
+				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, minimapColour, isFloor, 0.0f);
 			}
 		}
 	}
