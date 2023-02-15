@@ -24,7 +24,7 @@ namespace NCL {
 			TextureBase*	LoadTexture(const string& name);
 			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
 
-			void SetWorld(ToonGameWorld* world) { gameWorld = world; }
+			void SetWorld(ToonGameWorld* world);
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
 			void RetrieveAtomicValues();
@@ -151,10 +151,8 @@ namespace NCL {
 			float team4Percentage;
 
 			Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
-			Vector3 team1Colour = Vector3(0.0, 0.0, 0.9);
-			Vector3 team2Colour = Vector3(0.0, 0.9, 0.0);
-			Vector3 team3Colour = Vector3(0.9, 0.0, 0.0);
-			Vector3 team4Colour = Vector3(0.98, 0, 0.79);
+
+			Vector3 teamColours[ATOMIC_COUNT - 1];
 
 
 			GLuint currentAtomicCPU;

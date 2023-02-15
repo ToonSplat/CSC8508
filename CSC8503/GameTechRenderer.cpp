@@ -107,6 +107,9 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 
 	SetDebugStringBufferSizes(10000);
 	SetDebugLineBufferSizes(1000);
+
+
+
 }
 
 void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
@@ -314,7 +317,7 @@ void GameTechRenderer::RenderFrame() {
 
 	DrawMainScene();
 	DrawMap();
-	if (minimapEnabled)
+	if (gameWorld->GetMinimapCamera())
 	{
 		
 		DrawMinimap();
@@ -515,10 +518,10 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
 
 	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, team1Colour.array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, team2Colour.array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, team3Colour.array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, team4Colour.array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 	
 	Matrix4 identityMatrix = Matrix4();
 
@@ -691,8 +694,14 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			PassImpactPointDetails(paintedObject, shader);
 		}
 		if (shader == mapShader) {
+			// MAKE COLOUR WORK
 			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
 			glUniform1i(atomicLocation, currentAtomicGPU);
+
+			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 		}
 		
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
@@ -934,6 +943,18 @@ TextureBase* GameTechRenderer::LoadTexture(const string& name) {
 
 ShaderBase* GameTechRenderer::LoadShader(const string& vertex, const string& fragment) {
 	return new OGLShader(vertex, fragment);
+}
+
+void GameTechRenderer::SetWorld(ToonGameWorld* world)
+{
+	gameWorld = world;
+	std::set<Team*> teams = gameWorld->GetTeams();
+
+	int i = 0;
+	for (auto team : teams) {
+		teamColours[i] = team->getTeamColour();
+		i++;
+	}
 }
 
 void GameTechRenderer::SetDebugStringBufferSizes(size_t newVertCount) {

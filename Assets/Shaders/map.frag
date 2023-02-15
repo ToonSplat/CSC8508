@@ -10,13 +10,18 @@ struct ImpactPoint{
 	vec3 colour;
 	float radius;
 };
-#define MAX_IMPACT_POINTS 10
+#define MAX_IMPACT_POINTS 1000
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
+
+uniform vec3 team1Colour;
+uniform vec3 team2Colour;
+uniform vec3 team3Colour;
+uniform vec3 team4Colour;
 
 uniform bool hasTexture;
 
@@ -84,17 +89,28 @@ void main(void)
 	if (currentAtomicTarget == 0)
 	{
 		atomicCounterIncrement(scoreCount1[0]);
-		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount1[1]);
+		if (albedo.rgb == team1Colour) atomicCounterIncrement(scoreCount1[1]);
+		if (albedo.rgb == team2Colour) atomicCounterIncrement(scoreCount1[2]);
+		if (albedo.rgb == team3Colour) atomicCounterIncrement(scoreCount1[3]);
+		if (albedo.rgb == team4Colour) atomicCounterIncrement(scoreCount1[4]);
+
 	}
 	else if (currentAtomicTarget == 1)
 	{
 		atomicCounterIncrement(scoreCount2[0]);
-		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount2[1]);
+		if (albedo.rgb == team1Colour) atomicCounterIncrement(scoreCount2[1]);
+		if (albedo.rgb == team2Colour) atomicCounterIncrement(scoreCount2[2]);
+		if (albedo.rgb == team3Colour) atomicCounterIncrement(scoreCount2[3]);
+		if (albedo.rgb == team4Colour) atomicCounterIncrement(scoreCount2[4]);
 	}
 	else
 	{
 		atomicCounterIncrement(scoreCount3[0]);
-		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount3[1]);
+		if (albedo.rgb == team1Colour) atomicCounterIncrement(scoreCount3[1]);
+		if (albedo.rgb == team2Colour) atomicCounterIncrement(scoreCount3[2]);
+		if (albedo.rgb == team3Colour) atomicCounterIncrement(scoreCount3[3]);
+		if (albedo.rgb == team4Colour) atomicCounterIncrement(scoreCount3[4]);
+
 	}
 	
 	

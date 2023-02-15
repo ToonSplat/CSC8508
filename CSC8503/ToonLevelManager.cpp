@@ -181,8 +181,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 	Vector3 bridgeScaleX = Vector3(30.0f, 0.5f, 5.0f);
 	Vector3 bridgeScaleZ = Vector3(5.0f, 0.5f, 30.0f);
 	Vector4 bridgeColour = Vector4(0.83f, 0.34f, 0.36f, 1.0f);
-	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), bridgeColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), bridgeColour, 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), bridgeColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), bridgeColour, 0.0f, true);
 
 	Vector3 containerScaleSmall = Vector3(3.0f, 3.0f, 3.0f);
 	Vector3 containerScaleTall = Vector3(3.0f, 6.0f, 3.0f);

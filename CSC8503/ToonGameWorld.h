@@ -75,6 +75,8 @@ namespace NCL
 
 			Team* GetTeamLeastPlayers();
 
+			std::set<Team*>& GetTeams() { return teams; }
+
 			NetworkingStatus GetNetworkStatus() const { return networkStatus; }
 			void SetNetworkStatus(NetworkingStatus status) { networkStatus = status;; }
 
