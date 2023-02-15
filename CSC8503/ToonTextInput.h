@@ -26,8 +26,4 @@ class ToonTextInput
 		~ToonTextInput();
 		void Update();
 		void UpdatePosition(Coordinates newCoordinates);
-
-	private:
-		void DrawVirtualKeyboard();	//TODO: - To be drawn in a separate class.
-		void DrawKeyboardKey(Coordinates coordinate, std::string key, Vector4 keyColour);
 };
