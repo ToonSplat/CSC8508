@@ -15,8 +15,8 @@ namespace NCL {
 			void SetGameWorld(GameWorld& g);
 
 			bool SendGlobalPacket(int msgID);
-			bool SendGlobalPacket(GamePacket& packet);
-			bool SendPacketToClient(GamePacket& payload, int playerID);
+			bool SendGlobalPacket(GamePacket& packet, bool reliable = false);
+			bool SendPacketToClient(GamePacket& payload, int playerID, bool reliable = false);
 
 			int GetPlayerCount() const { return clientCount; } 
 

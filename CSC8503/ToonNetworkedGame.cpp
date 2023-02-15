@@ -102,8 +102,8 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 				newPacket.orientation[0] = orientation.x * 1000;
 				newPacket.orientation[1] = orientation.y * 1000;
 				newPacket.orientation[2] = orientation.z * 1000;
-				//std::cout << "I sent a shot. Hopefully it arrives!\n";
-				thisServer->SendGlobalPacket(newPacket);
+				std::cout << "I sent a shot. Hopefully it arrives!\n";
+				thisServer->SendGlobalPacket(newPacket, true);
 			}
 		}
 	}
@@ -138,8 +138,8 @@ void ToonNetworkedGame::UpdateAsClient(float dt) {
 	newPacket.playerID = myID;
 	newPacket.lastID = myState;
 	newPacket.controls = *playerControl;
-	//if (newPacket.controls.shooting) std::cout << "I sent that I am shooting. Hopefully it arrives!\n";
-	thisClient->SendPacket(newPacket);
+	if (newPacket.controls.shooting) std::cout << "I sent that I am shooting. Hopefully it arrives!\n";
+	thisClient->SendPacket(newPacket, true);
 	playerControl->jumping = false;
 	playerControl->shooting = false;
 }
@@ -234,12 +234,12 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		int receivedID = realPacket->playerID;
 		if (realPacket->you) {
 			myID = receivedID;
-			//std::cout << "Recieved my ID, I am" << myID << std::endl;
+			std::cout << "Recieved my ID, I am" << myID << std::endl;
 			return;
 		}
 
 
-		//std::cout << "Recieved message Player Connected, Spawning their player, they are player ID" << receivedID << std::endl;
+		std::cout << "Recieved message Player Connected, Spawning their player, they are player ID" << receivedID << std::endl;
 		Player* newPlayer = SpawnPlayer(receivedID);
 		if (myID == receivedID) {
 			player = newPlayer;
@@ -249,13 +249,13 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		}
 		if (thisServer) {
 			ConnectPacket outPacket(receivedID, false);
-			thisServer->SendGlobalPacket(outPacket);
+			thisServer->SendGlobalPacket(outPacket, true);
 			stateIDs.emplace(receivedID, 0);
 			playerControls.emplace(receivedID, new PlayerControl());
 			for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
 				if ((*i).first != receivedID) {
 					ConnectPacket goatPacket((*i).first, false);
-					thisServer->SendPacketToClient(goatPacket, receivedID);
+					thisServer->SendPacketToClient(goatPacket, receivedID, true);
 				}
 			}
 		}
@@ -278,7 +278,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			playerControls.erase(receivedID);
 			stateIDs.erase(receivedID);
 			DisconnectPacket outPacket(receivedID);
-			thisServer->SendGlobalPacket(outPacket);
+			thisServer->SendGlobalPacket(outPacket, true);
 		}
 	}
 	else if (type == Client_Update) {

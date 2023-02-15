@@ -38,7 +38,7 @@ void GameClient::UpdateClient() {
 	}
 }
 
-void GameClient::SendPacket(GamePacket& payload) {
-	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), 0);
+void GameClient::SendPacket(GamePacket& payload, bool reliable) {
+	ENetPacket* dataPacket = enet_packet_create(&payload, payload.GetTotalSize(), (reliable ? ENET_PACKET_FLAG_RELIABLE : 0));
 	enet_peer_send(netPeer, 0, dataPacket);
 }
