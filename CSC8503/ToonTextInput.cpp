@@ -1,6 +1,6 @@
 #include "ToonTextInput.h"
 
-ToonTextInput::ToonTextInput(Coordinates coordinates, Vector4 focusColour, Vector4 unfocusColour) : m_Coordinates(coordinates), m_IsFocused(true), m_FocusColour(focusColour), m_UnfocusColour(unfocusColour), m_InputText("") {}
+ToonTextInput::ToonTextInput(Coordinates coordinates, ToonVirtualKeyboard::KeyboardInputType inputType, Vector4 focusColour, Vector4 unfocusColour) : m_Coordinates(coordinates), m_InputType(inputType), m_IsFocused(true), m_FocusColour(focusColour), m_UnfocusColour(unfocusColour), m_InputText("") {}
 
 ToonTextInput::~ToonTextInput()
 {

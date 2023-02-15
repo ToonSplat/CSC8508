@@ -1,23 +1,23 @@
 #include "ToonMainMenu.h"
 
-#include "ToonTextInput.h"	//For Testing
+#include "ToonTextInput.h"
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
-	m_Renderer = renderer;
-	m_World = world;
+	m_Renderer			   = renderer;
+	m_World				   = world;
 	m_CurrentSelectedIndex = 0;
-	m_Window = win;
+	m_Window			   = win;
 }
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
 {
-	m_Renderer = renderer;
-	m_mainMenuData = menuData;
+	m_Renderer				  = renderer;
+	m_mainMenuData			  = menuData;
 	m_BaseCurrentSelectdIndex = baseCurrentSelectedIndex;
-	m_CurrentSelectedIndex = 0;
-	m_Window = win;
-	m_World = world;
+	m_CurrentSelectedIndex	  = 0;
+	m_Window				  = win;
+	m_World					  = world;
 }
 
 ToonTextInput ip(Coordinates(Vector2(50, 40), Vector2(30, 20)));//Test
@@ -47,7 +47,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 	}
 
 	// Testing
-	Debug::DrawQuad(Vector2(50, 20), Vector2(30, 20), Debug::BLUE);
+	Debug::DrawQuad(Vector2(50, 20), Vector2(30, 10), Debug::BLUE);
 	ip.Update();
 
 

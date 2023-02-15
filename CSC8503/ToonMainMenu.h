@@ -37,16 +37,16 @@ class ToonMainMenu : public PushdownState
 	};
 
 private:
-	Vector2						m_MouseLastPosition = Vector2(0.0f, 0.0f);
-	Window* m_Window = NULL;
-	bool						m_IsMousePointerVisible = true;
+	Vector2						m_MouseLastPosition		  = Vector2(0.0f, 0.0f);
+	Window*						m_Window				  = NULL;
+	bool						m_IsMousePointerVisible   = true;
 	int							m_BaseCurrentSelectdIndex = 0;
-	GameTechRenderer* m_Renderer;
-	ToonGame* m_Game = NULL;
-	ToonGameWorld* m_World;
-	ToonMainMenu* m_SubMenuScreenObject = NULL;
-	const Vector4				m_HoverColour = Debug::GREEN;
-	const Vector4				m_NormalTextColour = Debug::BLUE;
+	GameTechRenderer*			m_Renderer;
+	ToonGame*					m_Game					  = NULL;
+	ToonGameWorld*				m_World;
+	ToonMainMenu*				m_SubMenuScreenObject	  = NULL;
+	const Vector4				m_HoverColour			  = Debug::GREEN;
+	const Vector4				m_NormalTextColour		  = Debug::BLUE;
 	std::vector<MenuDataStruct> m_mainMenuData = {
 																MenuDataStruct("Play",		 MenuCoordinates(Vector2(5, 30), Vector2(80, 10)), m_NormalTextColour),
 																MenuDataStruct("Multi Play", MenuCoordinates(Vector2(5, 40), Vector2(80, 10)), m_NormalTextColour),
