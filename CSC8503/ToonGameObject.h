@@ -28,6 +28,7 @@ namespace NCL::CSC8503
 		const std::string& GetName() const { return name; }
 
 		bool IsActive() const { return isActive; }
+		bool HasSkin() const { return hasSkin; }
 		void SetActive(const bool& status) { isActive = status; }
 		
 		ToonTransform& GetTransform() { return transform; }
@@ -43,7 +44,7 @@ namespace NCL::CSC8503
 		void AddRigidbody();
 		
 		reactphysics3d::Collider* GetCollider() const { return collider; };
-		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape);
+		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, reactphysics3d::Transform collisionTransform = reactphysics3d::Transform::identity());
 
 		reactphysics3d::SphereShape* GetCollisionShapeSphere() const { return collisionShapeSphere; };
 		void SetCollisionShape(reactphysics3d::SphereShape* RP3D_CollisionShape) { collisionShapeSphere = RP3D_CollisionShape; }
@@ -97,6 +98,7 @@ namespace NCL::CSC8503
 
 	protected:
 		bool isActive;
+		bool hasSkin;
 		int worldID;
 		std::string	name;
 

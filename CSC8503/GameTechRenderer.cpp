@@ -39,7 +39,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	glEnable(GL_DEPTH_TEST);
 
 	debugShader = new OGLShader("debug.vert", "debug.frag");
-	shadowShader = new OGLShader("shadow.vert", "shadow.frag");
+	shadowShader = new OGLShader("shadowSkin.vert", "shadow.frag");
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 	sceneShader = new OGLShader("scene.vert", "scene.frag");
@@ -451,6 +451,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	BindShader(shadowShader);
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
+	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
 	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(lightPosition, Vector3(0, 0, 0), Vector3(0, 1, 0));
 	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 500.0f, 1, 45.0f);
@@ -479,6 +480,7 @@ void GameTechRenderer::RenderShadowMap() {
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
+		glUniform1i(hasSkinLocation, (*i).HasSkin());
 
 		(*i).Draw(*this);
 		/*BindMesh((*i).GetRenderObject()->GetMesh());

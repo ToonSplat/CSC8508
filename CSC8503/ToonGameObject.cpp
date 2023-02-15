@@ -7,6 +7,7 @@ NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_
 {
 	worldID = -1;
 	isActive = true;
+	hasSkin = false;
 
 	rigidBody = nullptr;
 	renderObject = nullptr;
@@ -50,12 +51,12 @@ void NCL::CSC8503::ToonGameObject::AddRigidbody()
 	rigidBody = physicsWorld.createRigidBody(transform.GetR3DTransform());
 }
 
-void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape)
+void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, reactphysics3d::Transform collisionTransform)
 {
 	if (rigidBody == nullptr)
 		return;
 
-	collider = rigidBody->addCollider(RP3D_CollisionShape, reactphysics3d::Transform::identity());
+	collider = rigidBody->addCollider(RP3D_CollisionShape, collisionTransform);
 	SetColliderLayer(ToonCollisionLayer::Default);
 
 	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;

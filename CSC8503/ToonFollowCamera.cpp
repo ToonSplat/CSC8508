@@ -12,8 +12,8 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonG
 	player = (Player*)followTarget;
 
 	followOffset = Vector3(0, 2.5f, 0.0f);
-	targetOffset = Vector3(0.65f, 0.85f, 3.5f);
-	aimOffset = Vector3(0.65f, 0.85f, 2.0f);
+	targetOffset = Vector3(0.75f, 1.6f, 3.5f);
+	aimOffset = Vector3(0.75f, 1.6f, 2.0f);
 	
 	up = Vector3(0, 1, 0);
 	right = Vector3(1, 0, 0);

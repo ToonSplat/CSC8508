@@ -15,7 +15,9 @@ namespace NCL::CSC8503
 		virtual void Draw(OGLRenderer& r) override;
 
 		void SetMeshMaterial(MeshMaterial* newMaterial) { meshMaterial = newMaterial; }
-		void PlayAnim(const std::string& anim);
+		void PlayAnim(const std::string& anim, float animSpeed = 1.0f);
+
+		const std::vector<Matrix4> GetFrameMat() const { return frameMatrices; }
 
 	protected:
 		bool LoadAnim(MeshAnimation** anim, const std::string& animFile);
@@ -27,8 +29,9 @@ namespace NCL::CSC8503
 		int		nextFrame;
 		float	frameTime;
 
-		int currentAnimIndex;
+		float	currentAnimSpeed;
 		MeshAnimation* currentAnim;
+		std::vector<Matrix4> frameMatrices;
 		std::map<std::string, MeshAnimation*> meshAnims;
 	};
 }

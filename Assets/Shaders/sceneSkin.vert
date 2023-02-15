@@ -10,12 +10,11 @@ layout(location = 1) in vec4 colour;
 layout(location = 2) in vec2 texCoord;
 layout(location = 3) in vec3 normal;
 
+layout(location = 5) in vec4 jointWeights;
+layout(location = 6) in ivec4 jointIndices;
+
+uniform mat4 joints[128];
 uniform vec4 objectColour = vec4(1,1,1,1);
-
-layout(location = 4) in vec4 jointWeights;
-layout(location = 5) in ivec4 jointIndices;
-
-uniform mat4 	joints[110];
 
 //uniform mat4 	otherJoints[128];
 

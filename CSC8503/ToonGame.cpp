@@ -88,16 +88,35 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	Vector3 right = world->GetMainCamera()->GetRight();
 	Vector3 up = world->GetMainCamera()->GetUp();
 
-	Vector3 linearMovement;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W)) linearMovement += forward;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S)) linearMovement -= forward;
+	Vector3 linearMovement, animMovement;
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
+	{
+		linearMovement += forward;
+		animMovement.z = 1.0f;
+	}
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
+	{
+		linearMovement -= forward;
+		animMovement.z = -1.0f;
+	}
 
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A)) linearMovement -= right;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D)) linearMovement += right;
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
+	{
+		linearMovement -= right;
+		animMovement.x = -1.0f;
+	}
+	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
+	{
+		linearMovement += right;
+		animMovement.x = 1.0f;
+	}
 
 	controls->direction[0] = short(linearMovement.x * 1000);
 	controls->direction[1] = short(linearMovement.y * 1000);
 	controls->direction[2] = short(linearMovement.z * 1000);
+	
+	controls->animDir[0] = short(animMovement.x * 1000);
+	controls->animDir[1] = short(animMovement.z * 1000);
 
 	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
 	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();

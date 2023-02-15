@@ -307,8 +307,10 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 	//reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(PLAYER_RADIUS * 0.85f);
 	reactphysics3d::CapsuleShape* capsuleShape = gameWorld->GetPhysicsCommon().createCapsuleShape(PLAYER_RADIUS, PLAYER_HEIGHT);
+
+	reactphysics3d::Transform capsuleTransform(ToonUtils::ConvertToRP3DVector3(Vector3(0, 2.2f, 0)), reactphysics3d::Quaternion::identity());
 	player->SetCollisionShape(capsuleShape);
-	player->SetCollider(capsuleShape);
+	player->SetCollider(capsuleShape, capsuleTransform);
 	player->SetColliderLayer(ToonCollisionLayer::Character);
 
 	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;

@@ -35,6 +35,9 @@ public:
 	void SetWeapon(PaintBallClass* base);
 
 protected:
+	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
+
+protected:
 	Team* team;
 	Camera* camera;
 
