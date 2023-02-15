@@ -329,7 +329,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	BuildObjectList();
 	RenderShadowMap();
 	RenderSkybox();
-
+	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
@@ -370,7 +370,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 void NCL::CSC8503::GameTechRenderer::DrawMap()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
-
+	
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -391,7 +391,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 
 
 	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -450,6 +450,7 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 
@@ -458,7 +459,6 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 
 	RetrieveAtomicValues();
 
-	
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
@@ -507,9 +507,10 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8, -0.7, 0)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+	
 	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
-
+	
 	BindMesh(minimapStencilQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -524,6 +525,7 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_STENCIL_TEST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void GameTechRenderer::SortObjectList() {
@@ -620,7 +622,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 	int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
 	int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
 	int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
-
+	
 	
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
@@ -814,17 +816,17 @@ void GameTechRenderer::GenerateAtomicBuffer()
 	glGenBuffers(1, &atomicsBuffer[0]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 
 	glGenBuffers(1, &atomicsBuffer[1]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	
 	glGenBuffers(1, &atomicsBuffer[2]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
-	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	
 	/*glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer);
 	glBufferData(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_DRAW);
