@@ -152,10 +152,10 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 {
 	Vector3 floorScale = Vector3(30.0f, 0.5f, 30.0f);
 	Vector4 floorColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
-	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
+	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
 
 	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 30.0f);
 	Vector3 wallScaleZ = Vector3(30.0f, 20.0f, 0.5f);
@@ -181,8 +181,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 	Vector3 bridgeScaleX = Vector3(30.0f, 0.5f, 5.0f);
 	Vector3 bridgeScaleZ = Vector3(5.0f, 0.5f, 30.0f);
 	Vector4 bridgeColour = Vector4(0.83f, 0.34f, 0.36f, 1.0f);
-	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), bridgeColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), bridgeColour, 0.0f);
+	AddCubeToWorld(Vector3(80.0f, 0.0f, 0.0f), Vector3(0, 0, 0), bridgeScaleX, GetTexture("basic"), bridgeColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0.5f, 0.0f), Vector3(0, 0, 0), bridgeScaleZ, GetTexture("basic"), bridgeColour, 0.0f, true);
 
 	Vector3 containerScaleSmall = Vector3(3.0f, 3.0f, 3.0f);
 	Vector3 containerScaleTall = Vector3(3.0f, 6.0f, 3.0f);
@@ -205,9 +205,11 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 }
 
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, bool isFloor)
 {
 	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
+
+	if (isFloor) cube->SetAsFloor();
 
 	cube->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
@@ -235,6 +237,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 
 	gameWorld->AddGameObject(cube);
 	gameWorld->AddPaintableObject(cube);
+
 
 	return cube;
 }
@@ -268,7 +271,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3&
 	return sphere;
 }
 
-void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, Vector4 minimapColour)
+void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, Vector4 minimapColour, bool isFloor)
 {
 	SetSelectedAxes(axes);
 	for (int x = 0; x < gridSize.x && (gridSize.x > 0); x++)
@@ -282,7 +285,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 				newPos.y = (IsYSelected() ? y * gridSpacing * cubeScale.y : 0.0f) + gridPosition.y;
 				newPos.z = (IsZSelected() ? z * gridSpacing * cubeScale.z : 0.0f) + gridPosition.z;
 
-				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, minimapColour, 0.0f);
+				AddCubeToWorld(newPos, Vector3(0, 0, 0), cubeScale, cubeTex, minimapColour, isFloor, 0.0f);
 			}
 		}
 	}

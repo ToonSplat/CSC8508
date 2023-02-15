@@ -5,14 +5,14 @@ struct ImpactPoint{
 	vec3 colour;
 	float radius;
 };
-#define MAX_IMPACT_POINTS 10
+#define MAX_IMPACT_POINTS 1000
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
-uniform sampler2DShadow shadowTex;
+//uniform sampler2DShadow shadowTex;
 
 uniform vec3	lightPos;
 uniform float	lightRadius;
@@ -65,9 +65,9 @@ void main(void)
 {
 	float shadow = 1.0; // New !
 	
-	if( IN . shadowProj . w > 0.0) { // New !
-		shadow = textureProj ( shadowTex , IN . shadowProj ) * 0.5f;
-	}
+	//if( IN . shadowProj . w > 0.0) { // New !
+		//shadow = textureProj ( shadowTex , IN . shadowProj ) * 0.5f;
+	//}
 
 	vec3  incident = normalize ( lightPos - IN.worldPos );
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 

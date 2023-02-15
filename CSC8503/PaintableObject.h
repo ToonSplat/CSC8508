@@ -17,8 +17,12 @@ namespace NCL {
 				return &impactPoints;
 			}
 
+			void SetAsFloor() { isFloor = true; }
+			bool IsObjectTheFloor() { return isFloor; }
+
 		private:
 			std::deque<ImpactPoint> impactPoints;
+			bool isFloor;
 		};
 	}
 }

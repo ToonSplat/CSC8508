@@ -15,6 +15,8 @@ namespace NCL
 	{
 		class ToonFollowCamera;
 		class ToonMinimapCamera;
+
+		class ToonMapCamera;
 		class ToonGame : public PushdownState
 		{
 		public:

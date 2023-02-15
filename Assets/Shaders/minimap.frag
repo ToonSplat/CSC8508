@@ -5,7 +5,7 @@ struct ImpactPoint{
 	vec3 colour;
 	float radius;
 };
-#define MAX_IMPACT_POINTS 10
+#define MAX_IMPACT_POINTS 1000
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
@@ -66,6 +66,5 @@ void main(void)
 	
 	
 	fragColor = albedo;
-	
 
 }

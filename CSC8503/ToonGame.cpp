@@ -3,6 +3,7 @@
 #include "ToonUtils.h"
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
+#include "ToonMapCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
@@ -30,7 +31,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	else {
 		world->SetMainCamera(new Camera());
 	}
-
+	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
 	showCursor = false;
 }

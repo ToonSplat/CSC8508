@@ -9,6 +9,7 @@ namespace NCL {
 		public:
 			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) {
 				playerCount = 0;
+				percentageOwned = 0;
 			}
 			~Team(void) = default;
 
@@ -17,10 +18,14 @@ namespace NCL {
 			int getPlayerCount(void) const { return playerCount; }
 			string getTeamName(void) const { return teamName; }
 			Vector3 getTeamColour(void) const { return teamColour; }
+
+			void SetPercentageOwned(float newPercentage) { percentageOwned = newPercentage; }
+			float GetPercentageOwned() const { return percentageOwned; }
 		private:
 			int playerCount;
 			string teamName;
 			Vector3 teamColour;
+			float percentageOwned;
 		};
 	}
 }

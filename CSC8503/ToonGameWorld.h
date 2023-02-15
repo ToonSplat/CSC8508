@@ -62,6 +62,11 @@ namespace NCL
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
+			
+			Camera* GetMapCamera() const { return mapCamera; }
+			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
+
+
 
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
@@ -69,6 +74,8 @@ namespace NCL
 			bool ShowCursor() const { return showCursor; }
 
 			Team* GetTeamLeastPlayers();
+
+			std::set<Team*>& GetTeams() { return teams; }
 
 			NetworkingStatus GetNetworkStatus() const { return networkStatus; }
 			void SetNetworkStatus(NetworkingStatus status) { networkStatus = status;; }
@@ -79,6 +86,7 @@ namespace NCL
 		protected:
 			Camera* mainCamera;
 			Camera* minimapCamera;
+			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
 			ToonEventListener* eventListener;
