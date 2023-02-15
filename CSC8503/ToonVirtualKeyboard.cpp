@@ -13,6 +13,17 @@ std::string ToonVirtualKeyboard::GetUserInputText()
 void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 {
 	DrawKeyboard();
+	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+	{
+		if (keys[m_CurrentSelectedKeyIndex].identifier == 26)
+		{
+			m_UserInputText.pop_back();
+		}
+		else
+		{
+			m_UserInputText += keys[m_CurrentSelectedKeyIndex].text;
+		}
+	}
 }
 
 void ToonVirtualKeyboard::CreateKeyboard()
@@ -36,20 +47,21 @@ void ToonVirtualKeyboard::CreateKeyboard()
 
 void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 {
-	float startX = m_Coordinates.origin.x;
-	float startY = m_Coordinates.origin.y;
+	const float padding = 0.5f;
+	float		startX  = m_Coordinates.origin.x;
+	float		startY  = m_Coordinates.origin.y + padding;
 	for (int i = 'A'; i <= 'Z'; i++)
 	{
 		if (startX + KEY_BUTTON_DEFAULT_SIZE > m_Coordinates.origin.x + m_Coordinates.size.x)
 		{
 			startX  = m_Coordinates.origin.x;
-			startY += KEY_BUTTON_DEFAULT_SIZE;
+			startY += KEY_BUTTON_DEFAULT_SIZE + padding;
 		}
 		std::string keyString		= "";
 		keyString				   += i;
 		Coordinates keyCoordinates  = Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE));
-		keys.push_back(KeyData(keyString, keyCoordinates));
-		startX					   += KEY_BUTTON_DEFAULT_SIZE;
+		keys.push_back(KeyData(keyString, keyCoordinates, i - 'A'));
+		startX					   += KEY_BUTTON_DEFAULT_SIZE + padding;
 	}
 	if (startX + BACKSPACE_BUTTON_WIDTH > m_Coordinates.origin.x + m_Coordinates.size.x)
 	{
@@ -59,7 +71,7 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
 	std::string keyString	   = "Back";
 	Coordinates keyCoordinates = Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
-	keys.push_back(KeyData(keyString, keyCoordinates));
+	keys.push_back(KeyData(keyString, keyCoordinates, 26));
 }
 
 void ToonVirtualKeyboard::InitializeNumericKeyboard()

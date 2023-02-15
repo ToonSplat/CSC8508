@@ -44,8 +44,9 @@ class ToonVirtualKeyboard
 		{
 			std::string text;
 			Coordinates coordinates;
+			int			identifier;
 
-			KeyData(std::string txt, Coordinates coord) : text(txt), coordinates(coord) {}
+			KeyData(std::string txt, Coordinates coord, int identifierValue) : text(txt), coordinates(coord), identifier(identifierValue) {}
 		};
 
 		std::vector<KeyData> keys;

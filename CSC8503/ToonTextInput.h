@@ -4,12 +4,14 @@
 //#include "ToonGame.h"
 //#include "ToonGameWorld.h"
 #include "ToonVirtualKeyboard.h"
+#include "PushdownMachine.h"
+#include "PushdownState.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 
-class ToonTextInput
+class ToonTextInput : public PushdownState
 {
 	private:
 		Coordinates							   m_Coordinates;
@@ -20,10 +22,14 @@ class ToonTextInput
 		ToonVirtualKeyboard::KeyboardInputType m_InputType;
 		Vector2								   m_WindowSize;
 		ToonVirtualKeyboard*				   m_VirtualKeyboard;
+		GameTechRenderer*					   m_Renderer;
 
 	public:
-		ToonTextInput(Coordinates coordinates, Vector2 windowSize, ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress, Vector4 focusColour = Debug::BLUE, Vector4 unfocusColour = Debug::WHITE);
+		ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer, Vector2 windowSize, ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress, Vector4 focusColour = Debug::BLUE, Vector4 unfocusColour = Debug::WHITE);
 		~ToonTextInput();
-		void Update();
 		void UpdatePosition(Coordinates newCoordinates);
+		void DrawUserInputText();
+		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+		void OnAwake() override;
+		void OnSleep() override;
 };

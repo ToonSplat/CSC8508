@@ -1,6 +1,6 @@
 #include "ToonMainMenu.h"
 
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win) : ip(ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 10)), win->GetScreenSize()))
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
 	m_Renderer			   = renderer;
 	m_World				   = world;
@@ -8,7 +8,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_Window			   = win;
 }
 
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win) : ip(ToonTextInput(Coordinates(Vector2(50, 20), Vector2(30, 10)), win->GetScreenSize()))
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
 {
 	m_Renderer				  = renderer;
 	m_mainMenuData			  = menuData;
@@ -43,11 +43,6 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 	{
 		return NavigateToScreen(newState);
 	}
-
-	// Testing
-	//Debug::DrawQuad(Vector2(50, 20), Vector2(30, 10), Debug::BLUE);
-	ip.Update();
-
 
 	m_Renderer->SetWorld(m_World);
 	m_Renderer->Update(dt);
@@ -97,7 +92,9 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-		return PushdownResult::NoChange;
+		*newState = GetUserInputScreenObject();
+		break;
+		//return PushdownResult::NoChange;
 	case LAUNCHASCLIENT:
 		return PushdownResult::NoChange;
 	case SETSERVERIP:
@@ -112,6 +109,12 @@ ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 {
 	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window); }
 	return m_SubMenuScreenObject;
+}
+
+ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
+{
+	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize()); }
+	return m_UserInputScreenObject;
 }
 
 void ToonMainMenu::UpdateMosePointerState(bool isVisible)

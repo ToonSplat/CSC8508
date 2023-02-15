@@ -63,7 +63,7 @@ private:
 	};
 	int							m_CurrentSelectedIndex = 0;
 
-	ToonTextInput ip;	//Test
+	ToonTextInput*				m_UserInputScreenObject = NULL;	//Test
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
@@ -77,6 +77,7 @@ private:
 	bool IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenuCoordinates);
 	PushdownState::PushdownResult NavigateToScreen(PushdownState** newState);
 	ToonMainMenu* GetSubMenuSceenObject();
+	ToonTextInput* GetUserInputScreenObject();
 	void UpdateMosePointerState(bool isVisible);
 	void WakeMouseOnMovement();
 };
