@@ -84,17 +84,17 @@ void main(void)
 	if (currentAtomicTarget == 0)
 	{
 		atomicCounterIncrement(scoreCount1[0]);
-		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount1[1]);
+		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount1[1]);
 	}
 	else if (currentAtomicTarget == 1)
 	{
 		atomicCounterIncrement(scoreCount2[0]);
-		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount2[1]);
+		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount2[1]);
 	}
 	else
 	{
 		atomicCounterIncrement(scoreCount3[0]);
-		if (albedo == vec4(0,0,1,1)) atomicCounterIncrement(scoreCount3[1]);
+		if (albedo == vec4(1,0,1,1)) atomicCounterIncrement(scoreCount3[1]);
 	}
 	
 	

@@ -152,10 +152,10 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 {
 	Vector3 floorScale = Vector3(30.0f, 0.5f, 30.0f);
 	Vector4 floorColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
-	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
-	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f);
+	AddCubeToWorld(Vector3(20.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(140.0f, 0, 0), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
+	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
 
 	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 30.0f);
 	Vector3 wallScaleZ = Vector3(30.0f, 20.0f, 0.5f);
@@ -205,7 +205,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 }
 
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, bool isFloor)
 {
 	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 

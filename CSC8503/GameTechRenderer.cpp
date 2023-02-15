@@ -338,8 +338,8 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	RenderSkybox();
 	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
 	RenderScene(sceneShader, viewMatrix, projMatrix);
 
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
@@ -363,8 +363,8 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
 	RenderScene(minimapShader, viewMatrix, projMatrix);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -382,7 +382,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 	ImGui::Begin("Debug Window");
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		if(!followCamera) followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera());
+		ToonFollowCamera* followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera());
 
 		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
 		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
@@ -413,6 +413,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		ImGui::DragFloat3("Position", (float*)(&playerPos));
 	}*/
 	ImGui::End();
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
 
 void NCL::CSC8503::GameTechRenderer::DrawMap()
 {
@@ -423,8 +426,8 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld.GetMapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld.GetMapCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
 	
 
@@ -441,11 +444,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMap()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-
-	ImGui::Render();
-	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void GameTechRenderer::BuildObjectList() {
@@ -510,6 +508,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 
 	RetrieveAtomicValues();
 
+	
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
 	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
@@ -619,7 +618,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
 
-		Matrix4 modelMatrix = (*i).GetModelMatrix();
+	
 		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 		BindMesh((*i).GetRenderObject()->GetMesh());
@@ -901,9 +900,12 @@ void GameTechRenderer::RetrieveAtomicValues()
 
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	totalPixelCount = pixelCount[0];
+	//std::cout << "TOTAL: " << totalPixelCount << std::endl;
 	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
 	{
 		teamPixelCount[i - 1] = pixelCount[i];
+		//std::cout << "Team " << i << "  " << i << std::endl;
+
 	}
 	
 	CalculatePercentages(totalPixelCount, teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);

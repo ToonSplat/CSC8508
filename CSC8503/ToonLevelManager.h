@@ -82,7 +82,7 @@ namespace NCL
 				return (selectedAxes & Axes::Z) == Axes::Z;
 			}
 
-			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, bool isFloor, float mass = 1.0f);
+			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, bool isFloor = false);
 			PaintableObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition,
 							const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, 

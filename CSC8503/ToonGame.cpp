@@ -31,7 +31,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	else {
 		world->SetMainCamera(new Camera());
 	}
-
+	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
 	showCursor = false;
 }

@@ -7,9 +7,9 @@ namespace NCL {
 		using namespace NCL::Maths;
 		class Team {
 		public:
-			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) { percentageOwned = 0; }
 			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) {
 				playerCount = 0;
+				percentageOwned = 0;
 			}
 			~Team(void) = default;
 
