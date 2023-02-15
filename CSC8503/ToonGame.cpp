@@ -102,3 +102,22 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
 	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }
+
+PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
+{
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
+		return PushdownResult::Pop;
+	if (dt > 0.1f)
+	{
+		std::cout << "Skipping large time delta" << std::endl;
+		return PushdownResult::NoChange; //must have hit a breakpoint or something to have a 1 second frame time!
+	}
+	UpdateGame(dt);
+
+	return PushdownResult::NoChange;
+}
+
+void NCL::CSC8503::ToonGame::OnAwake()
+{
+	Window::GetWindow()->ShowOSPointer(false);
+}
