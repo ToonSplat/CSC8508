@@ -5,6 +5,8 @@
 #include "ToonLevelManager.h"
 #include <reactphysics3d/reactphysics3d.h>
 #include "PaintBallClass.h"
+#include "ToonEventListener.h"
+#include "PushdownState.h"
 #include "PlayerControl.h"
 
 namespace NCL
@@ -13,8 +15,9 @@ namespace NCL
 	{
 		class ToonFollowCamera;
 		class ToonMinimapCamera;
+
 		class ToonMapCamera;
-		class ToonGame
+		class ToonGame : public PushdownState
 		{
 		public:
 			ToonGame(GameTechRenderer* renderer, bool offline = true);
@@ -23,6 +26,13 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
+			void UpdateCamera(float dt);
+			void UpdateTesting();
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+			void OnAwake() override;
+
+		protected:
+			ToonFollowCamera* followCamera;
 			void UpdateControls(PlayerControl* controls);
 			Player*	player = nullptr;
 			PlayerControl* playerControl = nullptr;
