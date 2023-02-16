@@ -70,6 +70,16 @@ void ToonNetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	StartLevel();
 }
 
+PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownState** newState) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame) {
+		if (thisClient && thisClient->IsConnected()) {
+			thisClient->Disconnect();
+		}
+		return PushdownResult::Pop;
+	}
+	ToonGame::OnUpdate(dt, newState);
+}
+
 void ToonNetworkedGame::UpdateGame(float dt) {
 	if(thisServer)
 		Debug::Print("Server", Vector2(0, 5));
@@ -134,7 +144,6 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 
 void ToonNetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
-
 	if (!player) return;
 
 	ClientPacket newPacket;

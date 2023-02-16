@@ -45,6 +45,32 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 	}
 }
 
+void GameClient::Disconnect() {
+	if (netPeer) {
+		ENetEvent event;
+		enet_peer_disconnect(netPeer, 0);
+		/* Allow up to 3 seconds for the disconnect to succeed
+		 * and drop any packets received packets.
+		 */
+		while (enet_host_service(netHandle, &event, 3000) > 0)
+		{
+			switch (event.type)
+			{
+			case ENET_EVENT_TYPE_RECEIVE:
+				enet_packet_destroy(event.packet);
+				break;
+			case ENET_EVENT_TYPE_DISCONNECT:
+				puts("Disconnection succeeded.");
+				return;
+			}
+		}
+		/* We've arrived here, so the disconnect attempt didn't */
+		/* succeed yet.  Force the connection down.             */
+		puts("Forcefully closing connection.");
+		enet_peer_reset(netPeer);
+	}
+}
+
 void GameClient::UpdateClient() {
 	if (netHandle == nullptr)
 		return;

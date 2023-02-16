@@ -103,7 +103,7 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }
 
-PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
+PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
 		return PushdownResult::Pop;

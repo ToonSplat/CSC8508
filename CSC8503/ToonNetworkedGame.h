@@ -21,6 +21,8 @@ namespace NCL {
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
 
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
 			void UpdateGame(float dt) override;
 
 			Player* SpawnPlayer(int playerID, Team* team);
