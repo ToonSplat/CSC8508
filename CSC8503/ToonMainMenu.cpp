@@ -1,4 +1,5 @@
 #include "ToonMainMenu.h"
+#include <regex>
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
@@ -113,7 +114,13 @@ ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 
 ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
 {
-	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize()); }
+	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize(), 
+		[](std::string inputStringText) 
+		{
+			std::cout << inputStringText << std::endl;
+			bool isValid = std::regex_match(inputStringText, std::regex("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
+			std::cout << (isValid ? "Valid" : "Invalid") << " Regex" << std::endl;
+		}); }
 	return m_UserInputScreenObject;
 }
 

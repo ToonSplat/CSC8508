@@ -1,10 +1,10 @@
 #include "ToonTextInput.h"
 
-ToonTextInput::ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer, Vector2 windowSize, ToonVirtualKeyboard::KeyboardInputType inputType, Vector4 focusColour, Vector4 unfocusColour) : m_Coordinates(coordinates), m_Renderer(renderer), m_WindowSize(windowSize), m_InputType(inputType), m_IsFocused(true), m_FocusColour(focusColour), m_UnfocusColour(unfocusColour), m_InputText("")
+ToonTextInput::ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer, Vector2 windowSize, std::function<void(std::string)> doneButtonClosure, ToonVirtualKeyboard::KeyboardInputType inputType, Vector4 focusColour, Vector4 unfocusColour) : m_Coordinates(coordinates), m_Renderer(renderer), m_WindowSize(windowSize), m_doneButtonClosure(doneButtonClosure), m_InputType(inputType), m_IsFocused(true), m_FocusColour(focusColour), m_UnfocusColour(unfocusColour), m_InputText("")
 {
 	Coordinates keyboardCoordinates  = m_Coordinates;
 	keyboardCoordinates.origin.y	+= keyboardCoordinates.size.y;
-	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize/*, ToonVirtualKeyboard::KeyboardInputType::Alphabetic*/);
+	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize, m_doneButtonClosure);
 }
 
 ToonTextInput::~ToonTextInput()
