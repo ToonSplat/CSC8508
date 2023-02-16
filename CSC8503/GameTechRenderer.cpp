@@ -33,10 +33,10 @@ GameTechRenderer::GameTechRenderer(ToonGameWorld& world) : OGLRenderer(*Window::
 	SetupStuffs();
 }
 
-GameTechRenderer::~GameTechRenderer()	{
-	glDeleteTextures(1, &shadowTex);
-	glDeleteFramebuffers(1, &shadowFBO);
-}
+//GameTechRenderer::~GameTechRenderer()	{
+//	glDeleteTextures(1, &shadowTex);
+//	glDeleteFramebuffers(1, &shadowFBO);
+//}
 
 void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 {
@@ -44,8 +44,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 
 	debugShader = new OGLShader("debug.vert", "debug.frag");
 
-	
-	debugShader  = new OGLShader("debug.vert", "debug.frag");
+
+	debugShader = new OGLShader("debug.vert", "debug.frag");
 
 	shadowShader = new OGLShader("shadow.vert", "shadow.frag");
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
@@ -57,7 +57,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	GenerateMinimapFBO(windowWidth, windowHeight);
 
 	glClearColor(1, 1, 1, 1);
-	
+
 	//Set up the light properties
 	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
 	lightRadius = 1000.0f;
@@ -76,7 +76,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	fullScreenQuad->UploadToGPU();
-	
+
 	minimapQuad = new OGLMesh();
 	minimapQuad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
 	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
@@ -87,10 +87,10 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f) , Vector3(0.5f, -0.8f, -1.0f) , Vector3(0.5f, 0.8f, -1.0f) });
 	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	minimapStencilQuad->UploadToGPU();
-	
 
 
-LoadDeferedLighting();
+
+	LoadDeferedLighting();
 
 	LoadSkybox();
 
@@ -206,7 +206,7 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+}
 GameTechRenderer::~GameTechRenderer() {
 	glDeleteTextures(1, &shadowTex);
 	glDeleteFramebuffers(1, &shadowFBO);
@@ -232,10 +232,9 @@ GameTechRenderer::~GameTechRenderer() {
 void GameTechRenderer::LoadDeferedLighting() {
 	bool init = false;
 	const int LIGHT_NUM = 24;
-	pointLights = new Light[LIGHT_NUM];
+	pointLights = new Light;
 
-	for (int i = 0; i < LIGHT_NUM; ++i) {
-		Light& l = pointLights[i];
+		Light& l = *pointLights;
 		l.SetPosition(Vector3(rand() % 10,
 			150.0f,
 			rand() % (int)10));
@@ -245,9 +244,9 @@ void GameTechRenderer::LoadDeferedLighting() {
 			0.5f + (float)(rand() / (float)RAND_MAX),
 			1));
 		l.SetRadius(250.0f + (rand() % 250));
-	}
-	//SceneShader = new OGLShader("BumpVertex.glsl", // reused!
-	//	"bufferFragment.glsl");
+	
+	SceneShader = new OGLShader("BumpVertex.glsl", // reused!
+		"bufferFragment.glsl");
 	PointLightShader = new OGLShader("pointlightvertex.vert",
 		"pointlightfrag.glsl");
 	CombineShader = new OGLShader("CombineVert.vert",
@@ -302,7 +301,7 @@ void GameTechRenderer::LoadDeferedLighting() {
 	glEnable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
 
-	init = true;
+	
 
 
 }
@@ -1033,37 +1032,7 @@ void GameTechRenderer::GenerateScreenTexture(GLuint& into, bool depth) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 }
-//void GameTechRenderer::FillBuffers() {
-//	float screenAspect = (float)windowWidth / (float)windowHeight;
-//	Matrix4 modelMatrix;
-//	Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-//	Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
-//
-//	 glBindFramebuffer(GL_FRAMEBUFFER, bufferFBO);
-//	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-//	
-//	 BindShader(SceneShader);
-//	 glUniform1i(
-//	 glGetUniformLocation(SceneShader->GetProgramID(), "diffuseTex"), 0);
-//	 glUniform1i(
-//	 glGetUniformLocation(SceneShader->GetProgramID(), "bumpTex"), 1);
-//	
-// glActiveTexture(GL_TEXTURE0);
-//	 glBindTexture(GL_TEXTURE_2D, earthTex);
-//	 glActiveTexture(GL_TEXTURE1);
-//	 glBindTexture(GL_TEXTURE_2D, earthBump);
-//	 modelMatrix.ToZero();
-//	 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
-//	 projMatrix = Matrix4::Perspective(1.0f, 10000.0f,
-//		 (float)windowWidth / (float)windowHeight, 45.0f);
-//	
-//	 UpdateShaderMatrices();
-//	
-//		 heightMap->Draw();
-//	
-//	 glBindFramebuffer(GL_FRAMEBUFFER, 0);
-//	
-//}
+
 void GameTechRenderer::DrawPointLights() {
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 modelMatrix;
@@ -1103,12 +1072,10 @@ void GameTechRenderer::DrawPointLights() {
 			1, false, (float*)&invViewProj);
 		UpdateShaderMatrices();
 		BindMesh((*i).GetMesh());
-		for (int i = 0; i < 24; ++i) {
-			Light& l = pointLights[i];
+			Light& l = *pointLights;
 			SetShaderLight(l);
 			DrawBoundMesh();
 
-		}
 
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		glCullFace(GL_BACK);
