@@ -1,6 +1,6 @@
 #include "ToonVirtualKeyboard.h"
 
-ToonVirtualKeyboard::ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType) : m_Coordinates(coordinates), m_WindowSize(windowSize), m_KeyboardInputType(keyboardInputType), m_UserInputText(""), m_CurrentSelectedKeyIndex(0), m_FocusColour(Debug::GREEN), m_UnfocusColour(Debug::WHITE)
+ToonVirtualKeyboard::ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType) : m_Coordinates(coordinates), m_WindowSize(windowSize), m_KeyboardInputType(keyboardInputType), m_UserInputText(""), m_CurrentSelectedKeyIndex(Index2D(0, 0)), m_FocusColour(Debug::GREEN), m_UnfocusColour(Debug::WHITE)
 {
 	CreateKeyboard();
 }
@@ -15,11 +15,11 @@ void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 	DrawKeyboard();
 	if (m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		if (keys[m_CurrentSelectedKeyIndex].identifier == 26)
+		if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 26)
 		{
 			if (m_UserInputText.length()) { m_UserInputText.pop_back(); }
 		}
-		else { m_UserInputText += keys[m_CurrentSelectedKeyIndex].text; }
+		else { m_UserInputText += keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].text; }
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::LEFT); }
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RIGHT)) { UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::RIGHT); }
@@ -52,17 +52,20 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 	const float padding = 0.5f;
 	float		startX  = m_Coordinates.origin.x;
 	float		startY  = m_Coordinates.origin.y + padding;
+	std::vector<KeyData> singleRowKeys;
 	for (int i = 'A'; i <= 'Z'; i++)
 	{
 		if (startX + KEY_BUTTON_DEFAULT_SIZE > m_Coordinates.origin.x + m_Coordinates.size.x)
 		{
-			startX  = m_Coordinates.origin.x;
-			startY += KEY_BUTTON_DEFAULT_SIZE + padding;
+			keys.push_back(singleRowKeys);
+			singleRowKeys = std::vector<KeyData>();
+			startX		  = m_Coordinates.origin.x;
+			startY		 += KEY_BUTTON_DEFAULT_SIZE + padding;
 		}
 		std::string keyString		= "";
 		keyString				   += i;
 		Coordinates keyCoordinates  = Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE));
-		keys.push_back(KeyData(keyString, keyCoordinates, i - 'A'));
+		singleRowKeys.push_back(KeyData(keyString, keyCoordinates, i - 'A'));
 		startX					   += KEY_BUTTON_DEFAULT_SIZE + padding;
 	}
 	if (startX + BACKSPACE_BUTTON_WIDTH > m_Coordinates.origin.x + m_Coordinates.size.x)
@@ -70,10 +73,11 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 		startX  = m_Coordinates.origin.x;
 		startY += KEY_BUTTON_DEFAULT_SIZE;
 	}
+	if (singleRowKeys.size()) { keys.push_back(singleRowKeys); }
 	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
 	std::string keyString	   = "Back";
 	Coordinates keyCoordinates = Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
-	keys.push_back(KeyData(keyString, keyCoordinates, 26));
+	keys[keys.size() - 1].push_back(KeyData(keyString, keyCoordinates, 26));
 }
 
 void ToonVirtualKeyboard::InitializeNumericKeyboard()
@@ -95,20 +99,25 @@ void ToonVirtualKeyboard::DrawKeyboard()
 	float	x						  = ((mousePosition.x / m_WindowSize.x) * 100);
 	Vector2 mousePositionWithinBounds = Vector2(x, y);
 
-	unsigned int index = 0;
-	for (KeyData key : keys)
+	unsigned int rowIndex = 0;
+	for (std::vector<KeyData> keysRow : keys)
 	{
-		if (m_IsMousePointerVisible && x >= m_Coordinates.origin.x && x <= m_Coordinates.origin.x + m_Coordinates.size.x && y >= m_Coordinates.origin.y && y <= m_Coordinates.origin.y + m_Coordinates.size.y)
+		unsigned int ColoumnIndex = 0;
+		for (KeyData key : keysRow)
 		{
-			if (x >= key.coordinates.origin.x && x <= key.coordinates.origin.x + key.coordinates.size.x && y >= key.coordinates.origin.y && y <= key.coordinates.origin.y + key.coordinates.size.y) { m_CurrentSelectedKeyIndex = index; }
+			if (m_IsMousePointerVisible && x >= m_Coordinates.origin.x && x <= m_Coordinates.origin.x + m_Coordinates.size.x && y >= m_Coordinates.origin.y && y <= m_Coordinates.origin.y + m_Coordinates.size.y)
+			{
+				if (x >= key.coordinates.origin.x && x <= key.coordinates.origin.x + key.coordinates.size.x && y >= key.coordinates.origin.y && y <= key.coordinates.origin.y + key.coordinates.size.y) { m_CurrentSelectedKeyIndex = Index2D(rowIndex, ColoumnIndex); }
+			}
+			//else { m_CurrentSelectedKeyIndex = 0; }
+			DrawSingleKey(key.text, key.coordinates, Index2D(rowIndex, ColoumnIndex));
+			ColoumnIndex++;
 		}
-		//else { m_CurrentSelectedKeyIndex = 0; }
-		DrawSingleKey(key.text, key.coordinates, index);
-		index++;
+		rowIndex++;
 	}
 }
 
-void ToonVirtualKeyboard::DrawSingleKey(std::string keyText, Coordinates coordinate, int index)
+void ToonVirtualKeyboard::DrawSingleKey(std::string keyText, Coordinates coordinate, Index2D index)
 {
 	Vector4		   keyColour		 = index == m_CurrentSelectedKeyIndex ? m_FocusColour : m_UnfocusColour;
 	Debug::DrawQuad(coordinate.origin, coordinate.size, keyColour);
@@ -138,18 +147,20 @@ void ToonVirtualKeyboard::UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys
 	switch (key)
 	{
 		case KeyboardKeys::RIGHT:
-			m_CurrentSelectedKeyIndex = (m_CurrentSelectedKeyIndex + 1) % totalKeys;
+			m_CurrentSelectedKeyIndex.coloumn = (m_CurrentSelectedKeyIndex.coloumn + 1) % keys[m_CurrentSelectedKeyIndex.row].size();
 			break;
 		case KeyboardKeys::LEFT:
-			m_CurrentSelectedKeyIndex = (m_CurrentSelectedKeyIndex - 1) < 0 ? keys.size() - 1 : m_CurrentSelectedKeyIndex - 1;
+			m_CurrentSelectedKeyIndex.coloumn = (m_CurrentSelectedKeyIndex.coloumn - 1) < 0 ? keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn - 1;
 			break;
 		case KeyboardKeys::UP:
-			m_CurrentSelectedKeyIndex -= 5;
-			m_CurrentSelectedKeyIndex  = m_CurrentSelectedKeyIndex < 0 ? keys.size() - 1 : m_CurrentSelectedKeyIndex;
+			m_CurrentSelectedKeyIndex.row	 -= 1;
+			m_CurrentSelectedKeyIndex.row	  = m_CurrentSelectedKeyIndex.row < 0 ? keys.size() - 1 : m_CurrentSelectedKeyIndex.row;
+			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= keys[m_CurrentSelectedKeyIndex.row].size() ? keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
 			break;
 		case KeyboardKeys::DOWN:
-			m_CurrentSelectedKeyIndex += 5;
-			m_CurrentSelectedKeyIndex  = m_CurrentSelectedKeyIndex > keys.size() - 1 ? m_CurrentSelectedKeyIndex - keys.size() : m_CurrentSelectedKeyIndex;
+			m_CurrentSelectedKeyIndex.row += 1;
+			m_CurrentSelectedKeyIndex.row  = m_CurrentSelectedKeyIndex.row > keys.size() - 1 ? 0 : m_CurrentSelectedKeyIndex.row;
+			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= keys[m_CurrentSelectedKeyIndex.row].size() ? keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
 			break;
 	}
 }

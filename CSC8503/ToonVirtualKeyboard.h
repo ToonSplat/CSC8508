@@ -32,16 +32,6 @@ class ToonVirtualKeyboard
 		};
 
 	private:
-		std::string		  m_UserInputText;
-		Coordinates		  m_Coordinates;
-		KeyboardInputType m_KeyboardInputType;
-		int				  m_CurrentSelectedKeyIndex;
-		Vector4			  m_FocusColour;
-		Vector4			  m_UnfocusColour;
-		Vector2			  m_WindowSize;
-		bool			  m_IsMousePointerVisible = true;
-		Vector2			  m_MouseLastPosition	  = Vector2(0.0f, 0.0f);
-
 		struct KeyData
 		{
 			std::string text;
@@ -50,8 +40,26 @@ class ToonVirtualKeyboard
 
 			KeyData(std::string txt, Coordinates coord, int identifierValue) : text(txt), coordinates(coord), identifier(identifierValue) {}
 		};
+		
+		struct Index2D
+		{
+			int row;
+			int coloumn;
 
-		std::vector<KeyData> keys;
+			bool operator==(Index2D rValue) { return ((row == rValue.row) && (coloumn == rValue.coloumn)); }
+		};
+
+		std::string		  m_UserInputText;
+		Coordinates		  m_Coordinates;
+		KeyboardInputType m_KeyboardInputType;
+		Index2D			  m_CurrentSelectedKeyIndex;
+		Vector4			  m_FocusColour;
+		Vector4			  m_UnfocusColour;
+		Vector2			  m_WindowSize;
+		bool			  m_IsMousePointerVisible = true;
+		Vector2			  m_MouseLastPosition	  = Vector2(0.0f, 0.0f);
+
+		std::vector<std::vector<KeyData>> keys;
 
 	public:
 		ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
@@ -65,7 +73,7 @@ class ToonVirtualKeyboard
 		void InitializeAlphaNumericKeyboard();
 		void InitializeIPAddressKeyboard();
 		void DrawKeyboard();
-		void DrawSingleKey(std::string keyText, Coordinates coordinate, int index);
+		void DrawSingleKey(std::string keyText, Coordinates coordinate, Index2D index);
 		void UpdateMosePointerState(bool isVisible);
 		void WakeMouseOnMovement();
 		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
