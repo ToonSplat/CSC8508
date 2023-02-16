@@ -4,7 +4,7 @@ ToonTextInput::ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer
 {
 	Coordinates keyboardCoordinates  = m_Coordinates;
 	keyboardCoordinates.origin.y	+= keyboardCoordinates.size.y;
-	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize, ToonVirtualKeyboard::KeyboardInputType::Alphabetic);
+	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize/*, ToonVirtualKeyboard::KeyboardInputType::Alphabetic*/);
 }
 
 ToonTextInput::~ToonTextInput()

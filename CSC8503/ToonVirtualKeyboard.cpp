@@ -13,7 +13,7 @@ std::string ToonVirtualKeyboard::GetUserInputText()
 void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 {
 	DrawKeyboard();
-	if (m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
+	if ((m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
 		if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 26)
 		{
@@ -100,6 +100,34 @@ void ToonVirtualKeyboard::InitializeAlphaNumericKeyboard()
 
 void ToonVirtualKeyboard::InitializeIPAddressKeyboard()
 {
+	const int			 keysInARow = 3;
+	const float			 padding    = 0.5f;
+	const float			 initialX	= m_Coordinates.origin.x + ((m_Coordinates.size.x - (keysInARow * KEY_BUTTON_DEFAULT_SIZE) - ((keysInARow - 1) * padding)) / 2);
+	float				 startX	    = initialX;
+	float				 startY	    = m_Coordinates.origin.y + padding;
+	std::vector<KeyData> singleRowsKeys;
+	for (int i = 0; i < 9; i++)
+	{
+		if (i && !(i % keysInARow))
+		{
+			keys.push_back(singleRowsKeys);
+			singleRowsKeys = std::vector<KeyData>();
+			startX		   = initialX;
+			startY		  += KEY_BUTTON_DEFAULT_SIZE + padding;
+		}
+		std::string text = "";
+		text			+= ((i + 1) + '0');
+		singleRowsKeys.push_back(KeyData(text, Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE)), i + 1));
+		startX			+= KEY_BUTTON_DEFAULT_SIZE + padding;
+	}
+	if (!singleRowsKeys.empty()) { keys.push_back(singleRowsKeys); }
+	//Adding 0
+	startY		  += KEY_BUTTON_DEFAULT_SIZE + padding;
+	startX		   = m_Coordinates.origin.x + ((m_Coordinates.size.x - KEY_BUTTON_DEFAULT_SIZE) / 2);
+	singleRowsKeys = std::vector<KeyData>();
+	singleRowsKeys.push_back(KeyData("0", Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE)), 0));
+	keys.push_back(singleRowsKeys);
+	m_Coordinates.size.y = startY + KEY_BUTTON_DEFAULT_SIZE;
 }
 
 void ToonVirtualKeyboard::DrawKeyboard()
@@ -107,7 +135,7 @@ void ToonVirtualKeyboard::DrawKeyboard()
 	Vector2 mousePosition			  = Window::GetMouse()->GetWindowPosition();
 	float	y						  = ((mousePosition.y / m_WindowSize.y) * 100);
 	float	x						  = ((mousePosition.x / m_WindowSize.x) * 100);
-	Vector2 mousePositionWithinBounds = Vector2(x, y);
+	m_MousePositionWithinBounds		  = Vector2(x, y);
 
 	unsigned int rowIndex = 0;
 	for (std::vector<KeyData> keysRow : keys)
@@ -115,7 +143,7 @@ void ToonVirtualKeyboard::DrawKeyboard()
 		unsigned int ColoumnIndex = 0;
 		for (KeyData key : keysRow)
 		{
-			if (m_IsMousePointerVisible && x >= m_Coordinates.origin.x && x <= m_Coordinates.origin.x + m_Coordinates.size.x && y >= m_Coordinates.origin.y && y <= m_Coordinates.origin.y + m_Coordinates.size.y)
+			if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(x, y)/*x >= m_Coordinates.origin.x && x <= m_Coordinates.origin.x + m_Coordinates.size.x && y >= m_Coordinates.origin.y && y <= m_Coordinates.origin.y + m_Coordinates.size.y*/)
 			{
 				if (x >= key.coordinates.origin.x && x <= key.coordinates.origin.x + key.coordinates.size.x && y >= key.coordinates.origin.y && y <= key.coordinates.origin.y + key.coordinates.size.y) { m_CurrentSelectedKeyIndex = Index2D(rowIndex, ColoumnIndex); }
 			}
@@ -173,4 +201,9 @@ void ToonVirtualKeyboard::UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys
 			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= keys[m_CurrentSelectedKeyIndex.row].size() ? keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
 			break;
 	}
+}
+
+bool ToonVirtualKeyboard::IsMouseInsideKeyboardArea(int mouseX, int mouseY)
+{
+	return (mouseX >= m_Coordinates.origin.x && mouseX <= m_Coordinates.origin.x + m_Coordinates.size.x && mouseY >= m_Coordinates.origin.y && mouseY <= m_Coordinates.origin.y + m_Coordinates.size.y);
 }

@@ -59,6 +59,7 @@ class ToonVirtualKeyboard
 		Vector2			  m_WindowSize;
 		bool			  m_IsMousePointerVisible = true;
 		Vector2			  m_MouseLastPosition	  = Vector2(0.0f, 0.0f);
+		Vector2			  m_MousePositionWithinBounds;
 
 		std::vector<std::vector<KeyData>> keys;
 
@@ -78,4 +79,5 @@ class ToonVirtualKeyboard
 		void UpdateMosePointerState(bool isVisible);
 		void WakeMouseOnMovement();
 		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
+		bool IsMouseInsideKeyboardArea(int mouseX, int mouseY);
 };
