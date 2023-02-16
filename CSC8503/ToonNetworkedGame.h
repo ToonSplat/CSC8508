@@ -23,7 +23,7 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			Player* SpawnPlayer(int playerID);
+			Player* SpawnPlayer(int playerID, Team* team);
 
 			void ServerStartLevel();
 			void StartLevel();
@@ -32,6 +32,8 @@ namespace NCL {
 			bool IsClient() { return thisClient; }
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
+
+			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
 		protected:
 			void UpdateAsServer(float dt);

@@ -11,6 +11,7 @@ GameServer::GameServer(int onPort, int maxClients) {
 	clientMax = maxClients;
 	clientCount = 0;
 	netHandle = nullptr;
+	playerMap.clear();
 	Initialise();
 }
 
@@ -70,8 +71,8 @@ void GameServer::UpdateServer() {
 			//std::cout << "Server: New client connected" << std::endl;
 			clientCount++;
 			playerMap.emplace(clientCount, p);
-			ConnectPacket returnPacket(clientCount, true);
-			SendPacketToClient(returnPacket, clientCount, true);
+			//ConnectPacket returnPacket(clientCount, true);
+			//SendPacketToClient(returnPacket, clientCount, true);
 			//std::cout << "Sent to " << p << " that they are client " << clientCount << std::endl;
 			ConnectPacket packet(clientCount, false);
 			ProcessPacket(&packet);
