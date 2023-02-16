@@ -40,6 +40,8 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 		enet_peer_reset(netPeer);
 		delete netHandle;
 		netHandle = nullptr;
+		delete netPeer;
+		netPeer = nullptr;
 		std::cout << "Connection to " << std::to_string(a) << "." << std::to_string(b) << "." << std::to_string(c) << "." << std::to_string(d) << ":" << portNum << " failed.";
 		return false;
 	}
