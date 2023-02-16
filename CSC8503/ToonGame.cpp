@@ -51,7 +51,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
-
 	world->GetMainCamera()->UpdateCamera(dt);
 	if(world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);
@@ -106,7 +105,7 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 
 PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
 		return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{
@@ -121,4 +120,5 @@ PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, Pushdow
 void NCL::CSC8503::ToonGame::OnAwake()
 {
 	Window::GetWindow()->ShowOSPointer(false);
+	Window::GetWindow()->LockMouseToWindow(true);
 }

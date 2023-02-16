@@ -42,6 +42,7 @@ namespace NCL
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
 
+			bool closeGame = false;
 			bool offline;
 			bool showCursor;
 			const double timeStep = 1.0 / 60.0;

@@ -8,17 +8,41 @@ GameClient::GameClient() {
 }
 
 GameClient::~GameClient() {
-	enet_host_destroy(netHandle);
+	if (netHandle) 
+		enet_host_destroy(netHandle);
 }
 
 bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum) {
 	ENetAddress address;
+	ENetEvent event;
 	address.port = portNum;
 	address.host = (d << 24) | (c << 16) | (b << 8) | (a);
 
 	netPeer = enet_host_connect(netHandle, &address, 2, 0);
 
-	return netPeer != nullptr;
+	if (netPeer == NULL)
+	{
+		std::cout << "No available peers for initiating an ENet connection.\n";
+		return false;
+	}
+	/* Wait up to 3 seconds for the connection attempt to succeed. */
+	if (enet_host_service(netHandle, &event, 3000) > 0 &&
+		event.type == ENET_EVENT_TYPE_CONNECT)
+	{
+		std::cout << "Connection to " << std::to_string(a) << "." << std::to_string(b) << "." << std::to_string(c) << "." << std::to_string(d) << ":" << portNum << " succeeded.";
+		return true;
+	}
+	else
+	{
+		/* Either the 3 seconds are up or a disconnect event was */
+		/* received. Reset the peer in the event the 3 seconds   */
+		/* had run out without any significant event.            */
+		enet_peer_reset(netPeer);
+		delete netHandle;
+		netHandle = nullptr;
+		std::cout << "Connection to " << std::to_string(a) << "." << std::to_string(b) << "." << std::to_string(c) << "." << std::to_string(d) << ":" << portNum << " failed.";
+		return false;
+	}
 }
 
 void GameClient::UpdateClient() {
