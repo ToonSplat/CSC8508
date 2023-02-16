@@ -71,13 +71,27 @@ void ToonNetworkedGame::StartAsClient(char a, char b, char c, char d) {
 }
 
 PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownState** newState) {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame) {
-		if (thisClient && thisClient->IsConnected()) {
-			thisClient->Disconnect();
+	if (serverClosed != -256.0f) {
+		serverClosed -= dt;
+		if (serverClosed <= 0) {
+			thisServer->Shutdown();
+			return PushdownResult::Pop;
 		}
-		return PushdownResult::Pop;
 	}
-	ToonGame::OnUpdate(dt, newState);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame) {
+		if (thisServer && serverClosed == -256.0f) {
+			std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
+			thisServer->RemoveClients();
+			// Give everyone 3 seconds to get cleanly kicked off server
+			serverClosed = 3.0f;
+			return PushdownResult::NoChange;
+		}
+		else if (thisClient && thisClient->IsConnected()) {
+			thisClient->DisconnectFromServer();
+			return PushdownResult::Pop;
+		}
+	}
+	return ToonGame::OnUpdate(dt, newState);
 }
 
 void ToonNetworkedGame::UpdateGame(float dt) {
@@ -125,7 +139,8 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			UpdateControls(playerControl);
 		}
 	}
-	ToonGame::UpdateGame(dt);
+	if(!closeGame)
+		ToonGame::UpdateGame(dt);
 }
 
 void ToonNetworkedGame::UpdateAsServer(float dt) {
@@ -264,6 +279,12 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else if (type == Player_Disconnected) {
 		DisconnectPacket* realPacket = (DisconnectPacket*)payload;
 		int receivedID = realPacket->playerID;
+		// I am being told to disconnect, presumably because the server is closed
+		if (receivedID == myID) {
+			std::cout << "Server kicking me off\n";
+			closeGame = true;
+			return;
+		}
 		std::cout << "Recieved message Player Disconnected, removing their player, they are player ID" << receivedID << std::endl;
 		Player* removingPlayer = serverPlayers.find(receivedID)->second;
 		for (auto i = networkObjects.begin(); i != networkObjects.end(); i++) {

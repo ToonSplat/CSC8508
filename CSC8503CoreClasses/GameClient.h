@@ -13,7 +13,7 @@ namespace NCL {
 			~GameClient();
 
 			bool Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum);
-			void Disconnect();
+			void DisconnectFromServer();
 
 			void SendPacket(GamePacket& payload, bool reliable = false);
 

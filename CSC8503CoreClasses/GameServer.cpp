@@ -19,8 +19,15 @@ GameServer::~GameServer() {
 	Shutdown();
 }
 
+void GameServer::RemoveClients() {
+	ENetEvent event;
+	for (auto& [ID, peer] : playerMap) {
+		DisconnectPacket disconnect(ID);
+		SendPacketToClient(disconnect, ID, true);
+	}
+}
+
 void GameServer::Shutdown() {
-	SendGlobalPacket(BasicNetworkMessages::Shutdown);
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
 }

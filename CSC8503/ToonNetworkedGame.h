@@ -49,6 +49,7 @@ namespace NCL {
 			float timeToNextPacket;
 			int packetsToSnapshot;
 
+			float serverClosed = -256.0f;
 			int myID;
 			int winner;
 			int myState;

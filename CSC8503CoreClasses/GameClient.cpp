@@ -45,7 +45,7 @@ bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum
 	}
 }
 
-void GameClient::Disconnect() {
+void GameClient::DisconnectFromServer() {
 	if (netPeer) {
 		ENetEvent event;
 		enet_peer_disconnect(netPeer, 0);
