@@ -9,7 +9,8 @@ using namespace NCL;
 using namespace CSC8503;
 
 #define KEY_BUTTON_DEFAULT_SIZE 5.0f
-#define BACKSPACE_BUTTON_WIDTH  20.0f
+#define BACKSPACE_BUTTON_WIDTH  15.0f
+#define SPACE_BUTTON_WIDTH		25.0f
 
 //TODO: Use this in Main Menu screen
 struct Coordinates

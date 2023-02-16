@@ -15,10 +15,11 @@ void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 	DrawKeyboard();
 	if (m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 26)
+		if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 26)
 		{
 			if (m_UserInputText.length()) { m_UserInputText.pop_back(); }
 		}
+		else if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 27) { m_UserInputText += " "; }
 		else { m_UserInputText += keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].text; }
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::LEFT); }
@@ -75,9 +76,18 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 	}
 	if (singleRowKeys.size()) { keys.push_back(singleRowKeys); }
 	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
-	std::string keyString	   = "Back";
+	std::string keyString	   = "Delete";
 	Coordinates keyCoordinates = Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
 	keys[keys.size() - 1].push_back(KeyData(keyString, keyCoordinates, 26));
+	//Adding Space bar
+	startY					  += KEY_BUTTON_DEFAULT_SIZE + padding;
+	startX					   = m_Coordinates.origin.x;
+	singleRowKeys			   = std::vector<KeyData>();
+	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
+	std::string spaceKeyString = "Space";
+	keyCoordinates			   = Coordinates(Vector2(startX, startY), Vector2(SPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
+	singleRowKeys.push_back(KeyData(spaceKeyString, keyCoordinates, 27));
+	keys.push_back(singleRowKeys);
 }
 
 void ToonVirtualKeyboard::InitializeNumericKeyboard()
