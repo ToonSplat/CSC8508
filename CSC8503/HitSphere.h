@@ -12,12 +12,13 @@ public:
 
 	bool CheckDelete();
 
-	Vector3 GetTeamColour() const { return teamColour; }
+	Team* GetTeam() const { return team; }
+	Vector3 GetTeamColour() const { return team->GetTeamColour(); }
 	float GetRadius() const { return radius; }
 
 protected:
 	float radius;
-	Vector3 teamColour;
+	Team* team;
 
 	bool toDelete;
 };

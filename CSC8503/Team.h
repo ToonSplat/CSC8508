@@ -7,21 +7,23 @@ namespace NCL {
 		using namespace NCL::Maths;
 		class Team {
 		public:
-			Team(string name, Vector3 colour) : teamName(name), teamColour(colour) {
+			Team(string name, Vector3 colour, int ID) : teamName(name), teamColour(colour), teamID(ID) {
 				playerCount = 0;
 				percentageOwned = 0;
 			}
 			~Team(void) = default;
 
+			int GetTeamID(void) const { return teamID; }
 			void AddPlayer(void) { playerCount++; }
 			void RemovePlayer(void) { playerCount--; }
-			int getPlayerCount(void) const { return playerCount; }
-			string getTeamName(void) const { return teamName; }
-			Vector3 getTeamColour(void) const { return teamColour; }
+			int GetPlayerCount(void) const { return playerCount; }
+			string GetTeamName(void) const { return teamName; }
+			Vector3 GetTeamColour(void) const { return teamColour; }
 
 			void SetPercentageOwned(float newPercentage) { percentageOwned = newPercentage; }
 			float GetPercentageOwned() const { return percentageOwned; }
 		private:
+			int teamID;
 			int playerCount;
 			string teamName;
 			Vector3 teamColour;

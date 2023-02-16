@@ -319,7 +319,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 	gameWorld->AddGameObject(player);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
-	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
+	player->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1));
 
 	return player;
 }
@@ -333,7 +333,7 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 	paintball->GetTransform().SetScale(Vector3(radius, radius, radius));
 
 	paintball->SetRenderObject(new ToonRenderObject(&paintball->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
-	paintball->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1.0f));
+	paintball->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1.0f));
 
 	paintball->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	paintball->GetRigidbody()->setMass(reactphysics3d::decimal(0.1));
@@ -357,7 +357,7 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 	hitSphere->GetTransform().SetScale(Vector3(radius, radius, radius));
 
 	hitSphere->SetRenderObject(new ToonRenderObject(&hitSphere->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
-	hitSphere->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 0.0f));
+	hitSphere->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 0.0f));
 
 	hitSphere->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 

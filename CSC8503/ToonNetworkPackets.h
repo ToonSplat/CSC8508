@@ -50,4 +50,16 @@ namespace NCL::CSC8503 {
 			size = sizeof(ShootPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct ImpactPacket : public GamePacket {
+		int		objectID;
+		char	teamID;
+		int		position[3];
+		char	radius;
+
+		ImpactPacket() {
+			type = Impact;
+			size = sizeof(ImpactPacket) - sizeof(GamePacket);
+		}
+	};
 }

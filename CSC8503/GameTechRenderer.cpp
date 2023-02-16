@@ -762,7 +762,7 @@ void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObj
 	if (objImpactPoints->empty()) return;
 
 	GLuint i = 0;
-	for (const ImpactPoint& point : *objImpactPoints) {
+	for (ImpactPoint& point : *objImpactPoints) {
 		char buffer[64];
 
 		sprintf_s(buffer, "impactPoints[%i].position", i);
@@ -955,11 +955,11 @@ ShaderBase* GameTechRenderer::LoadShader(const string& vertex, const string& fra
 void GameTechRenderer::SetWorld(ToonGameWorld* world)
 {
 	gameWorld = world;
-	std::set<Team*> teams = gameWorld->GetTeams();
+	std::map<int, Team*> teams = gameWorld->GetTeams();
 
 	int i = 0;
-	for (auto team : teams) {
-		teamColours[i] = team->getTeamColour();
+	for (auto& [ID, team] : teams) {
+		teamColours[i] = team->GetTeamColour();
 		i++;
 	}
 }
