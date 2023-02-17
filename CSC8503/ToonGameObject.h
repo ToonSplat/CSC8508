@@ -55,6 +55,9 @@ namespace NCL::CSC8503
 		reactphysics3d::CapsuleShape* GetCollisionShapeCapsule() const { return collisionShapeCapsule; };
 		void SetCollisionShape(reactphysics3d::CapsuleShape* RP3D_CollisionShape) { collisionShapeCapsule = RP3D_CollisionShape; }
 
+		reactphysics3d::ConcaveMeshShape* GetCollisionShapeConcave() const { return collisionShapeConcave; };
+		void SetCollisionShape(reactphysics3d::ConcaveMeshShape* RP3D_CollisionShape) { collisionShapeConcave = RP3D_CollisionShape; }
+
 		Vector3 GetPosition() const;
 		Quaternion GetOrientation() const;
 		Vector3 GetScale() const { return ToonUtils::ConvertToNCLVector3(transform.GetScale()); };
@@ -111,6 +114,7 @@ namespace NCL::CSC8503
 		reactphysics3d::BoxShape* collisionShapeBox;
 		reactphysics3d::SphereShape* collisionShapeSphere;
 		reactphysics3d::CapsuleShape* collisionShapeCapsule;
+		reactphysics3d::ConcaveMeshShape* collisionShapeConcave;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
 

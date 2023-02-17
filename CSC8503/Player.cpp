@@ -67,7 +67,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 
 	float animAngle = RadiansToDegrees(atan2(controls->animDir[1] / 1000.0f, controls->animDir[0] / 1000.0f));
 	if (animAngle < 0.0f) animAngle += 360.0f;
-	std::cout << animAngle << std::endl;
+	//std::cout << animAngle << std::endl;
 
 	if (isAiming)
 	{

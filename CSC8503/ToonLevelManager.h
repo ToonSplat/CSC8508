@@ -64,6 +64,8 @@ namespace NCL
 			bool LoadLevel();
 			bool LoadPrototypeLevel();
 
+			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
+
 			Axes selectedAxes = Axes::None;
 
 			inline void SetSelectedAxes(Axes axes) {
@@ -84,8 +86,8 @@ namespace NCL
 
 			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f);
 			PaintableObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass = 1.0f);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition, const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, Vector4 minimapColour = Vector4(0,0,0,1));
-
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;
