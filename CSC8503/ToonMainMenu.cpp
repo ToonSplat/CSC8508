@@ -83,7 +83,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
 		*newState = m_Game;
-		//m_mainMenuData[0].text = "Resume";
 		break;
 	case MULTIPLAY:
 		*newState = GetSubMenuSceenObject();
@@ -97,7 +96,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case LAUNCHASSERVER:
 		*newState = GetUserInputScreenObject();
 		break;
-		//return PushdownResult::NoChange;
 	case LAUNCHASCLIENT:
 		return PushdownResult::NoChange;
 	case SETSERVERIP:
@@ -106,8 +104,8 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		return PushdownResult::Pop;
 	case LAUNCHASSERVERAFTERIPADDRESSINPUT:
 		std::string text = m_UserInputScreenObject->GetUserInputText();
-		m_Game = new ToonGame(m_Renderer);
-		*newState = m_Game;
+		m_Game			 = new ToonGame(m_Renderer);
+		*newState		 = m_Game;
 		break;
 	}
 	return PushdownResult::Push;
@@ -121,8 +119,8 @@ ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 
 ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
 {
-	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize(), 
-		[&](std::string inputStringText) 
+	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(35, 20), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize(),
+		[&](std::string inputStringText, bool* showError)
 		{
 			std::cout << inputStringText << std::endl;
 			bool isValidIPAddress = std::regex_match(inputStringText, std::regex("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
@@ -130,13 +128,16 @@ ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
 			{
 				m_HasUserInitiatedScreenNavigation = true;
 				m_CurrentSelectedIndex			   = GameStates::LAUNCHASSERVERAFTERIPADDRESSINPUT;
+				*showError						   = false;
+				return PushdownResult::Pop;
 			}
 			else
 			{
-				//TODO : 1)Handle case for invalid IP address input. 
-				//		 2) Callback return type to be changed, in order to remain on the same state with error message
+				*showError = true;
+				return PushdownResult::NoChange;
 			}
-		}); 
+			return PushdownResult::NoChange;
+		}, "Please enter a valid IP Address.");
 	}
 	return m_UserInputScreenObject;
 }
