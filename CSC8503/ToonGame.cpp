@@ -52,7 +52,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 	world->GetMainCamera()->UpdateCamera(dt);
-	if(world->GetMinimapCamera())
+	if (world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 
@@ -64,7 +64,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 	// This next line is an abomination and should be refactored by Ryan
-	else if(player) {
+	else if (player) {
 		player->SetAiming(playerControl->aiming);
 	}
 
@@ -121,23 +121,4 @@ void NCL::CSC8503::ToonGame::OnAwake()
 {
 	Window::GetWindow()->ShowOSPointer(false);
 	Window::GetWindow()->LockMouseToWindow(true);
-}
-
-PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
-{
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
-		return PushdownResult::Pop;
-	if (dt > 0.1f)
-	{
-		std::cout << "Skipping large time delta" << std::endl;
-		return PushdownResult::NoChange; //must have hit a breakpoint or something to have a 1 second frame time!
-	}
-	UpdateGame(dt);
-
-	return PushdownResult::NoChange;
-}
-
-void NCL::CSC8503::ToonGame::OnAwake()
-{
-	Window::GetWindow()->ShowOSPointer(false);
 }

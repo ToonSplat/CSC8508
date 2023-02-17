@@ -103,7 +103,8 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = m_Game;
 		break;
 	case SETSERVERIP:
-		return PushdownResult::NoChange;
+		*newState = GetUserInputScreenObject();
+		break;
 	case BACK:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVERAFTERIPADDRESSINPUT:
