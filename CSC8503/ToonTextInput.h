@@ -29,7 +29,14 @@ class ToonTextInput : public PushdownState
 		std::string																	m_ErrorMessageText;
 
 	public:
-		ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer, Vector2 windowSize, std::function<PushdownState::PushdownResult(std::string, bool* showError)> doneButtonClosure, std::string errorMessage = "", ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress, Vector4 focusColour = Debug::BLUE, Vector4 unfocusColour = Debug::WHITE);
+		ToonTextInput(Coordinates coordinates,
+					  GameTechRenderer* renderer,
+					  Vector2 windowSize,
+					  std::function<PushdownState::PushdownResult(std::string, bool* showError)> doneButtonClosure,
+					  std::string errorMessage = "",
+					  ToonVirtualKeyboard::KeyboardInputType inputType = ToonVirtualKeyboard::KeyboardInputType::IPAddress,
+					  Vector4 focusColour = Debug::BLUE,
+					  Vector4 unfocusColour = Debug::WHITE);
 		~ToonTextInput();
 		void UpdatePosition(Coordinates newCoordinates);
 		void DrawUserInputText();

@@ -55,6 +55,11 @@ PushdownState::PushdownResult ToonTextInput::OnUpdate(float dt, PushdownState** 
 	Debug::UpdateRenderables(dt);
 	Debug::DrawQuad(m_Coordinates.origin, m_Coordinates.size, Debug::BLUE);
 	DrawUserInputText();
+	if (m_VirtualKeyboard->m_HasUserClickedBackButton)
+	{
+		m_VirtualKeyboard->m_HasUserClickedBackButton = false;
+		return PushdownState::PushdownResult::Pop;
+	}
 	if (m_VirtualKeyboard->m_HasUserClickedDoneButton)
 	{
 		m_VirtualKeyboard->m_HasUserClickedDoneButton = false;

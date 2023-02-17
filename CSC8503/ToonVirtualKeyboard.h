@@ -54,7 +54,8 @@ class ToonVirtualKeyboard
 		{
 			DeleteActionKey = 26,
 			SpaceActionKey  = 27,
-			DoneActionKey   = 100
+			DoneActionKey   = 100,
+			BackButton		= 200
 		};
 
 		std::string		  m_UserInputText;
@@ -68,10 +69,11 @@ class ToonVirtualKeyboard
 		Vector2			  m_MouseLastPosition	  = Vector2(0.0f, 0.0f);
 		Vector2			  m_MousePositionWithinBounds;
 
-		std::vector<std::vector<KeyData>> keys;
+		std::vector<std::vector<KeyData>> m_Keys;
 
 	public:
 		bool m_HasUserClickedDoneButton = false;
+		bool m_HasUserClickedBackButton = false;
 
 	public:
 		ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
@@ -90,5 +92,4 @@ class ToonVirtualKeyboard
 		void WakeMouseOnMovement();
 		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
 		bool IsMouseInsideKeyboardArea(int mouseX, int mouseY);
-		void UpdateIPAddressText();
 };
