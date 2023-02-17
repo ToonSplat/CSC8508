@@ -103,6 +103,7 @@ int main()
 	ImGui_ImplOpenGL3_Init();
 
 	//OpenAL
+	NCL::CSC8503::AudioSystem::Initialise();
 	AddAudioFiles();
 
 	if (!w->HasInitialised()) {
