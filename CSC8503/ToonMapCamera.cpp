@@ -14,10 +14,10 @@ NCL::CSC8503::ToonMapCamera::ToonMapCamera()
 	nearPlane = -1.0f;
 	farPlane = 10000.0f;
 
-	left = -width / 2.0;
-	right = width / 2.0;
-	top = height / 2.0;
-	bottom = -height / 2.0;
+	left = -width / 2.0f;
+	right = width / 2.0f;
+	top = height / 2.0f;
+	bottom = -height / 2.0f;
 
 	left = left / zoomFactor;
 	right = right / zoomFactor;

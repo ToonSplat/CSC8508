@@ -66,10 +66,10 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                 for (PaintableObject* p : gameWorld->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
                         Vector3 localPosition;
-                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - 
+                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
                             p->GetRigidbody()->getTransform().getPosition());
                         p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
-                        if (server) 
+                        if (server)
                             server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }
                 }
