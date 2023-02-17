@@ -272,8 +272,9 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	gameWorld->AddGameObject(player);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic")));
-	player->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1));
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("goat"), GetTexture("basicPurple"), GetShader("basic"), GetMesh("sphere")));
+	player->GetRenderObject()->SetColour(Vector4(team->getTeamColour(), 1));
+
 
 	return player;
 }
