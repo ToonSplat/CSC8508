@@ -46,6 +46,10 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
+                //make an audio play on collision
+                i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
+                AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+
                 // Make the HitSphere if local play or the server
                 if(gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
                     levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());

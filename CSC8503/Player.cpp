@@ -13,12 +13,15 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	moveSpeed = 1500.0f;
 	rotationSpeed = 6.0f;
 	aimingSpeed = 10.0f;
+
+	audiosystem = AudioSystem::GetAudioSystem();
+	MusicInitTest();
 }
 
 Player::~Player() 
 {
 	team->RemovePlayer();
-	delete team;
+	delete musicPlayer;
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
@@ -49,6 +52,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 		controls->jumping = false;
 	}
+	audiosystem->Update(dt);
+	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
+	MusicUpdateTest();
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
@@ -56,4 +62,23 @@ void Player::SetWeapon(PaintBallClass* base) {
 	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
+}
+
+void Player::MusicUpdateTest() {
+	musicPlayer->SetTarget(ToonUtils::ConvertToNCLVector3(GetTransform().GetPosition()));
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
+		musicPlayer->Play();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
+		musicPlayer->Pause();
+	}
+}
+
+void Player::MusicInitTest() {
+	musicPlayer = new AudioEmitter();
+	musicPlayer->SetLooping(true);
+	musicPlayer->SetPriority(SoundPriority::ALWAYS);
+	musicPlayer->SetSound(Audio::GetSound("tune.wav"));
+	musicPlayer->SetVolume(1.0f);
+	audiosystem->AddSoundEmitter(musicPlayer);
 }
