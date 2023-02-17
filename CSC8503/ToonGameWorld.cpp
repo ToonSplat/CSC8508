@@ -62,7 +62,9 @@ void NCL::CSC8503::ToonGameWorld::RemoveGameObject(ToonGameObject* o, bool andDe
 {
 	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), o), gameObjects.end());
 	if (andDelete) {
-		delete o;
+		if (dynamic_cast<Player*>(o))
+			delete (Player*)o;
+		else delete o;
 	}
 	worldStateCounter++;
 }
