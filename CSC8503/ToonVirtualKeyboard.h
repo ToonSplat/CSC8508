@@ -52,9 +52,9 @@ class ToonVirtualKeyboard
 
 		enum ActionKeysIdentifiers
 		{
-			Delete = 26,
-			Space  = 27,
-			Done   = 100
+			DeleteActionKey = 26,
+			SpaceActionKey  = 27,
+			DoneActionKey   = 100
 		};
 
 		std::string		  m_UserInputText;

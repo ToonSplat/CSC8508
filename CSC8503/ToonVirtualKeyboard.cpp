@@ -16,12 +16,12 @@ void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 	if (m_KeyboardInputType == IPAddress) { UpdateIPAddressText(); }
 	if ((m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
 	{
-		if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 26)
+		if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::DeleteActionKey)
 		{
 			if (m_UserInputText.length()) { m_UserInputText.pop_back(); }
 		}
-		else if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 27) { m_UserInputText += " "; }
-		else if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 100) { m_HasUserClickedDoneButton = true; }
+		else if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::SpaceActionKey) { m_UserInputText += " "; }
+		else if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::DoneActionKey) { m_HasUserClickedDoneButton = true; }
 		else { m_UserInputText += keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].text; }
 	}
 	if (m_KeyboardInputType != IPAddress) {  }
@@ -81,7 +81,7 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
 	std::string keyString	   = "Delete";
 	Coordinates keyCoordinates = Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
-	keys[keys.size() - 1].push_back(KeyData(keyString, keyCoordinates, 26));
+	keys[keys.size() - 1].push_back(KeyData(keyString, keyCoordinates, ActionKeysIdentifiers::DeleteActionKey));
 	//Adding Space bar
 	startY					  += KEY_BUTTON_DEFAULT_SIZE + padding;
 	startX					   = m_Coordinates.origin.x;
@@ -89,7 +89,7 @@ void ToonVirtualKeyboard::InitializeAlphabeticKeyboard()
 	m_Coordinates.size.y	   = startY + KEY_BUTTON_DEFAULT_SIZE;
 	std::string spaceKeyString = "Space";
 	keyCoordinates			   = Coordinates(Vector2(startX, startY), Vector2(SPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE));
-	singleRowKeys.push_back(KeyData(spaceKeyString, keyCoordinates, 27));
+	singleRowKeys.push_back(KeyData(spaceKeyString, keyCoordinates, ActionKeysIdentifiers::SpaceActionKey));
 	keys.push_back(singleRowKeys);
 }
 
@@ -126,7 +126,7 @@ void ToonVirtualKeyboard::InitializeIPAddressKeyboard()
 	if (!singleRowsKeys.empty()) { keys.push_back(singleRowsKeys); }
 	//Adding 0
 	startY		  += KEY_BUTTON_DEFAULT_SIZE + padding;
-	startX		   = initialX;// m_Coordinates.origin.x + ((m_Coordinates.size.x - KEY_BUTTON_DEFAULT_SIZE) / 2);
+	startX		   = initialX;
 	singleRowsKeys = std::vector<KeyData>();
 	singleRowsKeys.push_back(KeyData("0", Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE)), 0));
 	// Adding .
@@ -135,23 +135,23 @@ void ToonVirtualKeyboard::InitializeIPAddressKeyboard()
 	//Delete button
 	startX += KEY_BUTTON_DEFAULT_SIZE + padding;
 	Coordinates keyCoordinates = Coordinates(Vector2(startX, startY), Vector2(KEY_BUTTON_DEFAULT_SIZE, KEY_BUTTON_DEFAULT_SIZE));
-	singleRowsKeys.push_back(KeyData("<-", keyCoordinates, 26));
+	singleRowsKeys.push_back(KeyData("<-", keyCoordinates, ActionKeysIdentifiers::DeleteActionKey));
 	keys.push_back(singleRowsKeys);
 	//Adding Done Button
 	startY += KEY_BUTTON_DEFAULT_SIZE + padding;
 	startX  = initialX;
 	singleRowsKeys = std::vector<KeyData>();
-	singleRowsKeys.push_back(KeyData("Done", Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE)), 100));
+	singleRowsKeys.push_back(KeyData("Done", Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE)), ActionKeysIdentifiers::DoneActionKey));
 	keys.push_back(singleRowsKeys);
 	m_Coordinates.size.y = startY + KEY_BUTTON_DEFAULT_SIZE - m_Coordinates.origin.y;
 }
 
 void ToonVirtualKeyboard::DrawKeyboard()
 {
-	Vector2 mousePosition			  = Window::GetMouse()->GetWindowPosition();
-	float	y						  = ((mousePosition.y / m_WindowSize.y) * 100);
-	float	x						  = ((mousePosition.x / m_WindowSize.x) * 100);
-	m_MousePositionWithinBounds		  = Vector2(x, y);
+	Vector2 mousePosition		= Window::GetMouse()->GetWindowPosition();
+	float	y					= ((mousePosition.y / m_WindowSize.y) * 100);
+	float	x					= ((mousePosition.x / m_WindowSize.x) * 100);
+	m_MousePositionWithinBounds	= Vector2(x, y);
 
 	unsigned int rowIndex = 0;
 	for (std::vector<KeyData> keysRow : keys)
