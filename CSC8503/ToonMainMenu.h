@@ -24,7 +24,7 @@ class ToonMainMenu : public PushdownState
 		LAUNCHASCLIENT,
 		SETSERVERIP,
 		BACK,
-		LAUNCHASSERVERAFTERIPADDRESSINPUT
+		PLAYAFTERSERIPSET
 	};
 
 	struct MenuCoordinates
