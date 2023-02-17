@@ -742,8 +742,15 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
 
-		BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		MeshGeometry* boundMesh = nullptr;
+		if (shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr) {
+			boundMesh = (*i).GetRenderObject()->GetMinimapMesh();
+		}
+		else {
+			boundMesh = (*i).GetRenderObject()->GetMesh();
+		}
+		BindMesh(boundMesh);
+		int layerCount = boundMesh->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
 		}
