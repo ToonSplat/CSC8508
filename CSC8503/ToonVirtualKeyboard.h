@@ -50,6 +50,13 @@ class ToonVirtualKeyboard
 			bool operator==(Index2D rValue) { return ((row == rValue.row) && (coloumn == rValue.coloumn)); }
 		};
 
+		enum ActionKeysIdentifiers
+		{
+			Delete = 26,
+			Space  = 27,
+			Done   = 100
+		};
+
 		std::string		  m_UserInputText;
 		Coordinates		  m_Coordinates;
 		KeyboardInputType m_KeyboardInputType;
@@ -62,10 +69,12 @@ class ToonVirtualKeyboard
 		Vector2			  m_MousePositionWithinBounds;
 
 		std::vector<std::vector<KeyData>> keys;
-		std::function<void(std::string)>  m_doneButtonClosure;
 
 	public:
-		ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, std::function<void(std::string)> doneButtonClosure, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
+		bool m_HasUserClickedDoneButton = false;
+
+	public:
+		ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType = KeyboardInputType::IPAddress);
 		std::string GetUserInputText();
 		void UpdateAndHandleInputEvents();
 

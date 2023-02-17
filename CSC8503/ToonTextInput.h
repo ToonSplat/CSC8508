@@ -30,6 +30,7 @@ class ToonTextInput : public PushdownState
 		~ToonTextInput();
 		void UpdatePosition(Coordinates newCoordinates);
 		void DrawUserInputText();
+		std::string GetUserInputText();
 		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 		void OnAwake() override;
 		void OnSleep() override;

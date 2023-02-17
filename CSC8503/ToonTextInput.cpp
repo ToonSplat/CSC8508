@@ -4,7 +4,7 @@ ToonTextInput::ToonTextInput(Coordinates coordinates, GameTechRenderer* renderer
 {
 	Coordinates keyboardCoordinates  = m_Coordinates;
 	keyboardCoordinates.origin.y	+= keyboardCoordinates.size.y;
-	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize, m_doneButtonClosure);
+	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize);
 }
 
 ToonTextInput::~ToonTextInput()
@@ -24,6 +24,11 @@ void ToonTextInput::DrawUserInputText()
 	Debug::Print(m_InputText, inputTextCoordinates, Debug::GREEN);
 }
 
+std::string ToonTextInput::GetUserInputText()
+{
+	return m_InputText;
+}
+
 PushdownState::PushdownResult ToonTextInput::OnUpdate(float dt, PushdownState** newState)
 {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { return PushdownResult::Pop; }
@@ -34,6 +39,12 @@ PushdownState::PushdownResult ToonTextInput::OnUpdate(float dt, PushdownState** 
 	Debug::UpdateRenderables(dt);
 	Debug::DrawQuad(m_Coordinates.origin, m_Coordinates.size, Debug::BLUE);
 	DrawUserInputText();
+	if (m_VirtualKeyboard->m_HasUserClickedDoneButton)
+	{
+		m_VirtualKeyboard->m_HasUserClickedDoneButton = false;
+		m_doneButtonClosure(m_VirtualKeyboard->GetUserInputText());
+		return PushdownState::PushdownResult::Pop;
+	}
 	return PushdownState::PushdownResult::NoChange;
 }
 

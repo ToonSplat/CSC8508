@@ -22,7 +22,8 @@ class ToonMainMenu : public PushdownState
 		LAUNCHASSERVER,
 		LAUNCHASCLIENT,
 		SETSERVERIP,
-		BACK
+		BACK,
+		LAUNCHASSERVERAFTERIPADDRESSINPUT
 	};
 
 	struct MenuCoordinates
@@ -64,6 +65,7 @@ private:
 	int							m_CurrentSelectedIndex = 0;
 
 	ToonTextInput*				m_UserInputScreenObject = NULL;	//Test
+	bool						m_HasUserInitiatedScreenNavigation = false;
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);

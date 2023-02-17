@@ -40,7 +40,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { return PushdownResult::Pop; }	//Keeping it to quit game on escape key press
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || m_HasUserInitiatedScreenNavigation)
 	{
 		return NavigateToScreen(newState);
 	}
@@ -76,6 +76,7 @@ bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenu
 
 PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** newState)
 {
+	m_HasUserInitiatedScreenNavigation = false;
 	switch (m_CurrentSelectedIndex + m_BaseCurrentSelectdIndex)
 	{
 	case PLAY:
@@ -102,6 +103,11 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		return PushdownResult::NoChange;
 	case BACK:
 		return PushdownResult::Pop;
+	case LAUNCHASSERVERAFTERIPADDRESSINPUT:
+		std::string text = m_UserInputScreenObject->GetUserInputText();
+		m_Game = new ToonGame(m_Renderer);
+		*newState = m_Game;
+		break;
 	}
 	return PushdownResult::Push;
 }
@@ -115,11 +121,16 @@ ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
 {
 	if (!m_UserInputScreenObject) { m_UserInputScreenObject = new ToonTextInput(Coordinates(Vector2(50, 40), Vector2(30, 5)), m_Renderer, m_Window->GetScreenSize(), 
-		[](std::string inputStringText) 
+		[&](std::string inputStringText) 
 		{
 			std::cout << inputStringText << std::endl;
 			bool isValid = std::regex_match(inputStringText, std::regex("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
 			std::cout << (isValid ? "Valid" : "Invalid") << " Regex" << std::endl;
+			if (isValid)
+			{
+				m_HasUserInitiatedScreenNavigation = true;
+				m_CurrentSelectedIndex			   = 4;
+			}
 		}); }
 	return m_UserInputScreenObject;
 }

@@ -1,6 +1,6 @@
 #include "ToonVirtualKeyboard.h"
 
-ToonVirtualKeyboard::ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, std::function<void(std::string)> doneButtonClosure, KeyboardInputType keyboardInputType) : m_Coordinates(coordinates), m_WindowSize(windowSize), m_doneButtonClosure(doneButtonClosure), m_KeyboardInputType(keyboardInputType), m_UserInputText(""), m_CurrentSelectedKeyIndex(Index2D(0, 0)), m_FocusColour(Debug::GREEN), m_UnfocusColour(Debug::WHITE)
+ToonVirtualKeyboard::ToonVirtualKeyboard(Coordinates coordinates, Vector2 windowSize, KeyboardInputType keyboardInputType) : m_Coordinates(coordinates), m_WindowSize(windowSize), m_KeyboardInputType(keyboardInputType), m_UserInputText(""), m_CurrentSelectedKeyIndex(Index2D(0, 0)), m_FocusColour(Debug::GREEN), m_UnfocusColour(Debug::WHITE)
 {
 	CreateKeyboard();
 }
@@ -21,7 +21,7 @@ void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 			if (m_UserInputText.length()) { m_UserInputText.pop_back(); }
 		}
 		else if (m_KeyboardInputType != IPAddress && keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 27) { m_UserInputText += " "; }
-		else if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 100) { m_doneButtonClosure(m_UserInputText); }
+		else if (keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == 100) { m_HasUserClickedDoneButton = true; }
 		else { m_UserInputText += keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].text; }
 	}
 	if (m_KeyboardInputType != IPAddress) {  }
@@ -143,7 +143,7 @@ void ToonVirtualKeyboard::InitializeIPAddressKeyboard()
 	singleRowsKeys = std::vector<KeyData>();
 	singleRowsKeys.push_back(KeyData("Done", Coordinates(Vector2(startX, startY), Vector2(BACKSPACE_BUTTON_WIDTH, KEY_BUTTON_DEFAULT_SIZE)), 100));
 	keys.push_back(singleRowsKeys);
-	m_Coordinates.size.y = startY + KEY_BUTTON_DEFAULT_SIZE;
+	m_Coordinates.size.y = startY + KEY_BUTTON_DEFAULT_SIZE - m_Coordinates.origin.y;
 }
 
 void ToonVirtualKeyboard::DrawKeyboard()
