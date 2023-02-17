@@ -95,11 +95,11 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-		m_Game = new ToonNetworkedGame(m_Renderer);
+		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
-		m_Game = new ToonNetworkedGame(m_Renderer, 127, 0, 0, 1);
+		m_Game    = new ToonNetworkedGame(m_Renderer, 127, 0, 0, 1);
 		*newState = m_Game;
 		break;
 	case SETSERVERIP:
@@ -108,11 +108,10 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case BACK:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVERAFTERIPADDRESSINPUT:
-		std::string text = m_UserInputScreenObject->GetUserInputText();
 		std::vector<int> ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
-		m_Game			 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
-		*newState		 = m_Game;
+		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
+		*newState						 = m_Game;
 		break;
 	}
 	return PushdownResult::Push;
