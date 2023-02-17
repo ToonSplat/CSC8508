@@ -52,7 +52,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 	world->GetMainCamera()->UpdateCamera(dt);
-	if(world->GetMinimapCamera())
+	if (world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 
@@ -64,7 +64,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 	// This next line is an abomination and should be refactored by Ryan
-	else if(player) {
+	else if (player) {
 		player->SetAiming(playerControl->aiming);
 	}
 

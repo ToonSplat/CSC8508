@@ -353,6 +353,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	glDisable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
 	NewRenderText();
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
@@ -809,6 +810,38 @@ void GameTechRenderer::NewRenderLines() {
 	glUniform1i(texSlot, 0);
 
 	glUniformMatrix4fv(matSlot, 1, false, (float*)viewProj.array);
+
+	debugLineData.clear();
+
+	int frameLineCount = (int)lines.size() * 2;
+
+	SetDebugLineBufferSizes(frameLineCount);
+
+	glBindBuffer(GL_ARRAY_BUFFER, lineVertVBO);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, lines.size() * sizeof(Debug::DebugLineEntry), lines.data());
+
+
+	glBindVertexArray(lineVAO);
+	glDrawArrays(GL_LINES, 0, frameLineCount);
+	glBindVertexArray(0);
+}
+
+void GameTechRenderer::NewRenderLinesOnOrthographicView()
+{
+	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetOrthographicViewLines();
+	if (lines.empty()) {
+		return;
+	}
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+
+	Matrix4 proj = Matrix4::Orthographic(0.0, 100.0f, 100, 0, -1.0f, 1.0f);
+
+	BindShader(debugShader);
+	int matSlot = glGetUniformLocation(debugShader->GetProgramID(), "viewProjMatrix");
+	GLuint texSlot = glGetUniformLocation(debugShader->GetProgramID(), "useTexture");
+	glUniform1i(texSlot, 0);
+
+	glUniformMatrix4fv(matSlot, 1, false, (float*)proj.array);
 
 	debugLineData.clear();
 
