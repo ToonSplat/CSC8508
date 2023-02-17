@@ -83,7 +83,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
 		*newState = m_Game;
-		//m_mainMenuData[0].text = "Resume";
 		break;
 	case MULTIPLAY:
 		*newState = GetSubMenuSceenObject();
@@ -99,10 +98,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
-		m_Game    = new ToonNetworkedGame(m_Renderer, 127, 0, 0, 1);
-		*newState = m_Game;
-		break;
-	case SETSERVERIP:
 		*newState = GetUserInputScreenObject();
 		break;
 	case BACK:

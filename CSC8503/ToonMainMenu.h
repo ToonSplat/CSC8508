@@ -22,7 +22,6 @@ class ToonMainMenu : public PushdownState
 		QUIT,
 		LAUNCHASSERVER,
 		LAUNCHASCLIENT,
-		SETSERVERIP,
 		BACK,
 		PLAYAFTERSERIPSET
 	};
@@ -60,12 +59,11 @@ private:
 	std::vector<MenuDataStruct> m_SubMainMenuData = {
 																MenuDataStruct("Launch As Server", MenuCoordinates(Vector2(5, 35), Vector2(80, 10)), m_NormalTextColour),
 																MenuDataStruct("Launch As Client", MenuCoordinates(Vector2(5, 45), Vector2(80, 10)), m_NormalTextColour),
-																MenuDataStruct("Set Server IP",	   MenuCoordinates(Vector2(5, 55), Vector2(80, 10)), m_NormalTextColour),
-																MenuDataStruct("Back",			   MenuCoordinates(Vector2(5, 65), Vector2(80, 10)), m_NormalTextColour)
+																MenuDataStruct("Back",			   MenuCoordinates(Vector2(5, 55), Vector2(80, 10)), m_NormalTextColour)
 	};
 	int							m_CurrentSelectedIndex = 0;
 
-	ToonTextInput*				m_UserInputScreenObject = NULL;	//Test
+	ToonTextInput*				m_UserInputScreenObject = NULL;
 	bool						m_HasUserInitiatedScreenNavigation = false;
 
 public:
