@@ -45,6 +45,26 @@ std::string ToonTextInput::GetUserInputText()
 	return m_InputText;
 }
 
+std::vector<int> ToonTextInput::GetSeparatedIPAddressComponents(char delimiter)
+{
+	std::vector<int> ipAddressVector;
+	int				 number = 0;
+	for (char c : m_InputText)
+	{
+		if (c == delimiter)
+		{
+			ipAddressVector.push_back(number);
+			number = 0;
+			continue;
+		}
+		int digit = c - '0';
+		if (!(digit > -1 && digit < 10)) { return std::vector<int>(); }
+		number = (number * 10) + digit;
+	}
+	ipAddressVector.push_back(number);
+	return ipAddressVector;
+}
+
 PushdownState::PushdownResult ToonTextInput::OnUpdate(float dt, PushdownState** newState)
 {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { return PushdownResult::Pop; }

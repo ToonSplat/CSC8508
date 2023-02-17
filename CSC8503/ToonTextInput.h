@@ -41,6 +41,7 @@ class ToonTextInput : public PushdownState
 		void UpdatePosition(Coordinates newCoordinates);
 		void DrawUserInputText();
 		std::string GetUserInputText();
+		std::vector<int> GetSeparatedIPAddressComponents(char delimiter = '.');
 		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 		void OnAwake() override;
 		void OnSleep() override;
