@@ -1,9 +1,10 @@
-#include "Camera.h"
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
 #include "Window.h"
 #include "PaintableObject.h"
 #include "PaintBallProjectile.h"
+#include "Player.h"
+#include "ToonEventListener.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -12,25 +13,29 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
-	teams.insert(new Team("The Green Gulls", Vector3(0, 1.0f, 0)));
-	teams.insert(new Team("The Purple Panthers", Vector3(1.0f, 0, 1.0f)));
+	teams.emplace(0, new Team("The Green Gulls", Vector3(0, 1.0f, 0), 0));
+	teams.emplace(1, new Team("The Purple Panthers", Vector3(1.0f, 0, 1.0f), 1));
 	mainCamera = new Camera();
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
+	ClearAndErase();
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
 	delete mainCamera;
 	delete minimapCamera;
-	for (auto& team : teams)
+	for (auto& [id, team] : teams)
 		delete team;
 }
 
 void NCL::CSC8503::ToonGameWorld::Clear()
 {
 	gameObjects.clear();
+	paintableObjects.clear();
 	activePaintballs.clear();
+	activeHitSpheres.clear();
+	objectsToDelete.clear();
 	worldIDCounter = 0;
 	worldStateCounter = 0;
 }
@@ -38,10 +43,9 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
-		delete i;
-	}
-	for (auto& i : activePaintballs) {
-		delete i;
+		if (dynamic_cast<Player*>(i))
+			delete (Player*)i;
+		else delete i;
 	}
 	
 	Clear();
@@ -58,12 +62,15 @@ void NCL::CSC8503::ToonGameWorld::RemoveGameObject(ToonGameObject* o, bool andDe
 {
 	gameObjects.erase(std::remove(gameObjects.begin(), gameObjects.end(), o), gameObjects.end());
 	if (andDelete) {
-		delete o;
+		if (dynamic_cast<Player*>(o))
+			delete (Player*)o;
+		else delete o;
 	}
 	worldStateCounter++;
 }
 
 void ToonGameWorld::AddPaintball(PaintBallProjectile* paintball) {
+	AddGameObject(paintball);
 	activePaintballs.emplace(paintball);
 }
 void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {
@@ -125,11 +132,11 @@ void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)
 
 Team* NCL::CSC8503::ToonGameWorld::GetTeamLeastPlayers()
 {
-	Team* weakestTeam = *teams.begin();
-	int lowestPlayerCount = weakestTeam->getPlayerCount();
-	for (Team* team : teams) {
-		if (team->getPlayerCount() < lowestPlayerCount) {
-			lowestPlayerCount = team->getPlayerCount();
+	Team* weakestTeam = teams[1];
+	int lowestPlayerCount = weakestTeam->GetPlayerCount();
+	for (auto& [ID, team] : teams) {
+		if (team->GetPlayerCount() < lowestPlayerCount) {
+			lowestPlayerCount = team->GetPlayerCount();
 			weakestTeam = team;
 		}
 	}

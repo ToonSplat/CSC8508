@@ -10,6 +10,7 @@ namespace NCL {
 			~GameServer();
 
 			bool Initialise();
+			void RemoveClients();
 			void Shutdown();
 
 			void SetGameWorld(GameWorld& g);

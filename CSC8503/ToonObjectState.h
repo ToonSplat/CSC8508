@@ -14,11 +14,11 @@ namespace NCL {
 
 			// TODO: Replace with shorts, Vecs/Quats use floating points and are big!
 
-			int	position[3];
-			int	orientation[4];
+			int		position[3];
+			short	orientation[4];
 
-			int	linVelocity[3];
-			int	angVelocity[3];
+			int		linVelocity[3];
+			int		angVelocity[3];
 			int							stateID;
 		};
 	}

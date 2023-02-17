@@ -20,20 +20,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	levelManager = new ToonLevelManager(renderer, world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
-	if (offline) {
-		world->SetNetworkStatus(NetworkingStatus::Offline);
-		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
-		playerControl = new PlayerControl();
-		player->SetWeapon(baseWeapon);
-		world->SetMainCamera(new ToonFollowCamera(world, player));
-		world->SetMinimapCamera(new ToonMinimapCamera(*player));
-	}
-	else {
-		world->SetMainCamera(new Camera());
-	}
-	world->SetMapCamera(new ToonMapCamera());
-	accumulator = 0.0f;
-	showCursor = false;
+	StartGame();
 }
 
 NCL::CSC8503::ToonGame::~ToonGame()
@@ -44,6 +31,24 @@ NCL::CSC8503::ToonGame::~ToonGame()
 	delete playerControl;
 }
 
+void ToonGame::StartGame() {
+	if (offline) {
+		levelManager->ResetLevel();
+		world->SetNetworkStatus(NetworkingStatus::Offline);
+		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+		playerControl = new PlayerControl();
+		player->SetWeapon(baseWeapon);
+		world->SetMainCamera(new ToonFollowCamera(world, player));
+		world->SetMinimapCamera(new ToonMinimapCamera(*player));
+	}
+	else {
+		levelManager->ResetLevel();
+		world->SetMainCamera(new Camera());
+	}
+	world->SetMapCamera(new ToonMapCamera());
+	accumulator = 0.0f;
+}
+
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 {
 
@@ -51,9 +56,12 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
-
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
+		StartGame();
+		return;
+	}
 	world->GetMainCamera()->UpdateCamera(dt);
-	if(world->GetMinimapCamera())
+	if (world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
 
@@ -65,7 +73,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		}
 	}
 	// This next line is an abomination and should be refactored by Ryan
-	else if(player) {
+	else if (player) {
 		player->SetAiming(playerControl->aiming);
 	}
 
@@ -104,9 +112,9 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }
 
-PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, PushdownState** newState)
+PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE))
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
 		return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{
@@ -121,4 +129,5 @@ PushdownState::PushdownResult NCL::CSC8503::ToonGame::OnUpdate(float dt, Pushdow
 void NCL::CSC8503::ToonGame::OnAwake()
 {
 	Window::GetWindow()->ShowOSPointer(false);
+	Window::GetWindow()->LockMouseToWindow(true);
 }

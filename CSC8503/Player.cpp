@@ -17,7 +17,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 
 Player::~Player() 
 {
-	delete team;
+	team->RemovePlayer();
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
@@ -26,7 +26,7 @@ bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
-	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 10000.0f, controls->direction[1] / 10000.0f, controls->direction[2] / 10000.0f);
+	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, controls->direction[1] / 1000.0f, controls->direction[2] / 1000.0f);
 	linearMovement.normalize();
 
 	isMoving = linearMovement.length() >= 0.1f;

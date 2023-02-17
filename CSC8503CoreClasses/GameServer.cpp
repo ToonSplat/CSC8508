@@ -11,6 +11,7 @@ GameServer::GameServer(int onPort, int maxClients) {
 	clientMax = maxClients;
 	clientCount = 0;
 	netHandle = nullptr;
+	playerMap.clear();
 	Initialise();
 }
 
@@ -18,8 +19,15 @@ GameServer::~GameServer() {
 	Shutdown();
 }
 
+void GameServer::RemoveClients() {
+	ENetEvent event;
+	for (auto& [ID, peer] : playerMap) {
+		DisconnectPacket disconnect(ID);
+		SendPacketToClient(disconnect, ID, true);
+	}
+}
+
 void GameServer::Shutdown() {
-	SendGlobalPacket(BasicNetworkMessages::Shutdown);
 	enet_host_destroy(netHandle);
 	netHandle = nullptr;
 }
@@ -70,8 +78,8 @@ void GameServer::UpdateServer() {
 			//std::cout << "Server: New client connected" << std::endl;
 			clientCount++;
 			playerMap.emplace(clientCount, p);
-			ConnectPacket returnPacket(clientCount, true);
-			SendPacketToClient(returnPacket, clientCount, true);
+			//ConnectPacket returnPacket(clientCount, true);
+			//SendPacketToClient(returnPacket, clientCount, true);
 			//std::cout << "Sent to " << p << " that they are client " << clientCount << std::endl;
 			ConnectPacket packet(clientCount, false);
 			ProcessPacket(&packet);

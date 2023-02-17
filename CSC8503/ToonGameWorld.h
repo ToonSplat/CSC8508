@@ -3,10 +3,10 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <unordered_set>
 #include "HitSphere.h"
+#include "Camera.h"
 
 namespace NCL
 {
-	class Camera;
 	namespace CSC8503
 	{
 		class ToonGameObject;
@@ -34,6 +34,7 @@ namespace NCL
 			void ClearAndErase();
 
 			void AddEventListener(ToonEventListener* eventListener) { this->eventListener = eventListener; }
+			ToonEventListener* GetEventListener() const { return eventListener; }
 
 			void AddGameObject(ToonGameObject* o);
 			void RemoveGameObject(ToonGameObject* o, bool andDelete = false);
@@ -75,7 +76,7 @@ namespace NCL
 
 			Team* GetTeamLeastPlayers();
 
-			std::set<Team*>& GetTeams() { return teams; }
+			std::map<int, Team*>& GetTeams() { return teams; }
 
 			NetworkingStatus GetNetworkStatus() const { return networkStatus; }
 			void SetNetworkStatus(NetworkingStatus status) { networkStatus = status;; }
@@ -97,7 +98,7 @@ namespace NCL
 			std::unordered_set<PaintableObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
-			std::set<Team*> teams;
+			std::map<int, Team*> teams;
 
 			NetworkingStatus networkStatus;
 

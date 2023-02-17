@@ -32,6 +32,7 @@ public:
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
+	Team* GetTeam() const { return team; }
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 

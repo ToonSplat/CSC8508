@@ -8,17 +8,70 @@ GameClient::GameClient() {
 }
 
 GameClient::~GameClient() {
-	enet_host_destroy(netHandle);
+	if (netHandle) 
+		enet_host_destroy(netHandle);
+	netHandle = nullptr;
 }
 
 bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum) {
 	ENetAddress address;
+	ENetEvent event;
 	address.port = portNum;
 	address.host = (d << 24) | (c << 16) | (b << 8) | (a);
 
 	netPeer = enet_host_connect(netHandle, &address, 2, 0);
 
-	return netPeer != nullptr;
+	if (netPeer == NULL)
+	{
+		std::cout << "No available peers for initiating an ENet connection.\n";
+		return false;
+	}
+	/* Wait up to 3 seconds for the connection attempt to succeed. */
+	if (enet_host_service(netHandle, &event, 3000) > 0 &&
+		event.type == ENET_EVENT_TYPE_CONNECT)
+	{
+		std::cout << "Connection to " << std::to_string(a) << "." << std::to_string(b) << "." << std::to_string(c) << "." << std::to_string(d) << ":" << portNum << " succeeded.";
+		return true;
+	}
+	else
+	{
+		/* Either the 3 seconds are up or a disconnect event was */
+		/* received. Reset the peer in the event the 3 seconds   */
+		/* had run out without any significant event.            */
+		enet_peer_reset(netPeer);
+		delete netHandle;
+		netHandle = nullptr;
+		delete netPeer;
+		netPeer = nullptr;
+		std::cout << "Connection to " << std::to_string(a) << "." << std::to_string(b) << "." << std::to_string(c) << "." << std::to_string(d) << ":" << portNum << " failed.";
+		return false;
+	}
+}
+
+void GameClient::DisconnectFromServer() {
+	if (netPeer) {
+		ENetEvent event;
+		enet_peer_disconnect(netPeer, 0);
+		/* Allow up to 3 seconds for the disconnect to succeed
+		 * and drop any packets received packets.
+		 */
+		while (enet_host_service(netHandle, &event, 3000) > 0)
+		{
+			switch (event.type)
+			{
+			case ENET_EVENT_TYPE_RECEIVE:
+				enet_packet_destroy(event.packet);
+				break;
+			case ENET_EVENT_TYPE_DISCONNECT:
+				puts("Disconnection succeeded.");
+				return;
+			}
+		}
+		/* We've arrived here, so the disconnect attempt didn't */
+		/* succeed yet.  Force the connection down.             */
+		puts("Forcefully closing connection.");
+		enet_peer_reset(netPeer);
+	}
 }
 
 void GameClient::UpdateClient() {
