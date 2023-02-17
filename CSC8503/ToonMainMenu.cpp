@@ -76,8 +76,9 @@ bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenu
 
 PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** newState)
 {
+	int navigationScreenIndex = m_CurrentSelectedIndex + (!m_HasUserInitiatedScreenNavigation ? m_BaseCurrentSelectdIndex : 0);
 	m_HasUserInitiatedScreenNavigation = false;
-	switch (m_CurrentSelectedIndex + m_BaseCurrentSelectdIndex)
+	switch (navigationScreenIndex)
 	{
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
@@ -124,14 +125,19 @@ ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
 		[&](std::string inputStringText) 
 		{
 			std::cout << inputStringText << std::endl;
-			bool isValid = std::regex_match(inputStringText, std::regex("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
-			std::cout << (isValid ? "Valid" : "Invalid") << " Regex" << std::endl;
-			if (isValid)
+			bool isValidIPAddress = std::regex_match(inputStringText, std::regex("(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)"));
+			if (isValidIPAddress)
 			{
 				m_HasUserInitiatedScreenNavigation = true;
-				m_CurrentSelectedIndex			   = 4;
+				m_CurrentSelectedIndex			   = GameStates::LAUNCHASSERVERAFTERIPADDRESSINPUT;
 			}
-		}); }
+			else
+			{
+				//TODO : 1)Handle case for invalid IP address input. 
+				//		 2) Callback return type to be changed, in order to remain on the same state with error message
+			}
+		}); 
+	}
 	return m_UserInputScreenObject;
 }
 
