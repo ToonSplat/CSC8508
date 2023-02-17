@@ -58,7 +58,7 @@ SimpleFont::~SimpleFont()
 }
 
 int SimpleFont::GetVertexCountForString(const std::string& text) {
-	return 6 * text.size();
+	return 6 * (int)text.size();
 }
 
 void SimpleFont::BuildVerticesForString(const std::string& text, const Vector2& startPos, const Vector4& colour, float size, std::vector<Vector3>&positions, std::vector<Vector2>&texCoords, std::vector<Vector4>&colours) {

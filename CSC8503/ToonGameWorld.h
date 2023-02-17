@@ -3,10 +3,10 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <unordered_set>
 #include "HitSphere.h"
+#include "Camera.h"
 
 namespace NCL
 {
-	class Camera;
 	namespace CSC8503
 	{
 		class ToonGameObject;

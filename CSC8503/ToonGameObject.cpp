@@ -28,6 +28,7 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
 	
 	delete renderObject;
+	delete networkObject;
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()

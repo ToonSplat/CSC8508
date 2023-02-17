@@ -81,11 +81,10 @@ struct MessagePacket : public GamePacket {
 	short messageID;
 	short messageValue;
 
-	MessagePacket(short ID, short value) {
+	MessagePacket(short ID) {
 		type = Message;
-		size = sizeof(short) * 2;
+		size = sizeof(MessagePacket) - sizeof(GamePacket);
 		this->messageID = ID;
-		this->messageValue = value;
 	}
 };
 

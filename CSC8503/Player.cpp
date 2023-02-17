@@ -18,7 +18,6 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 Player::~Player() 
 {
 	team->RemovePlayer();
-	delete team;
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)

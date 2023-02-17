@@ -32,6 +32,8 @@ namespace NCL
 
 			Player* GetPlayer() { return player; }
 
+			void ResetLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
+
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
@@ -61,8 +63,7 @@ namespace NCL
 			bool LoadModel(MeshGeometry** mesh, const std::string& meshFileName);
 			bool LoadTexture(TextureBase** tex, const std::string& textureFileName, const bool& invert = false);
 			bool LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader);
-			bool LoadLevel();
-			bool LoadPrototypeLevel();
+			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
 			Axes selectedAxes = Axes::None;
 

@@ -82,7 +82,6 @@ int main()
 {
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	GameTechRenderer* renderer = new GameTechRenderer();
-	ToonGameWorld* world = new ToonGameWorld();
 
 	//Imgui 
 	IMGUI_CHECKVERSION();
@@ -103,7 +102,7 @@ int main()
 	w->GetTimer()->GetTimeDeltaSeconds(); //Clear the timer so we don't get a larget first dt!
 	//TestBehaviourTree();
 
-	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, world, w);
+	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, new ToonGameWorld(), w);
 	StartPushdownAutomata(w, mainMenu);
 
 	Window::DestroyGameWindow();

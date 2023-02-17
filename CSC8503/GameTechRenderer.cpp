@@ -543,7 +543,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85, 0)) * Matrix4::Scale(Vector3(0.4, 0.035, 1));
+	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85f, 0)) * Matrix4::Scale(Vector3(0.4f, 0.035f, 1));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&scoreBarModelMatrix);
 
 	BindMesh(scoreQuad);
@@ -701,6 +701,10 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
 			PassImpactPointDetails(paintedObject, shader);
 		}
+		else {
+			int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
+			glUniform1i(impactPointCountLocation, 0);
+		}
 		if (shader == mapShader) {
 			// MAKE COLOUR WORK
 			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
@@ -758,7 +762,7 @@ void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObj
 
 	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
 
-	glUniform1i(impactPointCountLocation, objImpactPoints->size());
+	glUniform1i(impactPointCountLocation, (GLint)objImpactPoints->size());
 
 	if (objImpactPoints->empty()) return;
 
