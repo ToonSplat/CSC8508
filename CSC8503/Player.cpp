@@ -5,7 +5,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team) : ToonGameObject(RP3D_World), team(team)
+Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : ToonGameObject(RP3D_World, gameWorld), team(team)
 {
 	team->AddPlayer();
 	isAiming = false;
@@ -17,12 +17,13 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team) : ToonGameO
 
 Player::~Player() 
 {
+	team->RemovePlayer();
 	delete team;
 }
 
-void Player::Update(float dt)
+bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    weapon.Update(dt);
+    return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {

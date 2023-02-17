@@ -15,6 +15,8 @@ namespace NCL
 	{
 		class ToonFollowCamera;
 		class ToonMinimapCamera;
+
+		class ToonMapCamera;
 		class ToonGame : public PushdownState
 		{
 		public:
@@ -40,6 +42,7 @@ namespace NCL
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
 
+			bool closeGame = false;
 			bool offline;
 			bool showCursor;
 			const double timeStep = 1.0 / 60.0;

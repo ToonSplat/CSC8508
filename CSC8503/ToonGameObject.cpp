@@ -2,7 +2,7 @@
 #include "ToonRenderObject.h"
 #include "ToonGameWorld.h"
 
-NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World) : physicsWorld(RP3D_World)
+NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : physicsWorld(RP3D_World), gameWorld(gameWorld)
 {
 	worldID = -1;
 	isActive = true;
@@ -21,12 +21,11 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 			rigidBody->removeCollider(collider); // Not clear if need to delete Collider seperately, doing for safety
 		physicsWorld.destroyRigidBody(rigidBody);
 	}
-	/*
-	* TODO: To delete the collisionShapes before ToonGameWorld deletion is a massive pain of adding GameWorld or PhysicsCommon to every TGO and children... it can be done though probably
+	
 	if(collisionShapeSphere)
-		ToonGameWorld::Get()->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
+		gameWorld->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
 	if(collisionShapeBox)
-		ToonGameWorld::Get()->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);*/
+		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
 	
 	delete renderObject;
 }

@@ -14,10 +14,11 @@ namespace NCL::CSC8503
 		Character = 2
 	};
 
+	class ToonGameWorld;
 	class ToonGameObject
 	{
 	public:
-		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World);
+		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld);
 		~ToonGameObject();
 
 		virtual void Update(float dt) { std::cout << "Base class update\n"; };
@@ -103,6 +104,8 @@ namespace NCL::CSC8503
 		reactphysics3d::SphereShape* collisionShapeSphere;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
+
+		ToonGameWorld* gameWorld;
 
 	private:
 		reactphysics3d::PhysicsWorld& physicsWorld;

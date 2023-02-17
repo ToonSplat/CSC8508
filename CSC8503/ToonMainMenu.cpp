@@ -3,20 +3,20 @@
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win)
 {
-	m_Renderer			   = renderer;
-	m_World				   = world;
+	m_Renderer = renderer;
+	m_World = world;
 	m_CurrentSelectedIndex = 0;
-	m_Window			   = win;
+	m_Window = win;
 }
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
 {
-	m_Renderer				  = renderer;
-	m_mainMenuData			  = menuData;
+	m_Renderer = renderer;
+	m_mainMenuData = menuData;
 	m_BaseCurrentSelectdIndex = baseCurrentSelectedIndex;
-	m_CurrentSelectedIndex	  = 0;
-	m_Window				  = win;
-	m_World					  = world;
+	m_CurrentSelectedIndex = 0;
+	m_Window = win;
+	m_World = world;
 }
 
 
@@ -83,6 +83,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
 		*newState = m_Game;
+		//m_mainMenuData[0].text = "Resume";
 		break;
 	case MULTIPLAY:
 		*newState = GetSubMenuSceenObject();
@@ -94,10 +95,13 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-		*newState = GetUserInputScreenObject();
+		m_Game = new ToonNetworkedGame(m_Renderer);
+		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
-		return PushdownResult::NoChange;
+		m_Game = new ToonNetworkedGame(m_Renderer, 127, 0, 0, 1);
+		*newState = m_Game;
+		break;
 	case SETSERVERIP:
 		return PushdownResult::NoChange;
 	case BACK:

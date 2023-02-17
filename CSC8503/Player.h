@@ -16,10 +16,11 @@ using namespace CSC8503;
 
 class Player : public ToonGameObject {
 public:
-	Player(reactphysics3d::PhysicsWorld& RP3D_World, Team* team);
+	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 
-	void Update(float dt) override;
+	void Update(float dt) {}
+	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
@@ -31,6 +32,7 @@ public:
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
+	Team* GetTeam() const { return team; }
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 

@@ -8,6 +8,7 @@ NetworkBase::~NetworkBase() {
 	if (netHandle) {
 		enet_host_destroy(netHandle);
 	}
+	Destroy();
 }
 
 void NetworkBase::Initialise() {

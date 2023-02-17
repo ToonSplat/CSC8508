@@ -1,17 +1,25 @@
 #pragma once
 #include "Vector3.h"
+#include "Team.h"
 
-using namespace NCL::Maths;
+namespace NCL {
+	namespace CSC8503 {
+		class ImpactPoint {
+		public:
+			ImpactPoint(Vector3 location, Team* team, float radius) : location(location), team(team), radius(radius) {}
 
-class ImpactPoint {
-public:
-	ImpactPoint(NCL::Maths::Vector3 location, NCL::Maths::Vector3 colour, float radius) : location(location), colour(colour), radius(radius) {}
-	NCL::Maths::Vector3 GetImpactLocation() const { return location; }
-	void SetImpactLocation(NCL::Maths::Vector3 localPoint) { location = localPoint; }
-	NCL::Maths::Vector3 GetImpactColour() const { return colour; }
-	float GetImpactRadius() const { return radius; }
-protected:
-	NCL::Maths::Vector3 location;
-	NCL::Maths::Vector3 colour;
-	float radius;
-};
+			int GetTeamID() { return team->GetTeamID(); }
+
+			Vector3 GetImpactLocation() const { return location; }
+			void SetImpactLocation(NCL::Maths::Vector3 localPoint) { location = localPoint; }
+
+			Vector3 GetImpactColour() { return team->GetTeamColour(); }
+
+			float GetImpactRadius() const { return radius; }
+		protected:
+			NCL::Maths::Vector3 location;
+			Team* team = nullptr;
+			float radius;
+		};
+	}
+}

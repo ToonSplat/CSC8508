@@ -15,6 +15,8 @@ enum BasicNetworkMessages {
 	Client_Update,
 	Player_Connected,
 	Player_Disconnected,
+	Shoot,
+	Impact,
 	Shutdown
 };
 
@@ -55,11 +57,13 @@ struct StringPacket : public GamePacket {
 
 struct ConnectPacket : public GamePacket {
 	int playerID;
+	int teamID;
 	bool you;
-	ConnectPacket(int playerID, bool you) {
+	ConnectPacket(int playerID, bool you, int teamID = -1) {
 		type = BasicNetworkMessages::Player_Connected;
 		size = sizeof(ConnectPacket) - sizeof(GamePacket);
 		this->playerID = playerID;
+		this->teamID = teamID;
 		this->you = you;
 	}
 };

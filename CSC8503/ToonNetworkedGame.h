@@ -21,14 +21,21 @@ namespace NCL {
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
 
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
 			void UpdateGame(float dt) override;
 
-			Player* SpawnPlayer(int playerID);
+			Player* SpawnPlayer(int playerID, Team* team);
 
 			void ServerStartLevel();
 			void StartLevel();
 
+			bool IsServer() { return thisServer; }
+			bool IsClient() { return thisClient; }
+
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
+
+			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -42,6 +49,7 @@ namespace NCL {
 			float timeToNextPacket;
 			int packetsToSnapshot;
 
+			float serverClosed = -256.0f;
 			int myID;
 			int winner;
 			int myState;
