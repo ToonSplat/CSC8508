@@ -10,7 +10,19 @@ namespace NCL {
 		class GameClient;
 		class NetworkPlayer;
 
-		
+		struct PlayerDetails {
+			Player* player;
+			PlayerControl* controls;
+			Team* team;
+			int StateID;
+
+			PlayerDetails(Player* player, PlayerControl* controls, Team* team) {
+				this->player = player;
+				this->controls = controls;
+				this->team = team;
+				this->StateID = 0;
+			}
+		};
 
 		class ToonNetworkedGame : public ToonGame, public PacketReceiver {
 		public:
@@ -27,8 +39,8 @@ namespace NCL {
 
 			Player* SpawnPlayer(int playerID, Team* team);
 
-			void ServerStartLevel();
-			void StartLevel();
+			void ServerStartGame();
+			void StartGame() override;
 
 			bool IsServer() { return thisServer; }
 			bool IsClient() { return thisClient; }
@@ -56,10 +68,7 @@ namespace NCL {
 
 			std::vector<ToonNetworkObject*> networkObjects;
 
-			std::map<int, Player*> serverPlayers;
-			std::map<int, PlayerControl*> playerControls;
-			std::map<int, int> stateIDs;
-			GameObject* localPlayer;
+			std::map<int, PlayerDetails> serverPlayers;
 		};
 	}
 }

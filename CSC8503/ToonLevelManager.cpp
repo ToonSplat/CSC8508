@@ -84,12 +84,12 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 	return true;
 }
 
-void ToonLevelManager::ResetLevel() {
+void ToonLevelManager::ResetLevel(std::vector<ToonNetworkObject*>* networkObjectList) {
 	gameWorld->ClearAndErase();
-	LoadPrototypeLevel();
+	LoadPrototypeLevel(networkObjectList);
 }
 
-bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
+bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList)
 {
 	Vector3 floorScale = Vector3(30.0f, 0.5f, 30.0f);
 	Vector4 floorColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
@@ -143,16 +143,17 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel()
 	AddCubeToWorld(Vector3(80.0f, containerScaleBig.y + 0.5f, 60.0f), Vector3(0, 0, 0), containerScaleBig, GetTexture("basicPurple"), Debug::BLACK, 0.0f);
 
 	axisObject = AddCubeToWorld(Vector3(40.0f, 10.0f, -20.0f), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Debug::WHITE, 1.0f);
-	axisObject->GetRigidbody()->setUserData(axisObject);
-	gameWorld->AddPaintableObject(axisObject);
-
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
-
+	if (networkObjectList) {
+		ToonNetworkObject* netO = new ToonNetworkObject(axisObject, axisObject->GetWorldID());
+		networkObjectList->push_back(netO);
+	}
 	axisObject = AddCubeToWorld(Vector3(40.0f, 10.0f, 20.0f), Vector3(0, 0, 0), Vector3(4, 1, 1), GetTexture("basicPurple"), Debug::WHITE, 1.0f);
-	axisObject->GetRigidbody()->setUserData(axisObject);
-	gameWorld->AddPaintableObject(axisObject);
-
 	axisObject->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	if (networkObjectList) {
+		ToonNetworkObject* netO = new ToonNetworkObject(axisObject, axisObject->GetWorldID());
+		networkObjectList->push_back(netO);
+	}
 
 	return true;
 }

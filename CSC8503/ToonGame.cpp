@@ -32,8 +32,8 @@ NCL::CSC8503::ToonGame::~ToonGame()
 }
 
 void ToonGame::StartGame() {
-	levelManager->ResetLevel();
 	if (offline) {
+		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
 		playerControl = new PlayerControl();
@@ -42,6 +42,7 @@ void ToonGame::StartGame() {
 		world->SetMinimapCamera(new ToonMinimapCamera(*player));
 	}
 	else {
+		levelManager->ResetLevel();
 		world->SetMainCamera(new Camera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
@@ -55,7 +56,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8)) {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
 		StartGame();
 		return;
 	}

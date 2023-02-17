@@ -10,6 +10,7 @@ GameClient::GameClient() {
 GameClient::~GameClient() {
 	if (netHandle) 
 		enet_host_destroy(netHandle);
+	netHandle = nullptr;
 }
 
 bool GameClient::Connect(uint8_t a, uint8_t b, uint8_t c, uint8_t d, int portNum) {

@@ -26,7 +26,7 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
-			void StartGame();
+			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
 
