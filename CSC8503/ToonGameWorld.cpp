@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "PaintableObject.h"
 #include "PaintBallProjectile.h"
+#include "Player.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -19,6 +20,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 {
+	ClearAndErase();
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
 	delete mainCamera;
@@ -30,7 +32,10 @@ NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 void NCL::CSC8503::ToonGameWorld::Clear()
 {
 	gameObjects.clear();
+	paintableObjects.clear();
 	activePaintballs.clear();
+	activeHitSpheres.clear();
+	objectsToDelete.clear();
 	worldIDCounter = 0;
 	worldStateCounter = 0;
 }
@@ -38,10 +43,9 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
-		delete i;
-	}
-	for (auto& i : activePaintballs) {
-		delete i;
+		if (dynamic_cast<Player*>(i))
+			delete (Player*)i;
+		else delete i;
 	}
 	
 	Clear();
@@ -64,6 +68,7 @@ void NCL::CSC8503::ToonGameWorld::RemoveGameObject(ToonGameObject* o, bool andDe
 }
 
 void ToonGameWorld::AddPaintball(PaintBallProjectile* paintball) {
+	AddGameObject(paintball);
 	activePaintballs.emplace(paintball);
 }
 void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {

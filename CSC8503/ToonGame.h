@@ -26,8 +26,7 @@ namespace NCL
 			virtual void UpdateGame(float dt);
 
 		protected:
-			void UpdateCamera(float dt);
-			void UpdateTesting();
+			void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
 
@@ -44,7 +43,6 @@ namespace NCL
 
 			bool closeGame = false;
 			bool offline;
-			bool showCursor;
 			const double timeStep = 1.0 / 60.0;
 			double accumulator;
 		};

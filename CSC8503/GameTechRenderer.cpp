@@ -700,6 +700,10 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
 			PassImpactPointDetails(paintedObject, shader);
 		}
+		else {
+			int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
+			glUniform1i(impactPointCountLocation, 0);
+		}
 		if (shader == mapShader) {
 			// MAKE COLOUR WORK
 			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");

@@ -20,6 +20,19 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	levelManager = new ToonLevelManager(renderer, world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
+	StartGame();
+}
+
+NCL::CSC8503::ToonGame::~ToonGame()
+{
+	delete world;
+	delete baseWeapon;
+	delete levelManager;
+	delete playerControl;
+}
+
+void ToonGame::StartGame() {
+	levelManager->ResetLevel();
 	if (offline) {
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
@@ -33,15 +46,6 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
-	showCursor = false;
-}
-
-NCL::CSC8503::ToonGame::~ToonGame()
-{
-	delete world;
-	delete baseWeapon;
-	delete levelManager;
-	delete playerControl;
 }
 
 void NCL::CSC8503::ToonGame::UpdateGame(float dt)
@@ -51,6 +55,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8)) {
+		StartGame();
+		return;
+	}
 	world->GetMainCamera()->UpdateCamera(dt);
 	if(world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt);

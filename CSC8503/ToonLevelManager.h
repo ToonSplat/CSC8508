@@ -32,6 +32,8 @@ namespace NCL
 
 			Player* GetPlayer() { return player; }
 
+			void ResetLevel();
+
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";

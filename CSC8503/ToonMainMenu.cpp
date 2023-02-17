@@ -55,6 +55,7 @@ void ToonMainMenu::OnAwake()
 {
 	UpdateMosePointerState(true);
 	Window::GetWindow()->LockMouseToWindow(true);
+	delete m_Game;
 	delete m_SubMenuScreenObject;
 	m_SubMenuScreenObject = NULL;
 }
