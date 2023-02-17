@@ -68,7 +68,7 @@ void ToonMainMenu::OnSleep()
 
 bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenuCoordinates)
 {
-	float widthConstraint = singleMenuCoordinates.position.x + singleMenuCoordinates.size.x;
+	float widthConstraint  = singleMenuCoordinates.position.x + singleMenuCoordinates.size.x;
 	float heightConstraint = singleMenuCoordinates.position.y + singleMenuCoordinates.size.y;
 	return (mouseCoordinates.x >= singleMenuCoordinates.position.x && mouseCoordinates.x <= widthConstraint && mouseCoordinates.y >= singleMenuCoordinates.position.y && mouseCoordinates.y <= heightConstraint);
 }
@@ -168,17 +168,17 @@ void ToonMainMenu::DrawMainMenu()
 	}
 	else
 	{
-		Vector2 mousePosition = Window::GetMouse()->GetWindowPosition();
-		Vector2 windowSize = m_Window->GetWindow()->GetScreenSize();
-		float y = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
-		float x = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
+		Vector2 mousePosition			  = Window::GetMouse()->GetWindowPosition();
+		Vector2 windowSize				  = m_Window->GetWindow()->GetScreenSize();
+		float	y						  = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
+		float	x						  = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
 		Vector2 mousePositionWithinBounds = Vector2(x, y);
-		int index = 0;
+		int		index					  = 0;
 		for (auto data : m_mainMenuData)
 		{
-			data.colour = m_NormalTextColour;
+			data.colour			   = m_NormalTextColour;
 			m_CurrentSelectedIndex = IsInside(mousePositionWithinBounds, data.coordinates) ? index : m_CurrentSelectedIndex;
-			data.colour = index == m_CurrentSelectedIndex ? m_HoverColour : m_NormalTextColour;
+			data.colour			   = index == m_CurrentSelectedIndex ? m_HoverColour : m_NormalTextColour;
 			Debug::Print(data.text, data.coordinates.position, data.colour);
 			index++;
 		}
