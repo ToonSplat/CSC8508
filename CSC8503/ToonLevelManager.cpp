@@ -38,14 +38,21 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel(&meshMap["arrow"], "Minimap_Arrow.msh")) return false;
 	if (!LoadModel(&meshMap["player"], "Character_Boss.msh")) return false;
 	if (!LoadModel(&meshMap["sphere"], "sphere.msh")) return false;
-	if (!LoadModel(&meshMap["floorMain"], "FloorsMain.msh")) return false;
-	if (!LoadModel(&meshMap["platformMain"], "Level_Platform.msh")) return false;
+	if (!LoadModel(&meshMap["arena_main"], "Level_Arena.msh")) return false;
+	if (!LoadModel(&meshMap["arena_lights"], "Level_Arena_Lights.msh")) return false;
+	if (!LoadModel(&meshMap["arena_obstacles"], "Level_Arena_Obstables.msh")) return false;
+	if (!LoadModel(&meshMap["arena_ramps"], "Level_Arena_Ramps.msh")) return false;
+	//if (!LoadModel(&meshMap["floorMain"], "FloorsMain.msh")) return false;
+	//if (!LoadModel(&meshMap["platformMain"], "Level_Platform.msh")) return false;
 
 	//All Textures
 	if (!LoadTexture(&textureMap["mesh"], "checkerboard.png", false)) return false;
 	if (!LoadTexture(&textureMap["basic"], "Prefab_Grey50.png", true)) return false;
 	if (!LoadTexture(&textureMap["basicPurple"], "Prefab_Purple.png", true)) return false;
 	if (!LoadTexture(&textureMap["boss_player"], "Boss_diffuse.png", true)) return false;
+	if (!LoadTexture(&textureMap["tex_arena_wall"], "RB_Level_Arena_Wall.png", true)) return false;
+	if (!LoadTexture(&textureMap["tex_arena_wall2"], "RB_Level_Arena_Wall2.png", true)) return false;
+	if (!LoadTexture(&textureMap["tex_arena_light"], "RB_Level_Arena_Lights.png", true)) return false;
 
 	//All Shaders
 	if (!LoadShader(&shaderMap["basic"], "scene.vert", "scene.frag")) return false;
@@ -91,7 +98,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::
 
 void ToonLevelManager::ResetLevel(std::vector<ToonNetworkObject*>* networkObjectList) {
 	gameWorld->ClearAndErase();
-	LoadPrototypeLevel(networkObjectList);
+	//LoadPrototypeLevel(networkObjectList);
+	LoadArenaLevel(networkObjectList);
 }
 
 bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList)
@@ -162,6 +170,18 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel(std::vector<ToonNetworkO
 		ToonNetworkObject* netO = new ToonNetworkObject(axisObject, axisObject->GetWorldID());
 		networkObjectList->push_back(netO);
 	}
+
+	return true;
+}
+
+bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList)
+{
+	Vector4 arenaColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
+	Vector3 arenaSize = Vector3(1, 1, 1);
+	AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_wall"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_wall2"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("basic"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_light"), arenaColour, 0.0f);
 
 	return true;
 }
