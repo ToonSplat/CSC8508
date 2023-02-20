@@ -82,14 +82,17 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	switch (status) 
 	{
 		case isFiring:
-			if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-				reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((playerControls->camera[0] + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
-				orientation.normalize();
-				reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + orientation * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, 0, 0);
-				FireBullet(position, orientation);
-				playerControls->shooting = false;
-			}
-			return true;
+				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
+					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((playerControls->camera[0] + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+					reactphysics3d::Vector3 dirOri = orientation;
+					dirOri.y = 0;
+					dirOri.normalize();
+					orientation.normalize();
+					reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, owningObject->GetScale().y * 1.5, 0);
+					FireBullet(position, orientation);
+					playerControls->shooting = false;
+				}
+				return true;
 		case isReloading:
 			Reload(dt);
 		case isIdle:
@@ -97,45 +100,13 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 		default:
 			return false;
 	}
-
-
-	if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
-	{
-		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(owningObject->GetRigidbody()->getTransform().getPosition());
-
-		reactphysics3d::Quaternion pRot = owningObject->GetRigidbody()->getTransform().getOrientation();
-		Quaternion nRot(pRot.x, pRot.y, pRot.z, pRot.w);
-		Matrix4 owningMat = Matrix4(nRot);
-
-		Vector3 forward = gameWorld->GetMainCamera()->GetForward();
-		Vector3 startRay = gameWorld->GetMainCamera()->GetPosition();
-		Vector3 endRay = startRay + forward * 500.0f;
-
-		reactphysics3d::Ray shootRay(ToonUtils::ConvertToRP3DVector3(startRay), ToonUtils::ConvertToRP3DVector3(endRay));
-		ToonRaycastCallback shootRayCallback;
-		gameWorld->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
-
-		trajectoryDetected = shootRayCallback.IsHit();
-		if (trajectoryDetected)
-		{
-			bulletVelocity = CalculateBulletVelocity(shootRayCallback.GetHitWorldPos(), startRay, 1.0f);
-			//Debug::DrawLine(startRay, shootRayCallback.GetHitWorldPos(), Debug::BLUE, 1.0f);
-		}
-
-		DrawTrajectory(bulletVelocity);	//250->10
-	}
-	else
-	{
-		HideTrajectory();
-	}
-	//}
 }
 
 void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
 {
 	const float PAINTBALL_RADIUS = 0.25f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);;
 	orientation.normalize();
 	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 1, 0);
 	//reactphysics3d::Vector3 forceVector = orientation * force;

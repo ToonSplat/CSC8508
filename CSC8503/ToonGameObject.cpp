@@ -1,11 +1,13 @@
 #include "ToonGameObject.h"
 #include "ToonRenderObject.h"
 #include "ToonGameWorld.h"
+#include "OGLMesh.h"
 
 NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : physicsWorld(RP3D_World), gameWorld(gameWorld)
 {
 	worldID = -1;
 	isActive = true;
+	hasSkin = false;
 
 	rigidBody = nullptr;
 	renderObject = nullptr;
@@ -26,9 +28,34 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 		gameWorld->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
 	if(collisionShapeBox)
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
+	if(collisionShapeCapsule)
+		gameWorld->GetPhysicsCommon().destroyCapsuleShape(collisionShapeCapsule);
 	
 	delete renderObject;
 	delete networkObject;
+}
+
+void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
+{
+	if (!renderObject || !renderObject->GetMesh())
+		return;
+
+	if (isMinimap)
+	{
+		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
+		r.BindMesh(minimapMesh);
+
+		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+	}
+	else
+	{
+		OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
+		r.BindMesh(boundMesh);
+
+		for (int i = 0; i < boundMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+	}	
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()
@@ -36,12 +63,12 @@ void NCL::CSC8503::ToonGameObject::AddRigidbody()
 	rigidBody = physicsWorld.createRigidBody(transform.GetR3DTransform());
 }
 
-void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape)
+void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, reactphysics3d::Transform collisionTransform)
 {
 	if (rigidBody == nullptr)
 		return;
 
-	collider = rigidBody->addCollider(RP3D_CollisionShape, reactphysics3d::Transform::identity());
+	collider = rigidBody->addCollider(RP3D_CollisionShape, collisionTransform);
 	SetColliderLayer(ToonCollisionLayer::Default);
 
 	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
@@ -103,7 +130,19 @@ void NCL::CSC8503::ToonGameObject::SetOrientation(const Quaternion& newRotQuat)
 
 void NCL::CSC8503::ToonGameObject::CalculateModelMatrix()
 {
-	modelMatrix = Matrix4::Translation(GetPosition()) * Matrix4(GetOrientation()) * Matrix4::Scale(GetScale());
+	if (!rigidBody)
+		return;
+
+	reactphysics3d::Transform currTransform = rigidBody->getTransform();
+	reactphysics3d::Transform interpolated = reactphysics3d::Transform::interpolateTransforms(prevTransform, currTransform, gameWorld->interpolationFactor);
+	prevTransform = currTransform;
+
+	float matrix[16];
+	interpolated.getOpenGLMatrix(matrix);
+
+	modelMatrix = Matrix4(matrix) * Matrix4::Scale(GetScale());
+
+	//modelMatrix = Matrix4::Translation(GetPosition()) * Matrix4(GetOrientation()) * Matrix4::Scale(GetScale());
 }
 
 Matrix4 NCL::CSC8503::ToonGameObject::GetModelMatrixNoRotation() const

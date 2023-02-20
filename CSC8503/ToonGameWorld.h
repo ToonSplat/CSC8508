@@ -84,6 +84,8 @@ namespace NCL
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
 
+			float interpolationFactor;
+
 		protected:
 			Camera* mainCamera;
 			Camera* minimapCamera;

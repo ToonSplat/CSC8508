@@ -40,6 +40,7 @@ namespace NCL
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;
 			PaintBallClass* baseWeapon;
+			std::unordered_set<Player*> allPlayers;
 
 			bool closeGame = false;
 			bool offline;

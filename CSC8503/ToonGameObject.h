@@ -4,6 +4,7 @@
 #include "ToonNetworkObject.h"
 #include "ToonUtils.h"
 #include <reactphysics3d/reactphysics3d.h>
+#include "OGLRenderer.h"
 
 namespace NCL::CSC8503
 {
@@ -22,12 +23,14 @@ namespace NCL::CSC8503
 		~ToonGameObject();
 
 		virtual void Update(float dt) { std::cout << "Base class update\n"; };
+		virtual void Draw(OGLRenderer& r, bool isMinimap = false);
 
 		const std::string& GetName() const { return name; }
 
 		bool IsActive() const { return isActive; }
+		bool HasSkin() const { return hasSkin; }
 		void SetActive(const bool& status) { isActive = status; }
-
+		
 		ToonTransform& GetTransform() { return transform; }
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
@@ -41,13 +44,19 @@ namespace NCL::CSC8503
 		void AddRigidbody();
 		
 		reactphysics3d::Collider* GetCollider() const { return collider; };
-		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape);
+		void SetCollider(reactphysics3d::CollisionShape* RP3D_CollisionShape, reactphysics3d::Transform collisionTransform = reactphysics3d::Transform::identity());
 
 		reactphysics3d::SphereShape* GetCollisionShapeSphere() const { return collisionShapeSphere; };
 		void SetCollisionShape(reactphysics3d::SphereShape* RP3D_CollisionShape) { collisionShapeSphere = RP3D_CollisionShape; }
 
 		reactphysics3d::BoxShape* GetCollisionShapeBox() const { return collisionShapeBox; };
 		void SetCollisionShape(reactphysics3d::BoxShape* RP3D_CollisionShape) { collisionShapeBox = RP3D_CollisionShape; }
+
+		reactphysics3d::CapsuleShape* GetCollisionShapeCapsule() const { return collisionShapeCapsule; };
+		void SetCollisionShape(reactphysics3d::CapsuleShape* RP3D_CollisionShape) { collisionShapeCapsule = RP3D_CollisionShape; }
+
+		reactphysics3d::ConcaveMeshShape* GetCollisionShapeConcave() const { return collisionShapeConcave; };
+		void SetCollisionShape(reactphysics3d::ConcaveMeshShape* RP3D_CollisionShape) { collisionShapeConcave = RP3D_CollisionShape; }
 
 		Vector3 GetPosition() const;
 		Quaternion GetOrientation() const;
@@ -92,9 +101,11 @@ namespace NCL::CSC8503
 
 	protected:
 		bool isActive;
+		bool hasSkin;
 		int worldID;
 		std::string	name;
 
+		reactphysics3d::Transform prevTransform;
 		ToonTransform transform;
 		ToonRenderObject* renderObject;
 		ToonNetworkObject* networkObject;
@@ -102,6 +113,8 @@ namespace NCL::CSC8503
 		reactphysics3d::RigidBody* rigidBody;
 		reactphysics3d::BoxShape* collisionShapeBox;
 		reactphysics3d::SphereShape* collisionShapeSphere;
+		reactphysics3d::CapsuleShape* collisionShapeCapsule;
+		reactphysics3d::ConcaveMeshShape* collisionShapeConcave;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
 
