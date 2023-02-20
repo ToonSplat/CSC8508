@@ -30,10 +30,10 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 
 Player::~Player() 
 {
-	delete team;
+	team->RemovePlayer();
 }
 
-void Player::Update(float dt)
+bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
     weapon.Update(dt);
 
@@ -95,6 +95,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
+
 
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);

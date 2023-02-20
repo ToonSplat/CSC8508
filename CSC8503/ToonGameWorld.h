@@ -3,10 +3,10 @@
 #include <reactphysics3d/reactphysics3d.h>
 #include <unordered_set>
 #include "HitSphere.h"
+#include "Camera.h"
 
 namespace NCL
 {
-	class Camera;
 	namespace CSC8503
 	{
 		class ToonGameObject;
@@ -14,6 +14,14 @@ namespace NCL
 		class PaintBallProjectile;
 		class PaintableObject;
 		class Team;
+
+		enum NetworkingStatus
+		{
+			Offline = 0,
+			Server = 1,
+			Client = 2
+		};
+
 		typedef std::function<void(ToonGameObject*)> ToonGameObjectFunc;
 
 		class ToonGameWorld
@@ -26,6 +34,7 @@ namespace NCL
 			void ClearAndErase();
 
 			void AddEventListener(ToonEventListener* eventListener) { this->eventListener = eventListener; }
+			ToonEventListener* GetEventListener() const { return eventListener; }
 
 			void AddGameObject(ToonGameObject* o);
 			void RemoveGameObject(ToonGameObject* o, bool andDelete = false);
@@ -54,6 +63,11 @@ namespace NCL
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
+			
+			Camera* GetMapCamera() const { return mapCamera; }
+			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
+
+
 
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
@@ -61,6 +75,11 @@ namespace NCL
 			bool ShowCursor() const { return showCursor; }
 
 			Team* GetTeamLeastPlayers();
+
+			std::map<int, Team*>& GetTeams() { return teams; }
+
+			NetworkingStatus GetNetworkStatus() const { return networkStatus; }
+			void SetNetworkStatus(NetworkingStatus status) { networkStatus = status;; }
 
 			reactphysics3d::PhysicsWorld& GetPhysicsWorld() const { return *physicsWorld; }
 			reactphysics3d::PhysicsCommon& GetPhysicsCommon() { return physicsCommon; }
@@ -70,6 +89,7 @@ namespace NCL
 		protected:
 			Camera* mainCamera;
 			Camera* minimapCamera;
+			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
 			reactphysics3d::PhysicsWorld* physicsWorld;
 			ToonEventListener* eventListener;
@@ -80,13 +100,14 @@ namespace NCL
 			std::unordered_set<PaintableObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
-			std::set<Team*> teams;
+			std::map<int, Team*> teams;
+
+			NetworkingStatus networkStatus;
 
 			int		worldIDCounter;
 			int		worldStateCounter;
 
 		private:
-			static ToonGameWorld* instance;
 			bool showCursor;
 		};
 	}

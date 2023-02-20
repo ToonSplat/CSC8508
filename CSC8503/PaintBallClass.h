@@ -17,7 +17,8 @@ namespace NCL {
             PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
-            void Update (float dt);
+            bool Update (float dt, PlayerControl* playerControls);
+            void FireBullet(reactphysics3d::Vector3 position, reactphysics3d::Vector3 orientation);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
@@ -37,10 +38,8 @@ namespace NCL {
             int trajectoryPoints = 20;          //Trajectory
             Vector3 bulletVelocity;
 
-            void Shoot(float dt);
             void Reload(float dt);
             void PickUpAmmo(int amt);
-            void FireBullet();
 
             float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);

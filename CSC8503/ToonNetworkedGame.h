@@ -10,7 +10,19 @@ namespace NCL {
 		class GameClient;
 		class NetworkPlayer;
 
-		
+		struct PlayerDetails {
+			Player* player;
+			PlayerControl* controls;
+			Team* team;
+			int StateID;
+
+			PlayerDetails(Player* player, PlayerControl* controls, Team* team) {
+				this->player = player;
+				this->controls = controls;
+				this->team = team;
+				this->StateID = 0;
+			}
+		};
 
 		class ToonNetworkedGame : public ToonGame, public PacketReceiver {
 		public:
@@ -21,14 +33,21 @@ namespace NCL {
 			void StartAsServer();
 			void StartAsClient(char a, char b, char c, char d);
 
+			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+
 			void UpdateGame(float dt) override;
 
-			Player* SpawnPlayer(int playerID);
+			Player* SpawnPlayer(int playerID, Team* team);
 
-			void ServerStartLevel();
-			void StartLevel();
+			void ServerStartGame();
+			void StartGame() override;
+
+			bool IsServer() { return thisServer; }
+			bool IsClient() { return thisClient; }
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
+
+			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -42,16 +61,14 @@ namespace NCL {
 			float timeToNextPacket;
 			int packetsToSnapshot;
 
+			float serverClosed = -256.0f;
 			int myID;
 			int winner;
 			int myState;
 
 			std::vector<ToonNetworkObject*> networkObjects;
 
-			std::map<int, Player*> serverPlayers;
-			std::map<int, PlayerControl*> playerControls;
-			std::map<int, int> stateIDs;
-			GameObject* localPlayer;
+			std::map<int, PlayerDetails> serverPlayers;
 		};
 	}
 }

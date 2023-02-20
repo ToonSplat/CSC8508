@@ -7,6 +7,7 @@
 #include "HitSphere.h"
 #include "ToonLevelManager.h"
 #include "ToonGameWorld.h"
+#include "ToonNetworkedGame.h"
 
 using namespace NCL::CSC8503;
 
@@ -45,8 +46,9 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                // Make the HitSphere
-                levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                // Make the HitSphere if local play or the server
+                if(gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
                 // Remove the Paintball
                 gameWorld->RemovePaintball(i);
                 gameWorld->RemoveGameObject(i, false);
@@ -59,14 +61,12 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             if (i == body1 || i == body2) {
                 for (PaintableObject* p : gameWorld->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
-                        if (p == body1) {
-                            Vector3 localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody1()->getTransform().getPosition());
-                            p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeamColour(), i->GetRadius()));                          
-                        }
-                        else {
-                            Vector3 localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() - contactPair.getBody2()->getTransform().getPosition());
-                            p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeamColour(), i->GetRadius()));
-                        }
+                        Vector3 localPosition;
+                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
+                            p->GetRigidbody()->getTransform().getPosition());
+                        p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                        if (server)
+                            server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }
                 }
             }

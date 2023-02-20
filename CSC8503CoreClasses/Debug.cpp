@@ -3,6 +3,7 @@ using namespace NCL;
 
 std::vector<Debug::DebugStringEntry>	Debug::stringEntries;
 std::vector<Debug::DebugLineEntry>		Debug::lineEntries;
+std::vector<Debug::DebugLineEntry>		Debug::orthographicViewLineEntries;
 
 SimpleFont* Debug::debugFont = nullptr;
 
@@ -25,6 +26,29 @@ void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& co
 	newEntry.colour = colour;
 
 	stringEntries.emplace_back(newEntry);
+}
+
+void Debug::Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vector4& colour)
+{
+	DebugLineEntry newEntry;
+
+	newEntry.start	 = startPos;
+	newEntry.end	 = endPos;
+	newEntry.colourA = colour;
+	newEntry.colourB = colour;
+	orthographicViewLineEntries.emplace_back(newEntry);
+}
+
+void Debug::DrawQuad(const Vector2& origin, const Vector2& size, const Vector4& colour)
+{
+	const Vector2& topRightPoint	= Vector2(origin.x + size.x, origin.y);
+	const Vector2& bottomRightPoint = Vector2(origin.x + size.x, origin.y + size.y);
+	const Vector2& bottomLeftPoint	= Vector2(origin.x, origin.y + size.y);
+	
+	Draw2DLine(origin,			topRightPoint,	  colour);//Top
+	Draw2DLine(topRightPoint,	bottomRightPoint, colour);//Right
+	Draw2DLine(bottomLeftPoint, bottomRightPoint, colour);//Bottom
+	Draw2DLine(origin,			bottomLeftPoint,  colour);//Left
 }
 
 void Debug::DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour, float time) {
@@ -100,6 +124,7 @@ void Debug::UpdateRenderables(float dt) {
 	}
 	lineEntries.resize(lineEntries.size() - trim);
 	stringEntries.clear();
+	orthographicViewLineEntries.clear();
 }
 
 SimpleFont* Debug::GetDebugFont() {
@@ -116,3 +141,5 @@ const std::vector<Debug::DebugStringEntry>& Debug::GetDebugStrings() {
 const std::vector<Debug::DebugLineEntry>& Debug::GetDebugLines() {
 	return lineEntries;
 }
+
+const std::vector<Debug::DebugLineEntry>& Debug::GetOrthographicViewLines() { return orthographicViewLineEntries; }

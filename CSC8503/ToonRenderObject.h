@@ -16,7 +16,7 @@ namespace NCL {
 		class ToonRenderObject
 		{
 		public:
-			ToonRenderObject(ToonTransform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
+			ToonRenderObject(ToonTransform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshGeometry* minimapMesh = nullptr);
 			ToonRenderObject(MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
 			~ToonRenderObject();
 
@@ -31,8 +31,12 @@ namespace NCL {
 			MeshGeometry*	GetMesh() const {
 				return mesh;
 			}
+			MeshGeometry* GetMinimapMesh() const {
+				return minimapMesh;
+			}
 
-			void SetMesh(MeshGeometry* mesh) { this->mesh = mesh; }
+			void SetMesh(MeshGeometry* mesh)		{ this->mesh = mesh; }
+			void SetMinimapMesh(MeshGeometry* mesh) { this->minimapMesh = mesh; }
 
 			ToonTransform*		GetTransform() const {
 				return transform;
@@ -59,6 +63,7 @@ namespace NCL {
 		protected:
 			ToonGameObject* gameObject;
 			MeshGeometry*	mesh;
+			MeshGeometry*	minimapMesh;
 			TextureBase*	texture;
 			ShaderBase*		shader;
 			ToonTransform*	transform;			
