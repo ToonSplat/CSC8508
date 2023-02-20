@@ -55,11 +55,6 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	else if (isMoving)
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 
-	float animAngle = RadiansToDegrees(atan2(controls->animDir[1] / 1000.0f, controls->animDir[0] / 1000.0f));
-
-	if (animAngle < 0.0f) animAngle += 360.0f;
-	//std::cout << animAngle << std::endl;
-
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
 
