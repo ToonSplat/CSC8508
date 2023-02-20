@@ -43,6 +43,10 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
+		std::cout << i->GetWorldID() << std::endl;
+	}
+	for (auto& i : gameObjects) {
+		std::cout << i->GetWorldID() << std::endl;
 		if (dynamic_cast<Player*>(i))
 			delete (Player*)i;
 		else delete i;
@@ -79,6 +83,7 @@ void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {
 }
 
 void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
+	AddGameObject(hitSphere);
 	activeHitSpheres.emplace(hitSphere);
 }
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
