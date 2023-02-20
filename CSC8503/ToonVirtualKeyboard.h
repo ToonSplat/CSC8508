@@ -19,6 +19,7 @@ struct Coordinates
 	Vector2 size;
 
 	Coordinates(Vector2 org, Vector2 siz) : origin(org), size(siz) {}
+	Coordinates(const Coordinates& coord) : origin(coord.origin), size(coord.size) {}
 };
 
 class ToonVirtualKeyboard

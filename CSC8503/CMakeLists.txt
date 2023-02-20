@@ -33,6 +33,7 @@ set(Header_Files
     "ToonMinimapCamera.h"
     "ToonTextInput.h"
     "ToonVirtualKeyboard.h"
+    "ToonConfirmationScreen.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -62,6 +63,7 @@ set(Source_Files
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
     "ToonVirtualKeyboard.cpp"
+    "ToonConfirmationScreen.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 
