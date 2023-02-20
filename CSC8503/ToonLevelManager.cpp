@@ -300,7 +300,6 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 
 	paintball->GetRigidbody()->setUserData(paintball);
 
-	gameWorld->AddGameObject(paintball);
 	gameWorld->AddPaintball(paintball);
 	return paintball;
 }
@@ -325,7 +324,6 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 
 	hitSphere->GetRigidbody()->setUserData(hitSphere);
 
-	gameWorld->AddGameObject(hitSphere);
 	gameWorld->AddHitSphere(hitSphere);
 	return hitSphere;
 }
