@@ -28,10 +28,21 @@ void NCL::CSC8503::ToonGameObjectAnim::Update(float dt)
 	}
 }
 
-void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r)
+void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 {
 	if (!renderObject || !renderObject->GetMesh())
 		return;
+
+	if (isMinimap)
+	{
+		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
+		r.BindMesh(minimapMesh);
+
+		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+
+		return;
+	}
 
 	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
 	OGLShader* shader = (OGLShader*)renderObject->GetShader();
@@ -52,7 +63,7 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r)
 	{
 		//To Add Textures
 		r.DrawBoundMesh(i);
-	}
+	}	
 }
 
 void NCL::CSC8503::ToonGameObjectAnim::PlayAnim(const std::string& anim, float animSpeed)

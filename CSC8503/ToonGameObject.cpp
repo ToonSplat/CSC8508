@@ -35,16 +35,27 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 	delete networkObject;
 }
 
-void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r)
+void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 {
 	if (!renderObject || !renderObject->GetMesh())
 		return;
 
-	OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
-	r.BindMesh(boundMesh);
+	if (isMinimap)
+	{
+		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
+		r.BindMesh(minimapMesh);
 
-	for (int i = 0; i < boundMesh->GetSubMeshCount(); ++i)
-		r.DrawBoundMesh(i);
+		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+	}
+	else
+	{
+		OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
+		r.BindMesh(boundMesh);
+
+		for (int i = 0; i < boundMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+	}	
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()

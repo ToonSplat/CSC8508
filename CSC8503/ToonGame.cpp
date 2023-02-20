@@ -118,9 +118,9 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 		animMovement.x = 1.0f;
 	}
 
-	controls->direction[0] = short(linearMovement.x * 1000);
-	controls->direction[1] = short(linearMovement.y * 1000);
-	controls->direction[2] = short(linearMovement.z * 1000);
+	controls->direction[0] = short(linearMovement.x * 10000);
+	controls->direction[1] = short(linearMovement.y * 10000);
+	controls->direction[2] = short(linearMovement.z * 10000);
 	
 	controls->animDir[0] = short(animMovement.x * 1000);
 	controls->animDir[1] = short(animMovement.z * 1000);

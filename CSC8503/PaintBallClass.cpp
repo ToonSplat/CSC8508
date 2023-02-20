@@ -97,38 +97,6 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 		default:
 			return false;
 	}
-
-
-	/*if (Window::GetMouse()->ButtonDown(NCL::MouseButtons::RIGHT))
-	{
-		Vector3 playerPos = ToonUtils::ConvertToNCLVector3(owningObject->GetRigidbody()->getTransform().getPosition());
-
-		reactphysics3d::Quaternion pRot = owningObject->GetRigidbody()->getTransform().getOrientation();
-		Quaternion nRot(pRot.x, pRot.y, pRot.z, pRot.w);
-		Matrix4 owningMat = Matrix4(nRot);
-
-		Vector3 forward = gameWorld->GetMainCamera()->GetForward();
-		Vector3 startRay = gameWorld->GetMainCamera()->GetPosition();
-		Vector3 endRay = startRay + forward * 500.0f;
-
-		reactphysics3d::Ray shootRay(ToonUtils::ConvertToRP3DVector3(startRay), ToonUtils::ConvertToRP3DVector3(endRay));
-		ToonRaycastCallback shootRayCallback;
-		gameWorld->GetPhysicsWorld().raycast(shootRay, &shootRayCallback, ToonCollisionLayer::Default);
-
-		trajectoryDetected = shootRayCallback.IsHit();
-		if (trajectoryDetected)
-		{
-			bulletVelocity = CalculateBulletVelocity(shootRayCallback.GetHitWorldPos(), startRay, 1.0f);
-			//Debug::DrawLine(startRay, shootRayCallback.GetHitWorldPos(), Debug::BLUE, 1.0f);
-		}
-
-		DrawTrajectory(bulletVelocity);	//250->10
-	}
-	else
-	{
-		HideTrajectory();
-	}
-	//}
 }
 
 void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)

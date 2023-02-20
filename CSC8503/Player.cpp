@@ -35,24 +35,16 @@ Player::~Player()
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    weapon.Update(dt);
-
-	ToonGameObjectAnim::Update(dt);
-
-	//std::cout << "Current Anim: " << currentFrame << std::endl;
-	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F5))
-		renderObject->GetShader()->ReloadShader();
-
-	//TESTING PURPOSE
-	/*if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM1)) PlayAnim("Run_N_Aim");
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM2)) PlayAnim("Run_F_Aim");
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM3)) PlayAnim("Run_L_Aim");
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM4)) PlayAnim("Run_R_Aim");
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM5)) PlayAnim("Run_B_Aim");
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::NUM0)) PlayAnim("Idle");*/
+    return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
+	
+	ToonGameObjectAnim::Update(dt);
+
+	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F5))
+		renderObject->GetShader()->ReloadShader();
+
 	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, controls->direction[1] / 1000.0f, controls->direction[2] / 1000.0f);
 	linearMovement.normalize();
 

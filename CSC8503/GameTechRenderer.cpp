@@ -613,25 +613,22 @@ void GameTechRenderer::RenderShadowMap() {
 
 	shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
 
-	for (const auto&i : activeObjects) 
+	for (const auto& i : activeObjects)
 	{
-		Quaternion rot;
+		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
 		rot.y = rRot.y;
 		rot.z = rRot.z;
 		rot.w = rRot.w;
-
 		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
 			(*i).GetRigidbody()->getTransform().getPosition().y,
 			(*i).GetRigidbody()->getTransform().getPosition().z) *
-
 			Matrix4(rot) *
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
-
-	
-		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 		glUniform1i(hasSkinLocation, (*i).HasSkin());
 
@@ -689,19 +686,24 @@ void GameTechRenderer::RenderSkybox() {
 
 void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)
 {
-	int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-	int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-	int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
-	int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-	int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
-	
-	
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
 
-		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader ) continue;
+		if (shader != minimapShader)
+		{
+			shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
+			BindShader(shader);
+		}
+
+		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
+		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
+		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
+
+		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader) continue;
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
@@ -726,15 +728,13 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 		}
-		
+
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-			activeShader = sceneShader;
-		//}
 
 		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
@@ -749,66 +749,8 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 			Matrix4(rot) *
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
-		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
-
-		Vector4 colour = i->GetRenderObject()->GetColour();
-		glUniform4fv(colourLocation, 1, colour.array);
-
-		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
-
-		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
-
-		/*BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-		for (int j = 0; j < layerCount; ++j) {
-			i->Draw(j);
-		}*/
-
-		(*i).Draw(*this);
-
-		/*Jainesh - Moved to ToonGameObject.h Draw() func
-		BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-		for (int i = 0; i < layerCount; ++i) {
-			DrawBoundMesh(i);
-		}*/
-	}
-}
-
-void GameTechRenderer::RenderMinimap()
-{
-	if (!gameWorld->GetMinimapCamera()) return;
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
-
-	OGLShader* activeShader = minimapShader;
-
-	int projLocation = glGetUniformLocation(activeShader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(activeShader->GetProgramID(), "viewMatrix");
-	int modelLocation = glGetUniformLocation(activeShader->GetProgramID(), "modelMatrix");
-	int colourLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectColour");
-	int hasVColLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasVertexColours");
-	int hasTexLocation = glGetUniformLocation(activeShader->GetProgramID(), "hasTexture");
-	int objectPosLocation = glGetUniformLocation(activeShader->GetProgramID(), "objectPosition");
-
-	int impactPointsLocation = 0;
-	int impactPointCountLocation = glGetUniformLocation(activeShader->GetProgramID(), "impactPointCount");
-	BindShader(activeShader);
-	for (const auto& i : activeObjects) 
-	{
-		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
-
-		PassImpactPointDetails((*i).GetRenderObject(), impactPointCountLocation, impactPointsLocation, activeShader);
-
-			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-			Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
-			glUniform3fv(objectPosLocation, 1, objPos.array);
-		
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
@@ -819,11 +761,21 @@ void GameTechRenderer::RenderMinimap()
 
 		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
 
-		BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		//Jainesh - This too was moved to Draw func
+		/*MeshGeometry* boundMesh = nullptr;
+		if (shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr) {
+			boundMesh = (*i).GetRenderObject()->GetMinimapMesh();
+		}
+		else {
+			boundMesh = (*i).GetRenderObject()->GetMesh();
+		}
+		BindMesh(boundMesh);
+		int layerCount = boundMesh->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}
+		}*/		
+
+		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
 }
 

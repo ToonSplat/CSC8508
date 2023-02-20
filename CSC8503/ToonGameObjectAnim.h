@@ -12,7 +12,7 @@ namespace NCL::CSC8503
 		~ToonGameObjectAnim();
 
 		virtual void Update(float dt) override;
-		virtual void Draw(OGLRenderer& r) override;
+		virtual void Draw(OGLRenderer& r, bool isMinimap = false) override;
 
 		void SetMeshMaterial(MeshMaterial* newMaterial) { meshMaterial = newMaterial; }
 		void PlayAnim(const std::string& anim, float animSpeed = 1.0f);
