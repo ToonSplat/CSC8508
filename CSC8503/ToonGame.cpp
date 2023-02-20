@@ -32,10 +32,12 @@ NCL::CSC8503::ToonGame::~ToonGame()
 }
 
 void ToonGame::StartGame() {
+	allPlayers.clear();
 	if (offline) {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+		allPlayers.emplace(player);
 		playerControl = new PlayerControl();
 		player->SetWeapon(baseWeapon);
 		world->SetMainCamera(new ToonFollowCamera(world, player));
@@ -75,6 +77,10 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	// This next line is an abomination and should be refactored by Ryan
 	else if (player) {
 		player->SetAiming(playerControl->aiming);
+	}
+
+	for (auto& player : allPlayers) {
+		player->AnimationUpdate(dt);
 	}
 
 	accumulator += dt;
@@ -121,9 +127,6 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 	controls->direction[0] = short(linearMovement.x * 10000);
 	controls->direction[1] = short(linearMovement.y * 10000);
 	controls->direction[2] = short(linearMovement.z * 10000);
-	
-	controls->animDir[0] = short(animMovement.x * 1000);
-	controls->animDir[1] = short(animMovement.z * 1000);
 
 	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
 	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();

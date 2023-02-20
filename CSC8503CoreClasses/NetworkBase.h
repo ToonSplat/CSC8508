@@ -78,8 +78,9 @@ struct DisconnectPacket : public GamePacket {
 };
 
 struct MessagePacket : public GamePacket {
-	short messageID;
-	short messageValue;
+	short	messageID;
+	int		playerID;
+	short	messageValue;
 
 	MessagePacket(short ID) {
 		type = Message;

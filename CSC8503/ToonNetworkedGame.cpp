@@ -217,6 +217,7 @@ Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team) {
 	newPlayerCharacter->SetWeapon(baseWeapon);
 	serverPlayers.find(playerID)->second.player = newPlayerCharacter;
 	networkObjects.push_back(netO);
+	allPlayers.emplace(newPlayerCharacter);
 	return newPlayerCharacter;
 }
 
@@ -238,6 +239,7 @@ void ToonNetworkedGame::ServerStartGame() {
 
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
+	allPlayers.clear();
 	levelManager->ResetLevel(&networkObjects);
 }
 
@@ -305,6 +307,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		}
 		std::cout << "Recieved message Player Disconnected, removing their player, they are player ID" << receivedID << std::endl;
 		Player* removingPlayer = serverPlayers.find(receivedID)->second.player;
+		allPlayers.erase(removingPlayer);
 		for (auto i = networkObjects.begin(); i != networkObjects.end(); i++) {
 			if (removingPlayer->GetNetworkObject() == (*i)) {
 				networkObjects.erase(i);
@@ -334,6 +337,12 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		playersControls->direction[2] =	realPacket->controls.direction[2];
 		playersControls->camera[0] =	realPacket->controls.camera[0];
 		playersControls->camera[1] =	realPacket->controls.camera[1];
+		if (playersControls->aiming != realPacket->controls.aiming) {
+			MessagePacket aimPacket(2);
+			aimPacket.playerID = realPacket->playerID;
+			aimPacket.messageValue = (realPacket->controls.aiming ? 1 : 0);
+			thisServer->SendGlobalPacket(aimPacket);
+		}
 		playersControls->aiming =		realPacket->controls.aiming;
 		playersControls->jumping =		realPacket->controls.jumping;
 		playersControls->shooting =		realPacket->controls.shooting;
@@ -381,6 +390,15 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		case(1):
 			myState = 0;
 			StartGame();
+			break;
+		case(2):
+			for (auto& player : allPlayers) {
+				if (player->GetNetworkObject()->GetNetworkID() == -realPacket->playerID) {
+					player->SetAiming((realPacket->messageValue == 0 ? false : true));
+					break;
+				}
+			}
+			std::cout << "Break time\n";
 			break;
 		default: std::cout << "Recieved unknown message\n";
 		}

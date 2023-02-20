@@ -39,8 +39,6 @@ bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
-	
-	ToonGameObjectAnim::Update(dt);
 
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F5))
 		renderObject->GetShader()->ReloadShader();
@@ -58,32 +56,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 
 	float animAngle = RadiansToDegrees(atan2(controls->animDir[1] / 1000.0f, controls->animDir[0] / 1000.0f));
+
 	if (animAngle < 0.0f) animAngle += 360.0f;
 	//std::cout << animAngle << std::endl;
-
-	if (isAiming)
-	{
-		if (isMoving)
-		{
-			if (animAngle == 0.0f) PlayAnim("Run_R_Aim");
-			if (animAngle == 90.0f) PlayAnim("Run_F_Aim");
-			if (animAngle == 45.0f) PlayAnim("Run_FR_Aim");
-			if (animAngle == 135.0f) PlayAnim("Run_FL_Aim");
-			if (animAngle == 180.0f) PlayAnim("Run_L_Aim");
-			if (animAngle == 225.0f) PlayAnim("Run_BL_Aim");
-			if (animAngle == 270.0f) PlayAnim("Run_B_Aim");
-			if (animAngle == 315.0f) PlayAnim("Run_BR_Aim");
-
-			//if(AngleInRange(animAngle, 0, 45.0f)) PlayAnim("Run_")
-		}
-		else
-			PlayAnim("Idle_Aim");
-	}
-	else
-	{
-		if (isMoving) PlayAnim("Run_N_Aim");
-		else PlayAnim("Idle");
-	}
 
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
@@ -94,6 +69,50 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (controls->jumping) {
 		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 		controls->jumping = false;
+	}
+}
+
+void Player::AnimationUpdate(float dt) {
+	ToonGameObjectAnim::Update(dt);
+	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
+	linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
+	linVel.y = 0;
+	isMoving = linVel.length() >= 0.5f;
+	linVel.normalize();
+	if (isAiming)
+	{
+		if (isMoving)
+		{
+			if (linVel.z < -0.5) {
+				if (linVel.x > 0.1)
+					PlayAnim("Run_FR_Aim");
+				else if (linVel.x < -0.1)
+					PlayAnim("Run_FL_Aim");
+				else PlayAnim("Run_F_Aim");
+			}
+			else if (linVel.z > 0.5) {
+				if (linVel.x > 0.1)
+					PlayAnim("Run_BR_Aim");
+				else if (linVel.x < -0.1)
+					PlayAnim("Run_BL_Aim");
+				else PlayAnim("Run_B_Aim");
+			}
+			else if (linVel.x > 0.5)
+				PlayAnim("Run_R_Aim");
+			else if (linVel.x < -0.5)
+				PlayAnim("Run_L_Aim");
+			else {
+				std::cout << "How did we get here?\n";
+				PlayAnim("Idle_Aim");
+			}
+		}
+		else
+			PlayAnim("Idle_Aim");
+	}
+	else
+	{
+		if (isMoving) PlayAnim("Run_N_Aim");
+		else PlayAnim("Idle");
 	}
 }
 
