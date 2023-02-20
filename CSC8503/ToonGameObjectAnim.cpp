@@ -70,7 +70,6 @@ void NCL::CSC8503::ToonGameObjectAnim::PlayAnim(const std::string& anim, float a
 {
 	if (anim.empty() || currentAnim == meshAnims.at(anim) || meshAnims.at(anim) == nullptr)
 		return;
-
 	currentFrame = 0;
 	currentAnimSpeed = animSpeed;
 	currentAnim = meshAnims[anim];
