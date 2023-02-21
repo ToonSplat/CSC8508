@@ -4,7 +4,6 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
-    "GameTechRenderer.h"
     "NetworkedGame.h"
     "NetworkPlayer.h"
     "PaintableObject.h"
@@ -22,7 +21,6 @@ set(Header_Files
     "ToonEventListener.h"
     "ToonTransform.h"
     "ToonGameWorld.h"
-    "ToonRenderObject.h"
     "ToonRaycastCallback.h"
     "ToonUtils.h"
     "ToonFollowCamera.h"
@@ -40,7 +38,6 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "GameTechRenderer.cpp"
     "Main.cpp"
     "NetworkedGame.cpp"
     "NetworkPlayer.cpp"
@@ -58,7 +55,6 @@ set(Source_Files
     "ToonEventListener.cpp"
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
-    "ToonRenderObject.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
     "ToonMapCamera.cpp"
@@ -69,7 +65,6 @@ set(Source_Files
     "ToonConfirmationScreen.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
-
 set(Networking_Files
     "ToonNetworkedGame.h"
     "ToonNetworkedGame.cpp"
@@ -79,6 +74,16 @@ set(Networking_Files
     "ToonNetworkPackets.h"
 )
 source_group("Networking Files" FILES ${Networking_Files})
+
+set(Rendering_Files
+    "ToonAssetManager.h"
+    "ToonAssetManager.cpp"
+    "GameTechRenderer.h"
+    "GameTechRenderer.cpp"
+    "ToonRenderObject.h"
+    "ToonRenderObject.cpp"
+)
+source_group("Rendering Files" FILES ${Rendering_Files})
 
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
@@ -92,12 +97,15 @@ set(ALL_FILES
     ${Header_Files}
     ${Source_Files}
     ${Networking_Files}
+    ${Rendering_Files}
 )
 
 if(USE_VULKAN)
     set(ALL_FILES 
         ${Header_Files}
         ${Source_Files}
+        ${Networking_Files}
+        ${Rendering_Files}
         ${SHADER_FILES}
     )
 

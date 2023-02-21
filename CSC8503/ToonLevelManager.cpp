@@ -6,24 +6,16 @@
 #include <stb/stb_image.h>
 #include <reactphysics3d/reactphysics3d.h>
 #include "ToonGameWorld.h"
+#include "ToonAssetManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-NCL::CSC8503::ToonLevelManager::ToonLevelManager(GameTechRenderer* renderer, ToonGameWorld* gameWorld) :
-	gameRenderer(renderer), gameWorld(gameWorld)
-{
+NCL::CSC8503::ToonLevelManager::ToonLevelManager(ToonGameWorld* gameWorld) : gameWorld(gameWorld){
 	if (!LoadAssets()) return;
 }
 
-NCL::CSC8503::ToonLevelManager::~ToonLevelManager()
-{
-	for (auto& mesh : meshMap)
-		delete mesh.second;
-	for (auto& texture : textureMap)
-		delete texture.second;
-	for (auto& shader : shaderMap)
-		delete shader.second;
+NCL::CSC8503::ToonLevelManager::~ToonLevelManager() {
 }
 
 void NCL::CSC8503::ToonLevelManager::Update(float dt)
@@ -34,59 +26,44 @@ void NCL::CSC8503::ToonLevelManager::Update(float dt)
 bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 {
 	//All Models
-	if (!LoadModel(&meshMap["cube"], "cube.msh")) return false;
-	if (!LoadModel(&meshMap["arrow"], "Minimap_Arrow.msh")) return false;
-	if (!LoadModel(&meshMap["player"], "Character_Boss.msh")) return false;
-	if (!LoadModel(&meshMap["sphere"], "sphere.msh")) return false;
-	if (!LoadModel(&meshMap["floorMain"], "FloorsMain.msh")) return false;
-	if (!LoadModel(&meshMap["platformMain"], "Level_Platform.msh")) return false;
+	if (!LoadModel("cube")) return false;
+	if (!LoadModel("arrow")) return false;
+	if (!LoadModel("player")) return false;
+	if (!LoadModel("sphere")) return false;
+	if (!LoadModel("floorMain")) return false;
+	if (!LoadModel("platformMain")) return false;
 
 	//All Textures
-	if (!LoadTexture(&textureMap["mesh"], "checkerboard.png", false)) return false;
-	if (!LoadTexture(&textureMap["basic"], "Prefab_Grey50.png", true)) return false;
-	if (!LoadTexture(&textureMap["basicPurple"], "Prefab_Purple.png", true)) return false;
-	if (!LoadTexture(&textureMap["boss_player"], "Boss_diffuse.png", true)) return false;
+	if (!LoadTexture("mesh")) return false;
+	if (!LoadTexture("basic")) return false;
+	if (!LoadTexture("basicPurple")) return false;
+	if (!LoadTexture("player")) return false;
 
 	//All Shaders
-	if (!LoadShader(&shaderMap["basic"], "scene.vert", "scene.frag")) return false;
-	if (!LoadShader(&shaderMap["animated"], "sceneSkin.vert", "scene.frag")) return false;
+	if (!LoadShader("scene")) return false;
+	if (!LoadShader("animated")) return false;
+
+	std::cout << "ToonLevelManager: All files successfully loaded\n";
 
 	return true;
 }
 
-bool NCL::CSC8503::ToonLevelManager::LoadModel(MeshGeometry** mesh, const std::string& meshFileName)
+bool NCL::CSC8503::ToonLevelManager::LoadModel(const std::string meshName)
 {
-	*mesh = gameRenderer->LoadMesh(meshFileName);
-	if (mesh == nullptr)
-		return false;
-
-	return true;
+	meshMap[meshName] = ToonAssetManager::Instance().GetMesh(meshName);
+	return(meshMap[meshName] != nullptr);
 }
 
-bool NCL::CSC8503::ToonLevelManager::LoadTexture(TextureBase** tex, const std::string& textureFileName, const bool& invert)
+bool NCL::CSC8503::ToonLevelManager::LoadTexture(const std::string textureName)
 {
-	if (invert)
-	{
-		stbi_set_flip_vertically_on_load(true);
-		*tex = gameRenderer->LoadTexture(textureFileName);
-		stbi_set_flip_vertically_on_load(false);
-	}
-	else
-		*tex = gameRenderer->LoadTexture(textureFileName);
-
-	if (*tex == nullptr)
-		return false;
-
-	return true;
+	textureMap[textureName] = ToonAssetManager::Instance().GetTexture(textureName);
+	return(textureMap[textureName] != nullptr);
 }
 
-bool NCL::CSC8503::ToonLevelManager::LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader)
+bool NCL::CSC8503::ToonLevelManager::LoadShader(const std::string shaderName)
 {
-	*shader = gameRenderer->LoadShader(shaderVertexShader, shaderFragmentShader);
-	if (*shader == nullptr)
-		return false;
-
-	return true;
+	shaderMap[shaderName] = ToonAssetManager::Instance().GetShader(shaderName);
+	return(shaderMap[shaderName] != nullptr);
 }
 
 void ToonLevelManager::ResetLevel(std::vector<ToonNetworkObject*>* networkObjectList) {
@@ -207,7 +184,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& p
 	cube->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	cube->GetRigidbody()->setMass(mass);
 	cube->GetRigidbody()->setIsAllowedToSleep(true);
-	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), GetMesh("cube"), cubeTex, GetShader("basic")));
+	cube->SetRenderObject(new ToonRenderObject(&cube->GetTransform(), GetMesh("cube"), cubeTex, GetShader("scene")));
   cube->GetRenderObject()->SetColour(minimapColour);
 
 	const reactphysics3d::Vector3 boxExtent(scale.x, scale.y, scale.z);
@@ -241,7 +218,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddSphereToWorld(const Vector3&
 	sphere->AddRigidbody();
 	sphere->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	sphere->GetRigidbody()->setIsAllowedToSleep(true);
-	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), GetMesh("sphere"), sphereTex, GetShader("basic")));
+	sphere->SetRenderObject(new ToonRenderObject(&sphere->GetTransform(), GetMesh("sphere"), sphereTex, GetShader("scene")));
   sphere->GetRenderObject()->SetColour(minimapColour);
   
 	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius * 0.85f);
@@ -288,7 +265,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	gameObject->GetRigidbody()->setMass(mass);
 	gameObject->GetRigidbody()->setIsAllowedToSleep(true);
-	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, cubeTex, GetShader("basic")));
+	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, cubeTex, GetShader("scene")));
 	gameObject->GetRenderObject()->SetColour(minimapColour);
 
 	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
@@ -336,7 +313,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	gameWorld->AddGameObject(player);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("boss_player"), GetShader("animated"), GetMesh("arrow")));
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("player"), GetShader("animated"), GetMesh("arrow")));
 	player->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1));
 
 	return player;
@@ -350,7 +327,7 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 	paintball->SetOrientation(rotationEuler);
 	paintball->GetTransform().SetScale(Vector3(radius, radius, radius));
 
-	paintball->SetRenderObject(new ToonRenderObject(&paintball->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
+	paintball->SetRenderObject(new ToonRenderObject(&paintball->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("scene")));
 	paintball->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1.0f));
 
 	paintball->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
@@ -373,7 +350,7 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 	hitSphere->SetPosition(position);
 	hitSphere->GetTransform().SetScale(Vector3(radius, radius, radius));
 
-	hitSphere->SetRenderObject(new ToonRenderObject(&hitSphere->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("basic")));
+	hitSphere->SetRenderObject(new ToonRenderObject(&hitSphere->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("scene")));
 	hitSphere->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 0.0f));
 
 	hitSphere->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);

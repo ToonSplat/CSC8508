@@ -1,6 +1,7 @@
 #include "ToonGameObjectAnim.h"
 #include "OGLMesh.h"
 #include "OGLShader.h"
+#include "ToonAssetManager.h"
 
 
 NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld)
@@ -11,8 +12,7 @@ NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorl
 
 NCL::CSC8503::ToonGameObjectAnim::~ToonGameObjectAnim()
 {
-	for (auto& anim : meshAnims)
-		delete anim.second;
+	
 }
 
 void NCL::CSC8503::ToonGameObjectAnim::Update(float dt)
@@ -75,11 +75,8 @@ void NCL::CSC8503::ToonGameObjectAnim::PlayAnim(const std::string& anim, float a
 	currentAnim = meshAnims[anim];
 }
 
-bool NCL::CSC8503::ToonGameObjectAnim::LoadAnim(MeshAnimation** anim, const std::string& animFile)
+bool NCL::CSC8503::ToonGameObjectAnim::LoadAnim(const std::string& animationName)
 {
-	*anim = new MeshAnimation(animFile);
-	if (anim == nullptr)
-		return false;
-
-	return true;
+	meshAnims[animationName] = ToonAssetManager::Instance().GetAnimation(animationName);
+	return(meshAnims[animationName] != nullptr);
 }
