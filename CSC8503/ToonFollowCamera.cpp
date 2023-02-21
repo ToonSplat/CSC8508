@@ -95,12 +95,15 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	//position = Lerp(position, FinalPos, dt * 20.0f);
 	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);
 
-	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos), ToonUtils::ConvertToRP3DVector3(position));
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos + Vector3(0, 2.5f, 0)), ToonUtils::ConvertToRP3DVector3(position));
 	ToonRaycastCallback wallHitData;
 	gameWorld->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
 
 	if (wallHitData.IsHit())
 		position = wallHitData.GetHitWorldPos();
+
+	//Debug::DrawLine(targetWorldPos, position, Debug::CYAN, 0.0f);
+	//Debug::DrawBox(targetWorldPos + Vector3(0, 2.5f, 0), Vector3(0.5f, 0.5f, 0.5f), Debug::CYAN);
 
 	/*Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
 	Quaternion q(viewMatrix);

@@ -2,6 +2,7 @@
 #include "TextureBase.h"
 #include "ShaderBase.h"
 #include "Vector4.h"
+#include "MeshMaterial.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL {
@@ -60,13 +61,17 @@ namespace NCL {
 				return gameObject;
 			}
 
+			MeshMaterial* GetMaterial() const { return material; }
+			void LoadMaterial(const std::string& materialFileName);
+
 		protected:
 			ToonGameObject* gameObject;
 			MeshGeometry*	mesh;
 			MeshGeometry*	minimapMesh;
 			TextureBase*	texture;
+			MeshMaterial*	material;
 			ShaderBase*		shader;
-			ToonTransform*	transform;			
+			ToonTransform*	transform;
 			Vector4			colour;
 		};
 	}
