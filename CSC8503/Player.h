@@ -1,5 +1,5 @@
 #pragma once
-#include "ToonGameObject.h"
+#include "ToonGameObjectAnim.h"
 #include "Team.h"
 #include "Matrix4.h"
 #include "Vector4.h"
@@ -14,14 +14,14 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public ToonGameObject {
+class Player : public ToonGameObjectAnim {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 
-	void Update(float dt) {}
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
+	void AnimationUpdate(float dt);
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
@@ -35,6 +35,9 @@ public:
 	Team* GetTeam() const { return team; }
 	PaintBallClass GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
+
+protected:
+	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
 
 protected:
 	Team* team;

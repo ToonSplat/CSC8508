@@ -46,7 +46,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	glEnable(GL_DEPTH_TEST);
 
 	debugShader = new OGLShader("debug.vert", "debug.frag");
-	shadowShader = new OGLShader("shadow.vert", "shadow.frag");
+	shadowShader = new OGLShader("shadowSkin.vert", "shadow.frag");
 	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
 	textureShader = new OGLShader("Texture.vert", "Texture.frag");
 	sceneShader = new OGLShader("scene.vert", "scene.frag");
@@ -604,6 +604,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	BindShader(shadowShader);
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
+	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
 	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(lightPosition, Vector3(0, 0, 0), Vector3(0, 1, 0));
 	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 500.0f, 1, 45.0f);
@@ -612,31 +613,38 @@ void GameTechRenderer::RenderShadowMap() {
 
 	shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
 
-	for (const auto&i : activeObjects) 
+	for (const auto& i : activeObjects)
 	{
-		Quaternion rot;
+		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
 		rot.y = rRot.y;
 		rot.z = rRot.z;
 		rot.w = rRot.w;
-
 		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
 			(*i).GetRigidbody()->getTransform().getPosition().y,
 			(*i).GetRigidbody()->getTransform().getPosition().z) *
-
 			Matrix4(rot) *
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
-
-	
-		Matrix4 mvpMatrix	= mvMatrix * modelMatrix;
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
+		glUniform1i(hasSkinLocation, (*i).HasSkin());
+
+		(*i).Draw(*this);
+		/*BindMesh((*i).GetRenderObject()->GetMesh());
+		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
+		for (int j = 0; j < layerCount; ++j) {
+			i->Draw(j);
+		}*/
+
+		/*Jainesh - Moved to ToonGameObject.h Draw() func
 		BindMesh((*i).GetRenderObject()->GetMesh());
 		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}
+		}*/
 	}
 
 	glViewport(0, 0, windowWidth, windowHeight);
@@ -678,19 +686,24 @@ void GameTechRenderer::RenderSkybox() {
 
 void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)
 {
-	int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-	int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-	int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-	int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
-	int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-	int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
-	
-	
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
 
-		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader ) continue;
+		if (shader != minimapShader && shader != mapShader)
+		{
+			shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
+			BindShader(shader);
+		}
+
+		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
+		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
+		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
+
+		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader) continue;
 		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
@@ -715,7 +728,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 		}
-		
+
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
@@ -723,7 +736,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
 
-		Quaternion rot;
+		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
 		rot.y = rRot.y;
@@ -736,8 +749,9 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 			Matrix4(rot) *
 
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);
+			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
 
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
 		Vector4 colour = i->GetRenderObject()->GetColour();
@@ -747,7 +761,8 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
 
-		MeshGeometry* boundMesh = nullptr;
+		//Jainesh - This too was moved to Draw func
+		/*MeshGeometry* boundMesh = nullptr;
 		if (shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr) {
 			boundMesh = (*i).GetRenderObject()->GetMinimapMesh();
 		}
@@ -758,7 +773,9 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		int layerCount = boundMesh->GetSubMeshCount();
 		for (int i = 0; i < layerCount; ++i) {
 			DrawBoundMesh(i);
-		}
+		}*/		
+
+		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
 }
 
