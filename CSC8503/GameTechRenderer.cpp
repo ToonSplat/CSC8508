@@ -12,6 +12,7 @@
 #include "ToonUtils.h"
 #include <iostream>
 #include <algorithm>
+#include "ToonAssetManager.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -29,6 +30,7 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
+	ToonAssetManager::Instance().LoadAssets();
 	SetupStuffs();
 	team1Percentage = 0;
 	team2Percentage = 0;
@@ -44,14 +46,13 @@ GameTechRenderer::~GameTechRenderer()	{
 void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 {
 	glEnable(GL_DEPTH_TEST);
-
-	debugShader = new OGLShader("debug.vert", "debug.frag");
-	shadowShader = new OGLShader("shadowSkin.vert", "shadow.frag");
-	minimapShader = new OGLShader("minimap.vert", "minimap.frag");
-	textureShader = new OGLShader("Texture.vert", "Texture.frag");
-	sceneShader = new OGLShader("scene.vert", "scene.frag");
-	scoreBarShader = new OGLShader("ScoreBar.vert", "ScoreBar.frag");
-	mapShader = new OGLShader("map.vert", "map.frag");
+	debugShader = ToonAssetManager::Instance().GetShader("debug");
+	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
+	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
+	textureShader = ToonAssetManager::Instance().GetShader("texture");
+	sceneShader = ToonAssetManager::Instance().GetShader("scene");
+	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
+	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
@@ -66,7 +67,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	lightPosition = Vector3(-200.0f, 60.0f, -200.0f);
 
 	//Skybox!
-	skyboxShader = new OGLShader("skybox.vert", "skybox.frag");
+	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
 	skyboxMesh = new OGLMesh();
 	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
@@ -814,13 +815,6 @@ void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObj
 	
 }
 
-MeshGeometry* GameTechRenderer::LoadMesh(const string& name) {
-	OGLMesh* mesh = new OGLMesh(name);
-	mesh->SetPrimitiveType(GeometryPrimitive::Triangles);
-	mesh->UploadToGPU();
-	return mesh;
-}
-
 void GameTechRenderer::NewRenderLines() {
 	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetDebugLines();
 	if (lines.empty()) {
@@ -1005,13 +999,6 @@ void GameTechRenderer::ResetAtomicBuffer()
 
 
 
-TextureBase* GameTechRenderer::LoadTexture(const string& name) {
-	return TextureLoader::LoadAPITexture(name);
-}
-
-ShaderBase* GameTechRenderer::LoadShader(const string& vertex, const string& fragment) {
-	return new OGLShader(vertex, fragment);
-}
 
 void GameTechRenderer::SetWorld(ToonGameWorld* world)
 {

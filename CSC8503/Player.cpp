@@ -14,18 +14,18 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	rotationSpeed = 6.0f;
 	aimingSpeed = 10.0f;
 
-	if (!LoadAnim(&meshAnims["Idle"], "Boss_Gun_Idle.anm")) return;
-	if (!LoadAnim(&meshAnims["Idle_Aim"], "Boss_Gun_Idle_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_N_Aim"], "Boss_Gun_Run_N_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_F_Aim"], "Boss_Gun_Run_F_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_FL_Aim"], "Boss_Gun_Run_FL_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_FR_Aim"], "Boss_Gun_Run_FR_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_L_Aim"], "Boss_Gun_Run_L_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_R_Aim"], "Boss_Gun_Run_R_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_B_Aim"], "Boss_Gun_Run_B_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_BL_Aim"], "Boss_Gun_Run_BL_Aim.anm")) return;
-	if (!LoadAnim(&meshAnims["Run_BR_Aim"], "Boss_Gun_Run_BR_Aim.anm")) return;
-	PlayAnim("Idle");
+	if (!LoadAnim("Player_Idle")) return;
+	if (!LoadAnim("Player_Idle_Aim")) return;
+	if (!LoadAnim("Player_Run")) return;
+	if (!LoadAnim("Player_Run_Aim_F")) return;
+	if (!LoadAnim("Player_Run_Aim_FL")) return;
+	if (!LoadAnim("Player_Run_Aim_FR")) return;
+	if (!LoadAnim("Player_Run_Aim_L")) return;
+	if (!LoadAnim("Player_Run_Aim_R")) return;
+	if (!LoadAnim("Player_Run_Aim_B")) return;
+	if (!LoadAnim("Player_Run_Aim_BL")) return;
+	if (!LoadAnim("Player_Run_Aim_BR")) return;
+	PlayAnim("Player_Idle");
 }
 
 Player::~Player() 
@@ -81,34 +81,34 @@ void Player::AnimationUpdate(float dt) {
 		{
 			if (linVel.z < -0.5) {
 				if (linVel.x > 0.1)
-					PlayAnim("Run_FR_Aim");
+					PlayAnim("Player_Run_Aim_FR");
 				else if (linVel.x < -0.1)
-					PlayAnim("Run_FL_Aim");
-				else PlayAnim("Run_F_Aim");
+					PlayAnim("Player_Run_Aim_FL");
+				else PlayAnim("Player_Run_Aim_F");
 			}
 			else if (linVel.z > 0.5) {
 				if (linVel.x > 0.1)
-					PlayAnim("Run_BR_Aim");
+					PlayAnim("Player_Run_Aim_BR");
 				else if (linVel.x < -0.1)
-					PlayAnim("Run_BL_Aim");
-				else PlayAnim("Run_B_Aim");
+					PlayAnim("Player_Run_Aim_BL");
+				else PlayAnim("Player_Run_Aim_B");
 			}
 			else if (linVel.x > 0.5)
-				PlayAnim("Run_R_Aim");
+				PlayAnim("Player_Run_Aim_R");
 			else if (linVel.x < -0.5)
-				PlayAnim("Run_L_Aim");
+				PlayAnim("Player_Run_Aim_L");
 			else {
 				std::cout << "How did we get here?\n";
-				PlayAnim("Idle_Aim");
+				PlayAnim("Player_Idle_Aim");
 			}
 		}
 		else
-			PlayAnim("Idle_Aim");
+			PlayAnim("Player_Idle_Aim");
 	}
 	else
 	{
-		if (isMoving) PlayAnim("Run_N_Aim");
-		else PlayAnim("Idle");
+		if (isMoving) PlayAnim("Player_Run");
+		else PlayAnim("Player_Idle");
 	}
 }
 
