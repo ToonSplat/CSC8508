@@ -7,11 +7,12 @@
 #include "ToonNetworkedGame.h"
 #include "ToonGameWorld.h"
 #include "ToonTextInput.h"
+#include "ToonConfirmationScreen.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class ToonMainMenu : public PushdownState
+class ToonMainMenu : public PushdownState, public ToonConfirmationScreen
 {
 	enum GameStates
 	{
@@ -66,6 +67,8 @@ private:
 	ToonTextInput*				m_UserInputScreenObject = NULL;
 	bool						m_HasUserInitiatedScreenNavigation = false;
 
+	ToonConfirmationScreen*		m_ToonConfirmationScreen = NULL;
+
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
 	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win);
@@ -81,4 +84,8 @@ private:
 	ToonTextInput* GetUserInputScreenObject();
 	void UpdateMosePointerState(bool isVisible);
 	void WakeMouseOnMovement();
+
+	//Delegates
+	PushdownState::PushdownResult DidSelectCancelButton() override;
+	PushdownState::PushdownResult DidSelectOkButton() override;
 };

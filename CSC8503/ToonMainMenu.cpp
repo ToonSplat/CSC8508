@@ -7,6 +7,8 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize());
+	m_ToonConfirmationScreen->delegate = this;
 }
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
@@ -17,6 +19,8 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize());
+	m_ToonConfirmationScreen->delegate = this;
 }
 
 
@@ -38,13 +42,13 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { return PushdownResult::Pop; }	//Keeping it to quit game on escape key press
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { /*return PushdownResult::Pop;*/ *newState = m_ToonConfirmationScreen; return PushdownState::PushdownResult::Push;
+	}	//Keeping it to quit game on escape key press
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || m_HasUserInitiatedScreenNavigation)
 	{
 		return NavigateToScreen(newState);
 	}
-
 	m_Renderer->SetWorld(m_World);
 	m_Renderer->Update(dt);
 	m_Renderer->Render();
@@ -162,6 +166,18 @@ void ToonMainMenu::WakeMouseOnMovement()
 	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 	m_MouseLastPosition = currentMousePosition;
+}
+
+PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()
+{
+	return PushdownResult::Pop;
+	//std::cout << "Clicked on Cancel Button" << std::endl;
+}
+
+PushdownState::PushdownResult ToonMainMenu::DidSelectOkButton()
+{
+	return PushdownResult::Pop;
+	//std::cout << "Clicked on OK Button" << std::endl;
 }
 
 void ToonMainMenu::DrawMainMenu()

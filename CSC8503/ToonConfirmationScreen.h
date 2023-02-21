@@ -11,7 +11,7 @@ using namespace CSC8503;
 #define CONFIRMATION_BUTTON_WIDTH  15.0f
 #define CONFIRMATION_BUTTON_HEIGHT 5.0f
 
-class ToonConfirmationScreen// : public PushdownState
+class ToonConfirmationScreen : public PushdownState
 {
 	enum ConfirmationButtonsType
 	{
@@ -22,11 +22,11 @@ class ToonConfirmationScreen// : public PushdownState
 
 	typedef struct ButtonStruct
 	{
-		std::string buttonText;
-		Coordinates buttonCoordinates;
-		int			identifier;
+		std::string				buttonText;
+		Coordinates				buttonCoordinates;
+		ConfirmationButtonsType identifier;
 
-		ButtonStruct(std::string text, Coordinates coordinates, int id) : buttonCoordinates(coordinates)
+		ButtonStruct(std::string text, Coordinates coordinates, ConfirmationButtonsType id) : buttonCoordinates(coordinates)
 		{
 			buttonText		  = text;
 			buttonCoordinates = coordinates;
@@ -49,6 +49,7 @@ class ToonConfirmationScreen// : public PushdownState
 		ToonConfirmationScreen* delegate;
 
 	public:
+		ToonConfirmationScreen();
 		ToonConfirmationScreen(Coordinates coordinates,
 							   Vector2 windowSize,
 							   std::string text			= CONFIRMATION_TEXT,
@@ -56,11 +57,14 @@ class ToonConfirmationScreen// : public PushdownState
 							   std::string okButtonText = "YES",
 							   std::string noButtonText = "NO");
 
-		void Update();
+		//void Update();
+		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
+		void OnAwake() override;
+		void OnSleep() override;
 
 		//Protocol Methods
-		virtual void DidSelectOkButton() {};
-		virtual void DidSelectCancelButton() {};
+		virtual PushdownState::PushdownResult DidSelectOkButton() { return PushdownState::PushdownResult::NoChange; }
+		virtual PushdownState::PushdownResult DidSelectCancelButton() { return PushdownState::PushdownResult::NoChange; }
 
 	private:
 		void UpdateButtonsCoordinates();
