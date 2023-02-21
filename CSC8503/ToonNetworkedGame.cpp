@@ -125,13 +125,13 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 				player.second.player->GetWeapon().FireBullet(position, orientation);
 				ShootPacket newPacket;
 				newPacket.playerID = player.first;
-				newPacket.position[0] = position.x * 1000;
-				newPacket.position[1] = position.y * 1000;
-				newPacket.position[2] = position.z * 1000;
+				newPacket.position[0] = (short)(position.x * 1000);
+				newPacket.position[1] = (short)(position.y * 1000);
+				newPacket.position[2] = (short)(position.z * 1000);
 
-				newPacket.orientation[0] = orientation.x * 1000;
-				newPacket.orientation[1] = orientation.y * 1000;
-				newPacket.orientation[2] = orientation.z * 1000;
+				newPacket.orientation[0] = (short)(orientation.x * 1000);
+				newPacket.orientation[1] = (short)(orientation.y * 1000);
+				newPacket.orientation[2] = (short)(orientation.z * 1000);
 				//std::cout << "I sent a shot. Hopefully it arrives!\n";
 				thisServer->SendGlobalPacket(newPacket, true);
 			}

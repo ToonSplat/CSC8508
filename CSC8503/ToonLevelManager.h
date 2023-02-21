@@ -1,5 +1,5 @@
 #pragma once
-#include "GameTechRenderer.h"
+#include "ToonAssetManager.h"
 #include "PaintableObject.h"
 #include "ToonGameWorld.h"
 #include "Player.h"
@@ -22,7 +22,7 @@ namespace NCL
 		class ToonLevelManager
 		{
 		public:
-			ToonLevelManager(GameTechRenderer* renderer, ToonGameWorld* gameWorld);
+			ToonLevelManager(ToonGameWorld* gameWorld);
 			~ToonLevelManager();
 
 			Player* AddPlayerToWorld(const Vector3& position, Team* team);
@@ -60,9 +60,9 @@ namespace NCL
 
 		protected:
 			bool LoadAssets();
-			bool LoadModel(MeshGeometry** mesh, const std::string& meshFileName);
-			bool LoadTexture(TextureBase** tex, const std::string& textureFileName, const bool& invert = false);
-			bool LoadShader(ShaderBase** shader, const std::string& shaderVertexShader, const std::string& shaderFragmentShader);
+			bool LoadModel(const std::string meshName);
+			bool LoadTexture(const std::string textureName);
+			bool LoadShader(const std::string shaderName);
 			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
 			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
