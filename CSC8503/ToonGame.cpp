@@ -17,7 +17,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	world = new ToonGameWorld();
 	renderer->SetWorld(world);
 
-	levelManager = new ToonLevelManager(renderer, world);
+	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	StartGame();

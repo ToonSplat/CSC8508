@@ -20,7 +20,7 @@ namespace NCL::CSC8503
 		const std::vector<Matrix4> GetFrameMat() const { return frameMatrices; }
 
 	protected:
-		bool LoadAnim(MeshAnimation** anim, const std::string& animFile);
+		bool LoadAnim(const std::string& animationName);
 
 	protected:
 		MeshMaterial* meshMaterial;

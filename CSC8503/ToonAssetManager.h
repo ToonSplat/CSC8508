@@ -25,9 +25,10 @@ namespace NCL {
 			return *instance;
 		}
 
+		void LoadAssets(void);
 		Rendering::TextureBase* GetTexture(const string& name);
 		MeshGeometry* GetMesh(const string& name);
-		Rendering::ShaderBase* GetShader(const string& name);
+		Rendering::OGLShader* GetShader(const string& name);
 		MeshAnimation* GetAnimation(const string& name);
 
 	protected:
@@ -35,16 +36,16 @@ namespace NCL {
 		~ToonAssetManager(void);
 		static ToonAssetManager* instance;
 
-		Rendering::TextureBase*		AddTexture(const string& name, const bool& invert);
-		MeshGeometry*				AddMesh(const string& name, const GeometryPrimitive& type = GeometryPrimitive::Triangles);
-		Rendering::ShaderBase*		AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
+		Rendering::TextureBase*		AddTexture(const string& name, const string& fileName, const bool& invert = false);
+		MeshGeometry*				AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type = GeometryPrimitive::Triangles);
+		Rendering::OGLShader*		AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
 			const string& geometryShader = "", const string& domainShader = "", const string& hullShader = "");
-		MeshAnimation*				AddAnimation(const string& name);
+		MeshAnimation*				AddAnimation(const string& name, const string& fileName);
 
 
 		map<string, Rendering::TextureBase*> textures;
 		map<string, MeshGeometry*> meshes;
-		map<string, Rendering::ShaderBase*> shaders;
+		map<string, Rendering::OGLShader*> shaders;
 		map<string, MeshAnimation*> animations;
 	};
 }

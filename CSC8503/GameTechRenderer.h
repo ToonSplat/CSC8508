@@ -20,10 +20,6 @@ namespace NCL {
 			GameTechRenderer();		
 			~GameTechRenderer();
 
-			MeshGeometry*	LoadMesh(const string& name);
-			TextureBase*	LoadTexture(const string& name);
-			ShaderBase*		LoadShader(const string& vertex, const string& fragment);
-
 			void SetWorld(ToonGameWorld* world);
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }

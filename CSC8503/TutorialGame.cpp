@@ -39,15 +39,15 @@ for this module, even in the coursework, but you can add it if you like!
 
 */
 void TutorialGame::InitialiseAssets() {
-	cubeMesh	= renderer->LoadMesh("cube.msh");
-	sphereMesh	= renderer->LoadMesh("sphere.msh");
-	charMesh	= renderer->LoadMesh("goat.msh");
-	enemyMesh	= renderer->LoadMesh("Keeper.msh");
-	bonusMesh	= renderer->LoadMesh("apple.msh");
-	capsuleMesh = renderer->LoadMesh("capsule.msh");
+	cubeMesh = nullptr;
+	sphereMesh = nullptr;
+	charMesh = nullptr;
+	enemyMesh = nullptr;
+	bonusMesh = nullptr;
+	capsuleMesh = nullptr;
 
-	basicTex	= renderer->LoadTexture("checkerboard.png");
-	basicShader = renderer->LoadShader("scene.vert", "scene.frag");
+	basicTex = nullptr;
+	basicShader = nullptr;
 
 	InitCamera();
 	InitWorld();
