@@ -68,7 +68,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 
 	if (offline) {
-		UpdateControlsByKeyboard(playerControl, world->GetMainCamera());
+		UpdateControls(playerControl, world->GetMainCamera());
 		if (player) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);

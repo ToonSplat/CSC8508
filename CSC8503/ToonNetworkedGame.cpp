@@ -143,7 +143,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 	}
 	else {
 		if (player) {
-			UpdateControlsByKeyboard(playerControl, world->GetMainCamera());
+			UpdateControls(playerControl, world->GetMainCamera());
 		}
 	}
 	if(!closeGame)

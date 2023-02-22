@@ -56,6 +56,7 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
+    "PlayerControl.cpp"
     "ToonMapCamera.cpp"
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
