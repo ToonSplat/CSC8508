@@ -45,6 +45,7 @@ class ToonConfirmationScreen : public PushdownState
 		bool					m_IsMousePointerVisible = true;
 		Vector2					m_WindowSize;
 		GameTechRenderer*		m_Renderer;
+		Vector2					m_MouseLastPosition = Vector2(0.0f, 0.0f);
 
 	public:
 		ToonConfirmationScreen* delegate;
@@ -71,4 +72,10 @@ class ToonConfirmationScreen : public PushdownState
 		void UpdateButtonsCoordinates();
 		void DrawScreen();
 		void DrawSingleButton(ConfirmationButtonsType buttonType);
+		void HandleMouse();
+		void HandleKeyboard();
+		int Clamp(int value, int lowerBound, int upperBound);
+		ConfirmationButtonsType GetConfirmationButtonTypeFromIntegerValue(int value);
+		void UpdateMosePointerState(bool isVisible);
+		void WakeMouseOnMovement();
 };

@@ -22,23 +22,25 @@ ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 
 PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, PushdownState** newState)
 {
-	m_CurrentSelectedButton = ConfirmationButtonsType::None;
 	m_Renderer->Update(dt);
 	m_Renderer->Render();
 	Debug::UpdateRenderables(dt);
+	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
+	if (m_IsMousePointerVisible)  { HandleMouse(); }
+	HandleKeyboard();
 	DrawScreen();
-	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
+	if ((m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || (!m_IsMousePointerVisible && Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)))
 	{
 		switch (m_CurrentSelectedButton)
 		{
-		case Ok:
-			return delegate->DidSelectOkButton();
-			break;
-		case Cancel:
-			return delegate->DidSelectCancelButton();
-			break;
-		case None:
-			break;
+			case Ok:
+				return delegate->DidSelectOkButton();
+				break;
+			case Cancel:
+				return delegate->DidSelectCancelButton();
+				break;
+			case None:
+				break;
 		}
 	}
 	return PushdownState::PushdownResult::NoChange;
@@ -70,14 +72,79 @@ void ToonConfirmationScreen::DrawSingleButton(ConfirmationButtonsType buttonType
 	Button button = buttonType == ConfirmationButtonsType::Ok ? m_OkButton : m_CancelButton;
 	float xOffset = (CONFIRMATION_BUTTON_WIDTH / 2.0f) - button.buttonText.length();
 	float yOffset = (CONFIRMATION_BUTTON_HEIGHT / 2.0f) + 1.0f;
-	if (m_IsMousePointerVisible)
+	Debug::DrawQuad(button.buttonCoordinates.origin, button.buttonCoordinates.size, buttonType == m_CurrentSelectedButton ? m_SelectedTextColour : m_TextColour);
+	Debug::Print(button.buttonText, button.buttonCoordinates.origin + Vector2(xOffset, yOffset), buttonType == m_CurrentSelectedButton ? m_SelectedTextColour : m_TextColour);
+}
+
+void ToonConfirmationScreen::HandleMouse()
+{
+	Vector2 mousePosition = Window::GetMouse()->GetWindowPosition();
+	float	y			  = ((mousePosition.y / m_WindowSize.y) * 100);
+	float	x			  = ((mousePosition.x / m_WindowSize.x) * 100);
+	m_MouseLastPosition	  = mousePosition;
+	if (m_OkButton.buttonCoordinates.origin.x <= x && m_OkButton.buttonCoordinates.origin.x + m_OkButton.buttonCoordinates.size.x >= x && m_OkButton.buttonCoordinates.origin.y <= y && m_OkButton.buttonCoordinates.origin.y + m_OkButton.buttonCoordinates.size.y >= y)
 	{
-		Vector2 mousePosition = Window::GetMouse()->GetWindowPosition();
-		float	y			  = ((mousePosition.y / m_WindowSize.y) * 100);
-		float	x			  = ((mousePosition.x / m_WindowSize.x) * 100);
-		bool	isHovered	  = button.buttonCoordinates.origin.x <= x && button.buttonCoordinates.origin.x + button.buttonCoordinates.size.x >= x && button.buttonCoordinates.origin.y <= y && button.buttonCoordinates.origin.y + button.buttonCoordinates.size.y >= y;
-		Debug::DrawQuad(button.buttonCoordinates.origin, button.buttonCoordinates.size, isHovered ? m_SelectedTextColour : m_TextColour);
-		Debug::Print(button.buttonText, button.buttonCoordinates.origin + Vector2(xOffset, yOffset), isHovered ? m_SelectedTextColour : m_TextColour);
-		if (isHovered) { m_CurrentSelectedButton = button.identifier; }
+		m_CurrentSelectedButton = ConfirmationButtonsType::Ok;
 	}
+	else if (m_CancelButton.buttonCoordinates.origin.x <= x && m_CancelButton.buttonCoordinates.origin.x + m_CancelButton.buttonCoordinates.size.x >= x && m_CancelButton.buttonCoordinates.origin.y <= y && m_CancelButton.buttonCoordinates.origin.y + m_CancelButton.buttonCoordinates.size.y >= y)
+	{
+		m_CurrentSelectedButton = ConfirmationButtonsType::Cancel;
+	}
+	else
+	{
+		m_CurrentSelectedButton = ConfirmationButtonsType::None;
+	}
+}
+
+void ToonConfirmationScreen::HandleKeyboard()
+{
+	int add = 0;
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))
+	{
+		add -= 1;
+		UpdateMosePointerState(false);
+	}
+	else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RIGHT))
+	{
+		add += 1;
+		UpdateMosePointerState(false);
+	}
+	if (!m_IsMousePointerVisible)
+	{
+		int currentSelectedButton = Clamp(m_CurrentSelectedButton + add, ConfirmationButtonsType::Ok, ConfirmationButtonsType::Cancel);
+		m_CurrentSelectedButton   = GetConfirmationButtonTypeFromIntegerValue(currentSelectedButton);
+	}
+}
+
+int ToonConfirmationScreen::Clamp(int value, int lowerBound, int upperBound)
+{
+	if		(value > upperBound) { return upperBound; }
+	else if (value < lowerBound) { return lowerBound; }
+	return value;
+}
+
+ToonConfirmationScreen::ConfirmationButtonsType ToonConfirmationScreen::GetConfirmationButtonTypeFromIntegerValue(int value)
+{
+	switch (value)
+	{
+		case 0:
+			return ToonConfirmationScreen::ConfirmationButtonsType::None;
+		case 1:
+			return ToonConfirmationScreen::ConfirmationButtonsType::Ok;
+		case 2:
+			return ToonConfirmationScreen::ConfirmationButtonsType::Cancel;
+	}
+	return ToonConfirmationScreen::ConfirmationButtonsType::None;
+}
+
+void ToonConfirmationScreen::UpdateMosePointerState(bool isVisible)
+{
+	Window::GetWindow()->ShowOSPointer(isVisible);
+	m_IsMousePointerVisible = isVisible;
+}
+
+void ToonConfirmationScreen::WakeMouseOnMovement()
+{
+	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
+	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 }
