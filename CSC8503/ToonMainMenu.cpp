@@ -7,7 +7,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
@@ -19,7 +19,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
@@ -99,6 +99,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	{
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
 		break;
 	case MULTIPLAY:
@@ -111,7 +112,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		*newState = m_ToonConfirmationScreen;
 		break;
-		//return PushdownResult::Pop;
 	case LAUNCHASSERVER:
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		*newState = m_Game;

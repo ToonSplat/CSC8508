@@ -21,6 +21,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
+
 	StartGame();
 }
 
@@ -113,6 +114,17 @@ void ToonGame::UpdateGame(float dt){
 	Debug::UpdateRenderables(dt);
 }
 
+PushdownState::PushdownResult ToonGame::DidSelectCancelButton()
+{
+	return PushdownState::Pop;
+}
+
+PushdownState::PushdownResult ToonGame::DidSelectOkButton()
+{
+	m_ShouldQuitGame = true;
+	return PushdownState::Pop;
+}
+
 void ToonGame::UpdateControls(PlayerControl* controls) {
 	Vector3 forward = world->GetMainCamera()->GetForward();
 	Vector3 right = world->GetMainCamera()->GetRight();
@@ -155,8 +167,13 @@ void ToonGame::UpdateControls(PlayerControl* controls) {
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
+	if (m_ShouldQuitGame) { return PushdownResult::Pop; }
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
-		return PushdownResult::Pop;
+	{
+		*newState = GetToonConfirmationScreen();
+		return PushdownResult::Push;
+	}
+		//return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{
 		std::cout << "Skipping large time delta" << std::endl;
@@ -204,4 +221,14 @@ Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
 	}
 	if (tie == true) return tieTeam;
 	else return world->GetTeams().find(currentWinner)->second;
+}
+
+ToonConfirmationScreen* NCL::CSC8503::ToonGame::GetToonConfirmationScreen()
+{
+	if (!m_ToonConfirmationScreen)
+	{
+		m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
+		m_ToonConfirmationScreen->delegate = this;
+	}
+	return m_ToonConfirmationScreen;
 }

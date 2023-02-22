@@ -1,7 +1,8 @@
 #pragma once
 #include "PushdownMachine.h"
 #include "PushdownState.h"
-#include "ToonVirtualKeyboard.h"	//TODO: - to be removed later
+#include "ToonGameWorld.h"
+#include "GameTechRenderer.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -11,32 +12,58 @@ using namespace CSC8503;
 #define CONFIRMATION_BUTTON_WIDTH  15.0f
 #define CONFIRMATION_BUTTON_HEIGHT 5.0f
 
+
+struct ConfirmationButtonCoordinates
+{
+	Vector2 origin;
+	Vector2 size;
+
+	ConfirmationButtonCoordinates(const ConfirmationButtonCoordinates& coord)
+	{
+		origin = coord.origin;
+		size   = coord.size;
+	}
+
+	ConfirmationButtonCoordinates(Vector2 org, Vector2 siz)
+	{
+		origin = org;
+		size   = siz;
+	}
+		
+	ConfirmationButtonCoordinates()
+	{
+		origin = Vector2(0.0f, 0.0f);
+		size   = Vector2(0.0f, 0.0f);
+	}
+};
+
+enum ConfirmationButtonsType
+{
+	NoneButton = 0,
+	Ok,
+	Cancel
+};
+
+typedef struct ButtonStruct
+{
+	std::string					  buttonText;
+	ConfirmationButtonCoordinates buttonCoordinates;
+	ConfirmationButtonsType		  identifier;
+
+	ButtonStruct(std::string text, ConfirmationButtonCoordinates coordinates, ConfirmationButtonsType id)// : buttonCoordinates(EMPTY_COORDINATES)
+	{
+		buttonText = text;
+		buttonCoordinates = coordinates;
+		identifier = id;
+	}
+}Button;
+
 class ToonConfirmationScreen : public PushdownState
 {
-	enum ConfirmationButtonsType
-	{
-		None = 0,
-		Ok,
-		Cancel
-	};
-
-	typedef struct ButtonStruct
-	{
-		std::string				buttonText;
-		Coordinates				buttonCoordinates;
-		ConfirmationButtonsType identifier;
-
-		ButtonStruct(std::string text, Coordinates coordinates, ConfirmationButtonsType id) : buttonCoordinates(coordinates)
-		{
-			buttonText		  = text;
-			buttonCoordinates = coordinates;
-			identifier		  = id;
-		}
-	}Button;
 
 	private:
 		const Vector4			m_SelectedTextColour = Debug::GREEN;
-		Coordinates				m_Coordinates;
+		ConfirmationButtonCoordinates m_Coordinates;
 		std::string				m_Text;
 		Vector4					m_TextColour;
 		Button					m_OkButton;
@@ -52,7 +79,7 @@ class ToonConfirmationScreen : public PushdownState
 
 	public:
 		ToonConfirmationScreen();
-		ToonConfirmationScreen(Coordinates coordinates,
+		ToonConfirmationScreen(ConfirmationButtonCoordinates coordinates,
 							   Vector2 windowSize,
 							   GameTechRenderer* renderer,
 							   std::string text			= CONFIRMATION_TEXT,
@@ -76,6 +103,6 @@ class ToonConfirmationScreen : public PushdownState
 		void HandleKeyboard();
 		int Clamp(int value, int lowerBound, int upperBound);
 		ConfirmationButtonsType GetConfirmationButtonTypeFromIntegerValue(int value);
-		void UpdateMosePointerState(bool isVisible);
+		void UpdateMousePointerState(bool isVisible);
 		void WakeMouseOnMovement();
 };

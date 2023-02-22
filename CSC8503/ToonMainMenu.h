@@ -12,7 +12,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class ToonMainMenu : public ToonConfirmationScreen
+class ToonMainMenu : public /*PushdownState*/ToonConfirmationScreen
 {
 	enum GameStates
 	{

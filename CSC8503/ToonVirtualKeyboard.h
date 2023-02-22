@@ -92,5 +92,5 @@ class ToonVirtualKeyboard
 		void UpdateMosePointerState(bool isVisible);
 		void WakeMouseOnMovement();
 		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
-		bool IsMouseInsideKeyboardArea(int mouseX, int mouseY);
+		bool IsMouseInsideKeyboardArea(float mouseX, float mouseY);
 };

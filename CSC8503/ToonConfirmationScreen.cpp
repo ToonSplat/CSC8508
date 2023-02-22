@@ -1,8 +1,8 @@
 #include "ToonConfirmationScreen.h"
 
-ToonConfirmationScreen::ToonConfirmationScreen() : m_Coordinates(Vector2(0, 0), Vector2(0, 0)), m_OkButton("", EMPTY_COORDINATES, ConfirmationButtonsType::Ok), m_CancelButton("", EMPTY_COORDINATES, ConfirmationButtonsType::Cancel) {}
+ToonConfirmationScreen::ToonConfirmationScreen() : m_Coordinates(ConfirmationButtonCoordinates()), m_OkButton("", ConfirmationButtonCoordinates(), ConfirmationButtonsType::Ok), m_CancelButton("", ConfirmationButtonCoordinates(), ConfirmationButtonsType::Cancel) {}
 
-ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
+ToonConfirmationScreen::ToonConfirmationScreen(ConfirmationButtonCoordinates coordinates,
 											   Vector2 windowSize,
 											   GameTechRenderer* renderer,
 											   std::string text,
@@ -13,9 +13,9 @@ ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 																		   m_Renderer(renderer),
 																		   m_Text(text),
 																		   m_TextColour(textColour),
-																		   m_OkButton(okButtonText,		EMPTY_COORDINATES, ConfirmationButtonsType::Ok),
-																		   m_CancelButton(noButtonText, EMPTY_COORDINATES, ConfirmationButtonsType::Cancel),
-																		   m_CurrentSelectedButton(ConfirmationButtonsType::None)
+																		   m_OkButton(okButtonText, ConfirmationButtonCoordinates(), ConfirmationButtonsType::Ok),
+																		   m_CancelButton(noButtonText, ConfirmationButtonCoordinates(), ConfirmationButtonsType::Cancel),
+																		   m_CurrentSelectedButton(ConfirmationButtonsType::NoneButton)
 {
 	UpdateButtonsCoordinates();
 }
@@ -39,7 +39,7 @@ PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, Pushdow
 			case Cancel:
 				return delegate->DidSelectCancelButton();
 				break;
-			case None:
+			case NoneButton:
 				break;
 		}
 	}
@@ -52,12 +52,13 @@ void ToonConfirmationScreen::OnSleep()
 
 void ToonConfirmationScreen::OnAwake()
 {
+	UpdateMousePointerState(true);
 }
 
 void ToonConfirmationScreen::UpdateButtonsCoordinates()
 {
-	m_OkButton.buttonCoordinates	 = Coordinates(Vector2(m_Coordinates.origin.x, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
-	m_CancelButton.buttonCoordinates = Coordinates(Vector2(m_Coordinates.origin.x + m_Coordinates.size.x - CONFIRMATION_BUTTON_WIDTH, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
+	m_OkButton.buttonCoordinates	 = ConfirmationButtonCoordinates(Vector2(m_Coordinates.origin.x, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
+	m_CancelButton.buttonCoordinates = ConfirmationButtonCoordinates(Vector2(m_Coordinates.origin.x + m_Coordinates.size.x - CONFIRMATION_BUTTON_WIDTH, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
 }
 
 void ToonConfirmationScreen::DrawScreen()
@@ -92,7 +93,7 @@ void ToonConfirmationScreen::HandleMouse()
 	}
 	else
 	{
-		m_CurrentSelectedButton = ConfirmationButtonsType::None;
+		m_CurrentSelectedButton = ConfirmationButtonsType::NoneButton;
 	}
 }
 
@@ -102,12 +103,12 @@ void ToonConfirmationScreen::HandleKeyboard()
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))
 	{
 		add -= 1;
-		UpdateMosePointerState(false);
+		UpdateMousePointerState(false);
 	}
 	else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RIGHT))
 	{
 		add += 1;
-		UpdateMosePointerState(false);
+		UpdateMousePointerState(false);
 	}
 	if (!m_IsMousePointerVisible)
 	{
@@ -123,21 +124,21 @@ int ToonConfirmationScreen::Clamp(int value, int lowerBound, int upperBound)
 	return value;
 }
 
-ToonConfirmationScreen::ConfirmationButtonsType ToonConfirmationScreen::GetConfirmationButtonTypeFromIntegerValue(int value)
+ConfirmationButtonsType ToonConfirmationScreen::GetConfirmationButtonTypeFromIntegerValue(int value)
 {
 	switch (value)
 	{
 		case 0:
-			return ToonConfirmationScreen::ConfirmationButtonsType::None;
+			return ConfirmationButtonsType::NoneButton;
 		case 1:
-			return ToonConfirmationScreen::ConfirmationButtonsType::Ok;
+			return ConfirmationButtonsType::Ok;
 		case 2:
-			return ToonConfirmationScreen::ConfirmationButtonsType::Cancel;
+			return ConfirmationButtonsType::Cancel;
 	}
-	return ToonConfirmationScreen::ConfirmationButtonsType::None;
+	return ConfirmationButtonsType::NoneButton;
 }
 
-void ToonConfirmationScreen::UpdateMosePointerState(bool isVisible)
+void ToonConfirmationScreen::UpdateMousePointerState(bool isVisible)
 {
 	Window::GetWindow()->ShowOSPointer(isVisible);
 	m_IsMousePointerVisible = isVisible;
@@ -146,5 +147,5 @@ void ToonConfirmationScreen::UpdateMosePointerState(bool isVisible)
 void ToonConfirmationScreen::WakeMouseOnMovement()
 {
 	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
-	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
+	if (currentMousePosition != m_MouseLastPosition) { UpdateMousePointerState(true); }
 }
