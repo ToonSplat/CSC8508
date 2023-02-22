@@ -68,6 +68,12 @@ static void UpdateControlsByKeyboard(PlayerControl* controls, Camera* camera) {
 
 // Index refers to index of the controller, from 1 to 4. Will probably map indices to players elsewhere
 static void UpdateControlsByXboxController(PlayerControl* controls, Camera* camera, int index = 0) {
+	Maths::Vector3 forward = camera->GetForward();
+	Maths::Vector3 right = camera->GetRight();
+	Maths::Vector3 up = camera->GetUp();
+
+	Maths::Vector3 linearMovement;
+
 	XINPUT_STATE state;
 	ZeroMemory(&state, sizeof(XINPUT_STATE));
 
@@ -92,11 +98,13 @@ static void UpdateControlsByXboxController(PlayerControl* controls, Camera* came
 				normalizedMagnitude = 1.0f;
 			}
 
-			float x = thumbLX / 32767.0f;
-			float y = thumbLY / 32767.0f;
+			float x = thumbLX / 32767.0f * normalizedMagnitude;
+			linearMovement += right * x;
+			float y = thumbLY / 32767.0f * normalizedMagnitude;
+			linearMovement += forward * y;
 
-			controls->direction[0] = short(x * normalizedMagnitude * 1000);
-			controls->direction[1] = short(y * normalizedMagnitude * 1000);
+			controls->direction[0] = short(linearMovement.x * 1000);
+			controls->direction[1] = short(linearMovement.z * 1000);
 		}
 		//	##################################
 		//	Actions
