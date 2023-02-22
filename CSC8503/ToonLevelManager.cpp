@@ -80,8 +80,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel(std::vector<ToonNetworkO
 	AddCubeToWorld(Vector3(80.0f, 0, 60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
 	AddCubeToWorld(Vector3(80.0f, 0, -60.0f), Vector3(0, 0, 0), floorScale, GetTexture("basic"), floorColour, 0.0f, true);
 
-	AddConcaveObjectToWorld(GetMesh("floorMain"), Vector3(0, 60.0f, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), floorColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("platformMain"), Vector3(0, 60.0f, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), floorColour, 0.0f);
+	//AddConcaveObjectToWorld(GetMesh("floorMain"), Vector3(0, 60.0f, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), floorColour, 0.0f);
+	//AddConcaveObjectToWorld(GetMesh("platformMain"), Vector3(0, 60.0f, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), floorColour, 0.0f);
 
 	Vector3 wallScaleX = Vector3(0.5f, 20.0f, 30.0f);
 	Vector3 wallScaleZ = Vector3(30.0f, 20.0f, 0.5f);
