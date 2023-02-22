@@ -8,8 +8,12 @@
 #include "PhysicsObject.h"
 #include "Debug.h"
 #include <vector>
+
+#include "AudioSystem.h"
+
 #include "PaintBallClass.h"
 #include "PlayerControl.h"
+
 
 using namespace NCL;
 using namespace CSC8503;
@@ -51,8 +55,15 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 
+
 	PaintBallClass weapon;
 	bool isAiming, isMoving;
+
+	AudioSystem* audiosystem;
+	AudioEmitter* musicPlayer;
+	void MusicInitTest();
+	void MusicUpdateTest();
+
 	/*
 	* Future Implementations:
 	*

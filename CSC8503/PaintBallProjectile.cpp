@@ -9,4 +9,12 @@ PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_Worl
 }
 
 PaintBallProjectile::~PaintBallProjectile(){
+	delete speaker;
+}
+
+void PaintBallProjectile::ConfigureSound() {
+	speaker = new AudioEmitter();
+	speaker->SetPriority(SoundPriority::LOW);
+	speaker->SetLooping(false);
+	speaker->SetSound(Audio::GetSound("splatter.wav"));
 }

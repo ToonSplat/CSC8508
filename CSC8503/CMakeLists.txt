@@ -16,6 +16,9 @@ set(Header_Files
     "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
+    "Audio.h"
+    "AudioEmitter.h"
+    "AudioSystem.h"
     "HitSphere.h"
     "ToonGameObject.h"
     "ToonEventListener.h"
@@ -49,6 +52,9 @@ set(Source_Files
     "Player.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
+    "Audio.cpp"
+    "AudioEmitter.cpp"
+    "AudioSystem.cpp"
     "HitSphere.cpp"
     "ToonGameObject.cpp"
     "ToonEventListener.cpp"
@@ -270,10 +276,16 @@ endif()
 include_directories("../OpenGLRendering/")
 include_directories("../NCLCoreClasses/")
 include_directories("../CSC8503CoreClasses/")
+include_directories("../openal-soft/")
+include_directories("../libsndfile/")
+
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC NCLCoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC CSC8503CoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC OpenGLRendering)
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "OpenAL32.lib")
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "sndfile.lib")
+
 
 if(USE_VULKAN)
 include_directories("../VulkanRendering/")
