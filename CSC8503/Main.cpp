@@ -78,7 +78,6 @@ int main()
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
-
 	//Imgui 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
