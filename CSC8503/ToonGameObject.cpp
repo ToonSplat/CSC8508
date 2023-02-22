@@ -45,7 +45,7 @@ void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
 		r.BindMesh(minimapMesh);
 
-		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
 			r.DrawBoundMesh(i);
 	}
 	else
@@ -53,7 +53,7 @@ void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 		OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
 		r.BindMesh(boundMesh);
 
-		for (int i = 0; i < boundMesh->GetSubMeshCount(); ++i)
+		for (int i = 0; i < (int)boundMesh->GetSubMeshCount(); ++i)
 			r.DrawBoundMesh(i);
 	}	
 }

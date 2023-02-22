@@ -43,7 +43,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F5))
 		renderObject->GetShader()->ReloadShader();
 
-	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, controls->direction[1] / 1000.0f, controls->direction[2] / 1000.0f);
+	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, 0, controls->direction[1] / 1000.0f);
 	linearMovement.normalize();
 
 	isMoving = linearMovement.length() >= 0.1f;

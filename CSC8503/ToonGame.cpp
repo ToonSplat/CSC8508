@@ -68,7 +68,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	world->UpdateWorld(dt);
 
 	if (offline) {
-		UpdateControls(playerControl);
+		UpdateControlsByKeyboard(playerControl, world->GetMainCamera());
 		if (player) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);
@@ -94,46 +94,6 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
-}
-
-void ToonGame::UpdateControls(PlayerControl* controls) {
-	Vector3 forward = world->GetMainCamera()->GetForward();
-	Vector3 right = world->GetMainCamera()->GetRight();
-	Vector3 up = world->GetMainCamera()->GetUp();
-
-	Vector3 linearMovement, animMovement;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
-	{
-		linearMovement += forward;
-		animMovement.z = 1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
-	{
-		linearMovement -= forward;
-		animMovement.z = -1.0f;
-	}
-
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
-	{
-		linearMovement -= right;
-		animMovement.x = -1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
-	{
-		linearMovement += right;
-		animMovement.x = 1.0f;
-	}
-
-	controls->direction[0] = short(linearMovement.x * 10000);
-	controls->direction[1] = short(linearMovement.y * 10000);
-	controls->direction[2] = short(linearMovement.z * 10000);
-
-	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
-	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();
-
-	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
-	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
-	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
 }
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
