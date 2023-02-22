@@ -30,14 +30,21 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arrow")) return false;
 	if (!LoadModel("player")) return false;
 	if (!LoadModel("sphere")) return false;
-	if (!LoadModel("floorMain")) return false;
-	if (!LoadModel("platformMain")) return false;
+	if (!LoadModel("arena_main")) return false;
+	if (!LoadModel("arena_lights")) return false;
+	if (!LoadModel("arena_obstacles")) return false;
+	if (!LoadModel("arena_ramps")) return false;
+	//if (!LoadModel("floorMain")) return false;
+	//if (!LoadModel("platformMain")) return false;
 
 	//All Textures
 	if (!LoadTexture("mesh")) return false;
 	if (!LoadTexture("basic")) return false;
 	if (!LoadTexture("basicPurple")) return false;
 	if (!LoadTexture("player")) return false;
+	if (!LoadTexture("tex_arena_wall")) return false;
+	if (!LoadTexture("tex_arena_wall2")) return false;
+	if (!LoadTexture("tex_arena_lights")) return false;
 
 	//All Shaders
 	if (!LoadShader("scene")) return false;
@@ -151,7 +158,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_wall"), arenaColour, 0.0f);
 	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_wall2"), arenaColour, 0.0f);
 	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("basic"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_light"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetTexture("tex_arena_lights"), arenaColour, 0.0f);
 
 	return true;
 }

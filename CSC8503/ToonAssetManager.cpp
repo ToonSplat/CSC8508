@@ -40,6 +40,9 @@ void ToonAssetManager::LoadAssets(void) {
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
 	AddTexture("player", "Boss_diffuse.png", true);
+	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
+	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
+	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);
 
 	//-----------------------------------------------------------
 	//		Meshes
@@ -47,8 +50,12 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arrow", "Minimap_Arrow.msh");
 	AddMesh("player", "Character_Boss.msh");
 	AddMesh("sphere", "sphere.msh");
-	AddMesh("floorMain", "FloorsMain.msh");
-	AddMesh("platformMain", "Level_Platform.msh");
+	AddMesh("arena_main", "Level_Arena.msh");
+	AddMesh("arena_lights", "Level_Arena_Lights.msh");
+	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
+	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
+	//AddMesh("floorMain", "FloorsMain.msh");
+	//AddMesh("platformMain", "Level_Platform.msh");
 	//-----------------------------------------------------------
 	//		Shaders
 	AddShader("debug", "debug.vert", "debug.frag");

@@ -37,6 +37,7 @@ namespace NCL
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
+					std::cout << "Mesh Name: " << meshName << std::endl;
 					return nullptr;
 				}
 				else return meshMap.at(meshName); 
@@ -44,6 +45,7 @@ namespace NCL
 			TextureBase* GetTexture(std::string textureName) const {
 				if (textureMap.count(textureName) == 0) {
 					std::cout << "ERROR: Attempting to get Texture that isn't loaded\n";
+					std::cout << "Texture Name: " << textureName << std::endl;
 					return nullptr;
 				}
 				else return textureMap.at(textureName);
@@ -51,6 +53,7 @@ namespace NCL
 			ShaderBase* GetShader(std::string shaderName) const {
 				if (shaderMap.count(shaderName) == 0) {
 					std::cout << "ERROR: Attempting to get Shader that isn't loaded\n";
+					std::cout << "Shader Name: " << shaderName << std::endl;
 					return nullptr;
 				}
 				else return shaderMap.at(shaderName);
