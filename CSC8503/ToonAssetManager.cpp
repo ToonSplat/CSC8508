@@ -1,6 +1,4 @@
 #include "ToonAssetManager.h"
-#include "TextureLoader.h"
-#include <stb/stb_image.h>
 
 using namespace NCL;
 
@@ -19,6 +17,8 @@ ToonAssetManager::~ToonAssetManager(void) {
 		delete shader;
 	for (auto& [name, animation] : animations)
 		delete animation;
+	for (auto& [name, mat] : materials)
+		delete mat;
 }
 
 void ToonAssetManager::LoadAssets(void) {
@@ -30,16 +30,18 @@ void ToonAssetManager::LoadAssets(void) {
 		delete shader;
 	for (auto& [name, animation] : animations)
 		delete animation;
-	textures.clear();
+	for (auto& [name, mat] : materials)
+		delete mat; materials.clear();
 	meshes.clear();
 	shaders.clear();
 	animations.clear();
+	materials.clear();
 	//-----------------------------------------------------------
 	//		Textures
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
-	AddTexture("player", "Boss_diffuse.png", true);
+	//AddTexture("player", "Boss_diffuse.png", true);
 	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
 	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
 	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);
@@ -81,6 +83,10 @@ void ToonAssetManager::LoadAssets(void) {
 	AddAnimation("Player_Run_Aim_B", "Boss_Gun_Run_Aim_B.anm");
 	AddAnimation("Player_Run_Aim_BL", "Boss_Gun_Run_Aim_BL.anm");
 	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");
+
+	//-----------------------------------------------------------
+	//		Materials
+	AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
@@ -167,6 +173,7 @@ MeshAnimation* ToonAssetManager::GetAnimation(const string& name) {
 	return nullptr;
 }
 
+
 MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& fileName) {
 	
 	MeshAnimation* animation = GetAnimation(name);
@@ -177,4 +184,24 @@ MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& 
 	animations.emplace(name, animation);
 
 	return animation;
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
+{
+	map<string, ToonMeshMaterial*>::iterator i = materials.find(name);
+
+	if (i != materials.end())
+		return i->second;
+	return nullptr;
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
+{
+	ToonMeshMaterial* mat = GetMaterial(name);
+	if (mat != nullptr) return mat;
+
+	mat = new ToonMeshMaterial(fileName, subMeshCount);
+	materials.emplace(name, mat);
+
+	return mat;
 }

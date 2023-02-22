@@ -9,9 +9,24 @@ ToonRenderObject::ToonRenderObject(ToonTransform* parentTransform, MeshGeometry*
 	this->transform	= parentTransform;
 	this->mesh		= mesh;
 	this->texture	= tex;
+	this->material = nullptr;
 	this->shader	= shader;
 	this->colour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->minimapMesh = minimapMesh;
+}
+
+NCL::CSC8503::ToonRenderObject::ToonRenderObject(ToonTransform* parentTransform, MeshGeometry* mesh, ToonMeshMaterial* mat, ShaderBase* shader, MeshGeometry* minimapMesh)
+{
+	this->transform = parentTransform;
+	this->mesh = mesh;
+	this->texture = nullptr;
+	this->shader = shader;
+	this->colour = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->minimapMesh = minimapMesh;
+
+	this->material = mat;
+	mTexturesDiffuse = this->material->GetDiffuseTextures();
+	mTexturesBump = this->material->GetBumpTextures();
 }
 
 NCL::CSC8503::ToonRenderObject::ToonRenderObject(MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader)

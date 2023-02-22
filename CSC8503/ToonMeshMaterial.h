@@ -1,5 +1,9 @@
 #pragma once
-#include "ToonAssetManager.h"
+#include "MeshMaterial.h"
+#include "TextureLoader.h"
+#include "OGLTexture.h"
+#include "Assets.h"
+#include <stb/stb_image.h>
 
 namespace NCL
 {
@@ -7,13 +11,15 @@ namespace NCL
 	{
 	public:
 		ToonMeshMaterial() = delete;
-		ToonMeshMaterial(const std::string& fileName, const int& subMeshCount)
+		ToonMeshMaterial(const std::string& fileName, const unsigned int& subMeshCount)
 		{
 			material = new MeshMaterial(fileName);
 			if (material != nullptr)
 			{
 				//material->LoadTextures();
-				for (int i = 0; i < subMeshCount; ++i)
+				std::cout << "----------------------------------------------------------------------------\n";
+				std::cout << "Loading Material for File: " << fileName << std::endl;
+				for (unsigned int i = 0; i < subMeshCount; i++)
 				{
 					const MeshMaterialEntry* matEntry = material->GetMaterialForLayer(i);
 
@@ -22,8 +28,14 @@ namespace NCL
 					if (diffuseFileName != nullptr)
 					{
 						std::string filePath = Assets::TEXTUREDIR + *diffuseFileName;
+						stbi_set_flip_vertically_on_load(true);
 						Rendering::TextureBase* diffuseTex = TextureLoader::LoadAPITexture(filePath);
-						texturesDiffuse.emplace_back(diffuseTex);
+						stbi_set_flip_vertically_on_load(false);
+						if (diffuseTex != nullptr)
+						{
+							std::cout << "Loaded Diffuse texture at path: " << filePath << ", with ID: " << dynamic_cast<Rendering::OGLTexture*>(diffuseTex)->GetObjectID() << std::endl;
+							texturesDiffuse.emplace_back(diffuseTex);
+						}
 					}
 
 					const std::string* bumpFileName = nullptr;
@@ -35,15 +47,17 @@ namespace NCL
 						texturesBump.emplace_back(bumpTex);
 					}
 				}
+				std::cout << "----------------------------------------------------------------------------\n";
 			}
 		}
 
 		std::vector<const Rendering::TextureBase*> GetDiffuseTextures() const { return std::vector<const Rendering::TextureBase*>(texturesDiffuse.begin(), texturesDiffuse.end()); }
 		std::vector<const Rendering::TextureBase*> GetBumpTextures() const { return std::vector<const Rendering::TextureBase*>(texturesBump.begin(), texturesBump.end()); }
 
-	private:
-		MeshMaterial* material;
 		std::vector<Rendering::TextureBase*> texturesDiffuse;
 		std::vector<Rendering::TextureBase*> texturesBump;
+
+	protected:
+		MeshMaterial* material;
 	};
 }

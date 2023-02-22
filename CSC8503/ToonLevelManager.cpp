@@ -1,12 +1,9 @@
-#include "PhysicsObject.h"
-#include "RenderObject.h"
 #include "ToonRenderObject.h"
 #include "ToonGameObject.h"
 #include "ToonLevelManager.h"
 #include <stb/stb_image.h>
 #include <reactphysics3d/reactphysics3d.h>
 #include "ToonGameWorld.h"
-#include "ToonAssetManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -41,7 +38,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadTexture("mesh")) return false;
 	if (!LoadTexture("basic")) return false;
 	if (!LoadTexture("basicPurple")) return false;
-	if (!LoadTexture("player")) return false;
+	//if (!LoadTexture("player")) return false;
 	if (!LoadTexture("tex_arena_wall")) return false;
 	if (!LoadTexture("tex_arena_wall2")) return false;
 	if (!LoadTexture("tex_arena_lights")) return false;
@@ -49,6 +46,9 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	//All Shaders
 	if (!LoadShader("scene")) return false;
 	if (!LoadShader("animated")) return false;
+
+	//All Materials
+	if (!LoadMaterial("mat_player")) return false;
 
 	std::cout << "ToonLevelManager: All files successfully loaded\n";
 
@@ -71,6 +71,12 @@ bool NCL::CSC8503::ToonLevelManager::LoadShader(const std::string shaderName)
 {
 	shaderMap[shaderName] = ToonAssetManager::Instance().GetShader(shaderName);
 	return(shaderMap[shaderName] != nullptr);
+}
+
+bool NCL::CSC8503::ToonLevelManager::LoadMaterial(const std::string materialName)
+{
+	materialMap[materialName] = ToonAssetManager::Instance().GetMaterial(materialName);
+	return(materialMap[materialName] != nullptr);
 }
 
 void ToonLevelManager::ResetLevel(std::vector<ToonNetworkObject*>* networkObjectList) {
@@ -333,8 +339,8 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	gameWorld->AddGameObject(player);
-	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetTexture("player"), GetShader("animated"), GetMesh("arrow")));
-	player->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1));
+	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetMaterial("mat_player"), GetShader("animated"), GetMesh("arrow")));
+	player->GetRenderObject()->SetColour(Vector4(/*team->GetTeamColour()*/1, 1, 1, 1));
 
 	return player;
 }

@@ -5,6 +5,7 @@
 #include "OGLTexture.h"
 #include "OGLMesh.h"
 #include "MeshAnimation.h"
+#include "ToonMeshMaterial.h"
 
 using std::map;
 using std::string;
@@ -30,6 +31,7 @@ namespace NCL {
 		MeshGeometry* GetMesh(const string& name);
 		Rendering::OGLShader* GetShader(const string& name);
 		MeshAnimation* GetAnimation(const string& name);
+		ToonMeshMaterial* GetMaterial(const string& name);
 
 	protected:
 		ToonAssetManager(void);
@@ -41,11 +43,13 @@ namespace NCL {
 		Rendering::OGLShader*		AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
 			const string& geometryShader = "", const string& domainShader = "", const string& hullShader = "");
 		MeshAnimation*				AddAnimation(const string& name, const string& fileName);
+		ToonMeshMaterial*			AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount);
 
 
 		map<string, Rendering::TextureBase*> textures;
 		map<string, MeshGeometry*> meshes;
 		map<string, Rendering::OGLShader*> shaders;
 		map<string, MeshAnimation*> animations;
+		map<string, ToonMeshMaterial*> materials;
 	};
 }
