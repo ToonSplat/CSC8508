@@ -114,7 +114,7 @@ void AudioSystem::CullNodes() {
         AudioEmitter* e = (*i);
         float length = (listenerTransform.GetPositionVector() - e->GetPosition()).Length();
 
-        if (length > e->GetRadius() || !e->GetSound() || e->GetTimeLeft() < 0) {
+        if (length > e->GetRadius() || !e->GetSound() || e->GetTimeLeft() < 0 || (mainMenu && e->GetPriority() < SoundPriority::ALWAYS)) {
             e->DetachSource();
             i = frameEmitters.erase(i);
         }

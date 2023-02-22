@@ -1,3 +1,4 @@
+
 #include "Player.h"
 #include "Maths.h"
 #include "ToonUtils.h"
@@ -26,18 +27,18 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	if (!LoadAnim("Player_Run_Aim_BL")) return;
 	if (!LoadAnim("Player_Run_Aim_BR")) return;
 	PlayAnim("Player_Idle");
+
+	audiosystem = AudioSystem::GetAudioSystem();
 }
 
-Player::~Player() 
+Player::~Player()
 {
 	team->RemovePlayer();
-Player::~Player() {
-	delete musicPlayer;
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    return weapon.Update(dt, controls);
+	return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
@@ -67,6 +68,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
 		controls->jumping = false;
 	}
+
+	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
+	
 }
 
 void Player::AnimationUpdate(float dt) {
@@ -111,14 +115,6 @@ void Player::AnimationUpdate(float dt) {
 		if (isMoving) PlayAnim("Player_Run");
 		else PlayAnim("Player_Idle");
 	}
-		GetRigidbody()->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(linearMovement.Normalised()) * moveSpeed);
-
-	audiosystem->Update(dt);
-	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
-	MusicUpdateTest();
-
-
-    weapon.Update(dt);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
@@ -126,28 +122,4 @@ void Player::SetWeapon(PaintBallClass* base) {
 	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
-}
-}
-
-void Player::Shoot() {
-	return;
-}
-
-void Player::MusicUpdateTest() {
-	musicPlayer->SetTarget(ToonUtils::ConvertToNCLVector3(GetTransform().GetPosition()));
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L)) {
-		musicPlayer->Play();
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::K)) {
-		musicPlayer->Pause();
-	}
-}
-
-void Player::MusicInitTest() {
-	musicPlayer = new AudioEmitter();
-	musicPlayer->SetLooping(true);
-	musicPlayer->SetPriority(SoundPriority::ALWAYS);
-	musicPlayer->SetSound(Audio::GetSound("tune.wav"));
-	musicPlayer->SetVolume(1.0f);
-	audiosystem->AddSoundEmitter(musicPlayer);
 }

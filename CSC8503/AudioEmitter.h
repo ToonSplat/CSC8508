@@ -36,14 +36,16 @@ namespace NCL
 			Maths::Vector3 velocity;
 			bool isLooping;
 			bool paused;
+			bool pause;
 			float volume;
 			float radius;
 			float  timeLeft;
 			OALSource* currentSource;
+			bool music;
 
 		public:
 			
-
+			void SetMusic() { music = true; };
 			AudioEmitter();
 			AudioEmitter(Sound* sound);
 			~AudioEmitter();

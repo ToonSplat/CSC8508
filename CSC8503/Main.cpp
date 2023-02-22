@@ -28,6 +28,8 @@
 #include "BehaviourAction.h"
 #include "ToonMainMenu.h"
 
+#include "AudioSystem.h"
+
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
 #include "../ThirdParty/imgui/imgui_impl_win32.h"
@@ -38,6 +40,9 @@ using namespace CSC8503;
 #include <chrono>
 #include <thread>
 #include <sstream>
+
+//Audio sounds
+std::map<std::string, NCL::CSC8503::Sound*> NCL::CSC8503::Audio::soundEffectBuffers;
 
 /*
 
@@ -52,10 +57,18 @@ hide or show the
 
 */
 
+void AddAudioFiles() {
+	Audio::AddSound("splatter.wav");
+	Audio::AddSound("gameTune.wav");
+	Audio::AddSound("menuTune.wav");
+	Audio::AddSound("splash.wav");
+}
+
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		AudioSystem::GetAudioSystem()->Update(dt);
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
 			continue; //must have hit a breakpoint or something to have a 1 second frame time!
@@ -80,6 +93,10 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 
 int main()
 {
+	//Audio
+	NCL::CSC8503::AudioSystem::Initialise();
+	AddAudioFiles();
+
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
@@ -91,6 +108,8 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
 	ImGui_ImplOpenGL3_Init();
+
+	
 
 	if (!w->HasInitialised()) {
 		return -1;
@@ -112,4 +131,8 @@ int main()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+
+	//Audio
+	Audio::DeleteSounds();
+	NCL::CSC8503::AudioSystem::Destroy();
 }

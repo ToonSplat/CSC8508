@@ -8,6 +8,8 @@
 #include "ToonGameWorld.h"
 #include "ToonTextInput.h"
 
+#include "AudioSystem.h"
+
 using namespace NCL;
 using namespace CSC8503;
 
@@ -71,6 +73,9 @@ public:
 	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win);
 
 private:
+	AudioEmitter* mainMenuTune,* gameTune,* optionClick;
+	void ToonMainMenuAudio();
+
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
 	void OnSleep() override;

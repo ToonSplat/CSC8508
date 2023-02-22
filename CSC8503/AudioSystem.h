@@ -27,18 +27,21 @@ namespace NCL {
 			NCL::Maths::Matrix4 GetListenerTransform() {
 				return listenerTransform;
 			}
-			void AddSoundEmitter(AudioEmitter* s) { emitters.push_back(s); }
+			void AddSoundEmitter(AudioEmitter* s) { if(s)emitters.push_back(s); }
 			void RenoveAudioEmitter(AudioEmitter* s);
 
 			void Update(float msec);
 
 			void SetMasterVolume(float value);
+			void SetMainMenuStatus(bool state) { mainMenu = state; };
 
 		private:
 			Maths::Matrix4 listenerTransform;
 			float masterVolume;
 			ALCcontext* context;
 			ALCdevice* device;
+
+			bool mainMenu;
 
 			std::vector<OALSource*> sources;
 			std::vector<AudioEmitter*> emitters;
