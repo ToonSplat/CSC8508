@@ -689,7 +689,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 {
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
-
+		if ((*i).GetRenderObject() == nullptr) continue;
 		if (shader != minimapShader && shader != mapShader)
 		{
 			shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
