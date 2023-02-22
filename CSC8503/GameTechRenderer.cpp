@@ -554,10 +554,19 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 }
 
 void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
-	team1Percentage = (float)team1Pixels / (float)totalPixels;
-	team2Percentage = (float)team2Pixels / (float)totalPixels;
-	team3Percentage = (float)team3Pixels / (float)totalPixels;
-	team4Percentage = (float)team4Pixels / (float)totalPixels;
+	float totalPaintedPixels = (float)team1Pixels + (float)team2Pixels + (float)team3Pixels + (float)team4Pixels;
+	if (totalPaintedPixels != 0) {
+		team1Percentage = (float)team1Pixels / totalPaintedPixels;
+		team2Percentage = (float)team2Pixels / totalPaintedPixels;
+		team3Percentage = (float)team3Pixels / totalPaintedPixels;
+		team4Percentage = (float)team4Pixels / totalPaintedPixels;
+	}
+	else {
+		team1Percentage = 0;
+		team2Percentage = 0;
+		team3Percentage = 0;
+		team4Percentage = 0;
+	}
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
@@ -997,7 +1006,14 @@ void GameTechRenderer::ResetAtomicBuffer()
 
 }
 
-
+std::map<int, float> GameTechRenderer::GetTeamScores() {
+	std::map<int, float> scores;
+	scores.emplace(1, team1Percentage);
+	scores.emplace(2, team2Percentage);
+	scores.emplace(3, team3Percentage);
+	scores.emplace(4, team4Percentage);
+	return scores;
+}
 
 
 void GameTechRenderer::SetWorld(ToonGameWorld* world)

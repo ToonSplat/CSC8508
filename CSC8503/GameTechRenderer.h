@@ -24,6 +24,7 @@ namespace NCL {
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
 			void RetrieveAtomicValues();
+			std::map<int, float> GetTeamScores();
 		protected:
 
 			void SetupStuffs();
@@ -74,7 +75,7 @@ namespace NCL {
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
 			OGLShader*	minimapShader;
-			OGLShader* scoreBarShader;
+			OGLShader*	scoreBarShader;
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
