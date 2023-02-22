@@ -7,7 +7,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize());
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
@@ -19,13 +19,14 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize());
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
+	if (m_ShouldQuitGame) { return PushdownState::PushdownResult::Pop; }
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
 	{
 		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
@@ -42,8 +43,11 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) { /*return PushdownResult::Pop;*/ *newState = m_ToonConfirmationScreen; return PushdownState::PushdownResult::Push;
-	}	//Keeping it to quit game on escape key press
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) 	//Keeping it to quit game on escape key press
+	{
+		m_CurrentSelectedIndex = CONFIRMATION;
+		return NavigateToScreen(newState);
+	}
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || m_HasUserInitiatedScreenNavigation)
 	{
@@ -88,6 +92,7 @@ bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenu
 
 PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** newState)
 {
+	std::vector<int> ipAddressVector;
 	int navigationScreenIndex = m_CurrentSelectedIndex + (!m_HasUserInitiatedScreenNavigation ? m_BaseCurrentSelectdIndex : 0);
 	m_HasUserInitiatedScreenNavigation = false;
 	switch (navigationScreenIndex)
@@ -104,7 +109,9 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case CREDITS:
 		return PushdownResult::NoChange;
 	case QUIT:
-		return PushdownResult::Pop;
+		*newState = m_ToonConfirmationScreen;
+		break;
+		//return PushdownResult::Pop;
 	case LAUNCHASSERVER:
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		*newState = m_Game;
@@ -115,10 +122,13 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case BACK:
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
-		std::vector<int> ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
+		ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
 		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
 		*newState						 = m_Game;
+		break;
+	case CONFIRMATION:
+		*newState = m_ToonConfirmationScreen;
 		break;
 	}
 	return PushdownResult::Push;
@@ -171,13 +181,12 @@ void ToonMainMenu::WakeMouseOnMovement()
 PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()
 {
 	return PushdownResult::Pop;
-	//std::cout << "Clicked on Cancel Button" << std::endl;
 }
 
 PushdownState::PushdownResult ToonMainMenu::DidSelectOkButton()
 {
+	m_ShouldQuitGame = true;
 	return PushdownResult::Pop;
-	//std::cout << "Clicked on OK Button" << std::endl;
 }
 
 void ToonMainMenu::DrawMainMenu()

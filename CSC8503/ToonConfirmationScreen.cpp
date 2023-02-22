@@ -4,11 +4,13 @@ ToonConfirmationScreen::ToonConfirmationScreen() : m_Coordinates(Vector2(0, 0), 
 
 ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 											   Vector2 windowSize,
+											   GameTechRenderer* renderer,
 											   std::string text,
 											   Vector4 textColour,
 											   std::string okButtonText,
 											   std::string noButtonText) : m_Coordinates(coordinates),
 																		   m_WindowSize(windowSize),
+																		   m_Renderer(renderer),
 																		   m_Text(text),
 																		   m_TextColour(textColour),
 																		   m_OkButton(okButtonText,		EMPTY_COORDINATES, ConfirmationButtonsType::Ok),
@@ -18,29 +20,12 @@ ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 	UpdateButtonsCoordinates();
 }
 
-//void ToonConfirmationScreen::Update()
-//{
-//	m_CurrentSelectedButton = ConfirmationButtonsType::None;
-//	DrawScreen();
-//	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
-//	{
-//		switch (m_CurrentSelectedButton)
-//		{
-//			case Ok:
-//				delegate->DidSelectOkButton();
-//				break;
-//			case Cancel:
-//				delegate->DidSelectCancelButton();
-//				break;
-//			case None:
-//				break;
-//		}
-//	}
-//}
-
 PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, PushdownState** newState)
 {
 	m_CurrentSelectedButton = ConfirmationButtonsType::None;
+	m_Renderer->Update(dt);
+	m_Renderer->Render();
+	Debug::UpdateRenderables(dt);
 	DrawScreen();
 	if (Window::GetMouse()->ButtonPressed(MouseButtons::LEFT))
 	{

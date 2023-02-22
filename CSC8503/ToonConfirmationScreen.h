@@ -44,6 +44,7 @@ class ToonConfirmationScreen : public PushdownState
 		ConfirmationButtonsType m_CurrentSelectedButton;
 		bool					m_IsMousePointerVisible = true;
 		Vector2					m_WindowSize;
+		GameTechRenderer*		m_Renderer;
 
 	public:
 		ToonConfirmationScreen* delegate;
@@ -52,12 +53,12 @@ class ToonConfirmationScreen : public PushdownState
 		ToonConfirmationScreen();
 		ToonConfirmationScreen(Coordinates coordinates,
 							   Vector2 windowSize,
+							   GameTechRenderer* renderer,
 							   std::string text			= CONFIRMATION_TEXT,
 							   Vector4 textColour		= Debug::WHITE,
 							   std::string okButtonText = "YES",
 							   std::string noButtonText = "NO");
 
-		//void Update();
 		PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 		void OnAwake() override;
 		void OnSleep() override;

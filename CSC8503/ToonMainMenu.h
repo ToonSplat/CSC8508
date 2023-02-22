@@ -12,7 +12,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class ToonMainMenu : public PushdownState, public ToonConfirmationScreen
+class ToonMainMenu : public ToonConfirmationScreen
 {
 	enum GameStates
 	{
@@ -24,7 +24,8 @@ class ToonMainMenu : public PushdownState, public ToonConfirmationScreen
 		LAUNCHASSERVER,
 		LAUNCHASCLIENT,
 		BACK,
-		PLAYAFTERSERIPSET
+		PLAYAFTERSERIPSET,
+		CONFIRMATION
 	};
 
 	struct MenuCoordinates
@@ -68,6 +69,7 @@ private:
 	bool						m_HasUserInitiatedScreenNavigation = false;
 
 	ToonConfirmationScreen*		m_ToonConfirmationScreen = NULL;
+	bool						m_ShouldQuitGame		 = false;
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
