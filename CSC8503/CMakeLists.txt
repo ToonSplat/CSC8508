@@ -25,6 +25,7 @@ set(Header_Files
     "ToonUtils.h"
     "ToonFollowCamera.h"
     "ToonMinimapCamera.h"
+    "ToonObserverCamera.h"
     "PlayerControl.h"
     "ToonMapCamera.h"
     "ToonMainMenu.h"
@@ -56,6 +57,8 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
+    "ToonObserverCamera.cpp"
+    "PlayerControl.cpp"
     "ToonMapCamera.cpp"
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
@@ -84,6 +87,17 @@ set(Rendering_Files
 )
 source_group("Rendering Files" FILES ${Rendering_Files})
 
+set(Inputs_Files
+    "PlayerControl.h"
+    "PlayerControl.cpp"
+    "BaseInput.h"
+    "KeyboardInput.h"
+    "KeyboardInput.cpp"
+    "ControllerInput.h"
+    "ControllerInput.cpp"
+)
+source_group("Inputs Files" FILES ${Inputs_Files})
+
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
 list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
@@ -97,6 +111,7 @@ set(ALL_FILES
     ${Source_Files}
     ${Networking_Files}
     ${Rendering_Files}
+    ${Inputs_Files}
 )
 
 if(USE_VULKAN)
@@ -105,6 +120,7 @@ if(USE_VULKAN)
         ${Source_Files}
         ${Networking_Files}
         ${Rendering_Files}
+        ${Inputs_Files}
         ${SHADER_FILES}
     )
 
@@ -259,6 +275,13 @@ find_package(ReactPhysics3D REQUIRED)
 set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ReactPhysics3D::ReactPhysics3D"
 )
+
+find_library(XINPUT_LIBRARY NAMES XInput)
+if(NOT XINPUT_LIBRARY)
+    message(FATAL_ERROR "XInput library not found")
+endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${XINPUT_LIBRARY})
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 ################################################################################

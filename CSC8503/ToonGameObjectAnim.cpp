@@ -45,7 +45,7 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
 		r.BindMesh(minimapMesh);
 
-		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
 			r.DrawBoundMesh(i);
 
 		return;
@@ -66,7 +66,7 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 	frameMatrices.clear();	
 
 	r.BindMesh(mesh);
-	for (int i = 0; i < mesh->GetSubMeshCount(); ++i)
+	for (int i = 0; i < (int)mesh->GetSubMeshCount(); i++)
 	{
 		//To Add Textures
 		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->texturesDiffuse.size() > 0)

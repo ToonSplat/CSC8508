@@ -10,13 +10,8 @@
 #include "GameServer.h"
 #include "GameClient.h"
 
-#include "NavigationGrid.h"
-#include "NavigationMesh.h"
-
-#include "TutorialGame.h"
 #include "ToonGame.h"
 #include "ToonNetworkedGame.h"
-#include "NetworkedGame.h"
 
 #include "PushdownMachine.h"
 
@@ -27,6 +22,13 @@
 #include "BehaviourSequence.h"
 #include "BehaviourAction.h"
 #include "ToonMainMenu.h"
+
+#include "KeyboardInput.h"
+#include "ControllerInput.h"
+#include "InputManager.h"
+
+#include <Windows.h>
+#include <Xinput.h>
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -72,6 +74,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		}
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		InputManager::GetInstance().Update();
 		if (!machine.Update(dt)) {
 			return;
 		}
@@ -84,6 +87,19 @@ int main()
 	ToonAssetManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
 
+	// Controller settings
+	XINPUT_STATE controllerState;
+	DWORD result = XInputGetState(0, &controllerState);
+	if (result == ERROR_SUCCESS)
+	{
+		std::cout << "Controller detected." << std::endl;
+		InputManager::GetInstance().GetInputs().emplace(1, new ControllerInput(0));
+	}
+	else
+	{
+		std::cout << "No controller detected. Using keyboard input." << std::endl;
+		InputManager::GetInstance().GetInputs().emplace(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+	}
 	//Imgui 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

@@ -16,7 +16,7 @@ namespace NCL {
 		Orthographic,
 		Perspective
 	};
-
+	class BaseInput;
 	class Camera {
 	public:
 		Camera(void) {
@@ -49,7 +49,7 @@ namespace NCL {
 
 		~Camera(void) = default;
 
-		virtual void UpdateCamera(float dt);
+		virtual void UpdateCamera(float dt, BaseInput* inputs);
 
 		void UpdateCamera(float dt, Vector3 targetPosition, Vector3 targetSize);
 

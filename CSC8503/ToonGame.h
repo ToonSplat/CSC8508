@@ -34,7 +34,6 @@ namespace NCL
 
 		protected:
 			ToonFollowCamera* followCamera;
-			void UpdateControls(PlayerControl* controls);
 			Player*	player = nullptr;
 			PlayerControl* playerControl = nullptr;
 

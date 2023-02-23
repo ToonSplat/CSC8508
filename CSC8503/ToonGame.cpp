@@ -4,9 +4,11 @@
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "ToonMapCamera.h"
+#include "ToonObserverCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -49,7 +51,7 @@ void ToonGame::StartGame() {
 	}
 	else {
 		levelManager->ResetLevel();
-		world->SetMainCamera(new Camera());
+		world->SetMainCamera(new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
@@ -65,16 +67,16 @@ void ToonGame::UpdateGame(float dt){
 		StartGame();
 		return;
 	}
+	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
 		gameTime = min(gameTime, 5.0f);
 	}
-	world->GetMainCamera()->UpdateCamera(dt);
 	if (world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt);
+		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	world->UpdateWorld(dt);
 
 	if (offline) {
-		UpdateControls(playerControl);
+		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
 		if (player) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);
@@ -113,49 +115,9 @@ void ToonGame::UpdateGame(float dt){
 	Debug::UpdateRenderables(dt);
 }
 
-void ToonGame::UpdateControls(PlayerControl* controls) {
-	Vector3 forward = world->GetMainCamera()->GetForward();
-	Vector3 right = world->GetMainCamera()->GetRight();
-	Vector3 up = world->GetMainCamera()->GetUp();
-
-	Vector3 linearMovement, animMovement;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
-	{
-		linearMovement += forward;
-		animMovement.z = 1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
-	{
-		linearMovement -= forward;
-		animMovement.z = -1.0f;
-	}
-
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
-	{
-		linearMovement -= right;
-		animMovement.x = -1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
-	{
-		linearMovement += right;
-		animMovement.x = 1.0f;
-	}
-
-	controls->direction[0] = short(linearMovement.x * 10000);
-	controls->direction[1] = short(linearMovement.y * 10000);
-	controls->direction[2] = short(linearMovement.z * 10000);
-
-	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
-	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();
-
-	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
-	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
-	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
-}
-
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
 		return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{
