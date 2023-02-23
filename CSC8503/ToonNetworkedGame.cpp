@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
+#include "InputManager.h"
 
 #include <fstream>
 
@@ -78,7 +79,7 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 			return PushdownResult::Pop;
 		}
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame) {
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame) {
 		if (thisServer && serverClosed == -256.0f) {
 			std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
 			thisServer->RemoveClients();
@@ -155,7 +156,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 	}
 	else {
 		if (player) {
-			UpdateControls(playerControl);
+			InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
 		}
 	}
 	if(!closeGame)
@@ -353,7 +354,6 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		serverPlayers.find(receivedID)->second.StateID = realPacket->lastID;
 		PlayerControl* playersControls = serverPlayers.find(receivedID)->second.controls;
 		playersControls->direction[0] =	realPacket->controls.direction[0];
-		playersControls->direction[1] =	realPacket->controls.direction[1];
 		playersControls->direction[2] =	realPacket->controls.direction[2];
 		playersControls->camera[0] =	realPacket->controls.camera[0];
 		playersControls->camera[1] =	realPacket->controls.camera[1];

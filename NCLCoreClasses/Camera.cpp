@@ -27,7 +27,7 @@ Polls the camera for keyboard / mouse movement.
 Should be done once per frame! Pass it the msec since
 last frame (default value is for simplicities sake...)
 */
-void Camera::UpdateCamera(float dt) {
+void Camera::UpdateCamera(float dt, BaseInput* inputs) {
 	UpdatePitchAndYaw();
 
 	float frameSpeed = 100 * dt;
