@@ -30,8 +30,8 @@ namespace NCL::CSC8503
 		ToonTransform& GetTransform() { return transform; }
 
 		ToonRenderObject* GetRenderObject() const { return renderObject; }
-		void SetRenderObject(ToonRenderObject* newRenderObject) { renderObject = newRenderObject; newRenderObject->SetGameObject(this); }
-
+		void SetRenderObject(ToonRenderObject* newRenderObject, Light* light) { renderObject = newRenderObject; newRenderObject->SetGameObject(this);  Light = light; }
+		
 		ToonNetworkObject* GetNetworkObject() const { return networkObject; }
 		void SetNetworkObject(ToonNetworkObject* newNetworkObject) { networkObject = newNetworkObject; newNetworkObject; }
 
@@ -88,6 +88,7 @@ namespace NCL::CSC8503
 		{
 			if (collider) collider->setCollideWithMaskBits(newMask);
 		}
+		bool Light;
 
 	protected:
 		bool isActive;

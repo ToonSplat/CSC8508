@@ -38,11 +38,12 @@ namespace NCL::CSC8503 {
 			return physicsObject;
 		}
 
-		void SetRenderObject(RenderObject* newObject) {
+		void SetRenderObject(RenderObject* newObject, bool light) {
 			renderObject = newObject;
 			renderObject->SetGameObject(this);
+			Light = light;
 		}
-
+		bool GetLightStatus() { return Light; }
 		void SetPhysicsObject(PhysicsObject* newObject) {
 			physicsObject = newObject;
 		}
@@ -70,7 +71,7 @@ namespace NCL::CSC8503 {
 		int		GetWorldID() const {
 			return worldID;
 		}
-
+		bool Light;
 	protected:
 		Transform			transform;
 

@@ -88,10 +88,7 @@ namespace NCL {
 			OGLMesh*	skyboxMesh;
 
 			vector<const RenderObject*> activeObjects;
-			OGLMesh* GenerateQuad;
-			OGLShader* debugShader;
-			OGLShader* skyboxShader;
-			OGLMesh* skyboxMesh;
+			OGLMesh* GenerateQuad;			
 
 			GLuint		skyboxTex;
 			// deffered render things

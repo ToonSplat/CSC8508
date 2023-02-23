@@ -348,9 +348,8 @@ void GameTechRenderer::LoadSkybox() {
 }
 
 void GameTechRenderer::RenderFrame() {
-	
-
 	DrawMainScene();
+	
 	if (minimapEnabled)
 	{
 		
@@ -1091,8 +1090,8 @@ void GameTechRenderer::DrawPointLights() {
 void GameTechRenderer::CombineBuffers() {
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	OGLMesh* quad = new OGLMesh;
-	quad = GenQuad();
-	BindMesh(quad);
+	//quad = GenQuad();
+	 BindMesh(fullScreenQuad);
 	 BindShader(CombineShader);
 	 Matrix4 modelMatrix;
 	 Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
@@ -1128,7 +1127,7 @@ void GameTechRenderer::UpdateShaderMatrices() {
 		boundShader = (OGLShader*)(*i).GetShader();
 		if (boundShader != nullptr) {
 			float screenAspect = (float)windowWidth / (float)windowHeight;
-			Matrix4 modelMatrix = (*i).GetTransform()->GetMatrix();
+			Matrix4 modelMatrix = ( *i).GetTransform()->GetMatrix();
 			/*Matrix4 textureMatrix;*/
 			Matrix4 viewMatrix = gameWorld.GetMainCamera()->BuildViewMatrix();
 			Matrix4 projMatrix = gameWorld.GetMainCamera()->BuildProjectionMatrix(screenAspect);
@@ -1167,7 +1166,6 @@ OGLMesh* GameTechRenderer::GenQuad() {
 
 	 }
 	 m->SetVertexColours(colours);
-//m->BufferData();
 	 m->UploadToGPU();
  return m;
 	
@@ -1190,4 +1188,3 @@ void GameTechRenderer::SetShaderLight(  const Light &l) {
 		"lightRadius"), radius);
 
 }
-

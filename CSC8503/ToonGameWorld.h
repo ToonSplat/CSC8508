@@ -8,12 +8,12 @@
 namespace NCL
 {
 	class Camera;
+	class ToonGameObject;
 	namespace CSC8503
 	{
-		class ToonGameObject;
 		typedef std::function<void(ToonGameObject*)> ToonGameObjectFunc;
 
-		class ToonGameWorld
+		class   ToonGameWorld
 		{
 		public:
 			ToonGameWorld();

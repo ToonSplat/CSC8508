@@ -14,7 +14,7 @@
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public ToonGameObject {
+class Player : public NCL::CSC8503::ToonGameObject {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, const NCL::Maths::Vector3& position, const NCL::Maths::Vector3& rotationEuler, const float& radius, Team* team);
 	~Player();
