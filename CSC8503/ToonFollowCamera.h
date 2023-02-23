@@ -4,7 +4,6 @@
 #include "ToonGameObject.h"
 #include "Player.h"
 #include "BaseInput.h"
-#include <thread>
 
 namespace NCL
 {
@@ -52,8 +51,6 @@ namespace NCL
 			float h, v;
 			float smoothness;
 			float distanceThresholdMoving, distanceThresholdStanding;
-
-			std::thread first;
 
 			bool reached;
 		};

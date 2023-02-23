@@ -25,6 +25,7 @@ set(Header_Files
     "ToonUtils.h"
     "ToonFollowCamera.h"
     "ToonMinimapCamera.h"
+    "ToonObserverCamera.h"
     "PlayerControl.h"
     "ToonMapCamera.h"
     "ToonMainMenu.h"
@@ -56,6 +57,7 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonFollowCamera.cpp"
     "ToonMinimapCamera.cpp"
+    "ToonObserverCamera.cpp"
     "PlayerControl.cpp"
     "ToonMapCamera.cpp"
     "ToonMainMenu.cpp"
@@ -90,6 +92,8 @@ set(Inputs_Files
     "BaseInput.h"
     "KeyboardInput.h"
     "KeyboardInput.cpp"
+    "ControllerInput.h"
+    "ControllerInput.cpp"
 )
 source_group("Inputs Files" FILES ${Inputs_Files})
 
