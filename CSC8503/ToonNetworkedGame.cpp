@@ -354,7 +354,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		serverPlayers.find(receivedID)->second.StateID = realPacket->lastID;
 		PlayerControl* playersControls = serverPlayers.find(receivedID)->second.controls;
 		playersControls->direction[0] =	realPacket->controls.direction[0];
-		playersControls->direction[2] =	realPacket->controls.direction[2];
+		playersControls->direction[1] =	realPacket->controls.direction[1];
 		playersControls->camera[0] =	realPacket->controls.camera[0];
 		playersControls->camera[1] =	realPacket->controls.camera[1];
 		if (playersControls->aiming != realPacket->controls.aiming) {
