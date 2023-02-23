@@ -45,8 +45,12 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) 	//Keeping it to quit game on escape key press
 	{
-		m_CurrentSelectedIndex = CONFIRMATION;
-		return NavigateToScreen(newState);
+		if (!m_BaseCurrentSelectdIndex)
+		{
+			m_CurrentSelectedIndex = CONFIRMATION;
+			return NavigateToScreen(newState);
+		}
+		else { return PushdownResult::Pop; }
 	}
 
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || m_HasUserInitiatedScreenNavigation)

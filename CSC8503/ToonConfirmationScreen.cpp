@@ -29,6 +29,7 @@ PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, Pushdow
 	if (m_IsMousePointerVisible)  { HandleMouse(); }
 	HandleKeyboard();
 	DrawScreen();
+	delegate->UpdateCall();
 	if ((m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || (!m_IsMousePointerVisible && Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)))
 	{
 		switch (m_CurrentSelectedButton)
@@ -63,7 +64,7 @@ void ToonConfirmationScreen::UpdateButtonsCoordinates()
 
 void ToonConfirmationScreen::DrawScreen()
 {
-	DrawBackground();
+	if (m_ShowBackground) { DrawBackground(); }
 	PrintText();
 	DrawSingleButton(ConfirmationButtonsType::Cancel);
 	DrawSingleButton(ConfirmationButtonsType::Ok);

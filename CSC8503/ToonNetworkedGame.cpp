@@ -449,3 +449,8 @@ void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, PaintableObject* obje
 		thisServer->SendPacketToClient(newPacket, playerID, true);
 	}
 }
+
+void NCL::CSC8503::ToonNetworkedGame::UpdateCall()
+{
+	UpdateGame(0.01f);
+}

@@ -48,6 +48,7 @@ class ToonConfirmationScreen : public PushdownState
 		Vector2					m_WindowSize;
 		GameTechRenderer*		m_Renderer;
 		Vector2					m_MouseLastPosition = Vector2(0.0f, 0.0f);
+		bool					m_ShowBackground	= true;
 
 	public:
 		ToonConfirmationScreen* delegate;
@@ -69,6 +70,7 @@ class ToonConfirmationScreen : public PushdownState
 		//Protocol Methods
 		virtual PushdownState::PushdownResult DidSelectOkButton() { return PushdownState::PushdownResult::NoChange; }
 		virtual PushdownState::PushdownResult DidSelectCancelButton() { return PushdownState::PushdownResult::NoChange; }
+		virtual void UpdateCall() {}
 
 	private:
 		void UpdateButtonsCoordinates();

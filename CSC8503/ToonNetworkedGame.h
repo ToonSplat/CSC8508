@@ -49,6 +49,8 @@ namespace NCL {
 
 			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
+			void UpdateCall() override;
+
 		protected:
 			void UpdateAsServer(float dt);
 			void UpdateAsClient(float dt);
