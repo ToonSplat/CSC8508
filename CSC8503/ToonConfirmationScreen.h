@@ -80,4 +80,6 @@ class ToonConfirmationScreen : public PushdownState
 		ConfirmationButtonsType GetConfirmationButtonTypeFromIntegerValue(int value);
 		void UpdateMousePointerState(bool isVisible);
 		void WakeMouseOnMovement();
+		void DrawBackground();
+		void PrintText(bool withBackground = true);
 };

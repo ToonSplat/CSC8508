@@ -63,7 +63,8 @@ void ToonConfirmationScreen::UpdateButtonsCoordinates()
 
 void ToonConfirmationScreen::DrawScreen()
 {
-	Debug::Print(m_Text, Vector2(m_Coordinates.origin.x + (m_Coordinates.size.x / 2.0f) - m_Text.length(), m_Coordinates.origin.y), m_TextColour);
+	DrawBackground();
+	PrintText();
 	DrawSingleButton(ConfirmationButtonsType::Cancel);
 	DrawSingleButton(ConfirmationButtonsType::Ok);
 }
@@ -148,4 +149,47 @@ void ToonConfirmationScreen::WakeMouseOnMovement()
 {
 	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMousePointerState(true); }
+}
+
+void ToonConfirmationScreen::DrawBackground()
+{
+	const float verticalPadding		  = 10.0f;
+	const float horizontalPadding	  = 2.0f;
+	Coordinates backgroundCoordinates = m_Coordinates;
+	backgroundCoordinates.origin.y   -= verticalPadding;
+	backgroundCoordinates.size.y	 += 2 * verticalPadding;
+	backgroundCoordinates.size.x	 += 2 * horizontalPadding;
+	backgroundCoordinates.origin.x	 -= horizontalPadding;
+	Debug::DrawFilledQuad(backgroundCoordinates.origin, backgroundCoordinates.size, Vector4(0.2f, 0.2f, 0.2f, 1.0f));
+}
+
+void ToonConfirmationScreen::PrintText(bool withBackground)
+{
+	if (!withBackground)
+	{
+		Debug::Print(m_Text, Vector2(m_Coordinates.origin.x + (m_Coordinates.size.x / 2.0f) - m_Text.length(), m_Coordinates.origin.y), m_TextColour);
+		return;
+	}
+	const int				 maxAllowedCharacters = 22;
+	std::vector<std::string> multilineText;
+	int index = 0;
+	std::string				 currString = "";
+	for (char textCharacter : m_Text)
+	{
+		if (index && !(index % maxAllowedCharacters))
+		{
+			multilineText.push_back(currString);
+			currString = "";
+		}
+		index++;
+		currString += textCharacter;
+	}
+	if (currString.length()) { multilineText.push_back(currString); }
+	int verticalPadding = 5.0f;
+	index				= 0;
+	for (std::string singleLineText : multilineText)
+	{
+		Debug::Print(singleLineText, Vector2(m_Coordinates.origin.x + 2.0f, m_Coordinates.origin.y + (index * verticalPadding)), m_TextColour);
+		index++;
+	}
 }
