@@ -1,8 +1,8 @@
 #include "ToonConfirmationScreen.h"
 
-ToonConfirmationScreen::ToonConfirmationScreen() : m_Coordinates(ConfirmationButtonCoordinates()), m_OkButton("", ConfirmationButtonCoordinates(), ConfirmationButtonsType::Ok), m_CancelButton("", ConfirmationButtonCoordinates(), ConfirmationButtonsType::Cancel) {}
+ToonConfirmationScreen::ToonConfirmationScreen() : m_Coordinates(Coordinates()), m_OkButton("", Coordinates(), ConfirmationButtonsType::Ok), m_CancelButton("", Coordinates(), ConfirmationButtonsType::Cancel) {}
 
-ToonConfirmationScreen::ToonConfirmationScreen(ConfirmationButtonCoordinates coordinates,
+ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 											   Vector2 windowSize,
 											   GameTechRenderer* renderer,
 											   std::string text,
@@ -13,8 +13,8 @@ ToonConfirmationScreen::ToonConfirmationScreen(ConfirmationButtonCoordinates coo
 																		   m_Renderer(renderer),
 																		   m_Text(text),
 																		   m_TextColour(textColour),
-																		   m_OkButton(okButtonText, ConfirmationButtonCoordinates(), ConfirmationButtonsType::Ok),
-																		   m_CancelButton(noButtonText, ConfirmationButtonCoordinates(), ConfirmationButtonsType::Cancel),
+																		   m_OkButton(okButtonText, Coordinates(), ConfirmationButtonsType::Ok),
+																		   m_CancelButton(noButtonText, Coordinates(), ConfirmationButtonsType::Cancel),
 																		   m_CurrentSelectedButton(ConfirmationButtonsType::NoneButton)
 {
 	UpdateButtonsCoordinates();
@@ -57,8 +57,8 @@ void ToonConfirmationScreen::OnAwake()
 
 void ToonConfirmationScreen::UpdateButtonsCoordinates()
 {
-	m_OkButton.buttonCoordinates	 = ConfirmationButtonCoordinates(Vector2(m_Coordinates.origin.x, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
-	m_CancelButton.buttonCoordinates = ConfirmationButtonCoordinates(Vector2(m_Coordinates.origin.x + m_Coordinates.size.x - CONFIRMATION_BUTTON_WIDTH, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
+	m_OkButton.buttonCoordinates	 = Coordinates(Vector2(m_Coordinates.origin.x, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
+	m_CancelButton.buttonCoordinates = Coordinates(Vector2(m_Coordinates.origin.x + m_Coordinates.size.x - CONFIRMATION_BUTTON_WIDTH, m_Coordinates.origin.y + 20.0f), Vector2(CONFIRMATION_BUTTON_WIDTH, CONFIRMATION_BUTTON_HEIGHT));
 }
 
 void ToonConfirmationScreen::DrawScreen()
@@ -124,7 +124,7 @@ int ToonConfirmationScreen::Clamp(int value, int lowerBound, int upperBound)
 	return value;
 }
 
-ConfirmationButtonsType ToonConfirmationScreen::GetConfirmationButtonTypeFromIntegerValue(int value)
+ToonConfirmationScreen::ConfirmationButtonsType ToonConfirmationScreen::GetConfirmationButtonTypeFromIntegerValue(int value)
 {
 	switch (value)
 	{

@@ -34,6 +34,7 @@ set(Header_Files
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
     "ToonConfirmationScreen.h"
+    "Toon2DCoordinates"
 )
 source_group("Header Files" FILES ${Header_Files})
 

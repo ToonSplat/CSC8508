@@ -227,7 +227,7 @@ ToonConfirmationScreen* NCL::CSC8503::ToonGame::GetToonConfirmationScreen()
 {
 	if (!m_ToonConfirmationScreen)
 	{
-		m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
+		m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
 		m_ToonConfirmationScreen->delegate = this;
 	}
 	return m_ToonConfirmationScreen;

@@ -7,7 +7,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
@@ -19,7 +19,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(ConfirmationButtonCoordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
