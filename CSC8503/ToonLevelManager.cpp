@@ -331,6 +331,8 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(scale);
 
+	gameObject->SetAsFloor();
+
 	gameObject->AddRigidbody();
 	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
 	gameObject->GetRigidbody()->setMass(mass);
