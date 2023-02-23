@@ -41,10 +41,10 @@ void ToonAssetManager::LoadAssets(void) {
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
-	//AddTexture("player", "Boss_diffuse.png", true);
+	/*AddTexture("player", "Boss_diffuse.png", true);
 	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
 	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
-	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);
+	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);*/
 
 	//-----------------------------------------------------------
 	//		Meshes
@@ -56,6 +56,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_lights", "Level_Arena_Lights.msh");
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
+	AddMesh("arena_decos", "Level_Arena_Decos.msh");
 	//AddMesh("floorMain", "FloorsMain.msh");
 	//AddMesh("platformMain", "Level_Platform.msh");
 	//-----------------------------------------------------------
@@ -87,6 +88,11 @@ void ToonAssetManager::LoadAssets(void) {
 	//-----------------------------------------------------------
 	//		Materials
 	AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
+	AddMaterial("mat_arena", "Level_Arena.mat", GetMesh("arena_main")->GetSubMeshCount());
+	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstables.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
+	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
+	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
+	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {

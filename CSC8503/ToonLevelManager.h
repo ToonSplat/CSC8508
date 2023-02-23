@@ -105,6 +105,7 @@ namespace NCL
 							Vector4 minimapColour = Vector4(0,0,0,1), bool isFloor = false);
 			
 			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f);
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;
