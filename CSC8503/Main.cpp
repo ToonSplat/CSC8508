@@ -23,9 +23,12 @@
 #include "BehaviourAction.h"
 #include "ToonMainMenu.h"
 
-#include <Xinput.h>
 #include "KeyboardInput.h"
+#include "ControllerInput.h"
 #include "InputManager.h"
+
+#include <Windows.h>
+#include <Xinput.h>
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -90,7 +93,7 @@ int main()
 	if (result == ERROR_SUCCESS)
 	{
 		std::cout << "Controller detected." << std::endl;
-		//playerInputs.emplace(1, )
+		InputManager::GetInstance().GetInputs().emplace(1, new ControllerInput(0));
 	}
 	else
 	{
