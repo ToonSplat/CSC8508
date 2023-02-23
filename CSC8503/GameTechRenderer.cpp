@@ -700,6 +700,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
 		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
 		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
 		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
 		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
@@ -738,7 +739,6 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-
 		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
@@ -759,6 +759,9 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 
 		Vector4 colour = i->GetRenderObject()->GetColour();
 		glUniform4fv(colourLocation, 1, colour.array);
+
+		if (shader == minimapShader) 
+			glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
 
 		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
 

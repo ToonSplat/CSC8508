@@ -32,6 +32,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arena_obstacles")) return false;
 	if (!LoadModel("arena_ramps")) return false;
 	if (!LoadModel("arena_decos")) return false;
+	if (!LoadModel("arena_border_wall")) return false;
 	//if (!LoadModel("floorMain")) return false;
 	//if (!LoadModel("platformMain")) return false;
 
@@ -55,6 +56,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadMaterial("mat_arena_ramps")) return false;
 	if (!LoadMaterial("mat_arena_lights")) return false;
 	if (!LoadMaterial("mat_arena_decos")) return false;
+	if (!LoadMaterial("mat_arena_border_wall")) return false;
 
 	std::cout << "ToonLevelManager: All files successfully loaded\n";
 
@@ -165,13 +167,18 @@ bool NCL::CSC8503::ToonLevelManager::LoadPrototypeLevel(std::vector<ToonNetworkO
 
 bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList)
 {
-	Vector4 arenaColour = Vector4(0.74f, 0.76f, 0.76f, 1.0f);
+	Vector4 arenaColour = Vector4(0.76f, 0.76f, 0.76f, 1.0f);
+	Vector4 arenaDecosColour = Vector4(0.65f, 0.65f, 0.65f, 1.0f);
+	Vector4 arenaObstaclesColor = Vector4(0.9f, 0.9f, 0.0f, 1.0f);
+	Vector4 arenaRampColor = Vector4(0.6f, 0.6f, 0.6f, 1.0f);
+	Vector4 arenaLightsColor = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
 	Vector3 arenaSize = Vector3(1, 1, 1);
 	AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false);
 
 	return true;
 }
@@ -287,7 +294,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -310,12 +317,14 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
 	gameWorld->AddGameObject(gameObject);
-	gameWorld->AddPaintableObject(gameObject);
+	
+	if(addAsPaintable)
+		gameWorld->AddPaintableObject(gameObject);
 
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -327,7 +336,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->GetRigidbody()->setMass(mass);
 	gameObject->GetRigidbody()->setIsAllowedToSleep(true);
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, mat, GetShader("scene")));
-	gameObject->GetRenderObject()->SetColour(minimapColour);
+	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
 
 	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
 
@@ -338,7 +347,9 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
 	gameWorld->AddGameObject(gameObject);
-	gameWorld->AddPaintableObject(gameObject);
+
+	if (addAsPaintable)
+		gameWorld->AddPaintableObject(gameObject);
 
 	return gameObject;
 }

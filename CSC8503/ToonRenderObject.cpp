@@ -12,6 +12,7 @@ ToonRenderObject::ToonRenderObject(ToonTransform* parentTransform, MeshGeometry*
 	this->material = nullptr;
 	this->shader	= shader;
 	this->colour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->minimapColour	= Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->minimapMesh = minimapMesh;
 }
 
@@ -22,6 +23,7 @@ NCL::CSC8503::ToonRenderObject::ToonRenderObject(ToonTransform* parentTransform,
 	this->texture = nullptr;
 	this->shader = shader;
 	this->colour = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
+	this->minimapColour = Vector4(1.0f, 1.0f, 1.0f, 1.0f);
 	this->minimapMesh = minimapMesh;
 
 	this->material = mat;

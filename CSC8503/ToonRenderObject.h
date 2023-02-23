@@ -57,6 +57,9 @@ namespace NCL {
 				return colour;
 			}
 
+			void SetMinimapColour(const Vector4& c) { minimapColour = c; }
+			Vector4 GetMinimapColour() const { return minimapColour; }
+
 			void SetGameObject(ToonGameObject* gameObject) { this->gameObject = gameObject; }
 
 			ToonGameObject* GetGameObject() const {
@@ -73,6 +76,7 @@ namespace NCL {
 			ShaderBase*		shader;
 			ToonTransform*	transform;
 			Vector4			colour;
+			Vector4			minimapColour;
 
 			ToonMeshMaterial*	material;
 			std::vector<const Rendering::TextureBase*> mTexturesDiffuse;

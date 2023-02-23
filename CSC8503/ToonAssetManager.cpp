@@ -57,6 +57,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
+	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
 	//AddMesh("floorMain", "FloorsMain.msh");
 	//AddMesh("platformMain", "Level_Platform.msh");
 	//-----------------------------------------------------------
@@ -93,6 +94,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
+	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
