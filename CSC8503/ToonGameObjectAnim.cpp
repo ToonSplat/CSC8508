@@ -3,7 +3,7 @@
 #include "OGLShader.h"
 #include "ToonAssetManager.h"
 
-
+int index = 0;
 NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld)
 {
 	hasSkin = true;
@@ -25,6 +25,13 @@ void NCL::CSC8503::ToonGameObjectAnim::Update(float dt)
 		currentFrame = (currentFrame + 1) % currentAnim->GetFrameCount();
 		nextFrame = (currentFrame + 1) % currentAnim->GetFrameCount();
 		frameTime += 1.0f / currentAnim->GetFrameRate();
+	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
+	{
+		index++;
+		index %= renderObject->GetMesh()->GetSubMeshCount();
+		std::cout << index << std::endl;
 	}
 }
 
@@ -56,14 +63,17 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 	int j = glGetUniformLocation(shader->GetProgramID(), "joints");
 	glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
 
-	frameMatrices.clear();
+	frameMatrices.clear();	
 
 	r.BindMesh(mesh);
-	for (int i = 0; i < mesh->GetSubMeshCount(); i++)
+	for (int i = 0; i < mesh->GetSubMeshCount(); ++i)
 	{
 		//To Add Textures
+		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->texturesDiffuse.size() > 0)
+			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->texturesDiffuse[i], "mainTex", 0);
+
 		r.DrawBoundMesh(i);
-	}	
+	}
 }
 
 void NCL::CSC8503::ToonGameObjectAnim::PlayAnim(const std::string& anim, float animSpeed)
