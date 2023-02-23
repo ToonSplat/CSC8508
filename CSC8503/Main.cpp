@@ -23,6 +23,10 @@
 #include "BehaviourAction.h"
 #include "ToonMainMenu.h"
 
+#include <Xinput.h>
+#include "KeyboardInput.h"
+#include "InputManager.h"
+
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
 #include "../ThirdParty/imgui/imgui_impl_win32.h"
@@ -67,6 +71,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		}
 
 		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		InputManager::GetInstance().Update();
 		if (!machine.Update(dt)) {
 			return;
 		}
@@ -78,6 +83,20 @@ int main()
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+
+	// Controller settings
+	XINPUT_STATE controllerState;
+	DWORD result = XInputGetState(0, &controllerState);
+	if (result == ERROR_SUCCESS)
+	{
+		std::cout << "Controller detected." << std::endl;
+		//playerInputs.emplace(1, )
+	}
+	else
+	{
+		std::cout << "No controller detected. Using keyboard input." << std::endl;
+		InputManager::GetInstance().GetInputs().emplace(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+	}
 	//Imgui 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();

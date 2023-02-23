@@ -34,9 +34,9 @@ NCL::CSC8503::ToonMinimapCamera::ToonMinimapCamera(ToonGameObject& target) :
 }
 
 
-void NCL::CSC8503::ToonMinimapCamera::UpdateCamera(float dt)
+void NCL::CSC8503::ToonMinimapCamera::UpdateCamera(float dt, BaseInput* inputs)
 {
-	yaw -= (Window::GetMouse()->GetRelativePosition().x);
+	yaw -= (inputs->GetMouseRelPos().x);
 	if (yaw < 0) {
 		yaw += 360.0f;
 	}

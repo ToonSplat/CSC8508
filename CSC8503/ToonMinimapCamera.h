@@ -2,7 +2,7 @@
 #include "ToonFollowCamera.h"
 #include "GameTechRenderer.h"
 #include "ToonGameObject.h"
-
+#include "BaseInput.h"
 
 namespace NCL::CSC8503 {
 	class ToonMinimapCamera : public Camera {
@@ -10,7 +10,7 @@ namespace NCL::CSC8503 {
 		ToonMinimapCamera(ToonGameObject& target);
 		~ToonMinimapCamera() {}
 
-		void UpdateCamera(float dt) override;
+		void UpdateCamera(float dt, BaseInput* inputs) override;
 	protected:
 		ToonGameObject& followTarget;
 		float zoomFactor = 15.0f;

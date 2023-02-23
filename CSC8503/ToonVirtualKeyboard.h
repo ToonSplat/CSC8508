@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "ToonGame.h"
 #include "ToonGameWorld.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;

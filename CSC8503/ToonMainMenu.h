@@ -7,6 +7,7 @@
 #include "ToonNetworkedGame.h"
 #include "ToonGameWorld.h"
 #include "ToonTextInput.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;

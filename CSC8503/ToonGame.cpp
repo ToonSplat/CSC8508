@@ -4,9 +4,11 @@
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "ToonMapCamera.h"
+#include "ToonObserverCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -45,7 +47,7 @@ void ToonGame::StartGame() {
 	}
 	else {
 		levelManager->ResetLevel();
-		world->SetMainCamera(new Camera());
+		world->SetMainCamera(new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
@@ -62,13 +64,13 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		StartGame();
 		return;
 	}
-	world->GetMainCamera()->UpdateCamera(dt);
+	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	if (world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt);
+		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	world->UpdateWorld(dt);
 
 	if (offline) {
-		UpdateControls(playerControl, world->GetMainCamera());
+		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
 		if (player) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);
@@ -98,7 +100,7 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
 		return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{

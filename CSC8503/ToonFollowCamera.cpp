@@ -30,7 +30,7 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonG
 	reached = false;
 }
 
-void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
+void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt, BaseInput* inputs)
 {
 	if ( (gameWorld != nullptr) && !gameWorld->ShowCursor())
 	{
@@ -38,10 +38,10 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 		Window::GetWindow()->LockMouseToWindow(true);
 	}
 
-	v -= (Window::GetMouse()->GetRelativePosition().y);
+	v -= (inputs->GetMouseRelPos().y);
 	v = Clamp(v, -80.0f, 80.0f);
 
-	h -= (Window::GetMouse()->GetRelativePosition().x);
+	h -= (inputs->GetMouseRelPos().x);
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
 	

@@ -1,54 +1,5 @@
 ﻿#include "PlayerControl.h"
 
-void UpdateControls(PlayerControl* controls, Camera* camera) {
-	UpdateControlsByKeyboard(controls, camera); // Always keyboard for now
-	UpdateCamera(controls, camera);
-}
-
-void UpdateCamera(PlayerControl* controls, Camera* camera) {
-	controls->camera[0] = (short)camera->GetPitch();
-	controls->camera[1] = (short)camera->GetYaw();
-}
-
-void UpdateControlsByKeyboard(PlayerControl* controls, Camera* camera) {
-	//	##################################
-	//	Movement
-	//	##################################
-	Maths::Vector3 forward = camera->GetForward();
-	Maths::Vector3 right = camera->GetRight();
-	Maths::Vector3 up = camera->GetUp();
-
-	Maths::Vector3 linearMovement;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
-	{
-		linearMovement += forward;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
-	{
-		linearMovement -= forward;
-	}
-
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
-	{
-		linearMovement -= right;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
-	{
-		linearMovement += right;
-	}
-
-	controls->direction[0] = short(linearMovement.x * 1000);
-	controls->direction[1] = short(linearMovement.z * 1000);
-
-	//	##################################
-	//	Actions
-	//	##################################
-
-	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
-	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
-	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
-}
-
 //// Index refers to index of the controller, from 1 to 4. Will probably map indices to players elsewhere
 //static void UpdateControlsByXboxController(PlayerControl* controls, Camera* camera) {
 //	Maths::Vector3 forward = camera->GetForward();

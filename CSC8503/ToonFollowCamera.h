@@ -3,7 +3,7 @@
 #include "GameTechRenderer.h"
 #include "ToonGameObject.h"
 #include "Player.h"
-
+#include "BaseInput.h"
 #include <thread>
 
 namespace NCL
@@ -17,7 +17,7 @@ namespace NCL
 			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target);
 			~ToonFollowCamera() {};
 
-			virtual void UpdateCamera(float dt) override;
+			virtual void UpdateCamera(float dt, BaseInput* inputs) override;
 
 			float GetPitchOffset() const { return pitchOffset; }
 			void SetPitchOffset(const float& newPitchOffset) { pitchOffset = newPitchOffset; }

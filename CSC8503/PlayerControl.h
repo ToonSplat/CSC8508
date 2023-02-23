@@ -10,7 +10,6 @@ struct PlayerControl {
 	bool	aiming;
 	bool	shooting;
 	bool	jumping;
-	bool	shootTriggerReleased;
 	InputType	input;
 
 	PlayerControl() {
@@ -21,24 +20,5 @@ struct PlayerControl {
 		aiming			= false;
 		shooting		= false;
 		jumping			= false;
-		shootTriggerReleased	= false;
 	}
 };
-
-#include "Window.h"
-//#include <Xinput.h>
-#include "Camera.h"
-
-using namespace NCL;
-
-extern void UpdateControls(PlayerControl* controls, Camera* camera);
-
-extern void UpdateCamera(PlayerControl* controls, Camera* camera);
-
-extern void UpdateControlsByKeyboard(PlayerControl* controls, Camera* camera);
-
-//static void UpdateControlsByXboxController(PlayerControl* controls, Camera* camera, int index = 0);
-
-//static bool IsXboxButtonPressed(XINPUT_STATE& state, int button);
-
-//static bool IsXboxTriggerPressed(BYTE trigger);
