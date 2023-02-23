@@ -114,6 +114,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		break;
 	case LAUNCHASSERVER:
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
