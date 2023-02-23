@@ -395,6 +395,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
 		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
+		Vector3 cFollowOffset2 = followCamera->followOffset2;
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
 		Vector3 cAimOffset = followCamera->GetAimOffset();
 
@@ -410,6 +411,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
 		if (ImGui::DragFloat("Follow Smoothness", (float*)&smoothness)) followCamera->SetSmoothness(smoothness);
 		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
+		if (ImGui::DragFloat3("Follow Offset 2", (float*)&cFollowOffset2)) followCamera->followOffset2 = cFollowOffset2;
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
 	}
@@ -709,12 +711,15 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
 		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
 		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
 		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
 		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
 
 		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader) continue;
-		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
+
+		if((*i).GetRenderObject()->GetDefaultTexture() != nullptr) 
+			BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);		
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
 		if (dynamic_cast<PaintableObject*>(linkedObject)) {
@@ -745,7 +750,6 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-
 		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
@@ -767,9 +771,13 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Vector4 colour = i->GetRenderObject()->GetColour();
 		glUniform4fv(colourLocation, 1, colour.array);
 
+		if (shader == minimapShader) 
+			glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
+
 		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
 
-		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
+		int hasTexFlag = ((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() || (*i).GetRenderObject()->GetMaterial() != nullptr) ? 1 : 0;
+		glUniform1i(hasTexLocation, hasTexFlag);
 
 		//Jainesh - This too was moved to Draw func
 		/*MeshGeometry* boundMesh = nullptr;
