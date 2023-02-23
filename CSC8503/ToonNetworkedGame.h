@@ -63,7 +63,6 @@ namespace NCL {
 
 			float serverClosed = -256.0f;
 			int myID;
-			int winner;
 			int myState;
 
 			std::vector<ToonNetworkObject*> networkObjects;

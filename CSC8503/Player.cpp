@@ -62,7 +62,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 	if (controls->jumping) {
-		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
+		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 		controls->jumping = false;
 	}
 }

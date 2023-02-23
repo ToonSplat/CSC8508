@@ -100,6 +100,9 @@ namespace NCL {
 		//Sets pitch, in degrees
 		Camera& SetPitch(float p) { pitch = p; return *this; }
 
+		float GetFOV() const { return fov; }
+		Camera& SetFOV(float newfov) { fov = newfov; return *this; }
+
 		static Camera BuildPerspectiveCamera(const Vector3& pos, float pitch, float yaw, float fov, float near, float far);
 		static Camera BuildOrthoCamera(const Vector3& pos, float pitch, float yaw, float left, float right, float top, float bottom, float near, float far);
 	protected:

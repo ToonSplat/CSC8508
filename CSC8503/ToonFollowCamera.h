@@ -36,6 +36,8 @@ namespace NCL
 			float GetSmoothness() const { return smoothness; }
 			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
 
+			Vector3 followOffset2;
+
 		protected:
 			ToonGameWorld* gameWorld;
 			ToonGameObject* followTarget;
@@ -44,13 +46,14 @@ namespace NCL
 		private:
 			Vector3 followOffset, targetOffset, aimOffset;
 			Vector3 refVel;
-			Vector3 up, right, forward;
+			Vector3 up, right, forward;			
 			
 			float requiredRayDistance, defaultRayDistance;
 			float pitchOffset;
 			float h, v;
 			float smoothness;
 			float distanceThresholdMoving, distanceThresholdStanding;
+			float startFOV, aimFOV, vFov, zoomSmoothess;
 
 			bool reached;
 		};

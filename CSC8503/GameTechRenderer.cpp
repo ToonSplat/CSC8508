@@ -142,8 +142,8 @@ void GameTechRenderer::GenerateSceneFBO(int width, int height)
 	glGenTextures(1, &sceneColourTexture);
 	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -154,8 +154,8 @@ void GameTechRenderer::GenerateSceneFBO(int width, int height)
 	glGenTextures(1, &sceneDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, sceneDepthTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
@@ -183,8 +183,8 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 	glGenTextures(1, &minimapColourTexture);
 	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -195,8 +195,8 @@ void GameTechRenderer::GenerateMinimapFBO(int width, int height)
 	glGenTextures(1, &minimapDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, minimapDepthTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
@@ -221,8 +221,8 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glGenTextures(1, &mapColourTexture);
 	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -234,8 +234,8 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glGenTextures(1, &mapDepthTexture);
 	glBindTexture(GL_TEXTURE_2D, mapDepthTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
@@ -249,8 +249,8 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glGenTextures(1, &mapScoreTexture);
 	glBindTexture(GL_TEXTURE_2D, mapScoreTexture);
 
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -395,6 +395,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
 		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
+		Vector3 cFollowOffset2 = followCamera->followOffset2;
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
 		Vector3 cAimOffset = followCamera->GetAimOffset();
 
@@ -410,6 +411,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
 		if (ImGui::DragFloat("Follow Smoothness", (float*)&smoothness)) followCamera->SetSmoothness(smoothness);
 		if (ImGui::DragFloat3("Follow Offset", (float*)&cFollowOffset)) followCamera->SetFollowOffset(cFollowOffset);
+		if (ImGui::DragFloat3("Follow Offset 2", (float*)&cFollowOffset2)) followCamera->followOffset2 = cFollowOffset2;
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
 	}
@@ -554,10 +556,19 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 }
 
 void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
-	team1Percentage = (float)team1Pixels / (float)totalPixels;
-	team2Percentage = (float)team2Pixels / (float)totalPixels;
-	team3Percentage = (float)team3Pixels / (float)totalPixels;
-	team4Percentage = (float)team4Pixels / (float)totalPixels;
+	float totalPaintedPixels = (float)team1Pixels + (float)team2Pixels + (float)team3Pixels + (float)team4Pixels;
+	if (totalPaintedPixels != 0) {
+		team1Percentage = (float)team1Pixels / totalPaintedPixels;
+		team2Percentage = (float)team2Pixels / totalPaintedPixels;
+		team3Percentage = (float)team3Pixels / totalPaintedPixels;
+		team4Percentage = (float)team4Pixels / totalPaintedPixels;
+	}
+	else {
+		team1Percentage = 0;
+		team2Percentage = 0;
+		team3Percentage = 0;
+		team4Percentage = 0;
+	}
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
@@ -700,12 +711,15 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
 		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
 		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
 		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
 		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
 
 		if ((i)->GetRigidbody()->getMass() != 0.0f && shader == mapShader) continue;
-		BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
+
+		if((*i).GetRenderObject()->GetDefaultTexture() != nullptr) 
+			BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);		
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
 		if (dynamic_cast<PaintableObject*>(linkedObject)) {
@@ -736,7 +750,6 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-
 		/*Quaternion rot;
 		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
 		rot.x = rRot.x;
@@ -758,9 +771,13 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Vector4 colour = i->GetRenderObject()->GetColour();
 		glUniform4fv(colourLocation, 1, colour.array);
 
+		if (shader == minimapShader) 
+			glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
+
 		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
 
-		glUniform1i(hasTexLocation, (OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() ? 1 : 0);
+		int hasTexFlag = ((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() || (*i).GetRenderObject()->GetMaterial() != nullptr) ? 1 : 0;
+		glUniform1i(hasTexLocation, hasTexFlag);
 
 		//Jainesh - This too was moved to Draw func
 		/*MeshGeometry* boundMesh = nullptr;
@@ -997,7 +1014,14 @@ void GameTechRenderer::ResetAtomicBuffer()
 
 }
 
-
+std::map<int, float> GameTechRenderer::GetTeamScores() {
+	std::map<int, float> scores;
+	scores.emplace(1, team1Percentage);
+	scores.emplace(2, team2Percentage);
+	scores.emplace(3, team3Percentage);
+	scores.emplace(4, team4Percentage);
+	return scores;
+}
 
 
 void GameTechRenderer::SetWorld(ToonGameWorld* world)

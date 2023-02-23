@@ -100,6 +100,18 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		Debug::Print("Server", Vector2(0, 5));
 	else
 		Debug::Print("Player ID: " + std::to_string(myID), Vector2(0, 5));
+	if (gameTime <= 0 && thisServer) {
+		if (winner == nullptr) {
+			winner = DetermineWinner(renderer->GetTeamScores());
+			MessagePacket endGame(3);
+			endGame.messageValue = winner->GetTeamID();
+			thisServer->SendGlobalPacket(endGame, true);
+		}
+		if (gameTime <= -5.0f) {
+			ServerStartGame();
+			return;
+		}
+	}
 	timeToNextPacket -= dt;
 	if (timeToNextPacket < 0) {
 		if (thisServer) {
@@ -117,7 +129,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
 				playersControl->shooting = false;
-				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((player.second.controls->camera[0] + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * _Pi), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
 				dirOri.normalize();
@@ -126,9 +138,9 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 				player.second.player->GetWeapon().FireBullet(position, orientation);
 				ShootPacket newPacket;
 				newPacket.playerID = player.first;
-				newPacket.position[0] = (short)(position.x * 1000);
-				newPacket.position[1] = (short)(position.y * 1000);
-				newPacket.position[2] = (short)(position.z * 1000);
+				newPacket.position[0] = (int)(position.x * 1000);
+				newPacket.position[1] = (int)(position.y * 1000);
+				newPacket.position[2] = (int)(position.z * 1000);
 
 				newPacket.orientation[0] = (short)(orientation.x * 1000);
 				newPacket.orientation[1] = (short)(orientation.y * 1000);
@@ -186,6 +198,9 @@ void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
 		minID = min(minID, i.second.StateID);
 	}
 
+	MessagePacket timePacket(4);
+	timePacket.messageValue = (int)(gameTime * 10);
+	thisServer->SendGlobalPacket(timePacket);
 
 	for (auto& object : networkObjects) {
 		GamePacket* newPacket = nullptr;
@@ -244,6 +259,8 @@ void ToonNetworkedGame::ServerStartGame() {
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
 	allPlayers.clear();
+	winner = nullptr;
+	gameTime = 150.0f;
 	levelManager->ResetLevel(&networkObjects);
 }
 
@@ -403,7 +420,16 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			}
 			std::cout << "Break time\n";
 			break;
-		default: std::cout << "Recieved unknown message\n";
+		case(3):
+			if (realPacket->messageValue == 0)
+				winner = tieTeam;
+			else winner = world->GetTeams().find(realPacket->messageValue)->second;
+			break;
+		case(4):
+			gameTime = realPacket->messageValue / 10.0f;
+			break;
+		default:
+			std::cout << "Recieved unknown message\n";
 		}
 	}
 	else std::cout << "Recieved unknown packet\n";

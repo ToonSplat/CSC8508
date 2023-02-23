@@ -29,6 +29,8 @@ namespace NCL
 			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
+			void ShowTime(float dt);
+			Team* DetermineWinner(std::map<int, float> teamScores);
 
 		protected:
 			ToonFollowCamera* followCamera;
@@ -41,6 +43,9 @@ namespace NCL
 			PaintBallClass* baseWeapon;
 			std::unordered_set<Player*> allPlayers;
 
+			Team* tieTeam;
+			Team* winner;
+			float gameTime;
 			bool closeGame = false;
 			bool offline;
 			const double timeStep = 1.0 / 60.0;

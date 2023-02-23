@@ -22,18 +22,22 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
+	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 	StartGame();
 }
 
-NCL::CSC8503::ToonGame::~ToonGame()
+ToonGame::~ToonGame()
 {
 	delete world;
 	delete baseWeapon;
 	delete levelManager;
 	delete playerControl;
+	delete tieTeam;
 }
 
 void ToonGame::StartGame() {
+	gameTime = 150.0f;
+	winner = nullptr;
 	allPlayers.clear();
 	if (offline) {
 		levelManager->ResetLevel();
@@ -53,8 +57,7 @@ void ToonGame::StartGame() {
 	accumulator = 0.0f;
 }
 
-void NCL::CSC8503::ToonGame::UpdateGame(float dt)
-{
+void ToonGame::UpdateGame(float dt){
 
 #pragma region To Be Changed
 	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
@@ -65,6 +68,9 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 		return;
 	}
 	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
+		gameTime = min(gameTime, 5.0f);
+	}
 	if (world->GetMinimapCamera())
 		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	world->UpdateWorld(dt);
@@ -94,6 +100,17 @@ void NCL::CSC8503::ToonGame::UpdateGame(float dt)
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
 
+	gameTime -= dt;
+	ShowTime(gameTime);
+	if (gameTime <= 0) {
+		if (winner == nullptr && offline == true) {
+			winner = DetermineWinner(renderer->GetTeamScores());
+		}
+		if(winner != nullptr)
+			Debug::Print("WINNER: " + winner->GetTeamName(), Vector2(0, 15), winner->GetTeamColour());
+		if (gameTime <= -5.0f && offline == true)
+			StartGame();
+	}
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }
@@ -112,8 +129,41 @@ PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newSt
 	return PushdownResult::NoChange;
 }
 
-void NCL::CSC8503::ToonGame::OnAwake()
+void ToonGame::OnAwake()
 {
 	Window::GetWindow()->ShowOSPointer(false);
 	Window::GetWindow()->LockMouseToWindow(true);
+}
+
+void ToonGame::ShowTime(float time) {
+	std::string output = "";
+	if (time < 0) {
+		output += '-';
+		time *= -1;
+	}
+	int minutes = (int)time / 60;
+	int seconds = (int)time % 60;
+	output += to_string(minutes);
+	output += ':';
+	if (seconds < 10)
+		output += "0";
+	output += to_string(seconds);
+	Debug::Print(output, NCL::Maths::Vector2(0, 10));
+}
+
+Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
+	int currentWinner = 0;
+	float winningScore = 0;
+	bool tie = false;
+	for (auto& [ID, score] : teamScores) {
+		if (score > winningScore) {
+			winningScore = score;
+			currentWinner = ID;
+			tie = false;
+		}
+		else if (score == winningScore)
+			tie = true;
+	}
+	if (tie == true) return tieTeam;
+	else return world->GetTeams().find(currentWinner)->second;
 }
