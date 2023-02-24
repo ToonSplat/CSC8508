@@ -86,6 +86,9 @@ int main()
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+#ifndef _DEBUG
+	w->ShowConsole(false);
+#endif
 
 	// Controller settings
 	XINPUT_STATE controllerState;
