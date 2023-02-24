@@ -20,7 +20,7 @@ ToonTextInput::ToonTextInput(Coordinates coordinates,
 	Coordinates keyboardCoordinates  = m_Coordinates;
 	keyboardCoordinates.origin.y	+= keyboardCoordinates.size.y;
 	m_VirtualKeyboard				 = new ToonVirtualKeyboard(keyboardCoordinates, m_WindowSize);
-	m_ErrorMessageCoordinates		 = Vector2(50 - errorMessage.length(), coordinates.origin.y - 5.0f);
+	m_ErrorMessageCoordinates		 = Vector2(50.0f - (float)errorMessage.length(), coordinates.origin.y - 5.0f);
 }
 
 ToonTextInput::~ToonTextInput()

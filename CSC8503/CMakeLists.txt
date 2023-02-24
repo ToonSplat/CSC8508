@@ -28,6 +28,8 @@ set(Header_Files
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
     "ToonDebugManager.h"
+    "ToonConfirmationScreen.h"
+    "Toon2DCoordinates"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -51,6 +53,7 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
+    "ToonConfirmationScreen.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
