@@ -768,6 +768,19 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
+		/*Player* player = dynamic_cast<Player*>(i);
+		if (player != nullptr)
+		{
+			BindMesh(player->GetRenderObject()->GetMesh());
+			for (int i = 0; i < (int)player->GetRenderObject()->GetMesh()->GetSubMeshCount(); i++)
+			{
+				if (i == 4)
+				{
+					glUniform4fv(colourLocation, 1, player->GetTeam()->GetTeamColour().array);
+				}
+			}
+		}*/
+
 		Vector4 colour = i->GetRenderObject()->GetColour();
 		glUniform4fv(colourLocation, 1, colour.array);
 

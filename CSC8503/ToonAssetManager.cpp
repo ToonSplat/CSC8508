@@ -1,4 +1,5 @@
 #include "ToonAssetManager.h"
+#include <stb/stb_image.h>
 
 using namespace NCL;
 

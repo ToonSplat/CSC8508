@@ -78,6 +78,7 @@ source_group("Networking Files" FILES ${Networking_Files})
 
 set(Rendering_Files
     "ToonMeshMaterial.h"
+    "ToonMeshMaterial.cpp"
     "ToonAssetManager.h"
     "ToonAssetManager.cpp"
     "GameTechRenderer.h"
