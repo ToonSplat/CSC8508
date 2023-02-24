@@ -27,6 +27,8 @@
 #include "ControllerInput.h"
 #include "InputManager.h"
 
+#include "ToonDebugManager.h"
+
 #include <Windows.h>
 #include <Xinput.h>
 
@@ -85,6 +87,7 @@ int main()
 {
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
+	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
 
 	// Controller settings
@@ -123,6 +126,7 @@ int main()
 	StartPushdownAutomata(w, mainMenu);
 
 	ToonAssetManager::Destroy();
+	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
 	//Imgui 
 	ImGui_ImplOpenGL3_Shutdown();

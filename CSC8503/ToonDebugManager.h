@@ -13,13 +13,33 @@ namespace NCL
 {
 	namespace CSC8503
 	{
+		using std::chrono::high_resolution_clock;
 		class ToonDebugManager
 		{
 		public:
-			ToonDebugManager();
-			~ToonDebugManager();
+			static void Create() {
+				if (instance == NULL)
+					instance = new ToonDebugManager();
+			}
 
-			virtual void Update(float dt);
+			static void Destroy() { delete instance; }
+
+			static ToonDebugManager& Instance() {
+				if (instance == NULL)
+					Create();
+				return *instance;
+			}
+
+			void Update(float dt);
+
+			void StartFrame();
+			void EndFrame();
+
+			void StartPhysics();
+			void EndPhysics();
+
+			void StartRendering();
+			void EndRendering();
 
 			void ToggleDebug() { isDebugging = !isDebugging; }
 
@@ -46,7 +66,13 @@ namespace NCL
 
 			void ToggleCollisionDisplay();
 
+			void SetGameWorld(ToonGameWorld* world) { this->world = world; }
+
 		protected:
+			ToonDebugManager();
+			~ToonDebugManager() {}
+			static ToonDebugManager* instance;
+
 			void DisplayCollisionBoxes(float dt);
 			void CalculateMemoryUsage();
 			void CalculateMemoryUsageByProgram();
@@ -58,6 +84,17 @@ namespace NCL
 			DWORDLONG totalPhysMem;
 			DWORDLONG usedPhysMem;
 			SIZE_T physMemUsedByProgram;
+
+			high_resolution_clock::time_point frameStart;
+			high_resolution_clock::time_point frameEnd;
+
+			high_resolution_clock::time_point physicsStart;
+			high_resolution_clock::time_point physicsEnd;
+
+			high_resolution_clock::time_point renderingStart;
+			high_resolution_clock::time_point renderingEnd;
+
+			ToonGameWorld* world;
 
 			double physicsTimeTaken;
 			double graphicsTimeTaken;

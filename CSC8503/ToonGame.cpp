@@ -9,6 +9,7 @@
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
 #include "InputManager.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -17,6 +18,8 @@ using namespace CSC8503;
 ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
 {
 	world = new ToonGameWorld();
+	ToonDebugManager::Instance().SetGameWorld(world);
+
 	renderer->SetWorld(world);
 
 	levelManager = new ToonLevelManager(world);

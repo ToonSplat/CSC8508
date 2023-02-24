@@ -50,7 +50,7 @@ set(Source_Files
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
     "ToonGameObjectAnim.cpp"
-    "ToonDebugManager.h"
+    "ToonDebugManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
