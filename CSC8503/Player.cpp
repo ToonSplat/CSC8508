@@ -51,18 +51,20 @@ void Player::Draw(OGLRenderer& r, bool isMinimap)
 	}
 
 	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
-	OGLShader* shader = (OGLShader*)renderObject->GetShader();
+	OGLShader* shader = r.GetBoundShader();
+	if (shader == (OGLShader*)renderObject->GetShader()) {
 
-	const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
-	const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
+		const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
+		const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
 
-	for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
-		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 
-	int j = glGetUniformLocation(shader->GetProgramID(), "joints");
-	glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
+		int j = glGetUniformLocation(shader->GetProgramID(), "joints");
+		glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
 
-	frameMatrices.clear();
+		frameMatrices.clear();
+	}
 
 	r.BindMesh(mesh);
 	for (int i = 0; i < (int)mesh->GetSubMeshCount(); i++)
