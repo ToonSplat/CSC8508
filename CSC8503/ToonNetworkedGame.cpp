@@ -10,6 +10,7 @@
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "InputManager.h"
+#include "ToonDebugManager.h"
 
 #include <fstream>
 
@@ -89,13 +90,15 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 		}
 		else if (thisClient && thisClient->IsConnected()) {
 			thisClient->DisconnectFromServer();
+			ToonDebugManager::Instance().SetGameWorld(nullptr);
 			return PushdownResult::Pop;
 		}
 	}
 	return ToonGame::OnUpdate(dt, newState);
 }
 
-void ToonNetworkedGame::UpdateGame(float dt) {
+void ToonNetworkedGame::UpdateGame(float dt) {;
+	ToonDebugManager::Instance().StartNetworking();
 	if(thisServer)
 		Debug::Print("Server", Vector2(0, 5));
 	else
@@ -154,11 +157,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		ServerStartGame();
 		return;
 	}
-	else {
-		if (player) {
-			InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
-		}
-	}
+	ToonDebugManager::Instance().EndNetworking();
 	if(!closeGame)
 		ToonGame::UpdateGame(dt);
 }

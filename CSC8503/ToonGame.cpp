@@ -9,6 +9,7 @@
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
 #include "InputManager.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -17,6 +18,8 @@ using namespace CSC8503;
 ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
 {
 	world = new ToonGameWorld();
+	ToonDebugManager::Instance().SetGameWorld(world);
+
 	renderer->SetWorld(world);
 
 	levelManager = new ToonLevelManager(world);
@@ -63,16 +66,15 @@ void ToonGame::UpdateGame(float dt){
 	world->UpdateWorld(dt);
 	UpdateCameras(dt, 1);
 
-	if (offline) {
+	if (player) {
 		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
-		if (player) {
+		if (offline) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);
 		}
-	}
-	// This next line is an abomination and should be refactored by Ryan
-	else if (player) {
-		player->SetAiming(playerControl->aiming);
+		else {
+			player->SetAiming(playerControl->aiming);
+		}
 	}
 
 	UpdateAnimations(dt);
@@ -88,8 +90,10 @@ void ToonGame::UpdateGame(float dt){
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame) {
+		ToonDebugManager::Instance().SetGameWorld(nullptr);
 		return PushdownResult::Pop;
+	}
 	if (dt > 0.1f)
 	{
 		std::cout << "Skipping large time delta" << std::endl;
@@ -111,9 +115,13 @@ bool ToonGame::CheckDebugKeys() {
 		StartGame();
 		return true;
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
+		ToonDebugManager::Instance().ToggleCollisionDisplay();
+	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
 		gameTime = min(gameTime, 5.0f);
 	}
+	return false;
 }
 
 void ToonGame::UpdateCameras(float dt, int localPlayer) {
@@ -123,6 +131,7 @@ void ToonGame::UpdateCameras(float dt, int localPlayer) {
 }
 
 void ToonGame::UpdatePhysics(float dt) {
+	ToonDebugManager::Instance().StartPhysics();
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
@@ -131,12 +140,15 @@ void ToonGame::UpdatePhysics(float dt) {
 		world->DeleteMarkedObjects();
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
+	ToonDebugManager::Instance().EndPhysics();
 }
 
 void ToonGame::UpdateAnimations(float dt) {
+	ToonDebugManager::Instance().StartAnimation();
 	for (auto& player : allPlayers) {
 		player->AnimationUpdate(dt);
 	}
+	ToonDebugManager::Instance().EndAnimation();
 }
 
 void ToonGame::UpdateTime(float dt) {

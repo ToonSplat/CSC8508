@@ -1,4 +1,5 @@
 #include "ToonAssetManager.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 
@@ -22,6 +23,7 @@ ToonAssetManager::~ToonAssetManager(void) {
 }
 
 void ToonAssetManager::LoadAssets(void) {
+	ToonDebugManager::Instance().StartLoad();
 	for (auto& [name, texture] : textures)
 		delete texture;
 	for (auto& [name, mesh] : meshes)
@@ -95,6 +97,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+	ToonDebugManager::Instance().EndLoad();
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {

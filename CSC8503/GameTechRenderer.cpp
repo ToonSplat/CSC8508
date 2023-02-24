@@ -13,6 +13,7 @@
 #include <iostream>
 #include <algorithm>
 #include "ToonAssetManager.h"
+#include "ToonDebugManager.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -314,6 +315,7 @@ void GameTechRenderer::LoadSkybox() {
 }
 
 void GameTechRenderer::RenderFrame() {
+	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
 	DrawMainScene();
@@ -330,7 +332,7 @@ void GameTechRenderer::RenderFrame() {
 	
 	
 	RenderImGUI();
-
+	ToonDebugManager::Instance().EndRendering();
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
@@ -422,6 +424,80 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 		ImGui::DragFloat3("Position", (float*)(&playerPos));
 	}*/
+	ImGui::End();
+	if (ImGui::Begin("Performance Window")) {
+		ImGui::BeginTable("FPS Table", 2);
+		ImGui::TableNextColumn();
+		ImGui::Text("FPS");
+		ImGui::TableNextColumn();
+		ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
+		ImGui::EndTable();
+
+		if (ImGui::CollapsingHeader("Memory Usage")) {
+			ImGui::BeginTable("Memory Usage Table", 2);
+
+			ImGui::TableNextColumn();
+			ImGui::Text("Virtual Memory");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetVirtualMemoryUsage().c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Virtual Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicalMemoryUsage().c_str());
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
+
+			ImGui::EndTable();
+
+		}
+		if (ImGui::CollapsingHeader("Update Times")) {
+			ImGui::BeginTable("Update Table", 2);
+
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Load Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetLoadTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Frame Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Networking Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physics Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicsTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Animation Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetAnimationTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Graphics Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetGraphicsTimeTaken().c_str());
+			ImGui::EndTable();
+		}
+	}
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
