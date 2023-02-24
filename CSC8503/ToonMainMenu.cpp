@@ -13,7 +13,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	ToonMenuSoundS();
 }
 
-ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
+ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win, AudioEmitter* e)
 {
 	m_Renderer = renderer;
 	m_mainMenuData = menuData;
@@ -22,7 +22,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_Window = win;
 	m_World = world;
 
-	ToonMenuSoundS();
+	optionClick = e;
 }
 
 ToonMainMenu::~ToonMainMenu() {
@@ -30,7 +30,6 @@ ToonMainMenu::~ToonMainMenu() {
 		delete gameTune;
 	if (mainMenuTune)
 		delete mainMenuTune;
-	optionClick->DeleteThis();
 }
 
 
@@ -38,12 +37,18 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
 	{
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
+
 		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex = (m_CurrentSelectedIndex + 1) % m_mainMenuData.size();
 	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP))
 	{
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
+
 		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex -= 1;
@@ -97,7 +102,7 @@ void ToonMainMenu::ToonMenuSoundS() {
 	optionClick->SetVolume(1.0f);
 	optionClick->SetRadius(1000000.0f);
 	optionClick->SetLooping(false);
-	optionClick->SetSound(Audio::GetSound("splatter.wav"));
+	optionClick->SetSound(Audio::GetSound("splash.wav"));
 }
 
 void ToonMainMenu::OnAwake()
@@ -147,25 +152,38 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 			gameTune->Play();
 		if (mainMenuTune)
 			mainMenuTune->Pause();
+
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
+
 		AudioSystem::GetAudioSystem()->SetMainMenuStatus(false);
 
 		m_Game = new ToonGame(m_Renderer);
 		*newState = m_Game;
 		break;
 	case MULTIPLAY:
+
 		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 
 		*newState = GetSubMenuSceenObject();
 		break;
 	case SETTINGS:
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 		return PushdownResult::NoChange;
 	case CREDITS:
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 		return PushdownResult::NoChange;
 	case QUIT:
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
+		optionClick->DeleteThis();
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 		if (gameTune)
 			gameTune->Play();
 		if (mainMenuTune)
@@ -175,6 +193,8 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 		*newState = GetUserInputScreenObject();
 		break;
 	case BACK:
@@ -184,6 +204,8 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
+		optionClick->ResetSound();
+		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
 		std::vector<int> ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
 		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
@@ -196,7 +218,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 
 ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
 {
-	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window); }
+	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window, optionClick); }
 	return m_SubMenuScreenObject;
 }
 

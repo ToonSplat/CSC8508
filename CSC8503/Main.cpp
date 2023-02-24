@@ -62,6 +62,7 @@ void AddAudioFiles() {
 	Audio::AddSound("gameTune.wav");
 	Audio::AddSound("menuTune.wav");
 	Audio::AddSound("splash.wav");
+	Audio::AddSound("click.wav");
 }
 
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
