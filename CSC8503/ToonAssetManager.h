@@ -1,10 +1,15 @@
 #pragma once
 #include <map>
+#include <unordered_set>
 #include <string>
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "OGLMesh.h"
 #include "MeshAnimation.h"
+#include "MeshMaterial.h"
+#include "TextureLoader.h"
+#include "OGLTexture.h"
+#include "Assets.h"
 #include "ToonMeshMaterial.h"
 
 using std::map;
@@ -13,6 +18,8 @@ using std::string;
 namespace NCL {
 	class ToonAssetManager {
 	public:
+		friend class ToonMeshMaterial;
+
 		static void Create() {
 			if (instance == NULL)
 				instance = new ToonAssetManager();
@@ -50,6 +57,6 @@ namespace NCL {
 		map<string, MeshGeometry*> meshes;
 		map<string, Rendering::OGLShader*> shaders;
 		map<string, MeshAnimation*> animations;
-		map<string, ToonMeshMaterial*> materials;
+		map<string, ToonMeshMaterial*> materials;		
 	};
 }

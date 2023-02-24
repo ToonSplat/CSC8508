@@ -1,9 +1,8 @@
 #include "ToonRenderObject.h"
 #include "ToonGameObject.h"
 #include "ToonLevelManager.h"
-#include <stb/stb_image.h>
-#include <reactphysics3d/reactphysics3d.h>
 #include "ToonGameWorld.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -386,9 +385,15 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 	player->GetRigidbody()->setUserData(player);
 
-	gameWorld->AddGameObject(player);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetMaterial("mat_player"), GetShader("animated"), GetMesh("arrow")));
-	player->GetRenderObject()->SetColour(Vector4(/*team->GetTeamColour()*/1, 1, 1, 1));
+	player->GetRenderObject()->SetMinimapColour(Vector4(team->GetTeamColour(), 1));
+
+	/*std::vector<Vector4> vertexColours;
+	for (size_t i = 0; i < player->GetRenderObject()->GetMesh()->GetVertexCount(); i++)
+		vertexColours.emplace_back(Debug::WHITE);
+	player->GetRenderObject()->GetMesh()->SetVertexColours(vertexColours);*/
+
+	gameWorld->AddGameObject(player);
 
 	return player;
 }
