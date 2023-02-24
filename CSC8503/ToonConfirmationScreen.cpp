@@ -29,7 +29,7 @@ PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, Pushdow
 	if (m_IsMousePointerVisible)  { HandleMouse(); }
 	HandleKeyboard();
 	DrawScreen();
-	delegate->UpdateCall();
+	delegate->UpdateCall(dt);
 	if ((m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsShooting()) || (!m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsSelecting()))
 	{
 		switch (m_CurrentSelectedButton)

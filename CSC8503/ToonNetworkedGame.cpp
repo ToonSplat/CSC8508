@@ -450,7 +450,7 @@ void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, PaintableObject* obje
 	}
 }
 
-void NCL::CSC8503::ToonNetworkedGame::UpdateCall()
+void NCL::CSC8503::ToonNetworkedGame::UpdateCall(float dt)
 {
-	UpdateGame(0.01f);
+	UpdateGame(dt);
 }

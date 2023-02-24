@@ -49,7 +49,7 @@ namespace NCL {
 
 			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
-			void UpdateCall() override;
+			void UpdateCall(float dt) override;
 
 		protected:
 			void UpdateAsServer(float dt);

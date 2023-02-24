@@ -71,7 +71,7 @@ class ToonConfirmationScreen : public PushdownState
 		//Protocol Methods
 		virtual PushdownState::PushdownResult DidSelectOkButton() { return PushdownState::PushdownResult::NoChange; }
 		virtual PushdownState::PushdownResult DidSelectCancelButton() { return PushdownState::PushdownResult::NoChange; }
-		virtual void UpdateCall() {}
+		virtual void UpdateCall(float dt) {}
 
 	private:
 		void UpdateButtonsCoordinates();
