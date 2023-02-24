@@ -8,6 +8,7 @@
 #include "ToonEventListener.h"
 #include "PushdownState.h"
 #include "PlayerControl.h"
+#include "ToonConfirmationScreen.h"
 
 namespace NCL
 {
@@ -17,7 +18,7 @@ namespace NCL
 		class ToonMinimapCamera;
 
 		class ToonMapCamera;
-		class ToonGame : public PushdownState
+		class ToonGame : public ToonConfirmationScreen//PushdownState
 		{
 		public:
 			ToonGame(GameTechRenderer* renderer, bool offline = true);
@@ -25,12 +26,24 @@ namespace NCL
 
 			virtual void UpdateGame(float dt);
 
+			//Delegates
+			PushdownState::PushdownResult DidSelectCancelButton() override;
+			PushdownState::PushdownResult DidSelectOkButton() override;
+
 		protected:
 			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
-			void ShowTime(float dt);
+			bool CheckDebugKeys();
+
+			void UpdateCameras(float dt, int localPlayer);
+			void UpdatePhysics(float dt);
+			void UpdateAnimations(float dt);
+			void UpdateTime(float dt);
+
+			void ShowUI(float time);
 			Team* DetermineWinner(std::map<int, float> teamScores);
+			ToonConfirmationScreen* GetToonConfirmationScreen();
 
 		protected:
 			ToonFollowCamera* followCamera;
@@ -50,6 +63,11 @@ namespace NCL
 			bool offline;
 			const double timeStep = 1.0 / 60.0;
 			double accumulator;
+			bool					m_ShouldQuitGame		 = false;
+			ToonConfirmationScreen* m_ToonConfirmationScreen = NULL;
+
+			public:
+				Vector2 m_WindowSize;
 		};
 	}
 }
