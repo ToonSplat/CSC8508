@@ -30,26 +30,29 @@ namespace NCL
 				return *instance;
 			}
 
-			void Update(float dt);
+			void Update();
+
+			void StartLoad();
+			void EndLoad();
 
 			void StartFrame();
 			void EndFrame();
 
+			void StartNetworking();
+			void EndNetworking();
+
 			void StartPhysics();
 			void EndPhysics();
+
+			void StartAnimation();
+			void EndAnimation();
 
 			void StartRendering();
 			void EndRendering();
 
-			void ToggleDebug() { isDebugging = !isDebugging; }
-
-			void SetPhysicsUpdateTime(auto start, auto end) { physicsTimeTaken = ConvertTimeTaken(start, end); }
-			void SetGraphicsUpdateTime(auto start, auto end) { graphicsTimeTaken = ConvertTimeTaken(start, end); }
-			void SetFrameUpdateTime(auto start, auto end) { frameTimeTaken = ConvertTimeTaken(start, end); }
-
-			double ConvertTimeTaken(auto start, auto end) {
-				auto timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-				return timeTaken.count();
+			double ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
+				std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+				return (double)timeTaken.count();
 			}
 
 			const int byteToMb = 1048576;
@@ -57,12 +60,13 @@ namespace NCL
 			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem / byteToMb) + "/" + std::to_string(totalVirtualMem / byteToMb) + "MB"; }
 			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram / byteToMb) + "MB"; }
 			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem / byteToMb) + "/" + std::to_string(totalPhysMem / byteToMb) + "MB"; }
-			string GetPhysicalUsgaebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
-			string GetFrameTimeTaken() { return std::to_string((int)frameTimeTaken) + " microseconds"; }
-			string GetPhysicsTimeTaken() { return std::to_string((int)physicsTimeTaken) + " microseconds"; }
-			string GetGraphicsTimnTaken() { return std::to_string((int)graphicsTimeTaken) + " microseconds"; }
-
-			bool GetIsDebugging() { return isDebugging; }
+			string GetPhysicalUsagebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
+			string GetLoadTimeTaken() { return std::to_string(loadTimeTaken / 1000.0f) + " ms"; }
+			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken / 1000.0f) + " ms"; }
+			string GetNetworkingTimeTaken() { return std::to_string(networkingTimeTaken / 1000.0f) + " ms"; }
+			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken / 1000.0f) + " ms"; }
+			string GetAnimationTimeTaken() { return std::to_string(animationTimeTaken / 1000.0f) + " ms"; }
+			string GetGraphicsTimeTaken() { return std::to_string(graphicsTimeTaken / 1000.0f) + " ms"; }
 
 			void ToggleCollisionDisplay();
 
@@ -73,7 +77,7 @@ namespace NCL
 			~ToonDebugManager() {}
 			static ToonDebugManager* instance;
 
-			void DisplayCollisionBoxes(float dt);
+			void DisplayCollisionBoxes();
 			void CalculateMemoryUsage();
 			void CalculateMemoryUsageByProgram();
 
@@ -85,24 +89,34 @@ namespace NCL
 			DWORDLONG usedPhysMem;
 			SIZE_T physMemUsedByProgram;
 
+			high_resolution_clock::time_point loadStart;
+			high_resolution_clock::time_point loadEnd;
+
 			high_resolution_clock::time_point frameStart;
 			high_resolution_clock::time_point frameEnd;
 
+			high_resolution_clock::time_point networkingStart;
+			high_resolution_clock::time_point networkingEnd;
+
 			high_resolution_clock::time_point physicsStart;
 			high_resolution_clock::time_point physicsEnd;
+
+			high_resolution_clock::time_point animationStart;
+			high_resolution_clock::time_point animationEnd;
 
 			high_resolution_clock::time_point renderingStart;
 			high_resolution_clock::time_point renderingEnd;
 
 			ToonGameWorld* world;
 
-			double physicsTimeTaken;
-			double graphicsTimeTaken;
+			double loadTimeTaken;
 			double frameTimeTaken;
+			double networkingTimeTaken;
+			double physicsTimeTaken;
+			double animationTimeTaken;
+			double graphicsTimeTaken;
 
-			bool isDebugging;
 			bool isCollisionDisplayToggled;
-			bool isDebugToggled;
 		};
 	}
 }
