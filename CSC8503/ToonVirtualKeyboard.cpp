@@ -13,7 +13,7 @@ std::string ToonVirtualKeyboard::GetUserInputText()
 void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 {
 	DrawKeyboard();
-	if ((m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN))
+	if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		if (m_Keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::DeleteActionKey)
 		{
@@ -25,10 +25,10 @@ void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 		else { m_UserInputText += m_Keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].text; }
 	}
 	if (m_KeyboardInputType != IPAddress) {  }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::LEFT); }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RIGHT)) { UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::RIGHT); }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP))	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::UP); }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::DOWN); }
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft())	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::LEFT); }
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight())	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::RIGHT); }
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingUp())		{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::UP); }
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown())	{ UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys::DOWN); }
 	if (!m_IsMousePointerVisible)								{ WakeMouseOnMovement(); }
 }
 
@@ -155,7 +155,7 @@ void ToonVirtualKeyboard::InitializeIPAddressKeyboard()
 
 void ToonVirtualKeyboard::DrawKeyboard()
 {
-	Vector2 mousePosition		= Window::GetMouse()->GetWindowPosition();
+	Vector2 mousePosition		= InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	float	y					= ((mousePosition.y / m_WindowSize.y) * 100);
 	float	x					= ((mousePosition.x / m_WindowSize.x) * 100);
 	m_MousePositionWithinBounds	= Vector2(x, y);
@@ -195,14 +195,14 @@ void ToonVirtualKeyboard::UpdateMosePointerState(bool isVisible)
 
 void ToonVirtualKeyboard::WakeMouseOnMovement()
 {
-	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
+	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 	m_MouseLastPosition = currentMousePosition;
 }
 
 void ToonVirtualKeyboard::UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key)
 {
-	m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
+	m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	UpdateMosePointerState(false);
 	int totalKeys		= (int)m_Keys.size();
 	switch (key)

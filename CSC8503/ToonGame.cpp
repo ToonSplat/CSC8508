@@ -4,9 +4,11 @@
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "ToonMapCamera.h"
+#include "ToonObserverCamera.h"
 #include "ToonRaycastCallback.h"
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -50,32 +52,20 @@ void ToonGame::StartGame() {
 	}
 	else {
 		levelManager->ResetLevel();
-		world->SetMainCamera(new Camera());
+		world->SetMainCamera(new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
 }
 
 void ToonGame::UpdateGame(float dt){
+	if (CheckDebugKeys()) return;
 
-#pragma region To Be Changed
-	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
-#pragma endregion
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
-		StartGame();
-		return;
-	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
-		gameTime = min(gameTime, 5.0f);
-	}
-	world->GetMainCamera()->UpdateCamera(dt);
-	if (world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt);
 	world->UpdateWorld(dt);
+	UpdateCameras(dt, 1);
 
 	if (offline) {
-		UpdateControls(playerControl);
+		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
 		if (player) {
 			player->MovementUpdate(dt, playerControl);
 			player->WeaponUpdate(dt, playerControl);
@@ -86,30 +76,13 @@ void ToonGame::UpdateGame(float dt){
 		player->SetAiming(playerControl->aiming);
 	}
 
-	for (auto& player : allPlayers) {
-		player->AnimationUpdate(dt);
-	}
+	UpdateAnimations(dt);
 
-	accumulator += dt;
-	while (accumulator >= timeStep)
-	{
-		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
-		accumulator -= timeStep;
-		world->DeleteMarkedObjects();
-	}
-	world->interpolationFactor = float(accumulator / timeStep);
+	UpdatePhysics(dt);
 
-	gameTime -= dt;
-	ShowTime(gameTime);
-	if (gameTime <= 0) {
-		if (winner == nullptr && offline == true) {
-			winner = DetermineWinner(renderer->GetTeamScores());
-		}
-		if(winner != nullptr)
-			Debug::Print("WINNER: " + winner->GetTeamName(), Vector2(0, 15), winner->GetTeamColour());
-		if (gameTime <= -5.0f && offline == true)
-			StartGame();
-	}
+	UpdateTime(dt);
+	ShowUI(gameTime);
+
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }
@@ -125,50 +98,10 @@ PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 	return PushdownState::Pop;
 }
 
-void ToonGame::UpdateControls(PlayerControl* controls) {
-	Vector3 forward = world->GetMainCamera()->GetForward();
-	Vector3 right = world->GetMainCamera()->GetRight();
-	Vector3 up = world->GetMainCamera()->GetUp();
-
-	Vector3 linearMovement, animMovement;
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::W))
-	{
-		linearMovement += forward;
-		animMovement.z = 1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::S))
-	{
-		linearMovement -= forward;
-		animMovement.z = -1.0f;
-	}
-
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::A))
-	{
-		linearMovement -= right;
-		animMovement.x = -1.0f;
-	}
-	if (Window::GetKeyboard()->KeyHeld(KeyboardKeys::D))
-	{
-		linearMovement += right;
-		animMovement.x = 1.0f;
-	}
-
-	controls->direction[0] = short(linearMovement.x * 10000);
-	controls->direction[1] = short(linearMovement.y * 10000);
-	controls->direction[2] = short(linearMovement.z * 10000);
-
-	controls->camera[0] = (short)world->GetMainCamera()->GetPitch();
-	controls->camera[1] = (short)world->GetMainCamera()->GetYaw();
-
-	controls->aiming = Window::GetMouse()->ButtonHeld(MouseButtons::RIGHT);
-	controls->shooting = controls->shooting || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT);
-	controls->jumping = controls->jumping || Window::GetKeyboard()->KeyPressed(KeyboardKeys::SPACE);
-}
-
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
 	if (m_ShouldQuitGame) { return PushdownResult::Pop; }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE) || closeGame)
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
 	{
 		*newState = GetToonConfirmationScreen();
 		return PushdownResult::Push;
@@ -190,7 +123,51 @@ void ToonGame::OnAwake()
 	Window::GetWindow()->LockMouseToWindow(true);
 }
 
-void ToonGame::ShowTime(float time) {
+bool ToonGame::CheckDebugKeys() {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
+		StartGame();
+		return true;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
+		gameTime = min(gameTime, 5.0f);
+	}
+}
+
+void ToonGame::UpdateCameras(float dt, int localPlayer) {
+	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+	if (world->GetMinimapCamera())
+		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+}
+
+void ToonGame::UpdatePhysics(float dt) {
+	accumulator += dt;
+	while (accumulator >= timeStep)
+	{
+		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
+		accumulator -= timeStep;
+		world->DeleteMarkedObjects();
+	}
+	world->interpolationFactor = float(accumulator / timeStep);
+}
+
+void ToonGame::UpdateAnimations(float dt) {
+	for (auto& player : allPlayers) {
+		player->AnimationUpdate(dt);
+	}
+}
+
+void ToonGame::UpdateTime(float dt) {
+	gameTime -= dt;
+	if (gameTime <= 0) {
+		if (winner == nullptr && offline == true) {
+			winner = DetermineWinner(renderer->GetTeamScores());
+		}
+		if (gameTime <= -5.0f && offline == true)
+			StartGame();
+	}
+}
+
+void ToonGame::ShowUI(float time) {
 	std::string output = "";
 	if (time < 0) {
 		output += '-';
@@ -203,7 +180,12 @@ void ToonGame::ShowTime(float time) {
 	if (seconds < 10)
 		output += "0";
 	output += to_string(seconds);
-	Debug::Print(output, NCL::Maths::Vector2(0, 10));
+	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+
+	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+
+	if (winner != nullptr)
+		Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {

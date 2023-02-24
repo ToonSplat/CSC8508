@@ -4,6 +4,7 @@
 #include "Window.h"
 #include "ToonGame.h"
 #include "ToonGameWorld.h"
+#include "InputManager.h"
 #include "Toon2DCoordinates.h"
 
 using namespace NCL;

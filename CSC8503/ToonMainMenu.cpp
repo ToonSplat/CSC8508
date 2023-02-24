@@ -26,16 +26,15 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
-	if (m_ShouldQuitGame) { return PushdownState::PushdownResult::Pop; }
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::DOWN))
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown())
 	{
-		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
+		m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex = (m_CurrentSelectedIndex + 1) % m_mainMenuData.size();
 	}
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::UP))
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingUp())
 	{
-		m_MouseLastPosition = Window::GetMouse()->GetWindowPosition();
+		m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex -= 1;
 		if (m_CurrentSelectedIndex < 0) { m_CurrentSelectedIndex = (int)(m_mainMenuData.size()) - 1; }
@@ -43,7 +42,8 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::ESCAPE)) 	//Keeping it to quit game on escape key press
+	if (m_ShouldQuitGame) { return PushdownState::PushdownResult::Pop; }
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack()) 	//Keeping it to quit game on escape key press
 	{
 		if (!m_BaseCurrentSelectdIndex)
 		{
@@ -53,7 +53,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 		else { return PushdownResult::Pop; }
 	}
 
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN) || Window::GetMouse()->ButtonPressed(MouseButtons::LEFT) || m_HasUserInitiatedScreenNavigation)
+	if (InputManager::GetInstance().GetInputs()[1]->IsSelecting() || InputManager::GetInstance().GetInputs()[1]->IsShooting() || m_HasUserInitiatedScreenNavigation)
 	{
 		return NavigateToScreen(newState);
 	}
@@ -178,7 +178,7 @@ void ToonMainMenu::UpdateMosePointerState(bool isVisible)
 
 void ToonMainMenu::WakeMouseOnMovement()
 {
-	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
+	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 	m_MouseLastPosition = currentMousePosition;
 }
@@ -208,7 +208,7 @@ void ToonMainMenu::DrawMainMenu()
 	}
 	else
 	{
-		Vector2 mousePosition			  = Window::GetMouse()->GetWindowPosition();
+		Vector2 mousePosition			  = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 		Vector2 windowSize				  = m_Window->GetWindow()->GetScreenSize();
 		float	y						  = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
 		float	x						  = ((mousePosition.x / windowSize.x) * 100) + 5.0f;

@@ -25,12 +25,17 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonG
 	smoothness = 0.1f;
 
 	distanceThresholdMoving = 100.0f;
-	distanceThresholdStanding = 10.0f;	
+	distanceThresholdStanding = 10.0f;
+
+	startFOV = fov;
+	aimFOV = startFOV - 20.0f;
+	vFov = 0.0f;
+	zoomSmoothess = 0.1f;
 
 	reached = false;
 }
 
-void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
+void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt, BaseInput* inputs)
 {
 	if ( (gameWorld != nullptr) && !gameWorld->ShowCursor())
 	{
@@ -38,10 +43,10 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 		Window::GetWindow()->LockMouseToWindow(true);
 	}
 
-	v -= (Window::GetMouse()->GetRelativePosition().y);
+	v -= (inputs->GetMouseRelPos().y);
 	v = Clamp(v, -80.0f, 80.0f);
 
-	h -= (Window::GetMouse()->GetRelativePosition().x);
+	h -= (inputs->GetMouseRelPos().x);
 	if (h < 0) h += 360.0f;
 	if (h > 360.0f) h -= 360.0f;
 	
@@ -54,9 +59,17 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 	Matrix4 finalMatrix = modelMatrixNoRot * rotMatrix;	
 
 	Vector3 targetWorldPos = ToonUtils::ConvertToNCLVector3(followTarget->GetRigidbody()->getTransform().getPosition());	
-	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);	
+	Vector3 targetLocalPos = finalMatrix.Inverse() * Vector4(targetWorldPos, 1.0f);
 
-	Vector3 targetlocalPosOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
+	Vector3 posOffsetLocal = targetLocalPos + targetOffset;
+	position = finalMatrix * Vector4(posOffsetLocal, 1.0f);
+
+	if (player->IsAiming())
+		fov = SmoothDamp(fov, aimFOV, vFov, zoomSmoothess, FLT_MAX, dt);
+	else
+		fov = SmoothDamp(fov, startFOV, vFov, zoomSmoothess, FLT_MAX, dt);
+
+	/*Vector3 targetlocalPosOffset = targetLocalPos + (player->IsAiming() ? aimOffset : targetOffset);
 	targetlocalPosOffset *= requiredRayDistance;
 	Vector3 targetWorldPosOffset = finalMatrix * Vector4(targetlocalPosOffset, 1.0f);
 	
@@ -93,14 +106,17 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt)
 
 	position = FinalPos;
 	//position = Lerp(position, FinalPos, dt * 20.0f);
-	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);
+	//position = Vector3::SmoothDamp(position, FinalPos, refVel, 0.1f, FLT_MAX, dt);*/
 
-	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos), ToonUtils::ConvertToRP3DVector3(position));
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(targetWorldPos + Vector3(0, 2.5f, 0)), ToonUtils::ConvertToRP3DVector3(position));
 	ToonRaycastCallback wallHitData;
 	gameWorld->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
 
 	if (wallHitData.IsHit())
 		position = wallHitData.GetHitWorldPos();
+
+	//Debug::DrawLine(targetWorldPos, position, Debug::CYAN, 0.0f);
+	//Debug::DrawBox(targetWorldPos + Vector3(0, 2.5f, 0), Vector3(0.5f, 0.5f, 0.5f), Debug::CYAN);
 
 	/*Matrix4 viewMatrix = Matrix4::BuildViewMatrix(position, FinalLookAt, up).Inverse();
 	Quaternion q(viewMatrix);

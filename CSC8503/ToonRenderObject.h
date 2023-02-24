@@ -2,6 +2,8 @@
 #include "TextureBase.h"
 #include "ShaderBase.h"
 #include "Vector4.h"
+#include "MeshMaterial.h"
+#include "ToonMeshMaterial.h"
 #include <reactphysics3d/reactphysics3d.h>
 
 namespace NCL {
@@ -17,6 +19,7 @@ namespace NCL {
 		{
 		public:
 			ToonRenderObject(ToonTransform* parentTransform, MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader, MeshGeometry* minimapMesh = nullptr);
+			ToonRenderObject(ToonTransform* parentTransform, MeshGeometry* mesh, ToonMeshMaterial* mat, ShaderBase* shader, MeshGeometry* minimapMesh = nullptr);
 			ToonRenderObject(MeshGeometry* mesh, TextureBase* tex, ShaderBase* shader);
 			~ToonRenderObject();
 
@@ -54,11 +57,16 @@ namespace NCL {
 				return colour;
 			}
 
+			void SetMinimapColour(const Vector4& c) { minimapColour = c; }
+			Vector4 GetMinimapColour() const { return minimapColour; }
+
 			void SetGameObject(ToonGameObject* gameObject) { this->gameObject = gameObject; }
 
 			ToonGameObject* GetGameObject() const {
 				return gameObject;
 			}
+
+			ToonMeshMaterial* GetMaterial() const { return material; }			
 
 		protected:
 			ToonGameObject* gameObject;
@@ -66,8 +74,13 @@ namespace NCL {
 			MeshGeometry*	minimapMesh;
 			TextureBase*	texture;
 			ShaderBase*		shader;
-			ToonTransform*	transform;			
+			ToonTransform*	transform;
 			Vector4			colour;
+			Vector4			minimapColour;
+
+			ToonMeshMaterial*	material;
+			std::vector<const Rendering::TextureBase*> mTexturesDiffuse;
+			std::vector<const Rendering::TextureBase*> mTexturesBump;
 		};
 	}
 }

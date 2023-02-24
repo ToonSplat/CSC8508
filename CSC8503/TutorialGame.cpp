@@ -3,7 +3,7 @@
 #include "PhysicsObject.h"
 #include "RenderObject.h"
 #include "TextureLoader.h"
-
+#include "InputManager.h"
 #include "PositionConstraint.h"
 #include "OrientationConstraint.h"
 #include "StateGameObject.h"
@@ -92,7 +92,7 @@ void TutorialGame::UpdateGame(float dt) {
 		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);*/
 	}
 	else if (!inSelectionMode) {
-		world->GetMainCamera()->UpdateCamera(dt);
+		world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	}
 
 	if (lockedObject != nullptr) {

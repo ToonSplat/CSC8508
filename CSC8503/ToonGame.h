@@ -34,13 +34,19 @@ namespace NCL
 			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
-			void ShowTime(float dt);
+			bool CheckDebugKeys();
+
+			void UpdateCameras(float dt, int localPlayer);
+			void UpdatePhysics(float dt);
+			void UpdateAnimations(float dt);
+			void UpdateTime(float dt);
+
+			void ShowUI(float time);
 			Team* DetermineWinner(std::map<int, float> teamScores);
 			ToonConfirmationScreen* GetToonConfirmationScreen();
 
 		protected:
 			ToonFollowCamera* followCamera;
-			void UpdateControls(PlayerControl* controls);
 			Player*	player = nullptr;
 			PlayerControl* playerControl = nullptr;
 

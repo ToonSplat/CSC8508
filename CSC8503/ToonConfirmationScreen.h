@@ -4,6 +4,7 @@
 #include "ToonGameWorld.h"
 #include "GameTechRenderer.h"
 #include "Toon2DCoordinates.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;

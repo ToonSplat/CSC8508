@@ -30,7 +30,7 @@ PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, Pushdow
 	HandleKeyboard();
 	DrawScreen();
 	delegate->UpdateCall();
-	if ((m_IsMousePointerVisible && Window::GetMouse()->ButtonPressed(MouseButtons::LEFT)) || (!m_IsMousePointerVisible && Window::GetKeyboard()->KeyPressed(KeyboardKeys::RETURN)))
+	if ((m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsShooting()) || (!m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsSelecting()))
 	{
 		switch (m_CurrentSelectedButton)
 		{
@@ -81,7 +81,7 @@ void ToonConfirmationScreen::DrawSingleButton(ConfirmationButtonsType buttonType
 
 void ToonConfirmationScreen::HandleMouse()
 {
-	Vector2 mousePosition = Window::GetMouse()->GetWindowPosition();
+	Vector2 mousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	float	y			  = ((mousePosition.y / m_WindowSize.y) * 100);
 	float	x			  = ((mousePosition.x / m_WindowSize.x) * 100);
 	m_MouseLastPosition	  = mousePosition;
@@ -102,12 +102,12 @@ void ToonConfirmationScreen::HandleMouse()
 void ToonConfirmationScreen::HandleKeyboard()
 {
 	int add = 0;
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::LEFT))
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft())
 	{
 		add -= 1;
 		UpdateMousePointerState(false);
 	}
-	else if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::RIGHT))
+	else if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight())
 	{
 		add += 1;
 		UpdateMousePointerState(false);
@@ -148,7 +148,7 @@ void ToonConfirmationScreen::UpdateMousePointerState(bool isVisible)
 
 void ToonConfirmationScreen::WakeMouseOnMovement()
 {
-	Vector2 currentMousePosition = Window::GetMouse()->GetWindowPosition();
+	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMousePointerState(true); }
 }
 

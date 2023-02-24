@@ -37,6 +37,7 @@ namespace NCL
 			MeshGeometry* GetMesh(std::string meshName) const { 
 				if (meshMap.count(meshName) == 0) {
 					std::cout << "ERROR: Attempting to get Mesh that isn't loaded\n";
+					std::cout << "Mesh Name: " << meshName << std::endl;
 					return nullptr;
 				}
 				else return meshMap.at(meshName); 
@@ -44,6 +45,7 @@ namespace NCL
 			TextureBase* GetTexture(std::string textureName) const {
 				if (textureMap.count(textureName) == 0) {
 					std::cout << "ERROR: Attempting to get Texture that isn't loaded\n";
+					std::cout << "Texture Name: " << textureName << std::endl;
 					return nullptr;
 				}
 				else return textureMap.at(textureName);
@@ -51,9 +53,18 @@ namespace NCL
 			ShaderBase* GetShader(std::string shaderName) const {
 				if (shaderMap.count(shaderName) == 0) {
 					std::cout << "ERROR: Attempting to get Shader that isn't loaded\n";
+					std::cout << "Shader Name: " << shaderName << std::endl;
 					return nullptr;
 				}
 				else return shaderMap.at(shaderName);
+			}
+			ToonMeshMaterial* GetMaterial(std::string materialName) const {
+				if (materialMap.count(materialName) == 0) {
+					std::cout << "ERROR: Attempting to get Material that isn't loaded\n";
+					std::cout << "Material Name: " << materialName << std::endl;
+					return nullptr;
+				}
+				else return materialMap.at(materialName);
 			}
 
 			void Update(float dt);
@@ -63,7 +74,9 @@ namespace NCL
 			bool LoadModel(const std::string meshName);
 			bool LoadTexture(const std::string textureName);
 			bool LoadShader(const std::string shaderName);
+			bool LoadMaterial(const std::string materialName);
 			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
+			bool LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
 			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
 
@@ -90,12 +103,15 @@ namespace NCL
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition,
 							const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, 
 							Vector4 minimapColour = Vector4(0,0,0,1), bool isFloor = false);
-			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f);
+			
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true);
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;
 			std::map<std::string, TextureBase*> textureMap;
 			std::map<std::string, ShaderBase*> shaderMap;
+			std::map<std::string, ToonMeshMaterial*> materialMap;
 
 			GameTechRenderer* gameRenderer;		
 			ToonGameWorld* gameWorld;
