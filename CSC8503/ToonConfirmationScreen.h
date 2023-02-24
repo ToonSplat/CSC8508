@@ -53,6 +53,7 @@ class ToonConfirmationScreen : public PushdownState
 
 	public:
 		ToonConfirmationScreen* delegate;
+		bool					m_ShouldRenderUpdates = true;
 
 	public:
 		ToonConfirmationScreen();
@@ -72,13 +73,13 @@ class ToonConfirmationScreen : public PushdownState
 		virtual PushdownState::PushdownResult DidSelectOkButton() { return PushdownState::PushdownResult::NoChange; }
 		virtual PushdownState::PushdownResult DidSelectCancelButton() { return PushdownState::PushdownResult::NoChange; }
 		virtual void UpdateCall(float dt) {}
+		void DrawScreen();
+		void HandleMouse();
+		void HandleKeyboard();
 
 	private:
 		void UpdateButtonsCoordinates();
-		void DrawScreen();
 		void DrawSingleButton(ConfirmationButtonsType buttonType);
-		void HandleMouse();
-		void HandleKeyboard();
 		int Clamp(int value, int lowerBound, int upperBound);
 		ConfirmationButtonsType GetConfirmationButtonTypeFromIntegerValue(int value);
 		void UpdateMousePointerState(bool isVisible);

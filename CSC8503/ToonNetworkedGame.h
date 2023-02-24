@@ -50,6 +50,8 @@ namespace NCL {
 			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
 
 			void UpdateCall(float dt) override;
+			PushdownState::PushdownResult DidSelectCancelButton() override;
+			PushdownState::PushdownResult DidSelectOkButton() override;
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -70,6 +72,10 @@ namespace NCL {
 			std::vector<ToonNetworkObject*> networkObjects;
 
 			std::map<int, PlayerDetails> serverPlayers;
+
+			ToonConfirmationScreen* m_ConfirmationScreen;
+			bool					m_ShouldShowConfirmationScreen = false;		//Just for showing confirmation screen
+			bool					m_MoveBackOnConfirmation	   = false;		//For moving back if the player selects yes on confirmation
 		};
 	}
 }

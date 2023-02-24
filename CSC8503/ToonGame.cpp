@@ -103,8 +103,11 @@ PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newSt
 	if (m_ShouldQuitGame) { return PushdownResult::Pop; }
 	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
 	{
-		*newState = GetToonConfirmationScreen();
-		return PushdownResult::Push;
+		if (offline)
+		{
+			*newState = GetToonConfirmationScreen();
+			return PushdownResult::Push;
+		}
 	}
 		//return PushdownResult::Pop;
 	if (dt > 0.1f)

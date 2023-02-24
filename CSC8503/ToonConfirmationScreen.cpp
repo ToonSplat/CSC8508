@@ -22,9 +22,12 @@ ToonConfirmationScreen::ToonConfirmationScreen(Coordinates coordinates,
 
 PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, PushdownState** newState)
 {
-	m_Renderer->Update(dt);
-	m_Renderer->Render();
-	Debug::UpdateRenderables(dt);
+	if (m_ShouldRenderUpdates)
+	{
+		m_Renderer->Update(dt);
+		m_Renderer->Render();
+		Debug::UpdateRenderables(dt);
+	}
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 	if (m_IsMousePointerVisible)  { HandleMouse(); }
 	HandleKeyboard();
