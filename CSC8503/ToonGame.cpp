@@ -60,7 +60,6 @@ void ToonGame::StartGame() {
 void ToonGame::UpdateGame(float dt){
 
 #pragma region To Be Changed
-	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
 	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 #pragma endregion
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
@@ -101,13 +100,13 @@ void ToonGame::UpdateGame(float dt){
 	world->interpolationFactor = float(accumulator / timeStep);
 
 	gameTime -= dt;
-	ShowTime(gameTime);
+	ShowUI(gameTime);
 	if (gameTime <= 0) {
 		if (winner == nullptr && offline == true) {
 			winner = DetermineWinner(renderer->GetTeamScores());
 		}
 		if(winner != nullptr)
-			Debug::Print("WINNER: " + winner->GetTeamName(), Vector2(0, 15), winner->GetTeamColour());
+			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 		if (gameTime <= -5.0f && offline == true)
 			StartGame();
 	}
@@ -135,7 +134,7 @@ void ToonGame::OnAwake()
 	Window::GetWindow()->LockMouseToWindow(true);
 }
 
-void ToonGame::ShowTime(float time) {
+void ToonGame::ShowUI(float time) {
 	std::string output = "";
 	if (time < 0) {
 		output += '-';
@@ -148,7 +147,8 @@ void ToonGame::ShowTime(float time) {
 	if (seconds < 10)
 		output += "0";
 	output += to_string(seconds);
-	Debug::Print(output, NCL::Maths::Vector2(0, 10));
+	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {

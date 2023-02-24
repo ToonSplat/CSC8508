@@ -29,7 +29,7 @@ namespace NCL
 			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 			void OnAwake() override;
-			void ShowTime(float dt);
+			void ShowUI(float time);
 			Team* DetermineWinner(std::map<int, float> teamScores);
 
 		protected:
