@@ -69,6 +69,8 @@ namespace NCL {
 			std::vector<ToonNetworkObject*> networkObjects;
 
 			std::map<int, PlayerDetails> serverPlayers;
+
+			AudioEmitter* e;
 		};
 	}
 }

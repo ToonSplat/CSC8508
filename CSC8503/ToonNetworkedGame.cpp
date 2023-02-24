@@ -30,6 +30,8 @@ ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, i
 	thisServer = nullptr;
 	thisClient = nullptr;
 
+	e = new AudioEmitter(Audio::GetSound("splash.wav"));
+
 	NetworkBase::Initialise();
 	timeToNextPacket = 0.0f;
 	packetsToSnapshot = 0;
@@ -40,6 +42,7 @@ ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, i
 ToonNetworkedGame::~ToonNetworkedGame() {
 	delete thisServer;
 	delete thisClient;
+	delete e;
 }
 
 void ToonNetworkedGame::StartAsServer() {
@@ -383,6 +386,14 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		for (PaintableObject* p : world->GetPaintableObjects()) {
 			if (p->GetWorldID() == realPacket->objectID) {
 				p->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
+				
+
+				e->SetPriority(SoundPriority::LOW);
+				e->SetLooping(false);
+				e->ResetSound();
+				e->SetTarget(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f));
+				AudioSystem::GetAudioSystem()->AddSoundEmitter(e);
+
 				break;
 			}
 		}

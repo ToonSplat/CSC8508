@@ -71,10 +71,12 @@ private:
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
 	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win);
+	~ToonMainMenu();
 
 private:
 	AudioEmitter* mainMenuTune,* gameTune,* optionClick;
 	void ToonMainMenuAudio();
+	void ToonMenuSoundS();
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;

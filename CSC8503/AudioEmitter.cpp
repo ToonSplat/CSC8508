@@ -25,6 +25,7 @@ void AudioEmitter::Reset() {
 	timeLeft = 0.0f;
 	currentSource = NULL;
 	music = false;
+	del = false;
 }
 
 AudioEmitter::~AudioEmitter() {
@@ -67,6 +68,7 @@ void AudioEmitter::AttachSource(OALSource* s) {
 void AudioEmitter::DetachSource() {
 	if (!currentSource)
 		return;
+
 	alSourcef(currentSource->source, AL_GAIN, 0.0f);
 	alSourceStop(currentSource->source);
 	alSourcei(currentSource->source, AL_BUFFER, 0);
@@ -93,6 +95,9 @@ void AudioEmitter::Update(float msec) {
 			alSourcePause(currentSource->source);
 		}
 	}
+
+	if (del && timeLeft <= 0.0f)
+		delete this;
 }
 
 void  AudioEmitter::Play() {

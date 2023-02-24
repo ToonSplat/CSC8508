@@ -46,6 +46,7 @@ AudioSystem::AudioSystem(unsigned int channels) {
 }
 
 AudioSystem::~AudioSystem() {
+
     alcMakeContextCurrent(NULL);
     for (std::vector < OALSource* >::iterator i = sources.begin();
         i != sources.end(); ++i) {
@@ -83,6 +84,13 @@ void AudioSystem::UpdateListener() {
 
 void AudioSystem::Update(float msec) {
     UpdateListener();
+
+    //for (int i = 0; i < emitters.size(); i++) {
+        //if (emitters.at(i)->GetTimeLeft() <= 0.0f && !emitters.at(i)->GetLooping()) {
+            //emitters.erase(emitters.begin() + i);
+        //}
+        //emitters.at(i)->Update(msec);
+    //}
 
     for (std::vector <AudioEmitter* >::iterator i = emitters.begin();
         i != emitters.end(); ++i) {

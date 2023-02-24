@@ -42,6 +42,7 @@ namespace NCL
 			float  timeLeft;
 			OALSource* currentSource;
 			bool music;
+			bool del;
 
 		public:
 			
@@ -52,7 +53,7 @@ namespace NCL
 
 			void Play();
 			void Pause();
-
+			void DeleteThis() { del = true; };
 
 			void Reset();
 
@@ -82,6 +83,8 @@ namespace NCL
 			inline float GetRadius() { return radius; }
 
 			inline float GetTimeLeft() { return timeLeft; }
+			void ResetSound() { timeLeft = sound->length;}
+
 
 			inline OALSource* GetSource() { return currentSource; }
 
