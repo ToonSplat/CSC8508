@@ -344,71 +344,72 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		}
 		ImGui::End();
 
-		ImGui::Begin("Performance Window");
-		ImGui::BeginTable("FPS Table", 2);
-		ImGui::TableNextColumn();
-		ImGui::Text("FPS");
-		ImGui::TableNextColumn();
-		ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
-		ImGui::EndTable();
-
-		if (ImGui::CollapsingHeader("Memory Usage")) {
-			ImGui::BeginTable("Memory Usage Table", 2);
-
-			string virtualMemoryUsage = toonDebugManager->GetVirtualMemoryUsage();
-			string virutalUsageByProgram = toonDebugManager->GetVirutalUsageByProgram();
-			string physicalMemoryUsage = toonDebugManager->GetPhysicalMemoryUsage();
-			string physicalUsgaebyProgram = toonDebugManager->GetPhysicalUsgaebyProgram();
-
+		if (ImGui::Begin("Performance Window")) {
+			ImGui::BeginTable("FPS Table", 2);
 			ImGui::TableNextColumn();
-			ImGui::Text("Virtual Memory");
+			ImGui::Text("FPS");
 			ImGui::TableNextColumn();
-			ImGui::Text(virtualMemoryUsage.c_str());
-
-			ImGui::TableNextColumn();
-
-			ImGui::Text("Virtual Memory By Program");
-			ImGui::TableNextColumn();
-			ImGui::Text(virutalUsageByProgram.c_str());
-
-			ImGui::TableNextColumn();
-
-			ImGui::Text("Physcial Memory");
-			ImGui::TableNextColumn();
-			ImGui::Text(physicalMemoryUsage.c_str());
-
-			ImGui::TableNextColumn();
-
-			ImGui::Text("Physcial Memory By Program");
-			ImGui::TableNextColumn();
-			ImGui::Text(physicalUsgaebyProgram.c_str());
-
+			ImGui::Text(std::to_string(ImGui::GetIO().Framerate).c_str());
 			ImGui::EndTable();
 
-		}
-		if (ImGui::CollapsingHeader("Update Times")) {
-			ImGui::BeginTable("Memory Usage Table", 2);
+			if (ImGui::CollapsingHeader("Memory Usage")) {
+				ImGui::BeginTable("Memory Usage Table", 2);
 
-			string frameTimeTaken = toonDebugManager->GetFrameTimeTaken();
-			string physicsTimeTaken = toonDebugManager->GetPhysicsTimeTaken();
-			string graphicsTimnTaken = toonDebugManager->GetGraphicsTimnTaken();
+				string virtualMemoryUsage = toonDebugManager->GetVirtualMemoryUsage();
+				string virutalUsageByProgram = toonDebugManager->GetVirutalUsageByProgram();
+				string physicalMemoryUsage = toonDebugManager->GetPhysicalMemoryUsage();
+				string physicalUsgaebyProgram = toonDebugManager->GetPhysicalUsgaebyProgram();
 
-			ImGui::TableNextColumn();
-			ImGui::Text("Frame Time");
-			ImGui::TableNextColumn();
-			ImGui::Text(frameTimeTaken.c_str());
+				ImGui::TableNextColumn();
+				ImGui::Text("Virtual Memory");
+				ImGui::TableNextColumn();
+				ImGui::Text(virtualMemoryUsage.c_str());
 
-			ImGui::TableNextColumn();
+				ImGui::TableNextColumn();
 
-			ImGui::Text("Physics Time");
-			ImGui::TableNextColumn();
-			ImGui::Text(physicsTimeTaken.c_str());
-			ImGui::TableNextColumn();
+				ImGui::Text("Virtual Memory By Program");
+				ImGui::TableNextColumn();
+				ImGui::Text(virutalUsageByProgram.c_str());
 
-			ImGui::Text("Graphics Time");
-			ImGui::TableNextColumn();
-			ImGui::Text(graphicsTimnTaken.c_str());
-			ImGui::EndTable();
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Physcial Memory");
+				ImGui::TableNextColumn();
+				ImGui::Text(physicalMemoryUsage.c_str());
+
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Physcial Memory By Program");
+				ImGui::TableNextColumn();
+				ImGui::Text(physicalUsgaebyProgram.c_str());
+
+				ImGui::EndTable();
+
+			}
+			if (ImGui::CollapsingHeader("Update Times")) {
+				ImGui::BeginTable("Memory Usage Table", 2);
+
+				string frameTimeTaken = toonDebugManager->GetFrameTimeTaken();
+				string physicsTimeTaken = toonDebugManager->GetPhysicsTimeTaken();
+				string graphicsTimnTaken = toonDebugManager->GetGraphicsTimnTaken();
+
+				ImGui::TableNextColumn();
+				ImGui::Text("Frame Time");
+				ImGui::TableNextColumn();
+				ImGui::Text(frameTimeTaken.c_str());
+
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Physics Time");
+				ImGui::TableNextColumn();
+				ImGui::Text(physicsTimeTaken.c_str());
+				ImGui::TableNextColumn();
+
+				ImGui::Text("Graphics Time");
+				ImGui::TableNextColumn();
+				ImGui::Text(graphicsTimnTaken.c_str());
+				ImGui::EndTable();
+			}
 		}
 		ImGui::End();
 

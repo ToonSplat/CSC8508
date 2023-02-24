@@ -60,6 +60,7 @@ int main() {
 
 	w->ShowOSPointer(false);
 	w->LockMouseToWindow(true);
+	w->ShowConsole(true);
   
 	//ToonGame* g = new ToonGame();
 	ToonGame* g;
