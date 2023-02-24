@@ -89,6 +89,9 @@ int main()
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+#ifndef _DEBUG
+	w->ShowConsole(false);
+#endif
 
 	// Controller settings
 	XINPUT_STATE controllerState;
