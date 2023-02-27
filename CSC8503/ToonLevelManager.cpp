@@ -386,12 +386,33 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRigidbody()->setUserData(player);
 
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetMaterial("mat_player"), GetShader("animated"), GetMesh("arrow")));
-	player->GetRenderObject()->SetMinimapColour(Vector4(team->GetTeamColour(), 1));
+	player->GetRenderObject()->SetMinimapColour(Vector4(team->GetTeamColour(), 1.0f));
 
-	/*std::vector<Vector4> vertexColours;
+	const std::vector<unsigned int> indices = player->GetRenderObject()->GetMesh()->GetIndexData();
+	std::vector<Vector4> vertexColours;
 	for (size_t i = 0; i < player->GetRenderObject()->GetMesh()->GetVertexCount(); i++)
 		vertexColours.emplace_back(Debug::WHITE);
-	player->GetRenderObject()->GetMesh()->SetVertexColours(vertexColours);*/
+
+	const SubMesh* clothesSubMesh = player->GetRenderObject()->GetMesh()->GetSubMesh(4);
+	if (clothesSubMesh != nullptr)
+	{
+		int start = clothesSubMesh->start;
+		int end = start + clothesSubMesh->count;
+
+		for (int i = start; i < end; i += 3)
+		{
+			int A = indices[i + 0];
+			int B = indices[i + 1];
+			int C = indices[i + 2];
+
+			vertexColours[A] = Vector4(team->GetTeamColour(), 1.0f);
+			vertexColours[B] = Vector4(team->GetTeamColour(), 1.0f);
+			vertexColours[C] = Vector4(team->GetTeamColour(), 1.0f);
+		}
+	}
+
+	player->GetRenderObject()->GetMesh()->SetVertexColours(vertexColours);
+	player->GetRenderObject()->GetMesh()->UploadToGPU();
 
 	gameWorld->AddGameObject(player);
 

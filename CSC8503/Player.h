@@ -17,9 +17,7 @@ using namespace CSC8503;
 class Player : public ToonGameObjectAnim {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
-	~Player();
-
-	virtual void Draw(OGLRenderer& r, bool isMinimap = false) override;
+	~Player();	
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
