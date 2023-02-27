@@ -28,6 +28,7 @@ namespace NCL {
 		protected:
 
 			void SetupStuffs();
+			void LoadQuads();
 			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
@@ -35,11 +36,11 @@ namespace NCL {
 
 
 			void RenderFrame()	override;
+			void RenderSplitScreen();
+			void RenderSinglePlayer();
 
 			void PresentSinglePlayer();
-			void Present2Player();
-			void Present3Player();
-			void Present4Player();
+			void PresentSplitScreen();
 
 			void RenderImGUI();
 
@@ -123,6 +124,11 @@ namespace NCL {
 			GLuint sceneColourTexture;
 			GLuint sceneDepthTexture;
 			void GenerateSceneFBO(int width, int height);
+			
+			GLuint splitFBO[2];
+			GLuint splitColourTexture[2];
+			GLuint splitDepthTexture[2];
+			void GenerateSplitFBO(int width, int height);
 
 			GLuint minimapFBO;
 			GLuint minimapColourTexture;
@@ -163,9 +169,11 @@ namespace NCL {
 			GLuint currentAtomicGPU;
 			GLuint curretAtomicReset;
 
-			int localPlayerCount = 1;
+			int localPlayerCount = 2;
 
-			
+			Camera* currentRenderCamera;
+
+			float screenAspect;
 		};
 	}
 }

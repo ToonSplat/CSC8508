@@ -55,8 +55,11 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
+	screenAspect = (float)windowWidth / (float)windowHeight;
+
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
+	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
 	GenerateAtomicBuffer();
@@ -74,28 +77,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
 	skyboxMesh->UploadToGPU();
 
-	fullScreenQuad = new OGLMesh();
-	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
-	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
-	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
-	fullScreenQuad->UploadToGPU();
-	
-	minimapQuad = new OGLMesh();
-	minimapQuad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
-	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
-	minimapQuad->SetVertexIndices({ 0,1,2,2,3,0 });
-	minimapQuad->UploadToGPU();
-
-	minimapStencilQuad = new OGLMesh();
-	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f) , Vector3(0.5f, -0.8f, -1.0f) , Vector3(0.5f, 0.8f, -1.0f) });
-	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
-	minimapStencilQuad->UploadToGPU();
-
-	scoreQuad = new OGLMesh();
-	scoreQuad->SetVertexPositions({ Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1) });
-	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
-	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
-	scoreQuad->UploadToGPU();
+	LoadQuads();
 	
 	LoadSkybox();
 
@@ -112,6 +94,32 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 
 
 
+}
+
+void NCL::CSC8503::GameTechRenderer::LoadQuads()
+{
+	fullScreenQuad = new OGLMesh();
+	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
+	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	fullScreenQuad->UploadToGPU();
+
+	minimapQuad = new OGLMesh();
+	minimapQuad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
+	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	minimapQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	minimapQuad->UploadToGPU();
+
+	minimapStencilQuad = new OGLMesh();
+	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f) , Vector3(0.5f, -0.8f, -1.0f) , Vector3(0.5f, 0.8f, -1.0f) });
+	minimapStencilQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	minimapStencilQuad->UploadToGPU();
+
+	scoreQuad = new OGLMesh();
+	scoreQuad->SetVertexPositions({ Vector3(-1, 1, 1), Vector3(-1, -1, 1), Vector3(1, -1, 1), Vector3(1, 1, 1) });
+	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	scoreQuad->UploadToGPU();
 }
 
 void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
@@ -171,6 +179,50 @@ void GameTechRenderer::GenerateSceneFBO(int width, int height)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !sceneColourTexture || !sceneColourTexture) {
 		return;
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
+{
+	for (int i = 0; i < 2; i++)
+	{
+		glGenFramebuffers(1, &splitFBO[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, splitFBO[i]);
+
+	
+		glGenTextures(1, &splitColourTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, splitColourTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, splitColourTexture[i], -1, "Split Colour Texture");
+
+		glGenTextures(1, &splitDepthTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, splitDepthTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, splitDepthTexture[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, splitDepthTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, splitDepthTexture[i], -1, "Split Depth Texture");
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !splitDepthTexture[i] || !splitColourTexture[i]) {
+			return;
+		}
+	}
+
+
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -318,43 +370,63 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
-	BuildObjectList();
-
-	if (gameWorld->GetMapCamera()) {
-		DrawMap();
-
+	switch (localPlayerCount) {
+	case 2:
+		RenderSplitScreen();
+		break;
+	default:
+		RenderSinglePlayer();
+		break;
 	}
 
+	DrawMap();
 
-	DrawMainScene();
-	
-	if (gameWorld->GetMinimapCamera())
-	{
-		
-		DrawMinimap();
-	}
 	PresentScene();
-	
 	
 	RenderImGUI();
 	ToonDebugManager::Instance().EndRendering();
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
+{
+	for (int i = 0; i < localPlayerCount; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, splitFBO[i]);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, splitColourTexture[i], 0);
+		currentRenderCamera = gameWorld->GetMainCamera(); // To be changed with camera map
+		DrawMainScene();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
+	currentRenderCamera = gameWorld->GetMainCamera(); // To be changed with camera map
+	DrawMainScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	DrawMinimap();
 }
 
 
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
+	
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	RenderShadowMap();
+
+	BuildObjectList();
+	//RenderShadowMap();
 	RenderSkybox();
 	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
+	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
 	RenderScene(sceneShader, viewMatrix, projMatrix);
 
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
@@ -367,11 +439,12 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 {
+	if (!gameWorld->GetMinimapCamera()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
 
@@ -511,26 +584,20 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 void NCL::CSC8503::GameTechRenderer::DrawMap()
 {
+	if (!gameWorld->GetMapCamera()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 	
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
-
-	
-
 	RenderScene(mapShader, viewMatrix, projMatrix);
 
 	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
 	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
 	curretAtomicReset = ((curretAtomicReset + 1) % 3);
-	
-	
-
 
 	glDisable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -577,21 +644,14 @@ void GameTechRenderer::PresentScene()
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
 	switch (localPlayerCount) {
-	case 1:
+	case 2:
+		PresentSplitScreen();
+		break;
+	default:
 		PresentSinglePlayer();
 		break;
-	case 2:
-		Present2Player();
-		break;
-	case 3:
-		Present3Player();
-		break;
-	case 4:
-		Present4Player();
-		break;
-	}
-
 	
+	}
 
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
@@ -606,22 +666,29 @@ void NCL::CSC8503::GameTechRenderer::PresentSinglePlayer()
 	PresentMinimap();
 }
 
-void NCL::CSC8503::GameTechRenderer::Present2Player()
+void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 {
+	for (int i = 0; i < 2; i++)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
+		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5 + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
+		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+		BindMesh(fullScreenQuad);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
-void NCL::CSC8503::GameTechRenderer::Present3Player()
-{
-}
-
-void NCL::CSC8503::GameTechRenderer::Present4Player()
-{
-}
 void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 {
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -739,36 +806,12 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto& i : activeObjects)
 	{
-		/*Quaternion rot;
-		reactphysics3d::Quaternion rRot = (*i).GetRigidbody()->getTransform().getOrientation();
-		rot.x = rRot.x;
-		rot.y = rRot.y;
-		rot.z = rRot.z;
-		rot.w = rRot.w;
-		Matrix4 modelMatrix = Matrix4::Translation((*i).GetRigidbody()->getTransform().getPosition().x,
-			(*i).GetRigidbody()->getTransform().getPosition().y,
-			(*i).GetRigidbody()->getTransform().getPosition().z) *
-			Matrix4(rot) *
-			Matrix4::Scale((*i).GetRenderObject()->GetTransform()->GetScale().x, (*i).GetRenderObject()->GetTransform()->GetScale().y, (*i).GetRenderObject()->GetTransform()->GetScale().z);*/
-
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
 		glUniform1i(hasSkinLocation, (*i).HasSkin());
 
 		(*i).Draw(*this);
-		/*BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-		for (int j = 0; j < layerCount; ++j) {
-			i->Draw(j);
-		}*/
-
-		/*Jainesh - Moved to ToonGameObject.h Draw() func
-		BindMesh((*i).GetRenderObject()->GetMesh());
-		int layerCount = (*i).GetRenderObject()->GetMesh()->GetSubMeshCount();
-		for (int i = 0; i < layerCount; ++i) {
-			DrawBoundMesh(i);
-		}*/
 	}
 
 	glViewport(0, 0, windowWidth, windowHeight);
