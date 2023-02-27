@@ -12,7 +12,7 @@ uniform int impactPointCount;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
-//uniform sampler2DShadow shadowTex;
+uniform sampler2DShadow shadowTex; // Was sampler2DShadow
 
 uniform vec3	lightPos;
 uniform float	lightRadius;
@@ -65,9 +65,20 @@ void main(void)
 {
 	float shadow = 1.0; // New !
 	
-	//if( IN . shadowProj . w > 0.0) { // New !
-		//shadow = textureProj ( shadowTex , IN . shadowProj ) * 0.5f;
+	if(IN.shadowProj.w > 0.0) { // New !
+		shadow = textureProj(shadowTex , IN.shadowProj) * 0.7f;
+	}
+
+	//vec3 shadowNDC = IN.shadowProj.xyz / IN.shadowProj.w;
+	//if(abs(shadowNDC.x) < 1.0f && abs(shadowNDC.y) < 1.0f && abs(shadowNDC.z) < 1.0f){
+		//vec3 biasCoord = shadowNDC * 0.5f + 0.5f;
+		//float shadowZ = texture(shadowTex, biasCoord.xy).x;
+		//if(shadowZ < biasCoord.z){
+			//shadow = 0.0f;
+		//}
 	//}
+
+
 
 	vec3  incident = normalize ( lightPos - IN.worldPos );
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
@@ -106,6 +117,5 @@ void main(void)
 	
 	fragColor.a = albedo.a;
 	
-	//fragColor.rgb = objectPosition;
 	//.rgb = vec3(
 }
