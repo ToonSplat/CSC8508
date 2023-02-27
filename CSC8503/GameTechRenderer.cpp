@@ -22,7 +22,7 @@ using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
 
-#define SHADOWSIZE 4096
+#define SHADOWSIZE 8192
 
 
 
@@ -336,6 +336,7 @@ void GameTechRenderer::RenderFrame() {
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 {
+	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
 	glEnable(GL_CULL_FACE);
@@ -619,8 +620,8 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 100), Vector3(15, 20, 0), Vector3(0, 1, 0)); // lightPosition
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 500.0f, 1, 60.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 50), Vector3(15, 15, 0), Vector3(0, 1, 0)); // lightPosition
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 300.0f, 1, 60.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
