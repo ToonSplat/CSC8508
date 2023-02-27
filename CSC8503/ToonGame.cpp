@@ -15,7 +15,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(2), offline(offline)
 {
 	world = new ToonGameWorld();
 	ToonDebugManager::Instance().SetGameWorld(world);
@@ -26,7 +26,9 @@ ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
-
+	for (int i = 2; i <= localPlayerCount; i++) {
+		InputManager::GetInstance().GetInputs().emplace(i, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+	}
 	StartGame();
 }
 
@@ -35,7 +37,8 @@ ToonGame::~ToonGame()
 	delete world;
 	delete baseWeapon;
 	delete levelManager;
-	delete playerControl;
+	for (auto& [id, control] : playerControls)
+		delete control;
 	delete tieTeam;
 }
 
@@ -43,19 +46,26 @@ void ToonGame::StartGame() {
 	gameTime = 150.0f;
 	winner = nullptr;
 	allPlayers.clear();
+	for (auto& [id, control] : playerControls)
+		delete control;
+	playerControls.clear();
 	if (offline) {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
-		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
-		allPlayers.emplace(player);
-		playerControl = new PlayerControl();
-		player->SetWeapon(baseWeapon);
-		world->SetMainCamera(new ToonFollowCamera(world, player));
-		world->SetMinimapCamera(new ToonMinimapCamera(*player));
+		for (int i = 1; i <= localPlayerCount; i++) {
+			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+			players[i] = player;
+			allPlayers.emplace(player);
+			playerControls[i] = new PlayerControl();
+			player->SetWeapon(baseWeapon);
+			world->SetMainCamera(i, new ToonFollowCamera(world, player));
+			if(localPlayerCount == 1)
+				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+		}
 	}
 	else {
 		levelManager->ResetLevel();
-		world->SetMainCamera(new ToonObserverCamera());
+		world->SetMainCamera(1, new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
@@ -65,18 +75,25 @@ void ToonGame::UpdateGame(float dt){
 	if (CheckDebugKeys()) return;
 
 	world->UpdateWorld(dt);
-	UpdateCameras(dt, 1);
 
-	if (player) {
-		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
-		if (offline) {
-			player->MovementUpdate(dt, playerControl);
-			player->WeaponUpdate(dt, playerControl);
-		}
-		else {
-			player->SetAiming(playerControl->aiming);
+	for (auto& [id, player] : players) {
+		if (player) {
+			if (id == debugPlayerControl) {
+				UpdateCameras(dt, id);
+				InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id)); // TODO: Change from hard coded P1 control
+				if (offline) {
+					player->MovementUpdate(dt, playerControls[id]);
+					player->WeaponUpdate(dt, playerControls[id]);
+				}
+				else {
+					player->SetAiming(playerControls[id]->aiming);
+				}
+			}
 		}
 	}
+
+	if (NetworkingStatus::Server)
+		UpdateCameras(dt, 1);
 
 	UpdateAnimations(dt);
 
@@ -140,6 +157,12 @@ bool ToonGame::CheckDebugKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
 		ToonDebugManager::Instance().ToggleCollisionDisplay();
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Z)) {
+		debugPlayerControl = 1;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::X)) {
+		debugPlayerControl = 2;
+	}
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
 		gameTime = min(gameTime, 5.0f);
 	}
@@ -147,9 +170,10 @@ bool ToonGame::CheckDebugKeys() {
 }
 
 void ToonGame::UpdateCameras(float dt, int localPlayer) {
-	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
-	if (world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+	world->GetMainCamera(localPlayer)->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+	if(localPlayer == 1)
+		if (world->GetMinimapCamera())
+			world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
 }
 
 void ToonGame::UpdatePhysics(float dt) {

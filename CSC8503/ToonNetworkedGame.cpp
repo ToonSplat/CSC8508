@@ -16,7 +16,7 @@
 
 #define COLLISION_MSG 30
 
-ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer) : ToonGame(renderer, false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer) : ToonGame(renderer, 1, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -28,7 +28,7 @@ ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer) : ToonGame(rend
 	StartAsServer();
 }
 
-ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, int c, int d) : ToonGame(renderer, false) {
+ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, int c, int d) : ToonGame(renderer, 1, false) {
 	thisServer = nullptr;
 	thisClient = nullptr;
 
@@ -212,16 +212,16 @@ void ToonNetworkedGame::UpdateAsServer(float dt) {
 
 void ToonNetworkedGame::UpdateAsClient(float dt) {
 	thisClient->UpdateClient();
-	if (!player) return;
+	if (!players[1]) return;
 
 	ClientPacket newPacket;
 	newPacket.playerID = myID;
 	newPacket.lastID = myState;
-	newPacket.controls = *playerControl;
+	newPacket.controls = *playerControls[1];
 	//if (newPacket.controls.shooting) std::cout << "I sent that I am shooting. Hopefully it arrives!\n";
 	thisClient->SendPacket(newPacket, true);
-	playerControl->jumping = false;
-	playerControl->shooting = false;
+	playerControls[1]->jumping = false;
+	playerControls[1]->shooting = false;
 }
 
 void ToonNetworkedGame::BroadcastSnapshot(bool deltaFrame) {
@@ -344,10 +344,10 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		serverPlayers.emplace(receivedID, PlayerDetails(nullptr, nullptr, team));
 		Player* newPlayer = SpawnPlayer(receivedID, team);
 		if (myID == receivedID) {
-			player = newPlayer;
-			playerControl = new PlayerControl();
-			world->SetMainCamera(new ToonFollowCamera(world, player));
-			world->SetMinimapCamera(new ToonMinimapCamera(*player));
+			players[1] = newPlayer;
+			playerControls[1] = new PlayerControl();
+			world->SetMainCamera(1, new ToonFollowCamera(world, players[1]));
+			world->SetMinimapCamera(new ToonMinimapCamera(*players[1]));
 		}
 	}
 	else if (type == Player_Disconnected) {

@@ -41,9 +41,8 @@ namespace NCL {
             void Reload(float dt);
             void PickUpAmmo(int amt);
 
-            float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
-            void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
+            //void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
             void HideTrajectory();              //Trajectory
 
             Team* team;
