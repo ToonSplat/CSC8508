@@ -370,7 +370,7 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
-	switch (localPlayerCount) {
+	switch (gameWorld->GetMainCameraCount()) {
 	case 2:
 		RenderSplitScreen();
 		break;
@@ -389,12 +389,11 @@ void GameTechRenderer::RenderFrame() {
 
 void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 {
-	for (int i = 0; i < localPlayerCount; i++)
+	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, splitFBO[i]);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, splitColourTexture[i], 0);
-		currentRenderCamera = gameWorld->GetMainCamera(); // To be changed with camera map
+		currentRenderCamera = gameWorld->GetMainCamera(i + 1); 
 		DrawMainScene();
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -404,8 +403,7 @@ void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	//glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
-	currentRenderCamera = gameWorld->GetMainCamera(); // To be changed with camera map
+	currentRenderCamera = gameWorld->GetMainCamera(1); 
 	DrawMainScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
@@ -643,7 +641,7 @@ void GameTechRenderer::PresentScene()
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
-	switch (localPlayerCount) {
+	switch (gameWorld->GetMainCameraCount()) {
 	case 2:
 		PresentSplitScreen();
 		break;

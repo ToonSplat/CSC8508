@@ -61,6 +61,10 @@ namespace NCL
 				mainCameras[player] = newCamera;
 			}
 
+			int GetMainCameraCount() {
+				return mainCameras.size();
+			}
+
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
 			
