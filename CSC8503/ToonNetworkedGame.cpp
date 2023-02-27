@@ -1,16 +1,14 @@
 #include "ToonNetworkedGame.h"
-#include "NetworkPlayer.h"
 #include "ToonNetworkPackets.h"
 #include "ToonNetworkObject.h"
 #include "GameServer.h"
 #include "GameClient.h"
-#include "PhysicsObject.h"
-#include "RenderObject.h"
 #include "Player.h"
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "InputManager.h"
 #include "ToonDebugManager.h"
+#include <math.h>
 
 #include <fstream>
 
@@ -166,12 +164,12 @@ void ToonNetworkedGame::UpdateGame(float dt) {;
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
 				playersControl->shooting = false;
-				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * _Pi), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
 				dirOri.normalize();
 				orientation.normalize();
-				reactphysics3d::Vector3 position = player.second.player->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, player.second.player->GetScale().y * 1.5, 0);
+				reactphysics3d::Vector3 position = player.second.player->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(player.second.player->GetScale().y * 1.5), 0);
 				player.second.player->GetWeapon().FireBullet(position, orientation);
 				ShootPacket newPacket;
 				newPacket.playerID = player.first;

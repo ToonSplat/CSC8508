@@ -5,7 +5,6 @@
 #include "Vector4.h"
 #include "Quaternion.h"
 #include "Window.h"
-#include "PhysicsObject.h"
 #include "Debug.h"
 #include <vector>
 #include "PaintBallClass.h"

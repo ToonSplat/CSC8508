@@ -4,7 +4,6 @@
 #include "OGLTexture.h"
 #include "OGLMesh.h"
 
-#include "GameWorld.h"
 #include "ToonGameWorld.h"
 
 namespace NCL {

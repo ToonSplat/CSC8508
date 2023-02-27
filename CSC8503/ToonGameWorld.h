@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include "HitSphere.h"
 #include "Camera.h"
+#include "Debug.h"
 
 namespace NCL
 {
