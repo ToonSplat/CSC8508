@@ -1,7 +1,5 @@
 #include "GameTechRenderer.h"
-#include "GameObject.h"
 #include "ToonGameObject.h"
-#include "RenderObject.h"
 #include "ToonRenderObject.h"
 #include "ToonFollowCamera.h"
 #include "ToonLevelManager.h"

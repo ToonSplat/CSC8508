@@ -189,7 +189,7 @@ void ToonConfirmationScreen::PrintText(bool withBackground)
 		currString += textCharacter;
 	}
 	if (currString.length()) { multilineText.push_back(currString); }
-	int verticalPadding = 5.0f;
+	int verticalPadding = 5;
 	index				= 0;
 	for (std::string singleLineText : multilineText)
 	{
