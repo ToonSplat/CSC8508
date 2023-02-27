@@ -23,6 +23,12 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_ToonConfirmationScreen->delegate = this;
 }
 
+ToonMainMenu::~ToonMainMenu()
+{
+	delete m_SettingsScreenObject;
+	m_SettingsScreenObject = NULL;
+}
+
 
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
@@ -83,7 +89,7 @@ void ToonMainMenu::OnAwake()
 
 void ToonMainMenu::OnSleep()
 {
-
+	
 }
 
 bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenuCoordinates)
@@ -110,7 +116,9 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = GetSubMenuSceenObject();
 		break;
 	case SETTINGS:
-		return PushdownResult::NoChange;
+		*newState = GetSettingsScreenObject();
+		break;
+		//return PushdownResult::NoChange;
 	case CREDITS:
 		return PushdownResult::NoChange;
 	case QUIT:
@@ -181,6 +189,12 @@ void ToonMainMenu::WakeMouseOnMovement()
 	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 	m_MouseLastPosition = currentMousePosition;
+}
+
+ToonGameSettings* ToonMainMenu::GetSettingsScreenObject()
+{
+	if (!m_SettingsScreenObject) { m_SettingsScreenObject = new ToonGameSettings(m_Renderer, m_World, m_Window); }
+	return m_SettingsScreenObject;
 }
 
 PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()
