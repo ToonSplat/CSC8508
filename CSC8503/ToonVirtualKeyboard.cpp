@@ -204,29 +204,29 @@ void ToonVirtualKeyboard::UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys
 {
 	m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	UpdateMosePointerState(false);
-	int totalKeys		= m_Keys.size();
+	int totalKeys		= (int)m_Keys.size();
 	switch (key)
 	{
 		case KeyboardKeys::RIGHT:
 			m_CurrentSelectedKeyIndex.coloumn = (m_CurrentSelectedKeyIndex.coloumn + 1) % m_Keys[m_CurrentSelectedKeyIndex.row].size();
 			break;
 		case KeyboardKeys::LEFT:
-			m_CurrentSelectedKeyIndex.coloumn = (m_CurrentSelectedKeyIndex.coloumn - 1) < 0 ? m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn - 1;
+			m_CurrentSelectedKeyIndex.coloumn = (m_CurrentSelectedKeyIndex.coloumn - 1) < 0 ? (int)m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn - 1;
 			break;
 		case KeyboardKeys::UP:
 			m_CurrentSelectedKeyIndex.row	 -= 1;
-			m_CurrentSelectedKeyIndex.row	  = m_CurrentSelectedKeyIndex.row < 0 ? m_Keys.size() - 1 : m_CurrentSelectedKeyIndex.row;
-			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= m_Keys[m_CurrentSelectedKeyIndex.row].size() ? m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
+			m_CurrentSelectedKeyIndex.row	  = m_CurrentSelectedKeyIndex.row < 0 ? (int)m_Keys.size() - 1 : m_CurrentSelectedKeyIndex.row;
+			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= (int)m_Keys[m_CurrentSelectedKeyIndex.row].size() ? (int)m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
 			break;
 		case KeyboardKeys::DOWN:
 			m_CurrentSelectedKeyIndex.row	 += 1;
 			m_CurrentSelectedKeyIndex.row	  = m_CurrentSelectedKeyIndex.row > m_Keys.size() - 1 ? 0 : m_CurrentSelectedKeyIndex.row;
-			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= m_Keys[m_CurrentSelectedKeyIndex.row].size() ? m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
+			m_CurrentSelectedKeyIndex.coloumn = m_CurrentSelectedKeyIndex.coloumn >= m_Keys[m_CurrentSelectedKeyIndex.row].size() ? (int)m_Keys[m_CurrentSelectedKeyIndex.row].size() - 1 : m_CurrentSelectedKeyIndex.coloumn;
 			break;
 	}
 }
 
-bool ToonVirtualKeyboard::IsMouseInsideKeyboardArea(int mouseX, int mouseY)
+bool ToonVirtualKeyboard::IsMouseInsideKeyboardArea(float mouseX, float mouseY)
 {
 	return (mouseX >= m_Coordinates.origin.x && mouseX <= m_Coordinates.origin.x + m_Coordinates.size.x && mouseY >= m_Coordinates.origin.y && mouseY <= m_Coordinates.origin.y + m_Coordinates.size.y);
 }

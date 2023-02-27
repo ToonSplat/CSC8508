@@ -10,6 +10,7 @@
 #include "ToonFollowCamera.h"
 #include "ToonMinimapCamera.h"
 #include "InputManager.h"
+#include "ToonDebugManager.h"
 
 #include <fstream>
 
@@ -76,10 +77,28 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 		serverClosed -= dt;
 		if (serverClosed <= 0) {
 			thisServer->Shutdown();
+			ToonDebugManager::Instance().SetGameWorld(nullptr);
 			return PushdownResult::Pop;
 		}
 	}
-	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame) {
+
+	if (m_ShouldShowConfirmationScreen)
+	{
+		Window::GetWindow()->ShowOSPointer(true);
+		if (!m_ConfirmationScreen)
+		{
+			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
+			m_ToonConfirmationScreen->delegate = this;
+			m_ToonConfirmationScreen->m_ShouldRenderUpdates = false;
+		}
+		*newState = m_ToonConfirmationScreen;
+		return PushdownResult::Push;
+		//m_ToonConfirmationScreen->OnUpdate(dt, NULL);
+	}
+
+
+	if (m_MoveBackOnConfirmation)
+	{
 		if (thisServer && serverClosed == -256.0f) {
 			std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
 			thisServer->RemoveClients();
@@ -89,13 +108,31 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 		}
 		else if (thisClient && thisClient->IsConnected()) {
 			thisClient->DisconnectFromServer();
+			ToonDebugManager::Instance().SetGameWorld(nullptr);
 			return PushdownResult::Pop;
 		}
+	}
+
+
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame) {
+		m_ShouldShowConfirmationScreen = true;
+		//if (thisServer && serverClosed == -256.0f) {
+		//	std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
+		//	thisServer->RemoveClients();
+		//	// Give everyone 3 seconds to get cleanly kicked off server
+		//	serverClosed = 3.0f;
+		//	return PushdownResult::NoChange;
+		//}
+		//else if (thisClient && thisClient->IsConnected()) {
+		//	thisClient->DisconnectFromServer();
+		//	return PushdownResult::Pop;
+		//}
 	}
 	return ToonGame::OnUpdate(dt, newState);
 }
 
-void ToonNetworkedGame::UpdateGame(float dt) {
+void ToonNetworkedGame::UpdateGame(float dt) {;
+	ToonDebugManager::Instance().StartNetworking();
 	if(thisServer)
 		Debug::Print("Server", Vector2(0, 5));
 	else
@@ -154,11 +191,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		ServerStartGame();
 		return;
 	}
-	else {
-		if (player) {
-			InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
-		}
-	}
+	ToonDebugManager::Instance().EndNetworking();
 	if(!closeGame)
 		ToonGame::UpdateGame(dt);
 }
@@ -448,4 +481,22 @@ void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, PaintableObject* obje
 	else {
 		thisServer->SendPacketToClient(newPacket, playerID, true);
 	}
+}
+
+void NCL::CSC8503::ToonNetworkedGame::UpdateCall(float dt)
+{
+	UpdateGame(dt);
+}
+
+PushdownState::PushdownResult NCL::CSC8503::ToonNetworkedGame::DidSelectCancelButton()
+{
+	m_ShouldShowConfirmationScreen = false;
+	return PushdownResult::Pop;
+}
+
+PushdownState::PushdownResult NCL::CSC8503::ToonNetworkedGame::DidSelectOkButton()
+{
+	m_ShouldShowConfirmationScreen = false;
+	m_MoveBackOnConfirmation	   = true;
+	return PushdownResult::Pop;
 }

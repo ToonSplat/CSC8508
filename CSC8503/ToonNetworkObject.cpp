@@ -35,25 +35,25 @@ bool ToonNetworkObject::WritePacket(GamePacket** p, bool deltaFrame, int stateID
 void ToonNetworkObject::UpdateLastFullState() {
 	lastFullState.stateID++;
 	reactphysics3d::Vector3 position = object->GetRigidbody()->getTransform().getPosition();
-	lastFullState.position[0] = position.x * 1000;
-	lastFullState.position[1] = position.y * 1000;
-	lastFullState.position[2] = position.z * 1000;
+	lastFullState.position[0] = int(position.x * 1000);
+	lastFullState.position[1] = int(position.y * 1000);
+	lastFullState.position[2] = int(position.z * 1000);
 
 	reactphysics3d::Quaternion orientation = object->GetRigidbody()->getTransform().getOrientation();
-	lastFullState.orientation[0] = orientation.x * 1000;
-	lastFullState.orientation[1] = orientation.y * 1000;
-	lastFullState.orientation[2] = orientation.z * 1000;
-	lastFullState.orientation[3] = orientation.w * 1000;
+	lastFullState.orientation[0] = short(orientation.x * 1000);
+	lastFullState.orientation[1] = short(orientation.y * 1000);
+	lastFullState.orientation[2] = short(orientation.z * 1000);
+	lastFullState.orientation[3] = short(orientation.w * 1000);
 
 	reactphysics3d::Vector3 linVelocity = object->GetRigidbody()->getLinearVelocity();
-	lastFullState.linVelocity[0] = linVelocity.x * 1000;
-	lastFullState.linVelocity[1] = linVelocity.y * 1000;
-	lastFullState.linVelocity[2] = linVelocity.z * 1000;
+	lastFullState.linVelocity[0] = int(linVelocity.x * 1000);
+	lastFullState.linVelocity[1] = int(linVelocity.y * 1000);
+	lastFullState.linVelocity[2] = int(linVelocity.z * 1000);
 
 	reactphysics3d::Vector3 angVelocity = object->GetRigidbody()->getAngularVelocity();
-	lastFullState.angVelocity[0] = angVelocity.x * 1000;
-	lastFullState.angVelocity[1] = angVelocity.y * 1000;
-	lastFullState.angVelocity[2] = angVelocity.z * 1000;
+	lastFullState.angVelocity[0] = int(angVelocity.x * 1000);
+	lastFullState.angVelocity[1] = int(angVelocity.y * 1000);
+	lastFullState.angVelocity[2] = int(angVelocity.z * 1000);
 }
 
 //Client objects recieve these packets
@@ -132,7 +132,8 @@ bool ToonNetworkObject::WriteDeltaPacket(GamePacket** p, int stateID) {
 	dp->objectID = networkID;
 
 	reactphysics3d::Vector3 currentPos = 
-		reactphysics3d::Vector3(lastFullState.position[0], lastFullState.position[1], lastFullState.position[2]);
+		reactphysics3d::Vector3(reactphysics3d::decimal(lastFullState.position[0]), 
+			reactphysics3d::decimal(lastFullState.position[1]), reactphysics3d::decimal(lastFullState.position[2]));
 
 	reactphysics3d::Quaternion currentOrientation =
 		reactphysics3d::Quaternion(lastFullState.orientation[0] / 1000.0f, lastFullState.orientation[1] / 1000.0f,
