@@ -317,6 +317,9 @@ void GameTechRenderer::LoadSkybox() {
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
+
+	BuildObjectList();
+
 	if (gameWorld->GetMapCamera()) {
 		DrawMap();
 
@@ -346,13 +349,12 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BuildObjectList();
 	RenderShadowMap();
 	RenderSkybox();
 	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
 	RenderScene(sceneShader, viewMatrix, projMatrix);
 
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
@@ -396,10 +398,10 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 	ImGui::Begin("Debug Window");
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		ToonFollowCamera* followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera());
+		ToonFollowCamera* followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera(1));
 
-		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
-		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
+		Vector3 cPos = gameWorld->GetMainCamera(1)->GetPosition();
+		Vector3 cRot(gameWorld->GetMainCamera(1)->GetPitch(), gameWorld->GetMainCamera(1)->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
 		Vector3 cFollowOffset2 = followCamera->followOffset2;
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
@@ -409,9 +411,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		float smoothness = followCamera->GetSmoothness();
 		float cPitchOffset = followCamera->GetPitchOffset();
 
-		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld->GetMainCamera()->SetPosition(cPos);
-		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld->GetMainCamera()->SetPitch(cPos.x);
-		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld->GetMainCamera()->SetYaw(cPos.y);
+		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld->GetMainCamera(1)->SetPosition(cPos);
+		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld->GetMainCamera(1)->SetPitch(cPos.x);
+		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld->GetMainCamera(1)->SetYaw(cPos.y);
 		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
@@ -782,8 +784,8 @@ void GameTechRenderer::RenderSkybox() {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
 
 	BindShader(skyboxShader);
 
@@ -961,8 +963,8 @@ void GameTechRenderer::NewRenderLines() {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 

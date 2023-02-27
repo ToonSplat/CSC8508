@@ -17,7 +17,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	teams.emplace(2, new Team("The Purple Prawns", Vector3(1.0f, 0, 1.0f), 2));
 	teams.emplace(3, new Team("The Blue Bulldogs", Vector3(0.0f, 0, 1.0f), 3));
 	teams.emplace(4, new Team("The Orange Otters", Vector3(1.0f, 2.0f / 3.0f, 0), 4));
-	mainCamera = new Camera();
+	mainCameras[1] = new Camera();
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
@@ -25,7 +25,8 @@ NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 	ClearAndErase();
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
-	delete mainCamera;
+	for (auto& [id, camera] : mainCameras)
+		delete camera;
 	delete minimapCamera;
 	for (auto& [id, team] : teams)
 		delete team;

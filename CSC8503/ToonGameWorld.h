@@ -55,10 +55,10 @@ namespace NCL
 
 			void GetGameObjects(void) const;
 
-			Camera* GetMainCamera() const { return mainCamera; }
-			void SetMainCamera(Camera* newCamera) { 
-				delete mainCamera;
-				mainCamera = newCamera; 
+			Camera* GetMainCamera(int player) { return mainCameras[player]; }
+			void SetMainCamera(int player, Camera* newCamera) { 
+				delete mainCameras[player];
+				mainCameras[player] = newCamera;
 			}
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
@@ -87,7 +87,7 @@ namespace NCL
 			float interpolationFactor;
 
 		protected:
-			Camera* mainCamera;
+			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
 			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
