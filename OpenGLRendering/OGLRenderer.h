@@ -69,6 +69,7 @@ namespace NCL {
 			void BindTextureToShader(const TextureBase* t, const std::string& uniform, int texUnit) const;
 			void BindMesh(MeshGeometry* m);
 			void DrawBoundMesh(int subLayer = 0, int numInstances = 1);
+			OGLShader* GetBoundShader() const { return boundShader; }
 
 		protected:			
 			void BeginFrame()	override;

@@ -23,17 +23,13 @@ set(Header_Files
     "ToonGameWorld.h"
     "ToonRaycastCallback.h"
     "ToonUtils.h"
-    "ToonFollowCamera.h"
-    "ToonMinimapCamera.h"
-    "ToonObserverCamera.h"
     "PlayerControl.h"
     "ToonMapCamera.h"
-    "ToonMainMenu.h"
-    "ToonMinimapCamera.h"
-    "ToonTextInput.h"
-    "ToonVirtualKeyboard.h"
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
+    "ToonDebugManager.h"
+    "ToonConfirmationScreen.h"
+    "Toon2DCoordinates"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -55,15 +51,9 @@ set(Source_Files
     "ToonEventListener.cpp"
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
-    "ToonFollowCamera.cpp"
-    "ToonMinimapCamera.cpp"
-    "ToonObserverCamera.cpp"
-    "PlayerControl.cpp"
-    "ToonMapCamera.cpp"
-    "ToonMainMenu.cpp"
-    "ToonTextInput.cpp"
-    "ToonVirtualKeyboard.cpp"
     "ToonGameObjectAnim.cpp"
+    "ToonDebugManager.cpp"
+    "ToonConfirmationScreen.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -78,6 +68,7 @@ source_group("Networking Files" FILES ${Networking_Files})
 
 set(Rendering_Files
     "ToonMeshMaterial.h"
+    "ToonMeshMaterial.cpp"
     "ToonAssetManager.h"
     "ToonAssetManager.cpp"
     "GameTechRenderer.h"
@@ -98,6 +89,28 @@ set(Inputs_Files
 )
 source_group("Inputs Files" FILES ${Inputs_Files})
 
+set(Camera_Files
+    "ToonFollowCamera.h"
+    "ToonMinimapCamera.h"
+    "ToonObserverCamera.h"
+    "ToonMapCamera.h"
+    "ToonFollowCamera.cpp"
+    "ToonMinimapCamera.cpp"
+    "ToonObserverCamera.cpp"
+    "ToonMapCamera.cpp"
+)
+source_group("Camera Files" FILES ${Camera_Files})
+
+set(Menu_Files
+    "ToonMainMenu.h"
+    "ToonTextInput.h"
+    "ToonVirtualKeyboard.h"
+    "ToonMainMenu.cpp"
+    "ToonTextInput.cpp"
+    "ToonVirtualKeyboard.cpp"
+)
+source_group("Menu Files" FILES ${Menu_Files})
+
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
 list(APPEND Source_Files "GameTechVulkanRenderer.cpp")
@@ -112,6 +125,8 @@ set(ALL_FILES
     ${Networking_Files}
     ${Rendering_Files}
     ${Inputs_Files}
+    ${Camera_Files}
+    ${Menu_Files}
 )
 
 if(USE_VULKAN)
@@ -121,6 +136,8 @@ if(USE_VULKAN)
         ${Networking_Files}
         ${Rendering_Files}
         ${Inputs_Files}
+        ${Camera_Files}
+        ${Menu_Files}
         ${SHADER_FILES}
     )
 

@@ -25,12 +25,72 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	if (!LoadAnim("Player_Run_Aim_B")) return;
 	if (!LoadAnim("Player_Run_Aim_BL")) return;
 	if (!LoadAnim("Player_Run_Aim_BR")) return;
+
 	PlayAnim("Player_Idle");
 }
 
 Player::~Player() 
 {
 	team->RemovePlayer();
+}
+
+void Player::Draw(OGLRenderer& r, bool isMinimap)
+{
+	if (!renderObject || !renderObject->GetMesh())
+		return;
+
+	if (isMinimap)
+	{
+		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
+		r.BindMesh(minimapMesh);
+
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+
+		return;
+	}
+
+	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
+	OGLShader* shader = r.GetBoundShader();
+	if (shader == (OGLShader*)renderObject->GetShader()) {
+
+		const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
+		const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
+
+		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+
+		int j = glGetUniformLocation(shader->GetProgramID(), "joints");
+		glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
+
+		frameMatrices.clear();
+	}
+
+	r.BindMesh(mesh);
+	for (int i = 0; i < (int)mesh->GetSubMeshCount(); i++)
+	{
+		//if (i == 4)
+		//{
+		//	int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
+		//	if (hasVColLocation != -1)
+		//	{
+		//		std::vector<Vector4> newVertexColours = renderObject->GetMesh()->GetColourData();
+		//		for (size_t i = 0; i < newVertexColours.size() && (int)newVertexColours.size() > 0; i++)
+		//			newVertexColours[i] = Debug::WHITE;
+		//	
+		//		//mesh->SetVertexColours(newVertexColours);
+		//		//glUniform1i(hasVColLocation, 1);
+		//	}
+		//}
+
+		if (renderObject->GetMaterial() != nullptr)
+		{
+			if ((int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+		}
+
+		r.DrawBoundMesh(i);
+	}
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
