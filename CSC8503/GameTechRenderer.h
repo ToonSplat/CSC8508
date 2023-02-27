@@ -35,13 +35,19 @@ namespace NCL {
 
 
 			void RenderFrame()	override;
+
+			void PresentSinglePlayer();
+			void Present2Player();
+			void Present3Player();
+			void Present4Player();
+
 			void RenderImGUI();
 
 			void PresentScene();
 
 			void PresentGameScene();
 
-			void PresentMinimap(int modelLocation);
+			void PresentMinimap();
 
 			void DrawMinimap();
 			void DrawScoreBar();
@@ -156,6 +162,8 @@ namespace NCL {
 			GLuint currentAtomicCPU;
 			GLuint currentAtomicGPU;
 			GLuint curretAtomicReset;
+
+			int localPlayerCount = 1;
 
 			
 		};

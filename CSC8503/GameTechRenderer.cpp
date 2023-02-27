@@ -317,12 +317,14 @@ void GameTechRenderer::LoadSkybox() {
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
-
-	DrawMainScene();
 	if (gameWorld->GetMapCamera()) {
 		DrawMap();
 
 	}
+
+
+	DrawMainScene();
+	
 	if (gameWorld->GetMinimapCamera())
 	{
 		
@@ -334,6 +336,8 @@ void GameTechRenderer::RenderFrame() {
 	RenderImGUI();
 	ToonDebugManager::Instance().EndRendering();
 }
+
+
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene()
 {
@@ -570,18 +574,47 @@ void GameTechRenderer::PresentScene()
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
-	PresentGameScene();
+	switch (localPlayerCount) {
+	case 1:
+		PresentSinglePlayer();
+		break;
+	case 2:
+		Present2Player();
+		break;
+	case 3:
+		Present3Player();
+		break;
+	case 4:
+		Present4Player();
+		break;
+	}
+
 	
-	PresentMinimap(modelLocation);
 
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
 
 	}
-	
-	
+
 }
 
+void NCL::CSC8503::GameTechRenderer::PresentSinglePlayer()
+{
+	PresentGameScene();
+	PresentMinimap();
+}
+
+void NCL::CSC8503::GameTechRenderer::Present2Player()
+{
+}
+
+void NCL::CSC8503::GameTechRenderer::Present3Player()
+{
+}
+
+void NCL::CSC8503::GameTechRenderer::Present4Player()
+{
+}
 void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -647,9 +680,10 @@ void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels
 	}
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
+void NCL::CSC8503::GameTechRenderer::PresentMinimap()
 {
 	if (!gameWorld->GetMinimapCamera()) return;
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
