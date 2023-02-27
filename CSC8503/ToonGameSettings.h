@@ -2,16 +2,18 @@
 #include "PushdownMachine.h"
 #include "PushdownState.h"
 #include "GameTechRenderer.h"
+#include "ToonToggleButton.h"
 
 using namespace NCL;
-using namespace CSC8503;
+//using namespace CSC8503;
 
 class ToonGameSettings : public PushdownState
 {
 	private:
 		GameTechRenderer* m_Renderer;
 		ToonGameWorld*	  m_World;
-		Window*			  m_Window = NULL;
+		Window*			  m_Window					 = NULL;
+		ToonToggleButton* m_InvertCameraToggleButton = NULL;
 
 	public:
 		ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);

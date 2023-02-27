@@ -31,6 +31,7 @@ set(Header_Files
     "ToonConfirmationScreen.h"
     "Toon2DCoordinates.h"
     "ToonGameSettings.h"
+    "ToonToggleButton.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -56,6 +57,7 @@ set(Source_Files
     "ToonDebugManager.cpp"
     "ToonConfirmationScreen.cpp"
     "ToonGameSettings.cpp"
+    "ToonToggleButton.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files

@@ -22,4 +22,12 @@ struct Coordinates
 		origin = Vector2(0.0f, 0.0f);
 		size   = Vector2(0.0f, 0.0f);
 	}
+
+	void ScaleCoordinatesBy(float scale)
+	{
+		origin.x -= scale;
+		origin.y -= scale;
+		size.x	 += 2 * scale;
+		size.y	 += 2 * scale;
+	}
 };
