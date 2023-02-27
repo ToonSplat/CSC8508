@@ -54,6 +54,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
+	
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
@@ -618,8 +619,8 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(lightPosition, Vector3(0, 0, 0), Vector3(0, 1, 0));
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 500.0f, 1, 45.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 100), Vector3(15, 20, 0), Vector3(0, 1, 0)); // lightPosition
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 500.0f, 1, 60.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
@@ -770,6 +771,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		int hasTexFlag = ((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() || (*i).GetRenderObject()->GetMaterial() != nullptr) ? 1 : 0;
 		glUniform1i(hasTexLocation, hasTexFlag);
 
+		
 		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
 }
