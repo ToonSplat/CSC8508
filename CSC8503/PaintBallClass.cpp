@@ -6,7 +6,7 @@
 #include "ToonRaycastCallback.h"
 #include "ToonGameWorld.h"
 #include "ToonLevelManager.h"
-#include <math.h>
+#include "Maths.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -82,7 +82,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	{
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 					reactphysics3d::Vector3 dirOri = orientation;
 					dirOri.y = 0;
 					dirOri.normalize();
@@ -105,7 +105,7 @@ void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
 {
 	const float PAINTBALL_RADIUS = 0.25f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);;
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);;
 	orientation.normalize();
 	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 1, 0);
 	//reactphysics3d::Vector3 forceVector = orientation * force;
