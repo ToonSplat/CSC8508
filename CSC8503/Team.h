@@ -22,6 +22,12 @@ namespace NCL {
 
 			void SetPercentageOwned(float newPercentage) { percentageOwned = newPercentage; }
 			float GetPercentageOwned() const { return percentageOwned; }
+
+			static const Vector3 T_GREEN_GOBLINS;
+			static const Vector3 T_PURPLE_PRAWNS;
+			static const Vector3 T_BLUE_BULLDOGS;
+			static const Vector3 T_ORANGE_OTTERS;
+
 		private:
 			int teamID;
 			int playerCount;
