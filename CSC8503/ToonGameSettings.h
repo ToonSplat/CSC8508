@@ -24,13 +24,13 @@ class ToonGameSettings : public PushdownState
 		bool			  hasToggle;
 		ToonToggleButton* toggleButton = NULL;
 
-		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, Coordinates toggleCoord = Coordinates())
+		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, Coordinates toggleCoord = Coordinates())
 		{
 			coordinates					  = coord;
 			text						  = txt;
 			this->hasToggle				  = hasToggle;
-			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 10.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
-			toggleButton				  = new ToonToggleButton(toggleCoordinates, true);
+			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 20.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
+			toggleButton				  = new ToonToggleButton(toggleCoordinates, toggleState, true);
 		}
 	};
 
@@ -45,7 +45,7 @@ class ToonGameSettings : public PushdownState
 		Vector2							   m_MouseLastPosition	   = Vector2();
 		std::vector<SettingsDataStructure> m_SettingsData		   = {
 																		SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera"),
-																		SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow"),
+																		SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, ToggleButtonStates::ToggleOn),
 																		SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
 																		SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
 																	 };

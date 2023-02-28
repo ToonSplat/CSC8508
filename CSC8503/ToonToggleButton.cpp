@@ -9,14 +9,15 @@ void ToonToggleButton::DrawButton()
 }
 
 
-ToonToggleButton::ToonToggleButton(Coordinates coordinates, bool shouldDrawValue)
+ToonToggleButton::ToonToggleButton(Coordinates coordinates, ToggleButtonStates currentState, bool shouldDrawValue)
 {
 	m_CurrentState	   = ToggleButtonStates::ToggleOff;
 	m_Coordinates	   = coordinates;
 	m_HalfSize		   = m_Coordinates;
 	m_HalfSize.size	   = m_Coordinates.size / 2;
 	m_ShouldDrawValue  = shouldDrawValue;
-	m_ToggleButtonHead = new ToonToggleButtonHead(m_HalfSize);
+	m_CurrentState	   = currentState;
+	m_ToggleButtonHead = new ToonToggleButtonHead(m_HalfSize, m_CurrentState);
 }
 
 ToonToggleButton::~ToonToggleButton()

@@ -37,11 +37,11 @@ class ToonToggleButtonHead
 		const float		   m_AnimationSpeed = 0.5f;
 		
 	public:
-		ToonToggleButtonHead(Coordinates coordinates)
+		ToonToggleButtonHead(Coordinates coordinates, ToggleButtonStates initialState)
 		{
 			m_StartLocation		 = coordinates.origin;
-			m_EndLoacation		 = coordinates.origin + coordinates.size;
-			m_CurrentLocation	 = m_StartLocation;
+			m_EndLoacation		 = Vector2(coordinates.origin.x + coordinates.size.x, coordinates.origin.y);
+			m_CurrentLocation	 = initialState == ToggleButtonStates::ToggleOff ? m_StartLocation : m_EndLoacation;
 			m_Size				 = coordinates.size;
 			m_AnimationDirection = AnimationDirection::NoAnimation;
 		}
@@ -96,7 +96,7 @@ class ToonToggleButton
 		bool m_IsActive = false;
 
 	public:
-		ToonToggleButton(Coordinates coordinates, bool shouldDrawValue = false);
+		ToonToggleButton(Coordinates coordinates, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false);
 		~ToonToggleButton();
 		ToggleButtonStates GetButtonState();
 		void UpdateButtonDraw();
