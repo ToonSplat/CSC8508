@@ -5,13 +5,10 @@ ToonGameSettings::ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* wo
 	m_Renderer = renderer;
 	m_Window   = win;
 	m_World	   = world;
-	m_InvertCameraToggleButton = new ToonToggleButton(Coordinates(Vector2(50.0f, 40.0f), Vector2(10.0f, 10.0f)), true);
 }
 
 ToonGameSettings::~ToonGameSettings()
 {
-	delete m_InvertCameraToggleButton;
-	m_InvertCameraToggleButton = NULL;
 }
 
 PushdownState::PushdownResult ToonGameSettings::OnUpdate(float dt, PushdownState** newState)
@@ -19,6 +16,8 @@ PushdownState::PushdownResult ToonGameSettings::OnUpdate(float dt, PushdownState
 	m_Renderer->Update(dt);
 	m_Renderer->Render();
 	Debug::UpdateRenderables(dt);
+	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
+	HandleKeyboardAndMouseEvents();
 	DrawScreen();
 	return PushdownResult::NoChange;
 }
@@ -33,6 +32,69 @@ void ToonGameSettings::OnSleep()
 
 void ToonGameSettings::DrawScreen()
 {
-	Debug::Print("Test Settings screen", Vector2(20.0f, 20.0f), Debug::WHITE);
-	m_InvertCameraToggleButton->UpdateButtonDraw();
+	int index = 0;
+	for (SettingsDataStructure data : m_SettingsData)
+	{
+		Debug::Print(data.text, data.coordinates.origin, index == m_CurrentSelectedIndex ? m_SelectedColour : m_NonSelectedColour);
+		if (data.hasToggle) { data.toggleButton->UpdateButtonDraw(); }
+		data.toggleButton->m_IsActive = m_CurrentSelectedIndex == index;
+		index++;
+	}
+}
+
+void ToonGameSettings::UpdateCurrentSelectedIndex(int incrementBy)
+{
+	m_CurrentSelectedIndex += incrementBy;
+	m_CurrentSelectedIndex  = m_CurrentSelectedIndex < 0 ? m_SettingsData.size() - 1 : m_CurrentSelectedIndex;
+	m_CurrentSelectedIndex  = m_CurrentSelectedIndex > m_SettingsData.size() - 1 ? 0 : m_CurrentSelectedIndex;
+}
+
+void ToonGameSettings::HandleKeyboardAndMouseEvents()
+{
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown() || InputManager::GetInstance().GetInputs()[1]->IsPushingUp()) { UpdateMosePointerState(false); }
+
+	if (!m_IsMousePointerVisible)
+	{
+		int increment = 0;
+		if		(InputManager::GetInstance().GetInputs()[1]->IsPushingDown()) { increment =  1; }
+		else if (InputManager::GetInstance().GetInputs()[1]->IsPushingUp())   { increment = -1; }
+		UpdateCurrentSelectedIndex(increment);
+	}
+	else
+	{
+		Vector2 mousePosition			  = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
+		Vector2 windowSize				  = m_Window->GetWindow()->GetScreenSize();
+		float	y						  = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
+		float	x						  = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
+		Vector2 mousePositionWithinBounds = Vector2(x, y);
+		int index = 0;
+		for (SettingsDataStructure data : m_SettingsData)
+		{
+			if (isInside(mousePositionWithinBounds, data.coordinates))
+			{
+				m_CurrentSelectedIndex = index;
+			}
+			index++;
+		}
+	}
+}
+
+void ToonGameSettings::UpdateMosePointerState(bool isVisible)
+{
+	Window::GetWindow()->ShowOSPointer(isVisible);
+	m_IsMousePointerVisible = isVisible;
+}
+
+void ToonGameSettings::WakeMouseOnMovement()
+{
+	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
+	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
+	m_MouseLastPosition = currentMousePosition;
+}
+
+bool ToonGameSettings::isInside(Vector2 mousePosition, Coordinates menuDataCoordinates)
+{
+	float widthConstraint  = menuDataCoordinates.origin.x + menuDataCoordinates.size.x;
+	float heightConstraint = menuDataCoordinates.origin.y + menuDataCoordinates.size.y;
+	return (mousePosition.x >= menuDataCoordinates.origin.x && mousePosition.x <= widthConstraint && mousePosition.y >= menuDataCoordinates.origin.y && mousePosition.y <= heightConstraint);
 }

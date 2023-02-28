@@ -31,13 +31,13 @@ ToggleButtonStates ToonToggleButton::GetButtonState()
 
 void ToonToggleButton::UpdateButtonDraw()
 {
-	HandleEvents();
+	if (m_IsActive) { HandleEvents(); }
 	DrawButton();
 }
 
 void ToonToggleButton::HandleEvents()
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsShooting())
+	if (InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		ToggleCurrentState();
 		m_ToggleButtonHead->TriggerAnimation();

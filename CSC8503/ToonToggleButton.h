@@ -91,6 +91,9 @@ class ToonToggleButton
 		bool				  m_ShouldDrawValue	 = false;
 		bool				  m_IsAnimating		 = false;
 		ToonToggleButtonHead* m_ToggleButtonHead = NULL;
+		
+	public:
+		bool m_IsActive = false;
 
 	public:
 		ToonToggleButton(Coordinates coordinates, bool shouldDrawValue = false);

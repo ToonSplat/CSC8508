@@ -9,11 +9,46 @@ using namespace NCL;
 
 class ToonGameSettings : public PushdownState
 {
+	enum SettingsScreenStates
+	{
+		InvertCamera,
+		Shadow,
+		WindowSize,
+		SettingsBack
+	};
+
+	struct SettingsDataStructure
+	{
+		Coordinates		  coordinates;
+		std::string		  text;
+		bool			  hasToggle;
+		ToonToggleButton* toggleButton = NULL;
+
+		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, Coordinates toggleCoord = Coordinates())
+		{
+			coordinates					  = coord;
+			text						  = txt;
+			this->hasToggle				  = hasToggle;
+			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 10.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
+			toggleButton				  = new ToonToggleButton(toggleCoordinates, true);
+		}
+	};
+
 	private:
-		GameTechRenderer* m_Renderer;
-		ToonGameWorld*	  m_World;
-		Window*			  m_Window					 = NULL;
-		ToonToggleButton* m_InvertCameraToggleButton = NULL;
+		GameTechRenderer*				   m_Renderer;
+		ToonGameWorld*					   m_World;
+		Window*							   m_Window				   = NULL;
+		Vector4							   m_SelectedColour		   = Debug::GREEN;
+		Vector4							   m_NonSelectedColour	   = Debug::WHITE;
+		int								   m_CurrentSelectedIndex  = 0;
+		bool							   m_IsMousePointerVisible = false;
+		Vector2							   m_MouseLastPosition	   = Vector2();
+		std::vector<SettingsDataStructure> m_SettingsData		   = {
+																		SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera"),
+																		SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow"),
+																		SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
+																		SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
+																	 };
 
 	public:
 		ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
@@ -24,4 +59,9 @@ class ToonGameSettings : public PushdownState
 
 	private:
 		void DrawScreen();
+		void UpdateCurrentSelectedIndex(int incrementBy);
+		void HandleKeyboardAndMouseEvents();
+		void UpdateMosePointerState(bool isVisible);
+		void WakeMouseOnMovement();
+		bool isInside(Vector2 mousePosition, Coordinates menuDataCoordinates);
 };

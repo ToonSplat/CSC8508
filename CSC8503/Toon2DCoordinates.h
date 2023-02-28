@@ -30,4 +30,9 @@ struct Coordinates
 		size.x	 += 2 * scale;
 		size.y	 += 2 * scale;
 	}
+
+	bool operator==(Coordinates& otherCoordinate)
+	{
+		return (origin.x == otherCoordinate.origin.x && origin.y == otherCoordinate.origin.y && size.x == otherCoordinate.size.x && size.y == otherCoordinate.size.y);
+	}
 };
