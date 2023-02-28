@@ -25,8 +25,7 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
-{
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()){
 	ToonAssetManager::Instance().LoadAssets();
 	SetupStuffs();
 	team1Percentage = 0;
@@ -40,8 +39,7 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteFramebuffers(1, &shadowFBO);
 }
 
-void NCL::CSC8503::GameTechRenderer::SetupStuffs()
-{
+void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	glEnable(GL_DEPTH_TEST);
 	debugShader = ToonAssetManager::Instance().GetShader("debug");
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
@@ -114,11 +112,9 @@ void GameTechRenderer::RenderFrame() {
 	DrawMainScene();
 	if (gameWorld->GetMapCamera()) {
 		DrawMap();
-
 	}
 	if (gameWorld->GetMinimapCamera())
 	{
-
 		DrawMinimap();
 	}
 	PresentScene();
@@ -127,8 +123,7 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().EndRendering();
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMainScene()
-{
+void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	glEnable(GL_DEPTH_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
@@ -247,8 +242,7 @@ void GameTechRenderer::RenderScene() {
 	}
 }
 
-void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)
-{
+void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
 	BindShader(shader);
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr) continue;
@@ -309,9 +303,7 @@ void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4
 	}
 }
 
-void GameTechRenderer::PresentScene()
-{
-
+void GameTechRenderer::PresentScene(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -340,8 +332,7 @@ void GameTechRenderer::PresentScene()
 	}
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentGameScene()
-{
+void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, sceneColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
@@ -350,8 +341,7 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
-{
+void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation){
 	if (!gameWorld->GetMinimapCamera()) return;
 	glEnable(GL_STENCIL_TEST);
 
@@ -381,8 +371,7 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMinimap()
-{
+void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
 
@@ -400,8 +389,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMap()
-{
+void NCL::CSC8503::GameTechRenderer::DrawMap(){
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -568,8 +556,7 @@ void GameTechRenderer::LoadSkybox() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::RenderImGUI()
-{
+void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -717,8 +704,7 @@ void GameTechRenderer::SortObjectList() {
 
 }
 
-void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader)
-{
+void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader){
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
 
@@ -782,8 +768,7 @@ void GameTechRenderer::NewRenderLines() {
 	glBindVertexArray(0);
 }
 
-void GameTechRenderer::NewRenderLinesOnOrthographicView()
-{
+void GameTechRenderer::NewRenderLinesOnOrthographicView(){
 	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetOrthographicViewLines();
 	if (lines.empty()) {
 		return;
@@ -866,8 +851,7 @@ void GameTechRenderer::NewRenderText() {
 	glBindVertexArray(0);
 }
 
-void GameTechRenderer::GenerateAtomicBuffer()
-{
+void GameTechRenderer::GenerateAtomicBuffer(){
 	glGenBuffers(1, &atomicsBuffer[0]);
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
@@ -892,8 +876,7 @@ void GameTechRenderer::GenerateAtomicBuffer()
 }
 	
 	
-void GameTechRenderer::RetrieveAtomicValues()
-{
+void GameTechRenderer::RetrieveAtomicValues(){
 	GLuint pixelCount[ATOMIC_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
@@ -913,8 +896,7 @@ void GameTechRenderer::RetrieveAtomicValues()
 	ResetAtomicBuffer();
 }
 
-void GameTechRenderer::ResetAtomicBuffer()
-{
+void GameTechRenderer::ResetAtomicBuffer(){
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
 	GLuint a[ATOMIC_COUNT];
