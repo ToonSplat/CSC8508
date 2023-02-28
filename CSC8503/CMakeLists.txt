@@ -4,6 +4,7 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
+    "ApplyPaint.h"
     "PaintableObject.h"
     "Team.h"
     "PaintBallClass.h"
@@ -30,6 +31,7 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "ApplyPaint.cpp"
     "Main.cpp"
     "PaintableObject.cpp"
     "Team.cpp"
