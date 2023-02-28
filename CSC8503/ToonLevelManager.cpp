@@ -417,6 +417,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRenderObject()->GetMesh()->UploadToGPU();
 
 	gameWorld->AddGameObject(player);
+	gameWorld->AddPaintableObject(player);
 
 	return player;
 }
