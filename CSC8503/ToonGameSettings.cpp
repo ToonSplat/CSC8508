@@ -9,6 +9,7 @@ ToonGameSettings::ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* wo
 
 ToonGameSettings::~ToonGameSettings()
 {
+	FreeAllToonToggleButtons();
 }
 
 PushdownState::PushdownResult ToonGameSettings::OnUpdate(float dt, PushdownState** newState)
@@ -112,4 +113,16 @@ PushdownState::PushdownResult ToonGameSettings::HandleNavigation(PushdownState**
 		}
 	}
 	return PushdownState::PushdownResult::NoChange;
+}
+
+void ToonGameSettings::FreeAllToonToggleButtons()
+{
+	for (SettingsDataStructure data : m_SettingsData)
+	{
+		if (data.toggleButton)
+		{
+			delete(data.toggleButton);
+			data.toggleButton = NULL;
+		}
+	}
 }

@@ -65,4 +65,5 @@ class ToonGameSettings : public PushdownState
 		void WakeMouseOnMovement();
 		bool isInside(Vector2 mousePosition, Coordinates menuDataCoordinates);
 		PushdownState::PushdownResult HandleNavigation(PushdownState** newState);
+		void FreeAllToonToggleButtons();
 };
