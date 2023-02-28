@@ -4,12 +4,9 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
+    "ApplyPaint.h"
     "PaintableObject.h"
-    "StateGameObject.h"
     "Team.h"
-    "TutorialGame.h"
     "PaintBallClass.h"
     "PaintBallProjectile.h"
     "Player.h"
@@ -36,13 +33,10 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "ApplyPaint.cpp"
     "Main.cpp"
-    "NetworkedGame.cpp"
-    "NetworkPlayer.cpp"
     "PaintableObject.cpp"
-    "StateGameObject.cpp"
     "Team.cpp"
-    "TutorialGame.cpp"
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"

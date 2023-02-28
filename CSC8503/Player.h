@@ -5,21 +5,19 @@
 #include "Vector4.h"
 #include "Quaternion.h"
 #include "Window.h"
-#include "PhysicsObject.h"
 #include "Debug.h"
 #include <vector>
 #include "PaintBallClass.h"
 #include "PlayerControl.h"
+#include "ApplyPaint.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public ToonGameObjectAnim {
+class Player : public ToonGameObjectAnim, public ApplyPaint {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
-
-	virtual void Draw(OGLRenderer& r, bool isMinimap = false) override;
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);

@@ -3,8 +3,6 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "OGLMesh.h"
-
-#include "GameWorld.h"
 #include "ToonGameWorld.h"
 
 namespace NCL {
@@ -61,7 +59,7 @@ namespace NCL {
 			void RenderShadowMap();
 
 			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
-			void PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader);
+			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
 			void RenderSkybox();
 
