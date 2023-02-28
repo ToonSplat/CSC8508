@@ -78,7 +78,7 @@ namespace NCL
 			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 			bool LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
-			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
+			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);			
 
 			Axes selectedAxes = Axes::None;
 
