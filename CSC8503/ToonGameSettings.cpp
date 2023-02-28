@@ -19,7 +19,7 @@ PushdownState::PushdownResult ToonGameSettings::OnUpdate(float dt, PushdownState
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 	HandleKeyboardAndMouseEvents();
 	DrawScreen();
-	return PushdownResult::NoChange;
+	return HandleNavigation(newState);
 }
 
 void ToonGameSettings::OnAwake()
@@ -97,4 +97,19 @@ bool ToonGameSettings::isInside(Vector2 mousePosition, Coordinates menuDataCoord
 	float widthConstraint  = menuDataCoordinates.origin.x + menuDataCoordinates.size.x;
 	float heightConstraint = menuDataCoordinates.origin.y + menuDataCoordinates.size.y;
 	return (mousePosition.x >= menuDataCoordinates.origin.x && mousePosition.x <= widthConstraint && mousePosition.y >= menuDataCoordinates.origin.y && mousePosition.y <= heightConstraint);
+}
+
+PushdownState::PushdownResult ToonGameSettings::HandleNavigation(PushdownState** newState)
+{
+	if (InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	{
+		switch (m_CurrentSelectedIndex)
+		{
+			case SettingsScreenStates::SettingsBack:
+				return PushdownState::PushdownResult::Pop;
+			case SettingsScreenStates::WindowSize:
+				break;
+		}
+	}
+	return PushdownState::PushdownResult::NoChange;
 }
