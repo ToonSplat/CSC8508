@@ -89,10 +89,10 @@ void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	objectsToDelete.insert(hitSphere);
 }
 
-void ToonGameWorld::AddPaintableObject(PaintableObject* paintableObject) {
+void ToonGameWorld::AddPaintableObject(ToonGameObject* paintableObject) {
 	paintableObjects.emplace(paintableObject);
 }
-void ToonGameWorld::RemovePaintableObject(PaintableObject* paintableObject) {
+void ToonGameWorld::RemovePaintableObject(ToonGameObject* paintableObject) {
 	paintableObjects.erase(paintableObject);
 	objectsToDelete.insert(paintableObject);
 }

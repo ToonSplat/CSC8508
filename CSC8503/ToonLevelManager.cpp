@@ -395,6 +395,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->GetRenderObject()->SetMesh(teamPlayerMesh);	//Eg: player_mesh_1, player_mesh_2, etc
 
 	gameWorld->AddGameObject(player);
+	gameWorld->AddPaintableObject(player);
 
 	return player;
 }

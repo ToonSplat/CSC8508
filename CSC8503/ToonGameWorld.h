@@ -48,9 +48,9 @@ namespace NCL
 			void RemoveHitSphere(HitSphere* hitSphere);
 			std::unordered_set<HitSphere*> GetHitSpheres(void) const { return activeHitSpheres; }
 
-			void AddPaintableObject(PaintableObject* paintableObject);
-			void RemovePaintableObject(PaintableObject* paintableObject);
-			std::unordered_set<PaintableObject*> GetPaintableObjects(void) const { return paintableObjects; }
+			void AddPaintableObject(ToonGameObject* paintableObject);
+			void RemovePaintableObject(ToonGameObject* paintableObject);
+			std::unordered_set<ToonGameObject*> GetPaintableObjects(void) const { return paintableObjects; }
 
 			void DeleteMarkedObjects();
 
@@ -98,7 +98,7 @@ namespace NCL
 			std::vector<ToonGameObject*> gameObjects;
 			std::unordered_set<PaintBallProjectile*> activePaintballs;
 			std::unordered_set<HitSphere*> activeHitSpheres;
-			std::unordered_set<PaintableObject*> paintableObjects;
+			std::unordered_set<ToonGameObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
 			std::map<int, Team*> teams;
