@@ -78,8 +78,8 @@ void ToonGame::UpdateGame(float dt){
 
 	for (auto& [id, player] : players) {
 		if (player) {
+			UpdateCameras(dt, id);
 			if (id == debugPlayerControl) {
-				UpdateCameras(dt, id);
 				InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id)); // TODO: Change from hard coded P1 control
 				if (offline) {
 					player->MovementUpdate(dt, playerControls[id]);
