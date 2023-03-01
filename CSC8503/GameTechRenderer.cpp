@@ -122,7 +122,8 @@ void GameTechRenderer::RenderFrame() {
 		break;
 	}
 
-	DrawMap();
+	if (gameWorld->MapNeedsUpdating())
+		DrawMap();
 	
 	PresentScene();
 
@@ -930,6 +931,7 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
+	if (!gameWorld->MapNeedsUpdating()) return;
 	GLuint pixelCount[ATOMIC_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
@@ -958,6 +960,8 @@ void GameTechRenderer::ResetAtomicBuffer(){
 		a[i] = 0;
 	}
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
+
+	gameWorld->MapChecked();
 
 }
 
