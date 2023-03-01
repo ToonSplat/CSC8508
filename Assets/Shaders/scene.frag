@@ -12,7 +12,7 @@ uniform int impactPointCount;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
-uniform sampler2DShadow shadowTex; // Was sampler2DShadow
+uniform sampler2DShadow shadowTex;
 
 uniform vec3	lightPos;
 uniform float	lightRadius;
@@ -69,17 +69,6 @@ void main(void)
 		shadow = textureProj(shadowTex , IN.shadowProj) * 0.7f;
 	}
 
-	//vec3 shadowNDC = IN.shadowProj.xyz / IN.shadowProj.w;
-	//if(abs(shadowNDC.x) < 1.0f && abs(shadowNDC.y) < 1.0f && abs(shadowNDC.z) < 1.0f){
-		//vec3 biasCoord = shadowNDC * 0.5f + 0.5f;
-		//float shadowZ = texture(shadowTex, biasCoord.xy).x;
-		//if(shadowZ < biasCoord.z){
-			//shadow = 0.0f;
-		//}
-	//}
-
-
-
 	vec3  incident = normalize ( lightPos - IN.worldPos );
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
 	
@@ -95,7 +84,6 @@ void main(void)
 	 albedo *= texture(mainTex, IN.texCoord);
 	}
 
-	
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
 		float distancePercentage = distanceBetween / impactPoints[i].radius;
@@ -103,7 +91,6 @@ void main(void)
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
-	
 	
 	albedo.rgb = pow(albedo.rgb, vec3(2.2));
 	

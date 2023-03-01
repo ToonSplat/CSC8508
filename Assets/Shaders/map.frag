@@ -1,4 +1,4 @@
-#version 420
+#version 420 core
 
 layout (binding = 0, offset = 0) uniform atomic_uint scoreCount1[5];
 layout (binding = 1, offset = 0) uniform atomic_uint scoreCount2[5];
@@ -112,7 +112,4 @@ void main(void)
 		if (albedo.rgb == team4Colour) atomicCounterIncrement(scoreCount3[4]);
 
 	}
-	
-	
-
 }
