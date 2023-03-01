@@ -30,7 +30,29 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("player_mesh_3")) return false;
 	if (!LoadModel("player_mesh_4")) return false;
 	if (!LoadModel("sphere")) return false;
-	if (!LoadModel("arena_main")) return false;
+
+	//if (!LoadModel("arena_main")) return false;
+	if (!LoadModel("arena_floor_part_a")) return false;
+	if (!LoadModel("arena_floor_part_b")) return false;
+	if (!LoadModel("arena_floor_part_c")) return false;
+	if (!LoadModel("arena_floor_part_d")) return false;
+
+	if (!LoadModel("arena_wall_part_a")) return false;
+	if (!LoadModel("arena_wall_part_b")) return false;
+	if (!LoadModel("arena_wall_part_c")) return false;
+	if (!LoadModel("arena_wall_part_d")) return false;
+
+	if (!LoadModel("arena_platform_floor_high_l")) return false;
+	if (!LoadModel("arena_platform_floor_high_r")) return false;
+	if (!LoadModel("arena_platform_wall_high_l")) return false;
+	if (!LoadModel("arena_platform_wall_high_r")) return false;
+
+	if (!LoadModel("arena_platform_floor_low_top")) return false;
+	if (!LoadModel("arena_platform_floor_low_bottom")) return false;
+	if (!LoadModel("arena_platform_wall_low_top")) return false;
+	if (!LoadModel("arena_platform_wall_low_bottom")) return false;
+
+
 	if (!LoadModel("arena_lights")) return false;
 	if (!LoadModel("arena_obstacles")) return false;
 	if (!LoadModel("arena_ramps")) return false;
@@ -54,7 +76,28 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 	//All Materials
 	if (!LoadMaterial("mat_player")) return false;
-	if (!LoadMaterial("mat_arena")) return false;
+
+	//if (!LoadMaterial("mat_arena")) return false;
+	if (!LoadMaterial("mat_arena_floor_part_a")) return false;
+	if (!LoadMaterial("mat_arena_floor_part_b")) return false;
+	if (!LoadMaterial("mat_arena_floor_part_c")) return false;
+	if (!LoadMaterial("mat_arena_floor_part_d")) return false;
+
+	if (!LoadMaterial("mat_arena_wall_part_a")) return false;
+	if (!LoadMaterial("mat_arena_wall_part_b")) return false;
+	if (!LoadMaterial("mat_arena_wall_part_c")) return false;
+	if (!LoadMaterial("mat_arena_wall_part_d")) return false;
+
+	if (!LoadMaterial("mat_arena_platform_floor_high_l")) return false;
+	if (!LoadMaterial("mat_arena_platform_floor_high_r")) return false;
+	if (!LoadMaterial("mat_arena_platform_wall_high_l")) return false;
+	if (!LoadMaterial("mat_arena_platform_wall_high_r")) return false;
+
+	if (!LoadMaterial("mat_arena_platform_floor_low_top")) return false;
+	if (!LoadMaterial("mat_arena_platform_floor_low_bottom")) return false;
+	if (!LoadMaterial("mat_arena_platform_wall_low_top")) return false;
+	if (!LoadMaterial("mat_arena_platform_wall_low_bottom")) return false;
+
 	if (!LoadMaterial("mat_arena_obstacles")) return false;
 	if (!LoadMaterial("mat_arena_ramps")) return false;
 	if (!LoadMaterial("mat_arena_lights")) return false;
@@ -176,12 +219,32 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	Vector4 arenaRampColor = Vector4(0.6f, 0.6f, 0.6f, 1.0f);
 	Vector4 arenaLightsColor = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
 	Vector3 arenaSize = Vector3(1, 1, 1);
-	AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena"), arenaColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f);
-	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false);
+	//AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena"), arenaColour, 0.0f);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_b"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_b"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_c"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_c"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_d"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_d"), arenaColour, 0.0f, true, true);
+	
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_a"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_b"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_b"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_c"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_c"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_d"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_d"), arenaColour, 0.0f, true, false);
+	
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_high_l"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_high_r"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_high_r"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_high_l"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_high_r"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_high_r"), arenaColour, 0.0f, true, false);
+	
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_low_top"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_low_bottom"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_low_bottom"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_top"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_bottom"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_bottom"), arenaColour, 0.0f, true, false);
+	
+	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false, false);
 
 	return true;
 }
@@ -296,12 +359,14 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(scale);
+
+	if (addAsFloor) gameObject->SetAsFloor();
 
 	gameObject->AddRigidbody();
 	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
@@ -326,14 +391,14 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
 		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
 		SetScale(scale);
 
-	gameObject->SetAsFloor();
+	if (addAsFloor) gameObject->SetAsFloor();
 
 	gameObject->AddRigidbody();
 	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
