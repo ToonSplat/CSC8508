@@ -91,6 +91,14 @@ namespace NCL
 
 			float interpolationFactor;
 
+			bool MapNeedsUpdating() {
+				return updateMap;
+			}
+
+			void MapChecked() {
+				updateMap = false;
+			}
+
 		protected:
 			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
@@ -111,6 +119,8 @@ namespace NCL
 
 			int		worldIDCounter;
 			int		worldStateCounter;
+
+			bool updateMap = false;
 
 		private:
 			bool showCursor;

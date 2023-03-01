@@ -88,6 +88,7 @@ void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	activeHitSpheres.erase(hitSphere);
 	objectsToDelete.insert(hitSphere);
+	updateMap = true;
 }
 
 void ToonGameWorld::AddPaintableObject(PaintableObject* paintableObject) {
