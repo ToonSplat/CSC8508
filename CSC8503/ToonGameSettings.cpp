@@ -5,6 +5,7 @@ ToonGameSettings::ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* wo
 	m_Renderer = renderer;
 	m_Window   = win;
 	m_World	   = world;
+	PopulateSettingsData();
 }
 
 ToonGameSettings::~ToonGameSettings()
@@ -107,6 +108,7 @@ PushdownState::PushdownResult ToonGameSettings::HandleNavigation(PushdownState**
 		switch (m_CurrentSelectedIndex)
 		{
 			case SettingsScreenStates::SettingsBack:
+				UpdateSettingsFile();
 				return PushdownState::PushdownResult::Pop;
 			case SettingsScreenStates::WindowSize:
 				break;
@@ -125,4 +127,25 @@ void ToonGameSettings::FreeAllToonToggleButtons()
 			data.toggleButton = NULL;
 		}
 	}
+}
+
+void ToonGameSettings::PopulateSettingsData()
+{
+	m_SettingsFile			= new ToonFileHandling(Settings_File_Name);
+	std::string fileContent = "";
+	m_SettingsFile->ReadDataIn(fileContent);
+
+	m_SettingsDS.ParseData(fileContent);
+
+	m_SettingsData = {
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera", true, m_SettingsDS.invertCameraState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, m_SettingsDS.shadowState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
+					 };
+}
+
+void ToonGameSettings::UpdateSettingsFile()
+{
+	m_SettingsFile->WriteData(m_SettingsDS.SerializeStructure());
 }

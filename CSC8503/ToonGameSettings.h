@@ -3,6 +3,14 @@
 #include "PushdownState.h"
 #include "GameTechRenderer.h"
 #include "ToonToggleButton.h"
+#include "ToonFileHandling.h"
+#include "Assets.h"
+#include <unordered_map>
+
+
+#define INVERT_CAMERA_STRING "InvertCamera"
+#define SHADOW_STRING		 "Shadow"
+#define WINDOW_SIZE_STRING	 "WindowSize"
 
 using namespace NCL;
 //using namespace CSC8503;
@@ -34,6 +42,60 @@ class ToonGameSettings : public PushdownState
 		}
 	};
 
+	struct ToonSettingsFileDataStructure
+	{
+		ToggleButtonStates invertCameraState = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates shadowState	     = ToggleButtonStates::ToggleOff;
+		std::string windowSize				 = "";
+
+		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
+		{
+			std::unordered_map<std::string, std::string> parsedComponentsMap;
+			int											 index   = 0;
+			bool										 isValue = false;
+			std::string currentString[2] = { "", "" };
+			while (dataString[index] != '\0')
+			{
+				if (dataString[index] == delimiter)
+				{
+					isValue = !isValue;
+				}
+				else if (dataString[index] == '\n')
+				{
+					parsedComponentsMap[currentString[0]] = currentString[1];
+					isValue								  = !isValue;
+					currentString[0]					  = "";
+					currentString[1]					  = "";
+				}
+				else
+				{
+					currentString[isValue] += dataString[index];
+				}
+				index++;
+			}
+			return parsedComponentsMap;
+		}
+
+		void ParseData(const std::string& dataString)
+		{
+			std::unordered_map<std::string, std::string> parsedMap = SeperateComponents(dataString);
+			for (std::pair<std::string, std::string> it : parsedMap)
+			{
+				if		(it.first == INVERT_CAMERA_STRING) { invertCameraState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == SHADOW_STRING)		   { shadowState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second; }
+			}
+		}
+
+		std::string SerializeStructure()
+		{
+			std::string serializedString = INVERT_CAMERA_STRING + std::string(":") + std::string((invertCameraState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			serializedString		    += SHADOW_STRING + std::string(":") + std::string((shadowState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
+			return serializedString;
+		}
+	};
+
 	private:
 		GameTechRenderer*				   m_Renderer;
 		ToonGameWorld*					   m_World;
@@ -43,12 +105,10 @@ class ToonGameSettings : public PushdownState
 		int								   m_CurrentSelectedIndex  = 0;
 		bool							   m_IsMousePointerVisible = false;
 		Vector2							   m_MouseLastPosition	   = Vector2();
-		std::vector<SettingsDataStructure> m_SettingsData		   = {
-																		SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera"),
-																		SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, ToggleButtonStates::ToggleOn),
-																		SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
-																		SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
-																	 };
+		std::vector<SettingsDataStructure> m_SettingsData;
+		ToonFileHandling*				   m_SettingsFile		   = NULL;
+		ToonSettingsFileDataStructure	   m_SettingsDS;
+		const std::string&				   Settings_File_Name	   = NCL::Assets::DATADIR + "ToonSettings.txt";
 
 	public:
 		ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
@@ -66,4 +126,6 @@ class ToonGameSettings : public PushdownState
 		bool isInside(Vector2 mousePosition, Coordinates menuDataCoordinates);
 		PushdownState::PushdownResult HandleNavigation(PushdownState** newState);
 		void FreeAllToonToggleButtons();
+		void PopulateSettingsData();
+		void UpdateSettingsFile();
 };

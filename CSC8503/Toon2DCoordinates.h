@@ -1,5 +1,5 @@
 #pragma once
-
+using namespace NCL::Maths;
 struct Coordinates
 {
 	Vector2 origin;
