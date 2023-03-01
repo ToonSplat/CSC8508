@@ -1,6 +1,4 @@
 #include "PaintBallClass.h"
-#include "RenderObject.h"
-#include "PhysicsObject.h"
 #include "PaintBallProjectile.h"
 #include "ToonLevelManager.h"
 #include "ToonRenderObject.h"
@@ -8,6 +6,7 @@
 #include "ToonRaycastCallback.h"
 #include "ToonGameWorld.h"
 #include "ToonLevelManager.h"
+#include <math.h>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -78,12 +77,12 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	{
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((playerControls->camera[0] + 10) / 180.0f * _Pi, 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 					reactphysics3d::Vector3 dirOri = orientation;
 					dirOri.y = 0;
 					dirOri.normalize();
 					orientation.normalize();
-					reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, owningObject->GetScale().y * 1.5, 0);
+					reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
 					FireBullet(position, orientation);
 					playerControls->shooting = false;
 				}
