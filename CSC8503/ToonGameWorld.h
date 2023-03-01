@@ -11,6 +11,7 @@ namespace NCL
 	namespace CSC8503
 	{
 		class ToonGameObject;
+		class ToonGame;
 		class ToonEventListener;
 		class PaintBallProjectile;
 		class PaintableObject;
@@ -56,23 +57,26 @@ namespace NCL
 
 			void GetGameObjects(void) const;
 
-			Camera* GetMainCamera() const { return mainCamera; }
-			void SetMainCamera(Camera* newCamera) { 
-				delete mainCamera;
-				mainCamera = newCamera; 
+			Camera* GetMainCamera(int player) { return mainCameras[player]; }
+			void SetMainCamera(int player, Camera* newCamera) {
+				delete mainCameras[player];
+				mainCameras[player] = newCamera;
+			}
+
+			int GetMainCameraCount() {
+				return mainCameras.size();
 			}
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
-			
+
 			Camera* GetMapCamera() const { return mapCamera; }
 			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
 
 
-
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
-      
+
 			bool ShowCursor() const { return showCursor; }
 
 			Team* GetTeamLeastPlayers();
@@ -88,7 +92,7 @@ namespace NCL
 			float interpolationFactor;
 
 		protected:
-			Camera* mainCamera;
+			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
 			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;

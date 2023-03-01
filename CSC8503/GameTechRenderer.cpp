@@ -51,9 +51,13 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
+	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
 	GenerateAtomicBuffer();
+
+	screenAspect = (float)windowWidth / (float)windowHeight;
+
 	glClearColor(1, 1, 1, 1);
 
 	//Set up the light properties
@@ -109,14 +113,17 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
-	DrawMainScene();
-	if (gameWorld->GetMapCamera()) {
-		DrawMap();
+	switch (gameWorld->GetMainCameraCount()) {
+	case 2:
+		RenderSplitScreen();
+		break;
+	default:
+		RenderSinglePlayer();
+		break;
 	}
-	if (gameWorld->GetMinimapCamera())
-	{
-		DrawMinimap();
-	}
+
+	DrawMap();
+	
 	PresentScene();
 
 	RenderImGUI();
@@ -125,8 +132,6 @@ void GameTechRenderer::RenderFrame() {
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	glEnable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -144,13 +149,11 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void GameTechRenderer::RenderScene() {
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
+	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
 
 	OGLShader* activeShader = nullptr;
 	int projLocation = 0;
@@ -194,8 +197,8 @@ void GameTechRenderer::RenderScene() {
 
 			cameraLocation = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
 
-			Vector3 camPos = gameWorld->GetMainCamera()->GetPosition();
-			glUniform3fv(cameraLocation, 1, camPos.array);
+			//Vector3 camPos = gameWorld->GetMainCamera()->GetPosition();
+			//glUniform3fv(cameraLocation, 1, camPos.array);
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
@@ -240,6 +243,30 @@ void GameTechRenderer::RenderScene() {
 
 		(*i).Draw(*this);
 	}
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
+{
+	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
+	{
+		currentFBO = &splitFBO[i];
+		glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
+		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
+		DrawMainScene();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
+{
+	currentFBO = &sceneFBO;
+	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	currentRenderCamera = gameWorld->GetMainCamera(1);
+	DrawMainScene();
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	DrawMinimap();
 }
 
 void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
@@ -319,9 +346,14 @@ void GameTechRenderer::PresentScene(){
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
 
-	PresentGameScene();
-
-	PresentMinimap(modelLocation);
+	switch (gameWorld->GetMainCameraCount()) {
+	case 2:
+		PresentSplitScreen();
+		break;
+	default:
+		PresentSinglePlayer();
+		break;
+	}
 
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
@@ -337,8 +369,9 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation){
+void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	if (!gameWorld->GetMinimapCamera()) return;
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -368,13 +401,13 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(int modelLocation){
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
+	if (!gameWorld->GetMinimapCamera()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
 
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
 	RenderMaps(minimapShader, viewMatrix, projMatrix);
@@ -386,6 +419,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMap(){
+	if (!gameWorld->GetMapCamera()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -477,9 +511,32 @@ void GameTechRenderer::RenderShadowMap() {
 
 	glViewport(0, 0, windowWidth, windowHeight);
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
 	glCullFace(GL_BACK);
+}
+
+void NCL::CSC8503::GameTechRenderer::PresentSinglePlayer()
+{
+	PresentGameScene();
+	PresentMinimap();
+}
+
+void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
+		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5 + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
+		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+		BindMesh(fullScreenQuad);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 void GameTechRenderer::RenderSkybox() {
@@ -488,8 +545,8 @@ void GameTechRenderer::RenderSkybox() {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
 
 	BindShader(skyboxShader);
 
@@ -560,10 +617,10 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 	ImGui::Begin("Debug Window");
 	if (ImGui::CollapsingHeader("Camera"))
 	{
-		ToonFollowCamera* followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera());
+		ToonFollowCamera* followCamera = (ToonFollowCamera*)(gameWorld->GetMainCamera(1));
 
-		Vector3 cPos = gameWorld->GetMainCamera()->GetPosition();
-		Vector3 cRot(gameWorld->GetMainCamera()->GetPitch(), gameWorld->GetMainCamera()->GetYaw(), 0);
+		Vector3 cPos = gameWorld->GetMainCamera(1)->GetPosition();
+		Vector3 cRot(gameWorld->GetMainCamera(1)->GetPitch(), gameWorld->GetMainCamera(1)->GetYaw(), 0);
 		Vector3 cFollowOffset = followCamera->GetFollowOffset();
 		Vector3 cFollowOffset2 = followCamera->followOffset2;
 		Vector3 cTargetOffset = followCamera->GetTargetOffset();
@@ -573,9 +630,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 		float smoothness = followCamera->GetSmoothness();
 		float cPitchOffset = followCamera->GetPitchOffset();
 
-		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld->GetMainCamera()->SetPosition(cPos);
-		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld->GetMainCamera()->SetPitch(cPos.x);
-		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld->GetMainCamera()->SetYaw(cPos.y);
+		if (ImGui::DragFloat3("Cam Position", (float*)&cPos)) gameWorld->GetMainCamera(1)->SetPosition(cPos);
+		if (ImGui::DragFloat("Cam Pitch", (float*)&cRot.x)) gameWorld->GetMainCamera(1)->SetPitch(cPos.x);
+		if (ImGui::DragFloat("Cam Yaw", (float*)&cRot.y)) gameWorld->GetMainCamera(1)->SetYaw(cPos.y);
 		if (ImGui::DragFloat("Pitch Offset", (float*)&cPitchOffset)) followCamera->SetPitchOffset(cPitchOffset);
 
 		if (ImGui::DragFloat("Follow Distance", (float*)&distance)) followCamera->SetFollowDistance(distance);
@@ -738,8 +795,8 @@ void GameTechRenderer::NewRenderLines() {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 
@@ -1141,6 +1198,50 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapScoreTexture) {
 		return;
 	}
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
+{
+	for (int i = 0; i < 2; i++)
+	{
+		glGenFramebuffers(1, &splitFBO[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, splitFBO[i]);
+
+
+		glGenTextures(1, &splitColourTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, splitColourTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, splitColourTexture[i], -1, "Split Colour Texture");
+
+		glGenTextures(1, &splitDepthTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, splitDepthTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, splitDepthTexture[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, splitDepthTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, splitDepthTexture[i], -1, "Split Depth Texture");
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !splitDepthTexture[i] || !splitColourTexture[i]) {
+			return;
+		}
+	}
+
+
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);

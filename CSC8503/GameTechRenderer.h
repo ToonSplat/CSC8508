@@ -34,13 +34,19 @@ namespace NCL {
 
 
 			void RenderFrame()	override;
+			void RenderSplitScreen();
+			void RenderSinglePlayer();
+			
+			void PresentSinglePlayer();
+			void PresentSplitScreen();
+			
 			void RenderImGUI();
 
 			void PresentScene();
 
 			void PresentGameScene();
 
-			void PresentMinimap(int modelLocation);
+			void PresentMinimap();
 
 			void DrawMinimap();
 			void DrawScoreBar();
@@ -129,6 +135,13 @@ namespace NCL {
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
+			GLuint splitFBO[2];
+			GLuint splitColourTexture[2];
+			GLuint splitDepthTexture[2];
+			void GenerateSplitFBO(int width, int height);
+
+			GLuint* currentFBO;
+
 			GLuint atomicsBuffer[3];
 			void GenerateAtomicBuffer();
 			void ResetAtomicBuffer();
@@ -157,7 +170,8 @@ namespace NCL {
 			GLuint currentAtomicGPU;
 			GLuint curretAtomicReset;
 
-			
+			Camera* currentRenderCamera;
+			float screenAspect;
 		};
 	}
 }

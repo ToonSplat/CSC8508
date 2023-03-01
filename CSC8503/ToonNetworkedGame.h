@@ -75,8 +75,7 @@ namespace NCL {
 
 			ToonConfirmationScreen* m_ConfirmationScreen;
 			bool					m_ShouldShowConfirmationScreen = false;		//Just for showing confirmation screen
-			bool					m_MoveBackOnConfirmation	   = false;		//For moving back if the player selects yes on confirmation
+			bool					m_MoveBackOnConfirmation = false;		//For moving back if the player selects yes on confirmation
 		};
 	}
 }
-
