@@ -39,8 +39,6 @@ in Vertex
 	vec4 localPos;
 } IN;
 
-//out vec4 fragColor;
-
 vec4 modulus(vec4 x){return x - floor(x * (1.0/289.0)) * 289.0;}
 vec4 permutate(vec4 x){return modulus(((x * 34.0) + 1.0) * x);}
 

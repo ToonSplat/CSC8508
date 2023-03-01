@@ -103,6 +103,4 @@ void main(void)
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	
 	fragColor.a = albedo.a;
-	
-	//.rgb = vec3(
 }

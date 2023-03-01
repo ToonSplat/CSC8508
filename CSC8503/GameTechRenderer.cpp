@@ -457,7 +457,7 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 50), Vector3(15, 15, 0), Vector3(0, 1, 0)); // lightPosition
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 75), Vector3(15, 15, 0), Vector3(0, 1, 0));
 	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 300.0f, 1, 60.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
