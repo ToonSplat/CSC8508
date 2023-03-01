@@ -58,6 +58,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arena_ramps")) return false;
 	if (!LoadModel("arena_decos")) return false;
 	if (!LoadModel("arena_border_wall")) return false;
+	if (!LoadModel("arena_cameras")) return false;
 	//if (!LoadModel("floorMain")) return false;
 	//if (!LoadModel("platformMain")) return false;
 
@@ -103,6 +104,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadMaterial("mat_arena_lights")) return false;
 	if (!LoadMaterial("mat_arena_decos")) return false;
 	if (!LoadMaterial("mat_arena_border_wall")) return false;
+	if (!LoadMaterial("mat_arena_cameras")) return false;
 
 	std::cout << "ToonLevelManager: All files successfully loaded\n";
 
@@ -244,6 +246,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_cameras"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_cameras"), arenaDecosColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false, false);
 
 	return true;

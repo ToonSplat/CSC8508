@@ -82,6 +82,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
+	AddMesh("arena_cameras", "Level_Arena_Cameras.msh");
 
 	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
 	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
@@ -146,6 +147,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+	AddMaterial("mat_arena_cameras", "Level_Arena_Cameras.mat", GetMesh("arena_cameras")->GetSubMeshCount());
 
 	ToonDebugManager::Instance().EndLoad();
 }
