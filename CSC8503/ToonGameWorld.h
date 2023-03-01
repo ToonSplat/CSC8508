@@ -10,6 +10,7 @@ namespace NCL
 	namespace CSC8503
 	{
 		class ToonGameObject;
+		class ToonGame;
 		class ToonEventListener;
 		class PaintBallProjectile;
 		class PaintableObject;
@@ -70,7 +71,6 @@ namespace NCL
 			
 			Camera* GetMapCamera() const { return mapCamera; }
 			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
-
 
 
 			virtual void UpdateWorld(float dt);

@@ -653,7 +653,6 @@ void GameTechRenderer::PresentScene()
 
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
-
 	}
 
 }
