@@ -7,7 +7,10 @@ using namespace NCL;
 ToonAssetManager* ToonAssetManager::instance = NULL;
 
 ToonAssetManager::ToonAssetManager(void) {
-	
+	file = std::ifstream(Assets::DATADIR + "ItemsToLoad.csv");
+	if (!file.is_open()) {
+		std::cerr << "Failed to open the file\n";
+	}
 }
 
 ToonAssetManager::~ToonAssetManager(void) {
@@ -24,8 +27,7 @@ ToonAssetManager::~ToonAssetManager(void) {
 }
 
 void ToonAssetManager::LoadAssets(void) {
-	ToonDebugManager::Instance().StartLoad();
-	for (auto& [name, texture] : textures)
+	/*for (auto& [name, texture] : textures)
 		delete texture;
 	for (auto& [name, mesh] : meshes)
 		delete mesh;
@@ -38,20 +40,20 @@ void ToonAssetManager::LoadAssets(void) {
 	meshes.clear();
 	shaders.clear();
 	animations.clear();
-	materials.clear();
+	materials.clear();*/
 	//-----------------------------------------------------------
 	//		Textures
-	AddTexture("mesh", "checkerboard.png");
-	AddTexture("basic", "Prefab_Grey50.png", true);
-	AddTexture("basicPurple", "Prefab_Purple.png", true);
-	/*AddTexture("player", "Boss_diffuse.png", true);
-	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
-	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
-	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);*/
+	//AddTexture("mesh", "checkerboard.png");
+	//AddTexture("basic", "Prefab_Grey50.png", true);
+	//AddTexture("basicPurple", "Prefab_Purple.png", true);
+	///*AddTexture("player", "Boss_diffuse.png", true);
+	//AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
+	//AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
+	//AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);*/
 
 	//-----------------------------------------------------------
 	//		Meshes
-	AddMesh("cube", "cube.msh");
+	/*AddMesh("cube", "cube.msh");
 	AddMesh("arrow", "Minimap_Arrow.msh");
 	AddMesh("player", "Character_Boss.msh");
 	AddMesh("sphere", "sphere.msh");
@@ -60,12 +62,13 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
-	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
-
+	AddMesh("arena_border_wall", "Level_Arena_Border.msh");*/
+	std::cout << "Player meshes start\n";
 	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
 	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
 	AddMesh("player_mesh_3", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_BLUE_BULLDOGS, 1.0f)));
 	AddMesh("player_mesh_4", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_ORANGE_OTTERS, 1.0f)));
+	std::cout << "Player meshes end\n";
 	//AddMesh("floorMain", "FloorsMain.msh");
 	//AddMesh("platformMain", "Level_Platform.msh");
 	
@@ -107,6 +110,38 @@ void ToonAssetManager::LoadAssets(void) {
 	ToonDebugManager::Instance().EndLoad();
 }
 
+void ToonAssetManager::LoadNextAsset(void) {
+	vector<string> tokens = SplitLine();
+	if (tokens[0] == "Texture")
+		AddTexture(tokens);
+	else if (tokens[0] == "Mesh")
+		AddMesh(tokens);
+	else if (tokens[0] == "Shader")
+		AddShader(tokens);
+	else if (tokens[0] == "Animation")
+		AddAnimation(tokens);
+	else if (tokens[0] == "Material")
+		AddMaterial(tokens);
+	else {
+		std::cout << "Error: Unknown asset type\n";
+	}
+}
+
+vector<string> ToonAssetManager::SplitLine() {
+	vector<string> result;
+	size_t pos = 0;
+	while (pos != string::npos) {
+		size_t next_pos = currentLine.find(',', pos);
+		if (next_pos == string::npos) {
+			result.push_back(currentLine.substr(pos));
+			break;
+		}
+		result.push_back(currentLine.substr(pos, next_pos - pos));
+		pos = next_pos + 1;
+	}
+	return result;
+}
+
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
 
 	map<string, Rendering::TextureBase*>::iterator i = textures.find(name);
@@ -114,6 +149,19 @@ Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
 	if (i != textures.end())
 		return i->second;
 	return nullptr;
+}
+
+Rendering::TextureBase* ToonAssetManager::AddTexture(vector<string> tokens) {
+	string name, fileName;
+	bool invert;
+
+	name = tokens[1];
+	fileName = tokens[2];
+	if (tokens.size() >= 4)
+		invert = (tokens[3] == "true");
+	else invert = false;
+
+	return AddTexture(name, fileName, invert);
 }
 
 Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const string& fileName, const bool& invert) {
@@ -143,6 +191,17 @@ MeshGeometry* ToonAssetManager::GetMesh(const string& name) {
 		return i->second;
 	return nullptr;
 }
+
+MeshGeometry* ToonAssetManager::AddMesh(vector<string> tokens) {
+	string name, fileName;
+
+	name = tokens[1];
+	fileName = tokens[2];
+	// For now not doing type... but it can be done
+
+	return AddMesh(name, fileName);
+}
+
 
 MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type) {
 
@@ -176,6 +235,22 @@ Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {
 	return nullptr;
 }
 
+Rendering::OGLShader* ToonAssetManager::AddShader(vector<string> tokens) {
+	string name, vertex, fragment, geometry, domain, hull;
+	name = tokens[1];
+	vertex = tokens[2];
+	fragment = tokens[3];
+	if (tokens.size() >= 5)
+		geometry = tokens[4];
+	if (tokens.size() >= 6)
+		domain = tokens[5];
+	if (tokens.size() >= 7)
+		hull = tokens[6];
+	// For now not doing type... but it can be done
+
+	return AddShader(name, vertex, fragment, geometry, domain, hull);
+}
+
 Rendering::OGLShader* ToonAssetManager::AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
 	const string& geometryShader, const string& domainShader, const string& hullShader) {
 
@@ -199,6 +274,15 @@ MeshAnimation* ToonAssetManager::GetAnimation(const string& name) {
 	return nullptr;
 }
 
+MeshAnimation* ToonAssetManager::AddAnimation(vector<string> tokens) {
+	string name, fileName;
+
+	name = tokens[1];
+	fileName = tokens[2];
+
+	return AddAnimation(name, fileName);
+}
+
 
 MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& fileName) {
 	
@@ -218,6 +302,15 @@ ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
 
 	if (i != materials.end())
 		return i->second;
+	return nullptr;
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(vector<string> tokens) {
+	string name, fileName;
+
+	name = tokens[1];
+	fileName = tokens[2];
+
 	return nullptr;
 }
 

@@ -22,7 +22,7 @@ using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
 
-#define SHADOWSIZE 8192/4
+#define SHADOWSIZE 8192/2
 
 
 
@@ -30,6 +30,11 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
+	ToonDebugManager::Instance().StartLoad();
+	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
+		std::cout << "Loading next asset\n";
+		ToonAssetManager::Instance().LoadNextAsset();
+	}
 	ToonAssetManager::Instance().LoadAssets();
 	SetupStuffs();
 	team1Percentage = 0;

@@ -92,6 +92,7 @@ int main()
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	renderer->SetVerticalSync(VerticalSyncState::VSync_OFF);
 #ifndef _DEBUG
 	w->ShowConsole(false);
 #endif
