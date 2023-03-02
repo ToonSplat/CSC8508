@@ -10,6 +10,11 @@
 #include "ToonEventListener.h"
 #include "InputManager.h"
 #include "ToonDebugManager.h"
+#include <Windows.h>
+#include <Xinput.h>
+#include "InputManager.h"
+#include "XboxControllerInput.h"
+#include "KeyboardInput.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -26,8 +31,20 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
-	for (int i = 2; i <= localPlayerCount; i++) {
-		InputManager::GetInstance().GetInputs().emplace(i, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+
+	if (localPlayerCount != 1) {
+		// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
+		for (int i = localPlayerCount; i > 0; i--) {
+			if (XInputGetState(i - 1, nullptr) == ERROR_SUCCESS)
+				InputManager::GetInstance().AddInput(i, new XboxControllerInput(i - 1));
+			else {
+				for (int j = i; j > 1; j--) {
+					InputManager::GetInstance().AddInput(j, new XboxControllerInput(j - 2));
+				}
+				InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+				break;
+			}
+		}
 	}
 	StartGame();
 }
@@ -58,7 +75,7 @@ void ToonGame::StartGame() {
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
 			player->SetWeapon(baseWeapon);
-			world->SetMainCamera(i, new ToonFollowCamera(world, player));
+			world->SetMainCamera(i, new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f)));
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 		}
@@ -79,15 +96,13 @@ void ToonGame::UpdateGame(float dt) {
 	for (auto& [id, player] : players) {
 		if (player) {
 			UpdateCameras(dt, id);
-			if (id == debugPlayerControl) {
-				InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id)); // TODO: Change from hard coded P1 control
-				if (offline) {
-					player->MovementUpdate(dt, playerControls[id]);
-					player->WeaponUpdate(dt, playerControls[id]);
-				}
-				else {
-					player->SetAiming(playerControls[id]->aiming);
-				}
+			InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id));
+			if (offline) {
+				player->MovementUpdate(dt, playerControls[id]);
+				player->WeaponUpdate(dt, playerControls[id]);
+			}
+			else {
+				player->SetAiming(playerControls[id]->aiming);
 			}
 		}
 	}
