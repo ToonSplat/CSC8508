@@ -162,7 +162,7 @@ void ToonGame::UpdatePhysics(float dt) {
 		world->DeleteMarkedObjects();
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
-	ToonDebugManager::Instance().EndPhysics();
+	ToonDebugManager::Instance().EndPhysics();	
 }
 
 void ToonGame::UpdateAnimations(float dt) {

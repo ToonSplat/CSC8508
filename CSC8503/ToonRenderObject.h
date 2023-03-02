@@ -66,7 +66,8 @@ namespace NCL {
 				return gameObject;
 			}
 
-			ToonMeshMaterial* GetMaterial() const { return material; }			
+			ToonMeshMaterial* GetMaterial() const { return material; }
+			void SetMeshMaterial(ToonMeshMaterial* newMat) { material = newMat; }
 
 		protected:
 			ToonGameObject* gameObject;

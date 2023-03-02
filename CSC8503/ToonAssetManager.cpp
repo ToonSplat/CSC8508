@@ -78,11 +78,13 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_platform_wall_low_bottom", "Arena_Platform_Low_Bottom_Wall.msh");
 
 	AddMesh("arena_lights", "Level_Arena_Lights.msh");
+	AddMesh("arena_deco_cats", "Level_Arena_Cats.msh");
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
 	AddMesh("arena_cameras", "Level_Arena_Cameras.msh");
+	AddMesh("arena_toonsplat_Box", "Level_ToonSplat_Box.msh");
 
 	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
 	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
@@ -105,7 +107,7 @@ void ToonAssetManager::LoadAssets(void) {
 
 	//-----------------------------------------------------------
 	//		Animations
-	AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");
+	AddAnimation("Player_Idle", "Boss_Gun_Idle2.anm");
 	AddAnimation("Player_Idle_Aim", "Boss_Gun_Idle_Aim.anm");
 	AddAnimation("Player_Run", "Boss_Gun_Run.anm");
 	AddAnimation("Player_Run_Aim_F", "Boss_Gun_Run_Aim_F.anm");
@@ -145,9 +147,11 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstables.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
 	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
+	AddMaterial("mat_arena_deco_cats", "Level_Arena_Cats.mat", GetMesh("arena_deco_cats")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
 	AddMaterial("mat_arena_cameras", "Level_Arena_Cameras.mat", GetMesh("arena_cameras")->GetSubMeshCount());
+	AddMaterial("mat_arena_toonsplat_Box", "Level_ToonSplat_Box.mat", GetMesh("arena_toonsplat_Box")->GetSubMeshCount());
 
 	ToonDebugManager::Instance().EndLoad();
 }
@@ -287,7 +291,7 @@ MeshGeometry* NCL::ToonAssetManager::CreateCharacterTeamMesh(const std::string& 
 	for (size_t i = 0; i < copyPlayerMesh->GetVertexCount(); i++)
 		vertexColours.emplace_back(Debug::WHITE);
 
-	const SubMesh* clothesSubMesh = copyPlayerMesh->GetSubMesh(4);
+	const SubMesh* clothesSubMesh = copyPlayerMesh->GetSubMesh(4);		//4 = Clothes!
 	if (clothesSubMesh == nullptr) return nullptr;
 
 	int start = clothesSubMesh->start;

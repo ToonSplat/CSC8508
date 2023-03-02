@@ -13,6 +13,9 @@ NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_
 	renderObject = nullptr;
 	collisionShapeBox = nullptr;
 	collisionShapeSphere = nullptr;
+	collisionShapeCapsule = nullptr;
+	collisionShapeConvex = nullptr;
+	collisionShapeConcave = nullptr;
 	collider = nullptr;
 }
 
@@ -30,6 +33,10 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
 	if(collisionShapeCapsule)
 		gameWorld->GetPhysicsCommon().destroyCapsuleShape(collisionShapeCapsule);
+	if (collisionShapeConcave)
+		gameWorld->GetPhysicsCommon().destroyConcaveMeshShape(collisionShapeConcave);
+	if(collisionShapeConvex)
+		gameWorld->GetPhysicsCommon().destroyConvexMeshShape(collisionShapeConvex);
 	
 	delete renderObject;
 	delete networkObject;

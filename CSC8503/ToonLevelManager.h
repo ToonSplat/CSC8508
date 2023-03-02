@@ -78,7 +78,8 @@ namespace NCL
 			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 			bool LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
-			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);			
+			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
+			reactphysics3d::ConvexMeshShape* CreateConvexMeshShape(MeshGeometry* mesh, const Vector3& scaling);
 
 			Axes selectedAxes = Axes::None;
 
@@ -99,6 +100,7 @@ namespace NCL
 			}
 
 			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, bool isFloor = false);
+			PaintableObject* AddTSCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, bool isFloor = false);
 			PaintableObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition,
 							const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, 
@@ -106,6 +108,7 @@ namespace NCL
 			
 			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
 			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+			PaintableObject* AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;

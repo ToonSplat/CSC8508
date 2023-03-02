@@ -13,6 +13,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+
 	teams.emplace(1, new Team("The Green Goblins", Team::T_GREEN_GOBLINS, 1));
 	teams.emplace(2, new Team("The Purple Prawns", Team::T_PURPLE_PRAWNS, 2));
 	teams.emplace(3, new Team("The Blue Bulldogs", Team::T_BLUE_BULLDOGS, 3));

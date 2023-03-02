@@ -28,6 +28,7 @@ namespace NCL {
 		static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1));
 		static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 		static void DrawBox(const Vector3& boxCenter, const Vector3& boxSize, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
+		static void DrawTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 
 		static void Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vector4& colour = Vector4(1, 1, 1, 1));
 		static void DrawQuad(const Vector2& origin, const Vector2& size, const Vector4& colour = Vector4(1, 1, 1, 1));

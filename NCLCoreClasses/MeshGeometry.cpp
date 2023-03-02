@@ -223,6 +223,19 @@ MeshGeometry::~MeshGeometry()
 {
 }
 
+int NCL::MeshGeometry::FindVertexIndex(const std::vector<Vector3>& vertices, const Vector3& vertex)
+{
+	for (size_t i = 0; i < vertices.size(); i++) 
+	{
+		if (vertices[i] == vertex) 
+		{
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 bool MeshGeometry::HasTriangle(unsigned int i) const {
 	int triCount = 0;
 	if (GetIndexCount() > 0) {

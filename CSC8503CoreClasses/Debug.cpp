@@ -117,6 +117,13 @@ void NCL::Debug::DrawBox(const Vector3& boxCenter, const Vector3& boxSize, const
 	DrawLine(v3FrontBottomLeft, v3BackBottomLeft, colour, time);
 }
 
+void NCL::Debug::DrawTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& colour, float time)
+{
+	DrawLine(v1, v2, colour, time);
+	DrawLine(v2, v3, colour, time);
+	DrawLine(v1, v3, colour, time);
+}
+
 void Debug::UpdateRenderables(float dt) {
 	int trim = 0;
 	for (int i = 0; i < lineEntries.size(); ) {

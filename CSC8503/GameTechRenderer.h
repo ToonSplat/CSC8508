@@ -35,6 +35,7 @@ namespace NCL {
 
 			void RenderFrame()	override;
 			void RenderImGUI();
+			void RenderReactPhysicsDebug();
 
 			void PresentScene();
 
