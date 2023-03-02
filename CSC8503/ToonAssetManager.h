@@ -35,7 +35,7 @@ namespace NCL {
 			return *instance;
 		}
 
-		void LoadAssets(void);
+		void LoadLoadingScreenAssets(void);
 		bool AreAssetsRemaining(void) {
 			if (std::getline(file, currentLine))
 				return true;

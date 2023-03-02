@@ -26,88 +26,29 @@ ToonAssetManager::~ToonAssetManager(void) {
 		delete mat;
 }
 
-void ToonAssetManager::LoadAssets(void) {
-	/*for (auto& [name, texture] : textures)
-		delete texture;
-	for (auto& [name, mesh] : meshes)
-		delete mesh;
-	for (auto& [name, shader] : shaders)
-		delete shader;
-	for (auto& [name, animation] : animations)
-		delete animation;
-	for (auto& [name, mat] : materials)
-		delete mat; materials.clear();
-	meshes.clear();
-	shaders.clear();
-	animations.clear();
-	materials.clear();*/
+void ToonAssetManager::LoadLoadingScreenAssets(void) {
+	// Everything that is added here, should be removed from the file.
+
 	//-----------------------------------------------------------
 	//		Textures
-	//AddTexture("mesh", "checkerboard.png");
-	//AddTexture("basic", "Prefab_Grey50.png", true);
-	//AddTexture("basicPurple", "Prefab_Purple.png", true);
-	///*AddTexture("player", "Boss_diffuse.png", true);
-	//AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
-	//AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
-	//AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);*/
+	/*AddTexture("player", "Boss_diffuse.png", true);*/
 
 	//-----------------------------------------------------------
 	//		Meshes
 	/*AddMesh("cube", "cube.msh");
-	AddMesh("arrow", "Minimap_Arrow.msh");
-	AddMesh("player", "Character_Boss.msh");
-	AddMesh("sphere", "sphere.msh");
-	AddMesh("arena_main", "Level_Arena.msh");
-	AddMesh("arena_lights", "Level_Arena_Lights.msh");
-	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
-	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
-	AddMesh("arena_decos", "Level_Arena_Decos.msh");
-	AddMesh("arena_border_wall", "Level_Arena_Border.msh");*/
-	/*std::cout << "Player meshes start\n";
-	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
-	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
-	AddMesh("player_mesh_3", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_BLUE_BULLDOGS, 1.0f)));
-	AddMesh("player_mesh_4", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_ORANGE_OTTERS, 1.0f)));
-	std::cout << "Player meshes end\n";*/
-	//AddMesh("floorMain", "FloorsMain.msh");
-	//AddMesh("platformMain", "Level_Platform.msh");
-	
+
 	//-----------------------------------------------------------
 	//		Shaders
-	/*AddShader("debug", "debug.vert", "debug.frag");
-	AddShader("shadow", "shadowSkin.vert", "shadow.frag");
-	AddShader("minimap", "minimap.vert", "minimap.frag");
-	AddShader("texture", "Texture.vert", "Texture.frag");
-	AddShader("scene", "scene.vert", "scene.frag");
-	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
-	AddShader("fullMap", "map.vert", "map.frag");
-	AddShader("skybox", "skybox.vert", "skybox.frag");
-	AddShader("animated", "sceneSkin.vert", "scene.frag");*/
+	/*AddShader("debug", "debug.vert", "debug.frag");*/
 
 	//-----------------------------------------------------------
 	//		Animations
-	/*AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");
-	AddAnimation("Player_Idle_Aim", "Boss_Gun_Idle_Aim.anm");
-	AddAnimation("Player_Run", "Boss_Gun_Run.anm");
-	AddAnimation("Player_Run_Aim_F", "Boss_Gun_Run_Aim_F.anm");
-	AddAnimation("Player_Run_Aim_FL", "Boss_Gun_Run_Aim_FL.anm");
-	AddAnimation("Player_Run_Aim_FR", "Boss_Gun_Run_Aim_FR.anm");
-	AddAnimation("Player_Run_Aim_L", "Boss_Gun_Run_Aim_L.anm");
-	AddAnimation("Player_Run_Aim_R", "Boss_Gun_Run_Aim_R.anm");
-	AddAnimation("Player_Run_Aim_B", "Boss_Gun_Run_Aim_B.anm");
-	AddAnimation("Player_Run_Aim_BL", "Boss_Gun_Run_Aim_BL.anm");
-	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");*/
+	/*AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");*/
 
 	//-----------------------------------------------------------
 	//		Materials
-	/*AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
-	AddMaterial("mat_arena", "Level_Arena.mat", GetMesh("arena_main")->GetSubMeshCount());
-	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstacles.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
-	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
-	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
-	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
-	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());*/
-	ToonDebugManager::Instance().EndLoad();
+	/*AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());*/
+	
 }
 
 void ToonAssetManager::LoadNextAsset(void) {

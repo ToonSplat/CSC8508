@@ -34,7 +34,6 @@ set(Source_Files
     "ApplyPaint.cpp"
     "Main.cpp"
     "PaintableObject.cpp"
-    "Team.cpp"
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"

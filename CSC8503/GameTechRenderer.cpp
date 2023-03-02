@@ -22,7 +22,7 @@ using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
 
-#define SHADOWSIZE 8192/2
+#define SHADOWSIZE 8192/4
 
 
 
@@ -33,13 +33,13 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	ToonDebugManager::Instance().StartLoad();
 	// Load everything needed for the loading screen here!
 	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
+	ToonAssetManager::Instance().LoadLoadingScreenAssets();
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
 		// Add the loading screen update here!
 		std::cout << "Loading next asset\n";
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 	ToonDebugManager::Instance().EndLoad();
-	//ToonAssetManager::Instance().LoadAssets(); Now redundant!
 	SetupStuffs();
 	team1Percentage = 0;
 	team2Percentage = 0;
