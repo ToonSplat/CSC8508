@@ -20,7 +20,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(2), offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
 	world = new ToonGameWorld();
 	ToonDebugManager::Instance().SetGameWorld(world);
@@ -32,20 +32,20 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 5000, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 
-	if (localPlayerCount != 1) {
-		// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
-		for (int i = localPlayerCount; i > 0; i--) {
-			if (XInputGetState(i - 1, nullptr) == ERROR_SUCCESS)
-				InputManager::GetInstance().AddInput(i, new XboxControllerInput(i - 1));
-			else {
-				for (int j = i; j > 1; j--) {
-					InputManager::GetInstance().AddInput(j, new XboxControllerInput(j - 2));
-				}
-				InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
-				break;
+	// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
+	for (int i = localPlayerCount; i > 0; i--) {
+		XINPUT_STATE controllerState;
+		if (XInputGetState(i - 1, &controllerState) == ERROR_SUCCESS)
+			InputManager::GetInstance().AddInput(i, new XboxControllerInput(i - 1));
+		else {
+			for (int j = i; j > 1; j--) {
+				InputManager::GetInstance().AddInput(j, new XboxControllerInput(j - 2));
 			}
+			InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+			break;
 		}
 	}
+
 	StartGame();
 }
 

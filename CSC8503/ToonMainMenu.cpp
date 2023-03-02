@@ -74,10 +74,15 @@ void ToonMainMenu::OnAwake()
 		delete m_Game;
 		m_Game = NULL;
 	}
-	if (m_SubMenuScreenObject)
+	if (m_LocalMenuScreenObject)
 	{
-		delete m_SubMenuScreenObject;
-		m_SubMenuScreenObject = NULL;
+		delete m_LocalMenuScreenObject;
+		m_LocalMenuScreenObject = NULL;
+	}
+	if (m_MultiMenuScreenObject)
+	{
+		delete m_MultiMenuScreenObject;
+		m_MultiMenuScreenObject = NULL;
 	}
 }
 
@@ -102,12 +107,10 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	switch (navigationScreenIndex)
 	{
 	case PLAY:
-		m_Game = new ToonGame(m_Renderer);
-		m_Game->m_WindowSize = m_Window->GetScreenSize();
-		*newState = m_Game;
+		*newState = GetLocalMenuSceenObject();
 		break;
 	case MULTIPLAY:
-		*newState = GetSubMenuSceenObject();
+		*newState = GetMultiMenuSceenObject();
 		break;
 	case SETTINGS:
 		return PushdownResult::NoChange;
@@ -116,6 +119,22 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case QUIT:
 		*newState = m_ToonConfirmationScreen;
 		break;
+	case LAUNCH1PLAYER:
+		m_Game = new ToonGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case LAUNCH2PLAYER:
+		m_Game = new ToonGame(m_Renderer, 2);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case LAUNCH3PLAYER:
+		return PushdownResult::NoChange;
+	case LAUNCH4PLAYER:
+		return PushdownResult::NoChange;
+	case BACKLOCAL:
+		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		m_Game->m_WindowSize = m_Window->GetScreenSize();
@@ -124,7 +143,7 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case LAUNCHASCLIENT:
 		*newState = GetUserInputScreenObject();
 		break;
-	case BACK:
+	case BACKMULTI:
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
 		ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
@@ -139,10 +158,16 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	return PushdownResult::Push;
 }
 
-ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
+ToonMainMenu* ToonMainMenu::GetLocalMenuSceenObject()
 {
-	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window); }
-	return m_SubMenuScreenObject;
+	if (!m_LocalMenuScreenObject) { m_LocalMenuScreenObject = new ToonMainMenu(m_Renderer, m_LocalMainMenuData, GameStates::LAUNCH1PLAYER, m_World, m_Window); }
+	return m_LocalMenuScreenObject;
+}
+
+ToonMainMenu* ToonMainMenu::GetMultiMenuSceenObject()
+{
+	if (!m_MultiMenuScreenObject) { m_MultiMenuScreenObject = new ToonMainMenu(m_Renderer, m_MultiMainMenuData, GameStates::LAUNCHASSERVER, m_World, m_Window); }
+	return m_MultiMenuScreenObject;
 }
 
 ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
