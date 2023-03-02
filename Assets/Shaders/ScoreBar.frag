@@ -34,7 +34,7 @@ void main(void)	{
     float team3 = team1 + (team3PercentageOwned * 2);
     float team4 = team2 - (team4PercentageOwned * 2);
 
-    float sdf = sdPlane(IN.fragWorldPos.xy, vec2(0.75, 0.5));//vec2(0.7, 0.5));
+    float sdf = sdPlane(IN.fragWorldPos.xy, vec2(0.75, 0.5));
     
     if(IN.fragWorldPos.x < team3 && IN.fragWorldPos.x > team1){
         fragColour = vec4(team3Colour, 1.0);
@@ -51,9 +51,7 @@ void main(void)	{
     if(sdf > 0.0 && sdf < 1.0){
         fragColour.a = 1 - sdf;
     }
-    if(1 - sdf < 0.75){// 0.6
+    if(1 - sdf < 0.75){
         discard;
     }
-    //float sdf = sdPlane(IN.fragWorldPos.xy, vec2(0.8, 0.8));
-    //fragColour = vec4(sdf, sdf, sdf, 1.0);
 }

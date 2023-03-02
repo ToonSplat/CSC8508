@@ -21,7 +21,7 @@ namespace NCL
 		class ToonGame : public ToonConfirmationScreen//PushdownState
 		{
 		public:
-			ToonGame(GameTechRenderer* renderer, bool offline = true);
+			ToonGame(GameTechRenderer* renderer, int playerCount = 1, bool offline = true);
 			~ToonGame();
 
 			virtual void UpdateGame(float dt);
@@ -47,8 +47,11 @@ namespace NCL
 
 		protected:
 			ToonFollowCamera* followCamera;
-			Player*	player = nullptr;
-			PlayerControl* playerControl = nullptr;
+
+			int debugPlayerControl = 1;
+			int localPlayerCount;
+			std::unordered_map<int, Player*> players;
+			std::unordered_map<int, PlayerControl*> playerControls;
 
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;
@@ -63,11 +66,11 @@ namespace NCL
 			bool offline;
 			const double timeStep = 1.0 / 60.0;
 			double accumulator;
-			bool					m_ShouldQuitGame		 = false;
+			bool					m_ShouldQuitGame = false;
 			ToonConfirmationScreen* m_ToonConfirmationScreen = NULL;
 
-			public:
-				Vector2 m_WindowSize;
+		public:
+			Vector2 m_WindowSize;
 		};
 	}
 }

@@ -33,13 +33,19 @@ namespace NCL {
 
 
 			void RenderFrame()	override;
+			void RenderSplitScreen();
+			void RenderSinglePlayer();
+			
+			void PresentSinglePlayer();
+			void PresentSplitScreen();
+			
 			void RenderImGUI();
 
 			void PresentScene();
 
 			void PresentGameScene();
 
-			void PresentMinimap(int modelLocation);
+			void PresentMinimap();
 
 			void DrawMinimap();
 			void DrawScoreBar();
@@ -58,7 +64,8 @@ namespace NCL {
 			void SortObjectList();
 			void RenderShadowMap();
 
-			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
+			void RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
+			void RenderScene();
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
 			void RenderSkybox();
@@ -127,6 +134,13 @@ namespace NCL {
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
+			GLuint splitFBO[2];
+			GLuint splitColourTexture[2];
+			GLuint splitDepthTexture[2];
+			void GenerateSplitFBO(int width, int height);
+
+			GLuint* currentFBO;
+
 			GLuint atomicsBuffer[3];
 			void GenerateAtomicBuffer();
 			void ResetAtomicBuffer();
@@ -155,7 +169,8 @@ namespace NCL {
 			GLuint currentAtomicGPU;
 			GLuint curretAtomicReset;
 
-			
+			Camera* currentRenderCamera;
+			float screenAspect;
 		};
 	}
 }
