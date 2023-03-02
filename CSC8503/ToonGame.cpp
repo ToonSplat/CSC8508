@@ -121,6 +121,7 @@ PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newSt
 {
 	if (m_ShouldQuitGame)
 	{
+		world->MapNeedsChecking(true);
 		ToonDebugManager::Instance().SetGameWorld(nullptr);
 		return PushdownResult::Pop;
 	}
