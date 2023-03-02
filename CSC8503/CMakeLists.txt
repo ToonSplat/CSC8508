@@ -88,6 +88,7 @@ set(Rendering_Files
 source_group("Rendering Files" FILES ${Rendering_Files})
 
 set(Inputs_Files
+    "InputManager.h"
     "PlayerControl.h"
     "PlayerControl.cpp"
     "BaseInput.h"

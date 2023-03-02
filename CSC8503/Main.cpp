@@ -24,7 +24,7 @@
 #include "ToonMainMenu.h"
 
 #include "KeyboardInput.h"
-#include "ControllerInput.h"
+#include "XboxControllerInput.h"
 #include "InputManager.h"
 
 #include <Windows.h>
@@ -93,7 +93,7 @@ int main()
 	if (result == ERROR_SUCCESS)
 	{
 		std::cout << "Controller detected." << std::endl;
-		InputManager::GetInstance().GetInputs().emplace(1, new ControllerInput(0));
+		InputManager::GetInstance().GetInputs().emplace(1, new XboxControllerInput(0));
 	}
 	else
 	{

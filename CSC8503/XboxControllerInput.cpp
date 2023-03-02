@@ -1,17 +1,17 @@
-#include "ControllerInput.h"
+#include "XboxControllerInput.h"
 #include <Windows.h>
 #include <Xinput.h>
 
 using namespace NCL;
 
-void ControllerInput::UpdateState() {
+void XboxControllerInput::UpdateState() {
 	UpdateLastState();
 	XINPUT_STATE state;;
 	
 	DWORD result = XInputGetState(index, &state);
 	if (result == ERROR_SUCCESS) {
 		inputs.moveDir = GetStickMovement(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY);
+		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY) * CONTROLLER_SENSITIVITY;
 		inputs.aiming = (state.Gamepad.bLeftTrigger > 0);
 		inputs.shooting = (state.Gamepad.bRightTrigger > 0);
 		inputs.jumping = (state.Gamepad.wButtons & XINPUT_GAMEPAD_X);
@@ -20,7 +20,7 @@ void ControllerInput::UpdateState() {
 	}
 }
 
-Vector2 ControllerInput::GetStickMovement(float thumbX, float thumbY) {
+Vector2 XboxControllerInput::GetStickMovement(float thumbX, float thumbY) {
 	float magnitude = sqrt(thumbX * thumbX + thumbY * thumbY);
 	float normalizedMagnitude = 0;
 

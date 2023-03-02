@@ -92,7 +92,7 @@ void TutorialGame::UpdateGame(float dt) {
 		cameraTargetObject->GetTransform().SetOrientation(combinedRotation);*/
 	}
 	else if (!inSelectionMode) {
-		world->GetMainCamera()->UpdateCamera(dt);
+		//world->GetMainCamera()->UpdateCamera(dt);
 	}
 
 	if (lockedObject != nullptr) {
