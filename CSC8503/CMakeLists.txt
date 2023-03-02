@@ -94,8 +94,8 @@ set(Inputs_Files
     "BaseInput.h"
     "KeyboardInput.h"
     "KeyboardInput.cpp"
-    "ControllerInput.h"
-    "ControllerInput.cpp"
+    "XboxControllerInput.h"
+    "XboxControllerInput.cpp"
 )
 source_group("Inputs Files" FILES ${Inputs_Files})
 

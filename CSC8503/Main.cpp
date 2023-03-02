@@ -93,12 +93,12 @@ int main()
 	if (result == ERROR_SUCCESS)
 	{
 		std::cout << "Controller detected." << std::endl;
-		InputManager::GetInstance().GetInputs().emplace(1, new XboxControllerInput(0));
+		InputManager::GetInstance().AddInput(1, new XboxControllerInput(0));
 	}
 	else
 	{
 		std::cout << "No controller detected. Using keyboard input." << std::endl;
-		InputManager::GetInstance().GetInputs().emplace(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+		InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
 	}
 	//Imgui 
 	IMGUI_CHECKVERSION();
