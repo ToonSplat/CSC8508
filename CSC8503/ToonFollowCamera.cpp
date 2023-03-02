@@ -43,14 +43,22 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt, BaseInput* inputs)
 		Window::GetWindow()->LockMouseToWindow(true);
 	}
 
-	v -= (inputs->GetMouseRelPos().y);
-	v = Clamp(v, -80.0f, 80.0f);
-
-	h -= (inputs->GetMouseRelPos().x);
-	if (h < 0) h += 360.0f;
-	if (h > 360.0f) h -= 360.0f;
+	std::cout << inputs->GetMouseRelPos() << std::endl;
 	
-	UpdatePitchAndYaw();
+	//Update the mouse by how much
+	pitch -= (inputs->GetMouseRelPos().y);
+	yaw -= (inputs->GetMouseRelPos().x);
+
+	//Bounds check the pitch, to be between straight up and straight down ;)
+	pitch = std::min(pitch, 90.0f);
+	pitch = std::max(pitch, -90.0f);
+
+	if (yaw < 0) {
+		yaw += 360.0f;
+	}
+	if (yaw > 360.0f) {
+		yaw -= 360.0f;
+	}
 
 	Matrix4 modelMatrixNoRot = followTarget->GetModelMatrixNoRotation();
 	Matrix4 modelMatrixWithRot = followTarget->GetModelMatrix();
