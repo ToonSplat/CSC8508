@@ -139,7 +139,7 @@ void ToonGameSettings::PopulateSettingsData()
 
 	m_SettingsData = {
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera", true, InvertCamera, m_SettingsDS.invertCameraState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, Shadow, m_SettingsDS.shadowState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
 					 };

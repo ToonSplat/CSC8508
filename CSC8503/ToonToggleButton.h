@@ -91,13 +91,14 @@ class ToonToggleButton
 		bool				  m_ShouldDrawValue	 = false;
 		bool				  m_IsAnimating		 = false;
 		ToonToggleButtonHead* m_ToggleButtonHead = NULL;
+		std::vector<std::string> m_ValueTextVector;
 		
 	public:
 		bool m_IsActive		 = false;
 		int m_ToggleButtonID = -1;
 
 	public:
-		ToonToggleButton(Coordinates coordinates, int toggleButtonID = -1, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false);
+		ToonToggleButton(Coordinates coordinates, int toggleButtonID = -1, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false, std::vector<std::string> valueTextVector = { "OFF", "ON" });
 		~ToonToggleButton();
 		ToggleButtonStates GetButtonState();
 		void UpdateButtonDraw();
