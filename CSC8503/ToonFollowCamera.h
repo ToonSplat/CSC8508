@@ -13,7 +13,7 @@ namespace NCL
 		class ToonFollowCamera : public Camera
 		{
 		public:
-			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target);
+			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target, float fov = 45.0f);
 			~ToonFollowCamera() {};
 
 			virtual void UpdateCamera(float dt, BaseInput* inputs) override;
@@ -50,7 +50,6 @@ namespace NCL
 			
 			float requiredRayDistance, defaultRayDistance;
 			float pitchOffset;
-			float h, v;
 			float smoothness;
 			float distanceThresholdMoving, distanceThresholdStanding;
 			float startFOV, aimFOV, vFov, zoomSmoothess;
