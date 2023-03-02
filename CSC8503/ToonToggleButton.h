@@ -93,10 +93,11 @@ class ToonToggleButton
 		ToonToggleButtonHead* m_ToggleButtonHead = NULL;
 		
 	public:
-		bool m_IsActive = false;
+		bool m_IsActive		 = false;
+		int m_ToggleButtonID = -1;
 
 	public:
-		ToonToggleButton(Coordinates coordinates, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false);
+		ToonToggleButton(Coordinates coordinates, int toggleButtonID = -1, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false);
 		~ToonToggleButton();
 		ToggleButtonStates GetButtonState();
 		void UpdateButtonDraw();

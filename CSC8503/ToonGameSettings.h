@@ -32,13 +32,13 @@ class ToonGameSettings : public PushdownState
 		bool			  hasToggle;
 		ToonToggleButton* toggleButton = NULL;
 
-		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, Coordinates toggleCoord = Coordinates())
+		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, int toggleButtonID = -1, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, Coordinates toggleCoord = Coordinates())
 		{
 			coordinates					  = coord;
 			text						  = txt;
 			this->hasToggle				  = hasToggle;
 			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 20.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
-			toggleButton				  = new ToonToggleButton(toggleCoordinates, toggleState, true);
+			toggleButton				  = new ToonToggleButton(toggleCoordinates, toggleButtonID, toggleState, true);
 		}
 	};
 

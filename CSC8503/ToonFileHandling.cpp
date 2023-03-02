@@ -10,14 +10,14 @@ ToonFileHandling::~ToonFileHandling()
 	
 }
 
-bool ToonFileHandling::WriteData(const std::string& dataString)
+bool ToonFileHandling::WriteData(char* dataString, std::ios_base::openmode mode)
 {
+	if (mode == std::ios::trunc) { std::remove(m_FileName.c_str()); }
 	bool isFilePresent = IsFilePresent();
-	std::fstream outputFileStream;
-	outputFileStream.open(m_FileName, isFilePresent ? std::ios_base::app : std::ios::out);
-	if (!outputFileStream.is_open()) { return false; }
-	outputFileStream << dataString;
-	outputFileStream.close();
+	m_FileStream.open(m_FileName, isFilePresent ? mode : std::ios::out);
+	if (!m_FileStream.is_open()) { return false; }
+	m_FileStream << dataString;
+	m_FileStream.close();
 	return true;
 }
 
@@ -33,11 +33,6 @@ bool ToonFileHandling::ReadDataIn(std::string& dataString)
 	}
 	m_FileStream.close();
 	return true;
-}
-
-bool ToonFileHandling::CreateFile()
-{
-	return false;
 }
 
 bool ToonFileHandling::IsFilePresent()

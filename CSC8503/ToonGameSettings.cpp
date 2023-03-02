@@ -138,8 +138,8 @@ void ToonGameSettings::PopulateSettingsData()
 	m_SettingsDS.ParseData(fileContent);
 
 	m_SettingsData = {
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera", true, m_SettingsDS.invertCameraState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, m_SettingsDS.shadowState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera", true, InvertCamera, m_SettingsDS.invertCameraState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Enable Shadow", true, Shadow, m_SettingsDS.shadowState),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
 					 };
@@ -147,5 +147,21 @@ void ToonGameSettings::PopulateSettingsData()
 
 void ToonGameSettings::UpdateSettingsFile()
 {
-	m_SettingsFile->WriteData(m_SettingsDS.SerializeStructure());
+	for (ToonGameSettings::SettingsDataStructure data : m_SettingsData)
+	{
+		if (data.hasToggle)
+		{
+			switch (data.toggleButton->m_ToggleButtonID)
+			{
+				case InvertCamera:
+					m_SettingsDS.invertCameraState = data.toggleButton->GetButtonState();
+					break;
+				case Shadow:
+					m_SettingsDS.shadowState = data.toggleButton->GetButtonState();
+					break;
+			}
+		}
+	}
+	//m_SettingsFile->WriteData(m_SettingsDS.SerializeStructure(), std::ios_base::trunc);
+	m_SettingsFile->WriteData((char*)m_SettingsDS.SerializeStructure().c_str(), std::ios_base::trunc);
 }

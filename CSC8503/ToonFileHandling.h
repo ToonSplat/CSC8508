@@ -1,5 +1,8 @@
 #pragma once
 #include <fstream>
+#include <filesystem>
+#include <stdlib.h>
+#include <stdio.h>
 
 class ToonFileHandling
 {
@@ -10,10 +13,9 @@ class ToonFileHandling
 	public:
 		ToonFileHandling(std::string fileName);
 		~ToonFileHandling();
-		bool WriteData(const std::string& dataString);
+		bool WriteData(char* dataString, std::ios_base::openmode mode = std::ios_base::app);
 		bool ReadDataIn(std::string& dataString);
 
 	private:
-		bool CreateFile();
 		bool IsFilePresent();
 };
