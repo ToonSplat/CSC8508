@@ -39,7 +39,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 	ToonDebugManager::Instance().EndLoad();
-	ToonAssetManager::Instance().LoadAssets();
+	//ToonAssetManager::Instance().LoadAssets(); Now redundant!
 	SetupStuffs();
 	team1Percentage = 0;
 	team2Percentage = 0;
