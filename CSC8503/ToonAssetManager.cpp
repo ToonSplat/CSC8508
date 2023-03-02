@@ -158,7 +158,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(vector<string> tokens) {
 	name = tokens[1];
 	fileName = tokens[2];
 	if (tokens.size() >= 4)
-		invert = (tokens[3] == "true");
+		invert = (tokens[3] == "TRUE");
 	else invert = false;
 
 	return AddTexture(name, fileName, invert);

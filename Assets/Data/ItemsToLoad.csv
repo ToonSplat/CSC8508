@@ -1,5 +1,5 @@
 Texture,mesh,checkerboard.png,,,,
-Texture,basic,Prefab_Grey50.png,,,,
+Texture,basic,Prefab_Grey50.png,TRUE,,,
 Texture,basicPurple,Prefab_Purple.png,TRUE,,,
 Mesh,cube,cube.msh,,,,
 Mesh,arrow,Minimap_Arrow.msh,,,,
@@ -15,15 +15,6 @@ Mesh,Character,player_mesh_1,Character_Boss.msh,0,1,0
 Mesh,Character,player_mesh_2,Character_Boss.msh,1,0,1
 Mesh,Character,player_mesh_3,Character_Boss.msh,0,0,1
 Mesh,Character,player_mesh_4,Character_Boss.msh,1,0.25,0
-Shader,debug,debug.vert,debug.frag,,,
-Shader,shadow,shadowSkin.vert,shadow.frag,,,
-Shader,minimap,minimap.vert,minimap.frag,,,
-Shader,texture,Texture.vert,Texture.frag,,,
-Shader,scene,scene.vert,scene.frag,,,
-Shader,scoreBar,ScoreBar.vert,ScoreBar.frag,,,
-Shader,fullMap,map.vert,map.frag,,,
-Shader,skybox,skybox.vert,skybox.frag,,,
-Shader,animated,sceneSkin.vert,scene.frag,,,
 Animation,Player_Idle,Boss_Gun_Idle.anm,,,,
 Animation,Player_Idle_Aim,Boss_Gun_Idle_Aim.anm,,,,
 Animation,Player_Run,Boss_Gun_Run.anm,,,,
