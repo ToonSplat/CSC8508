@@ -100,13 +100,13 @@ void ToonAssetManager::LoadAssets(void) {
 
 	//-----------------------------------------------------------
 	//		Materials
-	AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
+	/*AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
 	AddMaterial("mat_arena", "Level_Arena.mat", GetMesh("arena_main")->GetSubMeshCount());
-	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstables.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
+	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstacles.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
 	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
-	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());*/
 	ToonDebugManager::Instance().EndLoad();
 }
 
@@ -319,12 +319,13 @@ ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
 }
 
 ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(vector<string> tokens) {
-	string name, fileName;
+	string name, fileName, mesh;
 
 	name = tokens[1];
 	fileName = tokens[2];
+	mesh = tokens[3];
 
-	return nullptr;
+	return AddMaterial(name, fileName, GetMesh(mesh)->GetSubMeshCount());
 }
 
 ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)

@@ -31,10 +31,14 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
 	ToonDebugManager::Instance().StartLoad();
+	// Load everything needed for the loading screen here!
+	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
+		// Add the loading screen update here!
 		std::cout << "Loading next asset\n";
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
+	ToonDebugManager::Instance().EndLoad();
 	ToonAssetManager::Instance().LoadAssets();
 	SetupStuffs();
 	team1Percentage = 0;
