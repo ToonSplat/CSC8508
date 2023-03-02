@@ -7,6 +7,8 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen->delegate = this;
 }
 
 ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win)
@@ -17,6 +19,8 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
+	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
+	m_ToonConfirmationScreen->delegate = this;
 }
 
 
@@ -38,13 +42,21 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 	if (!m_IsMousePointerVisible) { WakeMouseOnMovement(); }
 
-	if (InputManager::GetInstance().GetInputs()[1]->IsBack()) { return PushdownResult::Pop; }	//Keeping it to quit game on escape key press
+	if (m_ShouldQuitGame) { return PushdownState::PushdownResult::Pop; }
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack()) 	//Keeping it to quit game on escape key press
+	{
+		if (!m_BaseCurrentSelectdIndex)
+		{
+			m_CurrentSelectedIndex = CONFIRMATION;
+			return NavigateToScreen(newState);
+		}
+		else { return PushdownResult::Pop; }
+	}
 
 	if (InputManager::GetInstance().GetInputs()[1]->IsSelecting() || InputManager::GetInstance().GetInputs()[1]->IsShooting() || m_HasUserInitiatedScreenNavigation)
 	{
 		return NavigateToScreen(newState);
 	}
-
 	m_Renderer->SetWorld(m_World);
 	m_Renderer->Update(dt);
 	m_Renderer->Render();
@@ -84,12 +96,14 @@ bool ToonMainMenu::IsInside(Vector2 mouseCoordinates, MenuCoordinates singleMenu
 
 PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** newState)
 {
+	std::vector<int> ipAddressVector;
 	int navigationScreenIndex = m_CurrentSelectedIndex + (!m_HasUserInitiatedScreenNavigation ? m_BaseCurrentSelectdIndex : 0);
 	m_HasUserInitiatedScreenNavigation = false;
 	switch (navigationScreenIndex)
 	{
 	case PLAY:
 		m_Game = new ToonGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
 		break;
 	case MULTIPLAY:
@@ -100,9 +114,11 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case CREDITS:
 		return PushdownResult::NoChange;
 	case QUIT:
-		return PushdownResult::Pop;
+		*newState = m_ToonConfirmationScreen;
+		break;
 	case LAUNCHASSERVER:
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
 		break;
 	case LAUNCHASCLIENT:
@@ -111,10 +127,13 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case BACK:
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
-		std::vector<int> ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
+		ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
 		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
 		*newState						 = m_Game;
+		break;
+	case CONFIRMATION:
+		*newState = m_ToonConfirmationScreen;
 		break;
 	}
 	return PushdownResult::Push;
@@ -162,6 +181,17 @@ void ToonMainMenu::WakeMouseOnMovement()
 	Vector2 currentMousePosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	if (currentMousePosition != m_MouseLastPosition) { UpdateMosePointerState(true); }
 	m_MouseLastPosition = currentMousePosition;
+}
+
+PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()
+{
+	return PushdownResult::Pop;
+}
+
+PushdownState::PushdownResult ToonMainMenu::DidSelectOkButton()
+{
+	m_ShouldQuitGame = true;
+	return PushdownResult::Pop;
 }
 
 void ToonMainMenu::DrawMainMenu()

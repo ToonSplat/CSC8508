@@ -4,12 +4,14 @@
 #include <unordered_set>
 #include "HitSphere.h"
 #include "Camera.h"
+#include "Debug.h"
 
 namespace NCL
 {
 	namespace CSC8503
 	{
 		class ToonGameObject;
+		class ToonGame;
 		class ToonEventListener;
 		class PaintBallProjectile;
 		class PaintableObject;
@@ -47,31 +49,34 @@ namespace NCL
 			void RemoveHitSphere(HitSphere* hitSphere);
 			std::unordered_set<HitSphere*> GetHitSpheres(void) const { return activeHitSpheres; }
 
-			void AddPaintableObject(PaintableObject* paintableObject);
-			void RemovePaintableObject(PaintableObject* paintableObject);
-			std::unordered_set<PaintableObject*> GetPaintableObjects(void) const { return paintableObjects; }
+			void AddPaintableObject(ToonGameObject* paintableObject);
+			void RemovePaintableObject(ToonGameObject* paintableObject);
+			std::unordered_set<ToonGameObject*> GetPaintableObjects(void) const { return paintableObjects; }
 
 			void DeleteMarkedObjects();
 
 			void GetGameObjects(void) const;
 
-			Camera* GetMainCamera() const { return mainCamera; }
-			void SetMainCamera(Camera* newCamera) { 
-				delete mainCamera;
-				mainCamera = newCamera; 
+			Camera* GetMainCamera(int player) { return mainCameras[player]; }
+			void SetMainCamera(int player, Camera* newCamera) {
+				delete mainCameras[player];
+				mainCameras[player] = newCamera;
+			}
+
+			int GetMainCameraCount() {
+				return mainCameras.size();
 			}
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }
 			void SetMinimapCamera(Camera* newCamera) { minimapCamera = newCamera; }
-			
+
 			Camera* GetMapCamera() const { return mapCamera; }
 			void SetMapCamera(Camera* newCamera) { mapCamera = newCamera; }
 
 
-
 			virtual void UpdateWorld(float dt);
 			void OperateOnContents(ToonGameObjectFunc f);
-      
+
 			bool ShowCursor() const { return showCursor; }
 
 			Team* GetTeamLeastPlayers();
@@ -86,8 +91,16 @@ namespace NCL
 
 			float interpolationFactor;
 
+			bool DoesMapNeedChecking() {
+				return updateMap;
+			}
+
+			void MapNeedsChecking(bool needsUpdating) {
+				updateMap = needsUpdating;
+			}
+
 		protected:
-			Camera* mainCamera;
+			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
 			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
@@ -97,7 +110,7 @@ namespace NCL
 			std::vector<ToonGameObject*> gameObjects;
 			std::unordered_set<PaintBallProjectile*> activePaintballs;
 			std::unordered_set<HitSphere*> activeHitSpheres;
-			std::unordered_set<PaintableObject*> paintableObjects;
+			std::unordered_set<ToonGameObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
 			std::map<int, Team*> teams;
@@ -106,6 +119,8 @@ namespace NCL
 
 			int		worldIDCounter;
 			int		worldStateCounter;
+
+			bool updateMap = true;
 
 		private:
 			bool showCursor;

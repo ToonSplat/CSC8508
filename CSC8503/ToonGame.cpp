@@ -9,20 +9,26 @@
 #include "PaintBallClass.h"
 #include "ToonEventListener.h"
 #include "InputManager.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(GameTechRenderer* renderer, bool offline) : renderer(renderer), offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(2), offline(offline)
 {
 	world = new ToonGameWorld();
+	ToonDebugManager::Instance().SetGameWorld(world);
+
 	renderer->SetWorld(world);
 
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
 	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
+	for (int i = 2; i <= localPlayerCount; i++) {
+		InputManager::GetInstance().GetInputs().emplace(i, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+	}
 	StartGame();
 }
 
@@ -31,7 +37,8 @@ ToonGame::~ToonGame()
 	delete world;
 	delete baseWeapon;
 	delete levelManager;
-	delete playerControl;
+	for (auto& [id, control] : playerControls)
+		delete control;
 	delete tieTeam;
 }
 
@@ -39,86 +46,94 @@ void ToonGame::StartGame() {
 	gameTime = 150.0f;
 	winner = nullptr;
 	allPlayers.clear();
+	for (auto& [id, control] : playerControls)
+		delete control;
+	playerControls.clear();
 	if (offline) {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
-		player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
-		allPlayers.emplace(player);
-		playerControl = new PlayerControl();
-		player->SetWeapon(baseWeapon);
-		world->SetMainCamera(new ToonFollowCamera(world, player));
-		world->SetMinimapCamera(new ToonMinimapCamera(*player));
+		for (int i = 1; i <= localPlayerCount; i++) {
+			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+			players[i] = player;
+			allPlayers.emplace(player);
+			playerControls[i] = new PlayerControl();
+			player->SetWeapon(baseWeapon);
+			world->SetMainCamera(i, new ToonFollowCamera(world, player));
+			if (localPlayerCount == 1)
+				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+		}
 	}
 	else {
 		levelManager->ResetLevel();
-		world->SetMainCamera(new ToonObserverCamera());
+		world->SetMainCamera(1, new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
 	accumulator = 0.0f;
 }
 
-void ToonGame::UpdateGame(float dt){
+void ToonGame::UpdateGame(float dt) {
+	if (CheckDebugKeys()) return;
 
-#pragma region To Be Changed
-	Vector2 screenSize = Window::GetWindow()->GetScreenSize();
-	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
-#pragma endregion
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
-		StartGame();
-		return;
-	}
-	world->GetMainCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
-	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
-		gameTime = min(gameTime, 5.0f);
-	}
-	if (world->GetMinimapCamera())
-		world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[1]);
 	world->UpdateWorld(dt);
 
-	if (offline) {
-		InputManager::GetInstance().GetInputs()[1]->UpdateGameControls(playerControl, world->GetMainCamera());
+	for (auto& [id, player] : players) {
 		if (player) {
-			player->MovementUpdate(dt, playerControl);
-			player->WeaponUpdate(dt, playerControl);
+			UpdateCameras(dt, id);
+			if (id == debugPlayerControl) {
+				InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id)); // TODO: Change from hard coded P1 control
+				if (offline) {
+					player->MovementUpdate(dt, playerControls[id]);
+					player->WeaponUpdate(dt, playerControls[id]);
+				}
+				else {
+					player->SetAiming(playerControls[id]->aiming);
+				}
+			}
 		}
 	}
-	// This next line is an abomination and should be refactored by Ryan
-	else if (player) {
-		player->SetAiming(playerControl->aiming);
-	}
 
-	for (auto& player : allPlayers) {
-		player->AnimationUpdate(dt);
-	}
+	if (NetworkingStatus::Server)
+		UpdateCameras(dt, 1);
 
-	accumulator += dt;
-	while (accumulator >= timeStep)
-	{
-		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
-		accumulator -= timeStep;
-		world->DeleteMarkedObjects();
-	}
-	world->interpolationFactor = float(accumulator / timeStep);
+	UpdateAnimations(dt);
 
-	gameTime -= dt;
-	ShowTime(gameTime);
-	if (gameTime <= 0) {
-		if (winner == nullptr && offline == true) {
-			winner = DetermineWinner(renderer->GetTeamScores());
-		}
-		if(winner != nullptr)
-			Debug::Print("WINNER: " + winner->GetTeamName(), Vector2(0, 15), winner->GetTeamColour());
-		if (gameTime <= -5.0f && offline == true)
-			StartGame();
-	}
+	UpdatePhysics(dt);
+
+	UpdateTime(dt);
+	ShowUI(gameTime);
+
 	renderer->Render();
 	Debug::UpdateRenderables(dt);
 }
 
+PushdownState::PushdownResult ToonGame::DidSelectCancelButton()
+{
+	return PushdownState::Pop;
+}
+
+PushdownState::PushdownResult ToonGame::DidSelectOkButton()
+{
+	m_ShouldQuitGame = true;
+	return PushdownState::Pop;
+}
+
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
+	if (m_ShouldQuitGame)
+	{
+		world->MapNeedsChecking(true);
+		ToonDebugManager::Instance().SetGameWorld(nullptr);
 		return PushdownResult::Pop;
+	}
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame)
+	{
+		if (offline)
+		{
+			*newState = GetToonConfirmationScreen();
+			return PushdownResult::Push;
+		}
+	}
+	//return PushdownResult::Pop;
 	if (dt > 0.1f)
 	{
 		std::cout << "Skipping large time delta" << std::endl;
@@ -135,7 +150,66 @@ void ToonGame::OnAwake()
 	Window::GetWindow()->LockMouseToWindow(true);
 }
 
-void ToonGame::ShowTime(float time) {
+bool ToonGame::CheckDebugKeys() {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F8) && offline) {
+		StartGame();
+		return true;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F3)) {
+		ToonDebugManager::Instance().ToggleCollisionDisplay();
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Z)) {
+		debugPlayerControl = 1;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::X)) {
+		debugPlayerControl = 2;
+	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
+		gameTime = min(gameTime, 5.0f);
+	}
+	return false;
+}
+
+void ToonGame::UpdateCameras(float dt, int localPlayer) {
+	world->GetMainCamera(localPlayer)->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+	if (localPlayer == 1)
+		if (world->GetMinimapCamera())
+			world->GetMinimapCamera()->UpdateCamera(dt, InputManager::GetInstance().GetInputs()[localPlayer]);
+}
+
+void ToonGame::UpdatePhysics(float dt) {
+	ToonDebugManager::Instance().StartPhysics();
+	accumulator += dt;
+	while (accumulator >= timeStep)
+	{
+		world->GetPhysicsWorld().update(reactphysics3d::decimal(timeStep));
+		accumulator -= timeStep;
+		world->DeleteMarkedObjects();
+	}
+	world->interpolationFactor = float(accumulator / timeStep);
+	ToonDebugManager::Instance().EndPhysics();
+}
+
+void ToonGame::UpdateAnimations(float dt) {
+	ToonDebugManager::Instance().StartAnimation();
+	for (auto& player : allPlayers) {
+		player->AnimationUpdate(dt);
+	}
+	ToonDebugManager::Instance().EndAnimation();
+}
+
+void ToonGame::UpdateTime(float dt) {
+	gameTime -= dt;
+	if (gameTime <= 0) {
+		if (winner == nullptr && offline == true) {
+			winner = DetermineWinner(renderer->GetTeamScores());
+		}
+		if (gameTime <= -5.0f && offline == true)
+			StartGame();
+	}
+}
+
+void ToonGame::ShowUI(float time) {
 	std::string output = "";
 	if (time < 0) {
 		output += '-';
@@ -148,7 +222,20 @@ void ToonGame::ShowTime(float time) {
 	if (seconds < 10)
 		output += "0";
 	output += to_string(seconds);
-	Debug::Print(output, NCL::Maths::Vector2(0, 10));
+
+	if (world->GetMainCameraCount() > 1) {
+		Debug::Print("[]", Vector2(48.5f / 2.0f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+		Debug::Print(output, NCL::Maths::Vector2(47.5f / 2, 5.0f));
+		if (winner != nullptr)
+			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f / 2, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+	}
+	else
+	{
+		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+		Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+		if (winner != nullptr)
+			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+	}
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
@@ -166,4 +253,19 @@ Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
 	}
 	if (tie == true) return tieTeam;
 	else return world->GetTeams().find(currentWinner)->second;
+}
+
+ToonConfirmationScreen* NCL::CSC8503::ToonGame::GetToonConfirmationScreen()
+{
+	if (!m_ToonConfirmationScreen)
+	{
+		if (world->GetMainCameraCount() > 1) {
+			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(10, 20), Vector2(30, 20)), m_WindowSize, renderer, "Quit the game?");
+		}
+		else {
+			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
+		}
+		m_ToonConfirmationScreen->delegate = this;
+	}
+	return m_ToonConfirmationScreen;
 }

@@ -27,6 +27,8 @@
 #include "XboxControllerInput.h"
 #include "InputManager.h"
 
+#include "ToonDebugManager.h"
+
 #include <Windows.h>
 #include <Xinput.h>
 
@@ -57,6 +59,9 @@ hide or show the
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
+		ToonDebugManager::Instance().EndFrame();
+		ToonDebugManager::Instance().StartFrame();
+		ToonDebugManager::Instance().Update();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
@@ -73,7 +78,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 			w->SetWindowPosition(0, 0);
 		}
 
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		w->SetTitle("ToonSplat frame time:" + std::to_string(1000.0f * dt));
 		InputManager::GetInstance().Update();
 		if (!machine.Update(dt)) {
 			return;
@@ -85,7 +90,11 @@ int main()
 {
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
+	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+#ifndef _DEBUG
+	w->ShowConsole(false);
+#endif
 
 	// Controller settings
 	XINPUT_STATE controllerState;
@@ -123,6 +132,7 @@ int main()
 	StartPushdownAutomata(w, mainMenu);
 
 	ToonAssetManager::Destroy();
+	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
 	//Imgui 
 	ImGui_ImplOpenGL3_Shutdown();

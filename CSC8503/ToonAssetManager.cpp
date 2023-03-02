@@ -1,4 +1,6 @@
 #include "ToonAssetManager.h"
+#include <stb/stb_image.h>
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 
@@ -22,6 +24,7 @@ ToonAssetManager::~ToonAssetManager(void) {
 }
 
 void ToonAssetManager::LoadAssets(void) {
+	ToonDebugManager::Instance().StartLoad();
 	for (auto& [name, texture] : textures)
 		delete texture;
 	for (auto& [name, mesh] : meshes)
@@ -58,8 +61,14 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
+
+	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
+	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
+	AddMesh("player_mesh_3", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_BLUE_BULLDOGS, 1.0f)));
+	AddMesh("player_mesh_4", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_ORANGE_OTTERS, 1.0f)));
 	//AddMesh("floorMain", "FloorsMain.msh");
 	//AddMesh("platformMain", "Level_Platform.msh");
+	
 	//-----------------------------------------------------------
 	//		Shaders
 	AddShader("debug", "debug.vert", "debug.frag");
@@ -95,6 +104,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+	ToonDebugManager::Instance().EndLoad();
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
@@ -147,6 +157,14 @@ MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileNa
 	meshes.emplace(name, mesh);
 
 	return mesh;
+}
+
+void NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
+{
+	if (newMesh == nullptr)
+		return;
+
+	meshes.emplace(name, newMesh);
 }
 
 Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {
@@ -212,4 +230,37 @@ ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const s
 	materials.emplace(name, mat);
 
 	return mat;
+}
+
+MeshGeometry* NCL::ToonAssetManager::CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor)
+{
+	MeshGeometry* copyPlayerMesh = new OGLMesh(fileName);
+	if (copyPlayerMesh == nullptr) return nullptr;
+
+	std::vector<Vector4> vertexColours;
+	const std::vector<unsigned int> indices = copyPlayerMesh->GetIndexData();
+	for (size_t i = 0; i < copyPlayerMesh->GetVertexCount(); i++)
+		vertexColours.emplace_back(Debug::WHITE);
+
+	const SubMesh* clothesSubMesh = copyPlayerMesh->GetSubMesh(4);
+	if (clothesSubMesh == nullptr) return nullptr;
+
+	int start = clothesSubMesh->start;
+	int end = start + clothesSubMesh->count;
+
+	for (int i = start; i < end; i += 3)
+	{
+		int A = indices[i + 0];
+		int B = indices[i + 1];
+		int C = indices[i + 2];
+
+		vertexColours[A] = teamColor;
+		vertexColours[B] = teamColor;
+		vertexColours[C] = teamColor;
+	}
+
+	copyPlayerMesh->SetVertexColours(vertexColours);
+	copyPlayerMesh->UploadToGPU();
+
+	return copyPlayerMesh;
 }

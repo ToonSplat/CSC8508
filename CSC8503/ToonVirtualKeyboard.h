@@ -5,6 +5,7 @@
 #include "ToonGame.h"
 #include "ToonGameWorld.h"
 #include "InputManager.h"
+#include "Toon2DCoordinates.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -13,14 +14,6 @@ using namespace CSC8503;
 #define BACKSPACE_BUTTON_WIDTH  15.0f
 #define SPACE_BUTTON_WIDTH		25.0f
 
-//TODO: Use this in Main Menu screen
-struct Coordinates
-{
-	Vector2 origin;
-	Vector2 size;
-
-	Coordinates(Vector2 org, Vector2 siz) : origin(org), size(siz) {}
-};
 
 class ToonVirtualKeyboard
 {
@@ -92,5 +85,5 @@ class ToonVirtualKeyboard
 		void UpdateMosePointerState(bool isVisible);
 		void WakeMouseOnMovement();
 		void UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key);
-		bool IsMouseInsideKeyboardArea(int mouseX, int mouseY);
+		bool IsMouseInsideKeyboardArea(float mouseX, float mouseY);
 };

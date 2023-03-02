@@ -1,9 +1,8 @@
 #include "ToonRenderObject.h"
 #include "ToonGameObject.h"
 #include "ToonLevelManager.h"
-#include <stb/stb_image.h>
-#include <reactphysics3d/reactphysics3d.h>
 #include "ToonGameWorld.h"
+#include <reactphysics3d/reactphysics3d.h>
 
 using namespace NCL;
 using namespace CSC8503;
@@ -26,6 +25,10 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("cube")) return false;
 	if (!LoadModel("arrow")) return false;
 	if (!LoadModel("player")) return false;
+	if (!LoadModel("player_mesh_1")) return false;
+	if (!LoadModel("player_mesh_2")) return false;
+	if (!LoadModel("player_mesh_3")) return false;
+	if (!LoadModel("player_mesh_4")) return false;
 	if (!LoadModel("sphere")) return false;
 	if (!LoadModel("arena_main")) return false;
 	if (!LoadModel("arena_lights")) return false;
@@ -207,7 +210,6 @@ reactphysics3d::ConcaveMeshShape* NCL::CSC8503::ToonLevelManager::CreateConcaveM
 	return concaveShape;
 }
 
-
 PaintableObject* NCL::CSC8503::ToonLevelManager::AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, bool isFloor)
 {
 	PaintableObject* cube = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
@@ -386,9 +388,14 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 
 	player->GetRigidbody()->setUserData(player);
 
-	gameWorld->AddGameObject(player);
 	player->SetRenderObject(new ToonRenderObject(&player->GetTransform(), GetMesh("player"), GetMaterial("mat_player"), GetShader("animated"), GetMesh("arrow")));
-	player->GetRenderObject()->SetColour(Vector4(/*team->GetTeamColour()*/1, 1, 1, 1));
+	player->GetRenderObject()->SetMinimapColour(Vector4(team->GetTeamColour(), 1.0f));
+
+	MeshGeometry* teamPlayerMesh = GetMesh("player_mesh_" + std::to_string(team->GetTeamID()));
+	player->GetRenderObject()->SetMesh(teamPlayerMesh);	//Eg: player_mesh_1, player_mesh_2, etc
+
+	gameWorld->AddGameObject(player);
+	gameWorld->AddPaintableObject(player);
 
 	return player;
 }
