@@ -17,7 +17,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	teams.emplace(2, new Team("The Purple Prawns", Team::T_PURPLE_PRAWNS, 2));
 	teams.emplace(3, new Team("The Blue Bulldogs", Team::T_BLUE_BULLDOGS, 3));
 	teams.emplace(4, new Team("The Orange Otters", Team::T_ORANGE_OTTERS, 4));
-	mainCamera = new Camera();
+	mainCameras[1] = new Camera();
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
