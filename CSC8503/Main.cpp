@@ -28,6 +28,7 @@
 #include "InputManager.h"
 
 #include "ToonDebugManager.h"
+#include "ToonSettingsManager.h"
 
 #include <Windows.h>
 #include <Xinput.h>
@@ -92,6 +93,7 @@ int main()
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	ToonSettingsManager::ApplySettings();
 #ifndef _DEBUG
 	w->ShowConsole(false);
 #endif
