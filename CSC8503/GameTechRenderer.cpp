@@ -419,7 +419,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMap(){
-	if (!gameWorld->GetMapCamera() || !gameWorld->MapNeedsUpdating()) return;
+	if (!gameWorld->GetMapCamera() || !gameWorld->DoesMapNeedChecking()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -445,7 +445,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	if (gameWorld->MapNeedsUpdating()) {
+	if (gameWorld->DoesMapNeedChecking()) {
 		RetrieveAtomicValues();
 
 		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
@@ -459,7 +459,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 
-		gameWorld->MapChecked();
+		gameWorld->MapNeedsChecking(false);
 	}
 	
 	Matrix4 identityMatrix = Matrix4();

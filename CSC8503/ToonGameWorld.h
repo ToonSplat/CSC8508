@@ -91,12 +91,12 @@ namespace NCL
 
 			float interpolationFactor;
 
-			bool MapNeedsUpdating() {
+			bool DoesMapNeedChecking() {
 				return updateMap;
 			}
 
-			void MapChecked() {
-				updateMap = false;
+			void MapNeedsChecking(bool needsUpdating) {
+				updateMap = needsUpdating;
 			}
 
 		protected:
@@ -120,7 +120,7 @@ namespace NCL
 			int		worldIDCounter;
 			int		worldStateCounter;
 
-			bool updateMap = true;
+			bool updateMap = false;
 
 		private:
 			bool showCursor;
