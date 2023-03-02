@@ -330,8 +330,6 @@ void GameTechRenderer::RenderFrame() {
 	}
 	PresentScene();
 	
-	
-	RenderReactPhysicsDebug();
 	RenderImGUI();
 	ToonDebugManager::Instance().EndRendering();
 }
@@ -503,20 +501,6 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void NCL::CSC8503::GameTechRenderer::RenderReactPhysicsDebug()
-{
-	int numTri = gameWorld->GetPhysicsWorld().getDebugRenderer().getNbTriangles();
-	if (numTri > 0)
-	{
-		const reactphysics3d::DebugRenderer::DebugTriangle* tri = gameWorld->GetPhysicsWorld().getDebugRenderer().getTrianglesArray();
-		for (int i = 0; i < numTri; i++)
-		{
-			Debug::DrawTriangle(ToonUtils::ConvertToNCLVector3(tri->point1), ToonUtils::ConvertToNCLVector3(tri->point2), ToonUtils::ConvertToNCLVector3(tri->point2), Debug::YELLOW, 0.0f);
-			tri++;
-		}
-	}
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMap()

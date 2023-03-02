@@ -55,6 +55,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 	if (!LoadModel("arena_lights")) return false;
 	if (!LoadModel("arena_deco_cats")) return false;
+	if (!LoadModel("arena_deco_cats_hull")) return false;
 	if (!LoadModel("arena_obstacles")) return false;
 	if (!LoadModel("arena_ramps")) return false;
 	if (!LoadModel("arena_decos")) return false;
@@ -105,6 +106,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadMaterial("mat_arena_ramps")) return false;
 	if (!LoadMaterial("mat_arena_lights")) return false;
 	if (!LoadMaterial("mat_arena_deco_cats")) return false;
+	if (!LoadMaterial("mat_arena_deco_cats_hull")) return false;
 	if (!LoadMaterial("mat_arena_decos")) return false;
 	if (!LoadMaterial("mat_arena_border_wall")) return false;
 	if (!LoadMaterial("mat_arena_cameras")) return false;
@@ -253,7 +255,8 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	AddConcaveObjectToWorld(GetMesh("arena_cameras"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_cameras"), arenaDecosColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false, false);
 	
-	//AddConvexObjectToWorld(GetMesh("arena_deco_cats"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats"), arenaLightsColor, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_deco_cats"), GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats"), arenaLightsColor, 0.0f, true, false, true);
+	//AddConcaveObjectToWorld(GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats_hull"), arenaLightsColor, 0.0f, true, false, true);
 
 	//Those Boxes with ToonSplat logos on it
 	AddTSCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), arenaDecosColour, 1.0f, false);	
@@ -431,7 +434,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -447,11 +450,14 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, cubeTex, GetShader("scene")));
 	gameObject->GetRenderObject()->SetColour(minimapColour);
 
-	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
+	if (makeConcaveShape)
+	{
+		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
 
-	gameObject->SetCollisionShape(concaveShape);
-	gameObject->SetCollider(concaveShape);
-	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+		gameObject->SetCollisionShape(concaveShape);
+		gameObject->SetCollider(concaveShape);
+		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+	}
 
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
@@ -463,7 +469,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -479,11 +485,14 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, mat, GetShader("scene")));
 	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
 
-	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
+	if (makeConcaveShape)
+	{
+		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
 
-	gameObject->SetCollisionShape(concaveShape);
-	gameObject->SetCollider(concaveShape);
-	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+		gameObject->SetCollisionShape(concaveShape);
+		gameObject->SetCollider(concaveShape);
+		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+	}
 
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
@@ -495,7 +504,42 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, MeshGeometry* collisionHullMesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
+{
+	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
+	gameObject->GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(scale);
+
+	if (addAsFloor) gameObject->SetAsFloor();
+
+	gameObject->AddRigidbody();
+	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
+	gameObject->GetRigidbody()->setMass(mass);
+	gameObject->GetRigidbody()->setIsAllowedToSleep(true);
+	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, mat, GetShader("scene")));
+	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
+
+	if (makeConcaveShape)
+	{
+		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(collisionHullMesh, scale);
+
+		gameObject->SetCollisionShape(concaveShape);
+		gameObject->SetCollider(concaveShape);
+		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+	}
+
+	gameObject->GetRigidbody()->setUserData(gameObject);
+
+	gameWorld->AddGameObject(gameObject);
+
+	if (addAsPaintable)
+		gameWorld->AddPaintableObject(gameObject);
+
+	return gameObject;
+}
+
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConvexShape)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -513,11 +557,14 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeom
 
 	reactphysics3d::ConvexMeshShape* convexShape = CreateConvexMeshShape(mesh, scale);
 
-	gameObject->SetCollisionShape(convexShape);
-	gameObject->SetCollider(convexShape);
-	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+	if (makeConvexShape)
+	{
+		gameObject->SetCollisionShape(convexShape);
+		gameObject->SetCollider(convexShape);
+		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
 
-	gameObject->GetRigidbody()->setUserData(gameObject);
+		gameObject->GetRigidbody()->setUserData(gameObject);
+	}
 
 	gameWorld->AddGameObject(gameObject);
 
