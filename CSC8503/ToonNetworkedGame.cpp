@@ -8,7 +8,7 @@
 #include "ToonMinimapCamera.h"
 #include "InputManager.h"
 #include "ToonDebugManager.h"
-#include <math.h>
+#include "Maths.h"
 
 #include <fstream>
 
@@ -165,7 +165,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
 				playersControl->shooting = false;
-				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
 				dirOri.normalize();
@@ -264,6 +264,7 @@ void ToonNetworkedGame::UpdateMinimumState() {
 
 Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team) {
 	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), team);
+	newPlayerCharacter->SetWorldID(-playerID);
 	ToonNetworkObject* netO = new ToonNetworkObject(newPlayerCharacter, -playerID, myState);
 	newPlayerCharacter->SetWeapon(baseWeapon);
 	serverPlayers.find(playerID)->second.player = newPlayerCharacter;
@@ -320,9 +321,19 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			}
 
 			// Tell the new player of every existing paint splat
-			for (PaintableObject* po : world->GetPaintableObjects())
-				for (ImpactPoint& i : *po->GetImpactPoints())
-					SendImpactPoint(i, po, receivedID);
+			for (ToonGameObject* po : world->GetPaintableObjects()) {
+				if (dynamic_cast<PaintableObject*>(po)) {
+					PaintableObject* object = (PaintableObject*)po;
+					for (ImpactPoint& i : *object->GetImpactPoints())
+						SendImpactPoint(i, object, receivedID);
+				}
+				else {
+					Player* object = (Player*)po;
+					for (ImpactPoint& i : *object->GetImpactPoints())
+						SendImpactPoint(i, object, receivedID);
+				}
+			}
+
 
 			// Have the server spawn the new player and add them to the networking lists
 			serverPlayers.emplace(receivedID, PlayerDetails(nullptr, new PlayerControl(), team));
@@ -368,6 +379,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			}
 		}
 		world->RemoveGameObject(removingPlayer, true);
+		world->RemovePaintableObject(removingPlayer);
 		if (thisServer) {
 			delete serverPlayers.find(receivedID)->second.controls;
 			DisconnectPacket outPacket(receivedID);
@@ -427,12 +439,19 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	}
 	else if (type == Impact) {
 		ImpactPacket* realPacket = (ImpactPacket*)payload;
-		//std::cout << "Recieved ImpactPacket for object " << realPacket->objectID << std::endl;
+		std::cout << "Recieved ImpactPacket for object " << realPacket->objectID << std::endl;
 		Team* team = world->GetTeams()[realPacket->teamID];
-		for (PaintableObject* p : world->GetPaintableObjects()) {
+		for (ToonGameObject* p : world->GetPaintableObjects()) {
 			if (p->GetWorldID() == realPacket->objectID) {
-				p->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
-				world->MapNeedsChecking(true);
+				if (dynamic_cast<PaintableObject*>(p)) {
+					PaintableObject* object = (PaintableObject*)p;
+					object->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
+				}
+				else {
+					Player* object = (Player*)p;
+					object->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
+				}
+        world->MapNeedsChecking(true);
 				break;
 			}
 		}
@@ -468,7 +487,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 	else std::cout << "Recieved unknown packet\n";
 }
 
-void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID) {
+void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, ToonGameObject* object, int playerID){
 	ImpactPacket newPacket;
 	newPacket.objectID = object->GetWorldID();
 	newPacket.teamID = point.GetTeamID();

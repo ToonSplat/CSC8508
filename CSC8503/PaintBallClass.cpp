@@ -6,7 +6,7 @@
 #include "ToonRaycastCallback.h"
 #include "ToonGameWorld.h"
 #include "ToonLevelManager.h"
-#include <math.h>
+#include "Maths.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -82,7 +82,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	{
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 					reactphysics3d::Vector3 dirOri = orientation;
 					dirOri.y = 0;
 					dirOri.normalize();

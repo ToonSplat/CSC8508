@@ -47,7 +47,7 @@ namespace NCL {
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
-			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
+			void SendImpactPoint(ImpactPoint point, ToonGameObject* object, int playerID = -1);
 
 			void UpdateCall(float dt) override;
 			PushdownState::PushdownResult DidSelectCancelButton() override;

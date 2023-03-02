@@ -12,6 +12,7 @@
 #include <algorithm>
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
+#include "Player.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -608,7 +609,6 @@ void GameTechRenderer::LoadSkybox() {
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
@@ -699,6 +699,7 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
 			ImGui::TableNextColumn();
 
+
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
 			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());
@@ -760,11 +761,26 @@ void GameTechRenderer::SortObjectList() {
 
 }
 
-void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader){
+void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader)
+{
 	int impactPointsLocation = 0;
 	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
 
-	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
+	int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
+
+	std::deque<ImpactPoint>* objImpactPoints;
+	if (dynamic_cast<PaintableObject*>(paintedObject)) {
+		PaintableObject* object = (PaintableObject*)paintedObject;
+		glUniform1i(isFloorLocation, object->IsObjectTheFloor() ? 1 : 0);
+
+		objImpactPoints = object->GetImpactPoints();
+	}
+	else {
+		Player* object = (Player*)paintedObject;
+		glUniform1i(isFloorLocation, object->IsObjectTheFloor() ? 1 : 0);
+
+		objImpactPoints = object->GetImpactPoints();
+	}
 
 	glUniform1i(impactPointCountLocation, (GLint)objImpactPoints->size());
 
@@ -791,6 +807,43 @@ void GameTechRenderer::PassImpactPointDetails(PaintableObject* const& paintedObj
 		i++;
 	}
 }
+
+//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader) {
+//	int i = 1;
+//}
+
+//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader)
+//{
+//	int impactPointsLocation = 0;
+//	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
+//
+//	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
+//
+//	glUniform1i(impactPointCountLocation, (GLint)objImpactPoints->size());
+//
+//	if (objImpactPoints->empty()) return;
+//
+//	GLuint i = 0;
+//	for (ImpactPoint& point : *objImpactPoints) {
+//		char buffer[64];
+//
+//		sprintf_s(buffer, "impactPoints[%i].position", i);
+//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+//		Vector3 impactLocation = point.GetImpactLocation();
+//		glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
+//
+//		sprintf_s(buffer, "impactPoints[%i].colour", i);
+//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+//		Vector3 impactColour = point.GetImpactColour();
+//		glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
+//
+//		sprintf_s(buffer, "impactPoints[%i].radius", i);
+//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
+//		glUniform1f(impactPointsLocation, point.GetImpactRadius());
+//
+//		i++;
+//	}
+//}
 
 void GameTechRenderer::NewRenderLines() {
 	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetDebugLines();
@@ -933,7 +986,6 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
-	//if (!gameWorld->MapNeedsUpdating()) return;
 	GLuint pixelCount[ATOMIC_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
