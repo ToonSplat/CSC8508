@@ -122,8 +122,7 @@ void GameTechRenderer::RenderFrame() {
 		break;
 	}
 
-	if (gameWorld->MapNeedsUpdating())
-		DrawMap();
+	DrawMap();
 	
 	PresentScene();
 
@@ -420,7 +419,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMap(){
-	if (!gameWorld->GetMapCamera()) return;
+	if (!gameWorld->GetMapCamera() || !gameWorld->MapNeedsUpdating()) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -446,19 +445,23 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	RetrieveAtomicValues();
+	if (gameWorld->MapNeedsUpdating()) {
+		RetrieveAtomicValues();
 
-	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
-	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
-	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
-	glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
+		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
+		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2PercentageOwned"), team2Percentage);
+		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3PercentageOwned"), team3Percentage);
+		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
 
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-	glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
+		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
+		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 
+		gameWorld->MapChecked();
+	}
+	
 	Matrix4 identityMatrix = Matrix4();
 
 	int projLocation = glGetUniformLocation(scoreBarShader->GetProgramID(), "projMatrix");
@@ -468,7 +471,6 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
-
 	glDisable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	Matrix4 scoreBarModelMatrix = Matrix4::Translation(Vector3(0, 0.85f, 0)) * Matrix4::Scale(Vector3(0.4f, 0.035f, 1));
@@ -924,14 +926,14 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 	
-	currentAtomicCPU = 0;
+	currentAtomicCPU = 2;
 	curretAtomicReset = 1;
-	currentAtomicGPU = 2;
+	currentAtomicGPU = 0;
 }
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
-	if (!gameWorld->MapNeedsUpdating()) return;
+	//if (!gameWorld->MapNeedsUpdating()) return;
 	GLuint pixelCount[ATOMIC_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
@@ -960,8 +962,6 @@ void GameTechRenderer::ResetAtomicBuffer(){
 		a[i] = 0;
 	}
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
-
-	gameWorld->MapChecked();
 
 }
 

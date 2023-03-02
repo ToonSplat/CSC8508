@@ -120,7 +120,7 @@ namespace NCL
 			int		worldIDCounter;
 			int		worldStateCounter;
 
-			bool updateMap = false;
+			bool updateMap = true;
 
 		private:
 			bool showCursor;
