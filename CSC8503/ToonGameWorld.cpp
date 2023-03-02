@@ -25,7 +25,8 @@ NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 	ClearAndErase();
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
-	delete mainCamera;
+	for (auto& [id, camera] : mainCameras)
+		delete camera;
 	delete minimapCamera;
 	for (auto& [id, team] : teams)
 		delete team;
@@ -49,7 +50,7 @@ void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 			delete (Player*)i;
 		else delete i;
 	}
-	
+
 	Clear();
 }
 
@@ -87,6 +88,7 @@ void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	activeHitSpheres.erase(hitSphere);
 	objectsToDelete.insert(hitSphere);
+	updateMap = true;
 }
 
 void ToonGameWorld::AddPaintableObject(ToonGameObject* paintableObject) {

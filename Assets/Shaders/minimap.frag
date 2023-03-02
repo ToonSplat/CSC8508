@@ -63,9 +63,7 @@ void main(void)
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
-	
-	
-	
+
 	fragColor = albedo;
 
 }
