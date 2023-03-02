@@ -230,12 +230,8 @@ void GameTechRenderer::RenderScene() {
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
-		if (dynamic_cast<PaintableObject*>(linkedObject)) {
-
-			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
-			int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
-			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
-			PassImpactPointDetails(paintedObject, shader);
+		if (dynamic_cast<PaintableObject*>(linkedObject) || dynamic_cast<Player*>(linkedObject)) {
+			PassImpactPointDetails(linkedObject, shader);
 		}
 		else {
 			int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");

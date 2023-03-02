@@ -29,7 +29,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
-	baseWeapon = new PaintBallClass(world, levelManager, 15, 500, 0.5f, 1.0f, 5);
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 5000, 0.5f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 
 	if (localPlayerCount != 1) {
@@ -60,7 +60,7 @@ ToonGame::~ToonGame()
 }
 
 void ToonGame::StartGame() {
-	gameTime = 150.0f;
+	gameTime = 90.0f;
 	winner = nullptr;
 	allPlayers.clear();
 	for (auto& [id, control] : playerControls)
