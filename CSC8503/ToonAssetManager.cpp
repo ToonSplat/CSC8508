@@ -63,18 +63,18 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");*/
-	std::cout << "Player meshes start\n";
+	/*std::cout << "Player meshes start\n";
 	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
 	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
 	AddMesh("player_mesh_3", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_BLUE_BULLDOGS, 1.0f)));
 	AddMesh("player_mesh_4", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_ORANGE_OTTERS, 1.0f)));
-	std::cout << "Player meshes end\n";
+	std::cout << "Player meshes end\n";*/
 	//AddMesh("floorMain", "FloorsMain.msh");
 	//AddMesh("platformMain", "Level_Platform.msh");
 	
 	//-----------------------------------------------------------
 	//		Shaders
-	AddShader("debug", "debug.vert", "debug.frag");
+	/*AddShader("debug", "debug.vert", "debug.frag");
 	AddShader("shadow", "shadowSkin.vert", "shadow.frag");
 	AddShader("minimap", "minimap.vert", "minimap.frag");
 	AddShader("texture", "Texture.vert", "Texture.frag");
@@ -82,11 +82,11 @@ void ToonAssetManager::LoadAssets(void) {
 	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
 	AddShader("fullMap", "map.vert", "map.frag");
 	AddShader("skybox", "skybox.vert", "skybox.frag");
-	AddShader("animated", "sceneSkin.vert", "scene.frag");
+	AddShader("animated", "sceneSkin.vert", "scene.frag");*/
 
 	//-----------------------------------------------------------
 	//		Animations
-	AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");
+	/*AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");
 	AddAnimation("Player_Idle_Aim", "Boss_Gun_Idle_Aim.anm");
 	AddAnimation("Player_Run", "Boss_Gun_Run.anm");
 	AddAnimation("Player_Run_Aim_F", "Boss_Gun_Run_Aim_F.anm");
@@ -96,7 +96,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddAnimation("Player_Run_Aim_R", "Boss_Gun_Run_Aim_R.anm");
 	AddAnimation("Player_Run_Aim_B", "Boss_Gun_Run_Aim_B.anm");
 	AddAnimation("Player_Run_Aim_BL", "Boss_Gun_Run_Aim_BL.anm");
-	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");
+	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");*/
 
 	//-----------------------------------------------------------
 	//		Materials
@@ -194,12 +194,23 @@ MeshGeometry* ToonAssetManager::GetMesh(const string& name) {
 
 MeshGeometry* ToonAssetManager::AddMesh(vector<string> tokens) {
 	string name, fileName;
+	if (tokens[1] != "Character") {
 
-	name = tokens[1];
-	fileName = tokens[2];
-	// For now not doing type... but it can be done
+		name = tokens[1];
+		fileName = tokens[2];
+		// For now not doing type... but it can be done
 
-	return AddMesh(name, fileName);
+		return AddMesh(name, fileName);
+	}
+	else {
+		float r, g, b;
+		name = tokens[2];
+		fileName = tokens[3];
+		r = stof(tokens[4]);
+		g = stof(tokens[5]);
+		b = stof(tokens[6]);
+		return AddMesh(name, CreateCharacterTeamMesh(fileName, Vector4(r, g, b, 1.0f)));
+	}
 }
 
 
@@ -218,12 +229,14 @@ MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileNa
 	return mesh;
 }
 
-void NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
+MeshGeometry* NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
 {
 	if (newMesh == nullptr)
-		return;
+		return nullptr;
 
 	meshes.emplace(name, newMesh);
+
+	return newMesh;
 }
 
 Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {

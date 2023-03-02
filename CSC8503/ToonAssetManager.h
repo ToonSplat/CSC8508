@@ -58,7 +58,7 @@ namespace NCL {
 
 		MeshGeometry*				AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type = GeometryPrimitive::Triangles);
 		MeshGeometry*				AddMesh(vector<string> tokens);
-		void						AddMesh(const string& name, MeshGeometry* newMesh);
+		MeshGeometry*				AddMesh(const string& name, MeshGeometry* newMesh);
 
 		Rendering::OGLShader*		AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
 			const string& geometryShader = "", const string& domainShader = "", const string& hullShader = "");
