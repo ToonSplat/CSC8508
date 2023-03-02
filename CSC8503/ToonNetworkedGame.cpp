@@ -377,6 +377,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			}
 		}
 		world->RemoveGameObject(removingPlayer, true);
+		world->RemovePaintableObject(removingPlayer);
 		if (thisServer) {
 			delete serverPlayers.find(receivedID)->second.controls;
 			DisconnectPacket outPacket(receivedID);

@@ -24,7 +24,7 @@
 #include "ToonMainMenu.h"
 
 #include "KeyboardInput.h"
-#include "ControllerInput.h"
+#include "XboxControllerInput.h"
 #include "InputManager.h"
 
 #include "ToonDebugManager.h"

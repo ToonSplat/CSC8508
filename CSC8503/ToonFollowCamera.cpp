@@ -42,8 +42,6 @@ void NCL::CSC8503::ToonFollowCamera::UpdateCamera(float dt, BaseInput* inputs)
 		Window::GetWindow()->ShowOSPointer(false);
 		Window::GetWindow()->LockMouseToWindow(true);
 	}
-
-	std::cout << inputs->GetMouseRelPos() << std::endl;
 	
 	//Update the mouse by how much
 	pitch -= (inputs->GetMouseRelPos().y);
