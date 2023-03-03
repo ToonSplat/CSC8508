@@ -105,6 +105,7 @@ set(Menu_Files
     "ToonGameSettings.h"
     "ToonToggleButton.h"
     "ToonFileHandling.h"
+    "ToonCredits.h"
 
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
@@ -113,6 +114,7 @@ set(Menu_Files
     "ToonGameSettings.cpp"
     "ToonToggleButton.cpp"
     "ToonFileHandling.cpp"
+    "ToonCredits.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 
