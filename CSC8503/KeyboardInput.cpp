@@ -28,10 +28,11 @@ void KeyboardInput::UpdateState() {
 
 	inputs.mousePosition = mouse->GetWindowPosition();
 	inputs.relativeMousePosition = mouse->GetRelativePosition();
-
 	inputs.aiming = mouse->ButtonHeld(MouseButtons::RIGHT);
 	inputs.shooting = mouse->ButtonHeld(MouseButtons::LEFT);
 	inputs.jumping = keyboard->KeyDown(KeyboardKeys::SPACE);
 	inputs.selecting = keyboard->KeyDown(KeyboardKeys::RETURN);
 	inputs.back = keyboard->KeyDown(KeyboardKeys::ESCAPE);
+
+	BaseInput::UpdateState();
 }

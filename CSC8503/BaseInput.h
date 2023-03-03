@@ -58,7 +58,11 @@ namespace NCL {
 		BaseInput() {}
 		virtual ~BaseInput() {}
 
-		virtual void UpdateState() { std::cout << "Base Input Update Called\n"; }
+		virtual void UpdateState() { 
+			if (BaseInput::invert) {
+				inputs.relativeMousePosition.y *= -1;
+			}
+		}
 		void UpdateGameControls(PlayerControl* controls, Camera* camera) {
 			Vector3 forward = camera->GetForward();
 			Vector3 right = camera->GetRight();
@@ -93,6 +97,10 @@ namespace NCL {
 		bool IsPushingDown() const	{ return (inputs.moveDir.y < -MINIMUM_MOVEMENT && inputs.lastDown == false); }
 		bool IsPushingLeft() const	{ return (inputs.moveDir.x < -MINIMUM_MOVEMENT && inputs.lastLeft == false); }
 		bool IsPushingRight() const { return (inputs.moveDir.x > MINIMUM_MOVEMENT && inputs.lastRight == false); }
+
+		static void SetInverted(bool inverted) {
+			invert = inverted;
+		}
 	protected:
 		void UpdateLastState() {
 			if (inputs.moveDir.y > MINIMUM_MOVEMENT) inputs.lastUp = true; else inputs.lastUp = false;
@@ -106,5 +114,6 @@ namespace NCL {
 			inputs.lastBack = inputs.back;
 		}
 		InputState inputs;
+		static bool invert;
 	};
 }

@@ -25,8 +25,7 @@ set(Header_Files
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
     "ToonDebugManager.h"
-    "ToonConfirmationScreen.h"
-    "Toon2DCoordinates"
+    "ToonSettingsManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -47,7 +46,7 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
-    "ToonConfirmationScreen.cpp"
+    "ToonSettingsManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -76,6 +75,7 @@ set(Inputs_Files
     "PlayerControl.h"
     "PlayerControl.cpp"
     "BaseInput.h"
+    "BaseInput.cpp"
     "KeyboardInput.h"
     "KeyboardInput.cpp"
     "XboxControllerInput.h"
@@ -96,12 +96,23 @@ set(Camera_Files
 source_group("Camera Files" FILES ${Camera_Files})
 
 set(Menu_Files
+    "Toon2DCoordinates.h"
+
     "ToonMainMenu.h"
     "ToonTextInput.h"
     "ToonVirtualKeyboard.h"
+    "ToonConfirmationScreen.h"
+    "ToonGameSettings.h"
+    "ToonToggleButton.h"
+    "ToonFileHandling.h"
+
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
     "ToonVirtualKeyboard.cpp"
+    "ToonConfirmationScreen.cpp"
+    "ToonGameSettings.cpp"
+    "ToonToggleButton.cpp"
+    "ToonFileHandling.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 

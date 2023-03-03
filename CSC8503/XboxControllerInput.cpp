@@ -11,13 +11,16 @@ void XboxControllerInput::UpdateState() {
 	DWORD result = XInputGetState(index, &state);
 	if (result == ERROR_SUCCESS) {
 		inputs.moveDir = GetStickMovement(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, -state.Gamepad.sThumbRY) * CONTROLLER_SENSITIVITY;
+		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY) * CONTROLLER_SENSITIVITY;
+		inputs.relativeMousePosition.y *= -1; // Default is inverted!
 		inputs.aiming = (state.Gamepad.bLeftTrigger > 0);
 		inputs.shooting = (state.Gamepad.bRightTrigger > 0);
 		inputs.jumping = (state.Gamepad.wButtons & XINPUT_GAMEPAD_X);
 		inputs.selecting = (state.Gamepad.wButtons & XINPUT_GAMEPAD_A);
 		inputs.back = (state.Gamepad.wButtons & XINPUT_GAMEPAD_B);
 	}
+
+	BaseInput::UpdateState();
 }
 
 Vector2 XboxControllerInput::GetStickMovement(float thumbX, float thumbY) {

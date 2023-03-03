@@ -22,11 +22,12 @@ namespace NCL {
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
 			void RetrieveAtomicValues();
+			void SetShadowSize(int size) { shadowSize = size; }
+			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
 		protected:
 
 			void SetupStuffs();
-			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
@@ -93,6 +94,7 @@ namespace NCL {
 			OGLShader*	shadowShader;
 			GLuint		shadowTex;
 			GLuint		shadowFBO;
+			int shadowSize;
 			Matrix4     shadowMatrix;
 
 			Vector4		lightColour;
