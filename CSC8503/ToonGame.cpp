@@ -239,18 +239,20 @@ void ToonGame::ShowUI(float time) {
 	output += to_string(seconds);
 
 	if (world->GetMainCameraCount() > 1) {
-		Debug::Print("[]", Vector2(48.5f / 2.0f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+		//Debug::Print("[]", Vector2(48.5f / 2.0f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
 		Debug::Print(output, NCL::Maths::Vector2(47.5f / 2, 5.0f));
 		if (winner != nullptr)
 			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f / 2, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 	}
 	else
 	{
-		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
+			//TODO: Hardcoded for now. To be changed later.
 		Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
 		if (winner != nullptr)
 			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 	}
+
+	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {

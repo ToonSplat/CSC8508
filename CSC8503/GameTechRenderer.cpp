@@ -243,13 +243,16 @@ void GameTechRenderer::RenderScene() {
 
 void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 {
+	screenAspect = ((float)windowWidth / 2) / (float)windowHeight;
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
 		currentFBO = &splitFBO[i];
 		glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		glViewport(i * (windowWidth / 2), 0, windowWidth / 2, windowHeight);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
 		DrawMainScene();
+		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
@@ -507,8 +510,13 @@ void GameTechRenderer::RenderShadowMap() {
 
 		(*i).Draw(*this);
 	}
-
-	glViewport(0, 0, windowWidth, windowHeight);
+	if (*currentFBO == splitFBO[0] || *currentFBO == splitFBO[1]) {
+		glViewport(0, 0, windowWidth / 2, windowHeight);
+	}
+	else {
+		glViewport(0, 0, windowWidth, windowHeight);
+	}
+	
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
