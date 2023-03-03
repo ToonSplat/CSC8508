@@ -48,7 +48,7 @@ void ToonGameSettings::DrawScreen()
 void ToonGameSettings::UpdateCurrentSelectedIndex(int incrementBy)
 {
 	m_CurrentSelectedIndex += incrementBy;
-	m_CurrentSelectedIndex  = m_CurrentSelectedIndex < 0 ? m_SettingsData.size() - 1 : m_CurrentSelectedIndex;
+	m_CurrentSelectedIndex  = m_CurrentSelectedIndex < 0 ? (int)m_SettingsData.size() - 1 : m_CurrentSelectedIndex;
 	m_CurrentSelectedIndex  = m_CurrentSelectedIndex > m_SettingsData.size() - 1 ? 0 : m_CurrentSelectedIndex;
 }
 

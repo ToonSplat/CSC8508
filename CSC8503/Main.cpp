@@ -93,6 +93,7 @@ int main()
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	ToonSettingsManager::SetRenderer(renderer);
 	ToonSettingsManager::ApplySettings();
 #ifndef _DEBUG
 	w->ShowConsole(false);

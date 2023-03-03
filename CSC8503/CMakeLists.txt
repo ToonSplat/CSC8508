@@ -46,6 +46,7 @@ set(Source_Files
     "ToonGameWorld.cpp"
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
+    "ToonSettingsManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -74,6 +75,7 @@ set(Inputs_Files
     "PlayerControl.h"
     "PlayerControl.cpp"
     "BaseInput.h"
+    "BaseInput.cpp"
     "KeyboardInput.h"
     "KeyboardInput.cpp"
     "XboxControllerInput.h"

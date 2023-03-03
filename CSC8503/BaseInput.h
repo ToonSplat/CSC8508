@@ -100,7 +100,6 @@ namespace NCL {
 
 		static void SetInverted(bool inverted) {
 			invert = inverted;
-			std::cout << "invert set to " << invert << std::endl;
 		}
 	protected:
 		void UpdateLastState() {
