@@ -104,7 +104,7 @@ bool ToonGameSettings::isInside(Vector2 mousePosition, Coordinates menuDataCoord
 
 PushdownState::PushdownResult ToonGameSettings::HandleNavigation(PushdownState** newState)
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	if (InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		switch (m_CurrentSelectedIndex)
 		{

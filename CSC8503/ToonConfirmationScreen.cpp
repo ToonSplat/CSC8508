@@ -33,7 +33,7 @@ PushdownState::PushdownResult ToonConfirmationScreen::OnUpdate(float dt, Pushdow
 	HandleKeyboard();
 	DrawScreen();
 	delegate->UpdateCall(dt);
-	if ((m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsShooting()) || (!m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsSelecting()))
+	if ((m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsShootingOnce()) || (!m_IsMousePointerVisible && InputManager::GetInstance().GetInputs()[1]->IsSelecting()))
 	{
 		switch (m_CurrentSelectedButton)
 		{

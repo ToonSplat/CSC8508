@@ -40,7 +40,7 @@ void ToonToggleButton::UpdateButtonDraw()
 
 void ToonToggleButton::HandleEvents()
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	if (InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		ToggleCurrentState();
 		m_ToggleButtonHead->TriggerAnimation();

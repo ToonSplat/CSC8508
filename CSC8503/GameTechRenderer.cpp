@@ -529,7 +529,7 @@ void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
 		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
-		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5 + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
 		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 		BindMesh(fullScreenQuad);
