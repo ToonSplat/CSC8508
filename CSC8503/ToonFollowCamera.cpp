@@ -6,7 +6,7 @@
 #include "ToonGameWorld.h"
 //#include <iostream>
 
-NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target) : 
+NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target, float fov) : 
 	gameWorld(gameWorld), followTarget(target)
 {
 	player = (Player*)followTarget;
@@ -21,13 +21,12 @@ NCL::CSC8503::ToonFollowCamera::ToonFollowCamera(ToonGameWorld* gameWorld, ToonG
 
 	requiredRayDistance = defaultRayDistance = 1.0f;
 	pitchOffset = -2.0f;
-	h = v = 0.0f;
 	smoothness = 0.1f;
 
 	distanceThresholdMoving = 100.0f;
 	distanceThresholdStanding = 10.0f;
-
-	startFOV = fov;
+	this->fov = fov;
+	startFOV = this->fov;
 	aimFOV = startFOV - 20.0f;
 	vFov = 0.0f;
 	zoomSmoothess = 0.1f;

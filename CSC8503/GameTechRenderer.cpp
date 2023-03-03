@@ -22,8 +22,6 @@ using namespace NCL;
 using namespace Rendering;
 using namespace CSC8503;
 
-#define SHADOWSIZE 8192/4
-
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()){
@@ -50,6 +48,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
+	shadowSize = 2048;
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
@@ -230,12 +229,8 @@ void GameTechRenderer::RenderScene() {
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
-		if (dynamic_cast<PaintableObject*>(linkedObject)) {
-
-			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
-			int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
-			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
-			PassImpactPointDetails(paintedObject, shader);
+		if (dynamic_cast<PaintableObject*>(linkedObject) || dynamic_cast<Player*>(linkedObject)) {
+			PassImpactPointDetails(linkedObject, shader);
 		}
 		else {
 			int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
@@ -490,7 +485,7 @@ void GameTechRenderer::RenderShadowMap() {
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glViewport(0, 0, SHADOWSIZE, SHADOWSIZE);
+	glViewport(0, 0, shadowSize, shadowSize);
 
 	glCullFace(GL_FRONT);
 
@@ -542,7 +537,7 @@ void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
 		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
-		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5 + i, 0, 0))*Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
 		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 		BindMesh(fullScreenQuad);
@@ -1116,6 +1111,10 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 
 void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 {
+	if (shadowTex != 0) {
+		glDeleteTextures(1, &shadowTex);
+		glDeleteFramebuffers(1, &shadowFBO);
+	}
 	glGenTextures(1, &shadowTex);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1123,7 +1122,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
-		SHADOWSIZE, SHADOWSIZE, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+		shadowSize, shadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);

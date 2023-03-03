@@ -381,9 +381,6 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player->SetCollider(capsuleShape, capsuleTransform);
 	player->SetColliderLayer(ToonCollisionLayer::Character);
 
-	int collisionMask = ToonCollisionLayer::Character | ToonCollisionLayer::Default;
-	player->SetColliderLayerMask(ToonCollisionLayer(collisionMask));
-
 	player->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	player->GetRigidbody()->setUserData(player);
@@ -417,6 +414,9 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius);
 	paintball->SetCollisionShape(sphereShape);
 	paintball->SetCollider(sphereShape);
+	paintball->SetColliderLayer(ToonCollisionLayer::Paintball);
+	int collisionMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
+	paintball->SetColliderLayerMask(ToonCollisionLayer(collisionMask));
 	paintball->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	paintball->GetRigidbody()->setUserData(paintball);
@@ -436,6 +436,9 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius);
 	hitSphere->SetCollisionShape(sphereShape);
 	hitSphere->SetCollider(sphereShape);
+	hitSphere->SetColliderLayer(ToonCollisionLayer::Hitsphere);
+	int collisionMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
+	hitSphere->SetColliderLayerMask(ToonCollisionLayer(collisionMask));
 	hitSphere->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	//GetCollider()->setIsTrigger(true);

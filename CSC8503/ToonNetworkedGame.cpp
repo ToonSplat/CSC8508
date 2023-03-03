@@ -164,7 +164,6 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			PlayerControl* playersControl = player.second.controls;
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
-				playersControl->shooting = false;
 				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
@@ -293,7 +292,7 @@ void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
 	allPlayers.clear();
 	winner = nullptr;
-	gameTime = 150.0f;
+	gameTime = 90.0f;
 	levelManager->ResetLevel(&networkObjects);
 }
 
