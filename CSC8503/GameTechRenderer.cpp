@@ -61,9 +61,10 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	glClearColor(1, 1, 1, 1);
 
 	//Set up the light properties
-	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
-	lightRadius = 10000.0f;
-	lightPosition = Vector3(-300.0f, 500.0f, -300.0f);
+	//lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
+	//lightRadius = 10000.0f;
+	//lightPosition = Vector3(-300.0f, 500.0f, -300.0f);
+	sceneLights.push_back(Light(Vector4(0.8f, 0.8f, 0.5f, 1.0f), 10000.0f, Vector3(-300.0f, 500.0f, -300.0f)));
 
 	//Skybox!
 	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
@@ -203,9 +204,9 @@ void GameTechRenderer::RenderScene() {
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
-			glUniform3fv(lightPosLocation, 1, (float*)&lightPosition);
-			glUniform4fv(lightColourLocation, 1, (float*)&lightColour);
-			glUniform1f(lightRadiusLocation, lightRadius);
+			glUniform3fv(lightPosLocation, 1, sceneLights[0].GetLightPosition().array);
+			glUniform4fv(lightColourLocation, 1, sceneLights[0].GetLightColour().array);
+			glUniform1f(lightRadiusLocation, sceneLights[0].GetLightRadius());
 
 			int shadowTexLocation = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
 			glUniform1i(shadowTexLocation, 1);
@@ -1302,4 +1303,15 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::CreateMatrixUBO() {
+	glGenBuffers(1, &uboMatrix);
+	/*glBindBuffer(GL_UNIFORM_BUFFER, uboMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(Light), sceneLights[0], GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);*/
+	
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboMatrix);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
+}
 

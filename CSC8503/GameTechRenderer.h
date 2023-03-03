@@ -4,6 +4,7 @@
 #include "OGLTexture.h"
 #include "OGLMesh.h"
 #include "ToonGameWorld.h"
+#include "Light.h"
 
 namespace NCL {
 	class Maths::Vector3;
@@ -31,7 +32,7 @@ namespace NCL {
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
-
+			void CreateMatrixUBO();
 
 			void RenderFrame()	override;
 			void RenderSplitScreen();
@@ -97,9 +98,10 @@ namespace NCL {
 			int shadowSize;
 			Matrix4     shadowMatrix;
 
-			Vector4		lightColour;
+			std::vector<Light> sceneLights;
+			/*Vector4		lightColour;
 			float		lightRadius;
-			Vector3		lightPosition;
+			Vector3		lightPosition;*/
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;
@@ -173,6 +175,8 @@ namespace NCL {
 
 			Camera* currentRenderCamera;
 			float screenAspect;
+
+			unsigned int uboMatrix;
 		};
 	}
 }

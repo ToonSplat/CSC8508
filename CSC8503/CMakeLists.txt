@@ -11,6 +11,7 @@ set(Header_Files
     "PaintBallProjectile.h"
     "Player.h"
     "ImpactPoint.h"
+    "Light.h"
     "ToonLevelManager.h"
     "ToonGame.h"
     "HitSphere.h"

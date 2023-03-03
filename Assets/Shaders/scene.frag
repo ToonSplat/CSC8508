@@ -5,6 +5,18 @@ struct ImpactPoint{
 	vec3 colour;
 	float radius;
 };
+
+struct Light{
+	vec4 colour;
+	float radius;
+	vec3 position;
+};
+
+#define SCENE_LIGHTS 4
+layout (std140) uniform lights{
+	uniform Light sceneLights[SCENE_LIGHTS];
+};
+
 #define MAX_IMPACT_POINTS 300
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
