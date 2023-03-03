@@ -64,7 +64,7 @@ namespace NCL
 			}
 
 			int GetMainCameraCount() {
-				return mainCameras.size();
+				return (int)mainCameras.size();
 			}
 
 			Camera* GetMinimapCamera() const { return minimapCamera; }

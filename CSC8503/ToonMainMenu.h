@@ -9,6 +9,7 @@
 #include "ToonTextInput.h"
 #include "InputManager.h"
 #include "ToonConfirmationScreen.h"
+#include "ToonGameSettings.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -50,6 +51,7 @@ private:
 	ToonGame*					m_Game					  = NULL;
 	ToonGameWorld*				m_World;
 	ToonMainMenu*				m_SubMenuScreenObject	  = NULL;
+	ToonGameSettings*			m_SettingsScreenObject	  = NULL;
 	const Vector4				m_HoverColour			  = Debug::GREEN;
 	const Vector4				m_NormalTextColour		  = Debug::BLUE;
 	std::vector<MenuDataStruct> m_mainMenuData = {
@@ -75,6 +77,7 @@ private:
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
 	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win);
+	~ToonMainMenu();
 
 private:
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
@@ -87,6 +90,7 @@ private:
 	ToonTextInput* GetUserInputScreenObject();
 	void UpdateMosePointerState(bool isVisible);
 	void WakeMouseOnMovement();
+	ToonGameSettings* GetSettingsScreenObject();
 
 	//Delegates
 	PushdownState::PushdownResult DidSelectCancelButton() override;
