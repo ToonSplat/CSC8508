@@ -68,8 +68,8 @@ private:
 	std::vector<MenuDataStruct> m_LocalMainMenuData = {
 																MenuDataStruct("Launch 1 Player", MenuCoordinates(Vector2(5, 35), Vector2(80, 10)), m_NormalTextColour),
 																MenuDataStruct("Launch 2 Player", MenuCoordinates(Vector2(5, 45), Vector2(80, 10)), m_NormalTextColour),
-																MenuDataStruct("Launch 3 Player", MenuCoordinates(Vector2(5, 55), Vector2(80, 10)), m_NormalTextColour),
-																MenuDataStruct("Launch 4 Player", MenuCoordinates(Vector2(5, 65), Vector2(80, 10)), m_NormalTextColour),
+																MenuDataStruct("3 Player (Coming Soon)", MenuCoordinates(Vector2(5, 55), Vector2(80, 10)), m_NormalTextColour),
+																MenuDataStruct("4 Player (Coming Soon)", MenuCoordinates(Vector2(5, 65), Vector2(80, 10)), m_NormalTextColour),
 																MenuDataStruct("Back",			  MenuCoordinates(Vector2(5, 75), Vector2(80, 10)), m_NormalTextColour)
 	};
 	std::vector<MenuDataStruct> m_MultiMainMenuData = {
