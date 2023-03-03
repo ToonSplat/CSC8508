@@ -518,9 +518,6 @@ void GameTechRenderer::RenderShadowMap() {
 	if (*currentFBO == splitFBO[0] || *currentFBO == splitFBO[1]) {
 		glViewport(0, 0, windowWidth / 2, windowHeight);
 	}
-	/*else if (*currentFBO == splitFBO[1]) {
-		glViewport(windowWidth / 2, 0, windowWidth / 2, windowHeight);
-	}*/
 	else {
 		glViewport(0, 0, windowWidth, windowHeight);
 	}
