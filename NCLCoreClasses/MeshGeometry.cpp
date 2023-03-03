@@ -169,7 +169,7 @@ MeshGeometry::MeshGeometry(const std::string&filename) {
 	file >> filetype;
 
 	if (filetype != "MeshGeometry") {
-		std::cout << __FUNCTION__ << " File is not a MeshGeometry file!\n";
+		std::cout << __FUNCTION__ << " File is not a MeshGeometry file! File: " << filename << std::endl;
 		return;
 	}
 

@@ -78,11 +78,18 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_platform_wall_low_bottom", "Arena_Platform_Low_Bottom_Wall.msh");
 
 	AddMesh("arena_lights", "Level_Arena_Lights.msh");
+
 	AddMesh("arena_deco_cats", "Level_Arena_Cats.msh");
 	AddMesh("arena_deco_cats_hull", "Level_Arena_Cats_Hull.msh");
+
+	AddMesh("arena_deco_chair", "Level_Deco_Chair.msh");
+	AddMesh("arena_deco_chair_hull", "Level_Deco_Chair_Hull.msh");
+
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
+	AddMesh("arena_obstacles_hulls", "Level_Arena_Obstacles_Hulls.msh");
 	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
 	AddMesh("arena_decos", "Level_Arena_Decos.msh");
+	AddMesh("arena_decos_hulls", "Level_Arena_Decos_Hulls.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
 	AddMesh("arena_cameras", "Level_Arena_Cameras.msh");
 	AddMesh("arena_toonsplat_Box", "Level_ToonSplat_Box.msh");
@@ -146,11 +153,18 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_platform_wall_low_bottom", "Arena_Platform_Low_Bottom_Wall.mat", GetMesh("arena_platform_wall_low_bottom")->GetSubMeshCount());
 
 	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstables.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
+	AddMaterial("mat_arena_obstacles_hulls", "Level_Arena_Obstacles_Hulls.mat", GetMesh("arena_obstacles_hulls")->GetSubMeshCount());
 	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
 	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
+	
 	AddMaterial("mat_arena_deco_cats", "Level_Arena_Cats.mat", GetMesh("arena_deco_cats")->GetSubMeshCount());
 	AddMaterial("mat_arena_deco_cats_hull", "Level_Arena_Cats_Hull.mat", GetMesh("arena_deco_cats_hull")->GetSubMeshCount());
+	
+	AddMaterial("mat_arena_deco_chair", "Level_Deco_Chair.mat", GetMesh("arena_deco_chair")->GetSubMeshCount());
+	AddMaterial("mat_arena_deco_chair_hull", "Level_Deco_Chair_Hull.mat", GetMesh("arena_deco_chair_hull")->GetSubMeshCount());
+	
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
+	AddMaterial("mat_arena_decos_hulls", "Level_Arena_Decos_Hulls.mat", GetMesh("arena_decos_hulls")->GetSubMeshCount());
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
 	AddMaterial("mat_arena_cameras", "Level_Arena_Cameras.mat", GetMesh("arena_cameras")->GetSubMeshCount());
 	AddMaterial("mat_arena_toonsplat_Box", "Level_ToonSplat_Box.mat", GetMesh("arena_toonsplat_Box")->GetSubMeshCount());

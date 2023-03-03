@@ -54,11 +54,18 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 
 	if (!LoadModel("arena_lights")) return false;
+	
 	if (!LoadModel("arena_deco_cats")) return false;
 	if (!LoadModel("arena_deco_cats_hull")) return false;
+
+	if (!LoadModel("arena_deco_chair")) return false;
+	if (!LoadModel("arena_deco_chair_hull")) return false;
+
 	if (!LoadModel("arena_obstacles")) return false;
+	if (!LoadModel("arena_obstacles_hulls")) return false;
 	if (!LoadModel("arena_ramps")) return false;
 	if (!LoadModel("arena_decos")) return false;
+	if (!LoadModel("arena_decos_hulls")) return false;
 	if (!LoadModel("arena_border_wall")) return false;
 	if (!LoadModel("arena_cameras")) return false;
 	if (!LoadModel("arena_toonsplat_Box")) return false;
@@ -103,11 +110,18 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadMaterial("mat_arena_platform_wall_low_bottom")) return false;
 
 	if (!LoadMaterial("mat_arena_obstacles")) return false;
+	if (!LoadMaterial("mat_arena_obstacles_hulls")) return false;
 	if (!LoadMaterial("mat_arena_ramps")) return false;
 	if (!LoadMaterial("mat_arena_lights")) return false;
+
 	if (!LoadMaterial("mat_arena_deco_cats")) return false;
 	if (!LoadMaterial("mat_arena_deco_cats_hull")) return false;
+
+	if (!LoadMaterial("mat_arena_deco_chair")) return false;
+	if (!LoadMaterial("mat_arena_deco_chair_hull")) return false;
+	
 	if (!LoadMaterial("mat_arena_decos")) return false;
+	if (!LoadMaterial("mat_arena_decos_hulls")) return false;
 	if (!LoadMaterial("mat_arena_border_wall")) return false;
 	if (!LoadMaterial("mat_arena_cameras")) return false;
 	if (!LoadMaterial("mat_arena_toonsplat_Box")) return false;
@@ -226,7 +240,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	Vector4 arenaObstaclesColor = Vector4(0.9f, 0.9f, 0.0f, 1.0f);
 	Vector4 arenaRampColor = Vector4(0.6f, 0.6f, 0.6f, 1.0f);
 	Vector4 arenaLightsColor = Vector4(0.5f, 0.5f, 0.5f, 1.0f);
-	Vector3 arenaSize = Vector3(1, 1, 1);
+	Vector3 arenaSize = Vector3(1.0f, 1.0f, 1.0f);
 	//AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena"), arenaColour, 0.0f);
 	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_floor_part_b"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_b"), arenaColour, 0.0f, true, true);
@@ -248,20 +262,32 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_top"), arenaColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_bottom"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_bottom"), arenaColour, 0.0f, true, false);
 	
-	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), GetMesh("arena_obstacles_hulls"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_decos"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_decos"), GetMesh("arena_decos_hulls"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_cameras"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_cameras"), arenaDecosColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false, false);
 	
-	AddConcaveObjectToWorld(GetMesh("arena_deco_cats"), GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats"), arenaLightsColor, 0.0f, true, false, true);
+	AddConcaveObjectToWorld(GetMesh("arena_deco_cats"), GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats"), arenaLightsColor, 0.0f, true, false);
+	//AddDynamicConcaveObjectToWorld(GetMesh("arena_deco_chair"), GetMesh("arena_deco_chair_hull"), Vector3(10.0f, 10.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_chair"), arenaLightsColor, 0.0f, true, false, true);
 	//AddConcaveObjectToWorld(GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats_hull"), arenaLightsColor, 0.0f, true, false, true);
 
 	//Those Boxes with ToonSplat logos on it
-	AddTSCubeToWorld(Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), arenaDecosColour, 1.0f, false);	
-	AddTSCubeToWorld(Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), arenaDecosColour, 1.0f, false);	
-	AddTSCubeToWorld(Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetTexture("basic"), arenaDecosColour, 1.0f, false);	
+	BoxCollisionShapeData* boxData = new BoxCollisionShapeData(Vector3(2.65f, 2.65f, 2.65f));
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
+
+	BoxCollisionShapeData* chairData = new BoxCollisionShapeData(Vector3(1.5f, 2.35f, 1.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 0.25f, 0.0f)), reactphysics3d::Quaternion::identity()));
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, -5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, -5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
+
+	//Delete these "now" useless data to avoid leaks
+	delete boxData;
+	delete chairData;
 
 	return true;
 }
@@ -434,7 +460,7 @@ void NCL::CSC8503::ToonLevelManager::AddGridWorld(Axes axes, const Vector3& grid
 	}
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -450,14 +476,11 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, cubeTex, GetShader("scene")));
 	gameObject->GetRenderObject()->SetColour(minimapColour);
 
-	if (makeConcaveShape)
-	{
-		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
+	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
 
-		gameObject->SetCollisionShape(concaveShape);
-		gameObject->SetCollider(concaveShape);
-		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
-	}
+	gameObject->SetCollisionShape(concaveShape);
+	gameObject->SetCollider(concaveShape);
+	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
@@ -469,7 +492,15 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+{
+	PaintableObject* gameObject = AddConcaveObjectToWorld(mesh, position, rotationEuler, scale, GetTexture("basic"), minimapColour, mass, addAsPaintable, addAsFloor);
+	gameObject->GetRenderObject()->SetMeshMaterial(mat);	
+
+	return gameObject;
+}
+
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, MeshGeometry* collisionHullMesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -485,14 +516,11 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, mat, GetShader("scene")));
 	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
 
-	if (makeConcaveShape)
-	{
-		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
+	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(collisionHullMesh, scale);
 
-		gameObject->SetCollisionShape(concaveShape);
-		gameObject->SetCollider(concaveShape);
-		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
-	}
+	gameObject->SetCollisionShape(concaveShape);
+	gameObject->SetCollider(concaveShape);
+	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
 
 	gameObject->GetRigidbody()->setUserData(gameObject);
 
@@ -504,42 +532,15 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeometry* mesh, MeshGeometry* collisionHullMesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConcaveShape)
-{
-	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
-	gameObject->GetTransform().SetPosition(position).
-		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
-		SetScale(scale);
+//PaintableObject* NCL::CSC8503::ToonLevelManager::AddDynamicConcaveObjectToWorld(MeshGeometry* mesh, MeshGeometry* collisionHullMesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+//{
+//	PaintableObject* object = AddConcaveObjectToWorld(mesh, collisionHullMesh, position, rotationEuler, scale, mat, minimapColour, 0.1f, addAsPaintable, addAsFloor);
+//	object->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);	
+//
+//	return object;
+//}
 
-	if (addAsFloor) gameObject->SetAsFloor();
-
-	gameObject->AddRigidbody();
-	gameObject->GetRigidbody()->setType(reactphysics3d::BodyType::STATIC);
-	gameObject->GetRigidbody()->setMass(mass);
-	gameObject->GetRigidbody()->setIsAllowedToSleep(true);
-	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, mat, GetShader("scene")));
-	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
-
-	if (makeConcaveShape)
-	{
-		reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(collisionHullMesh, scale);
-
-		gameObject->SetCollisionShape(concaveShape);
-		gameObject->SetCollider(concaveShape);
-		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
-	}
-
-	gameObject->GetRigidbody()->setUserData(gameObject);
-
-	gameWorld->AddGameObject(gameObject);
-
-	if (addAsPaintable)
-		gameWorld->AddPaintableObject(gameObject);
-
-	return gameObject;
-}
-
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, bool makeConvexShape)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
 {
 	PaintableObject* gameObject = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	gameObject->GetTransform().SetPosition(position).
@@ -557,14 +558,11 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeom
 
 	reactphysics3d::ConvexMeshShape* convexShape = CreateConvexMeshShape(mesh, scale);
 
-	if (makeConvexShape)
-	{
-		gameObject->SetCollisionShape(convexShape);
-		gameObject->SetCollider(convexShape);
-		gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
+	gameObject->SetCollisionShape(convexShape);
+	gameObject->SetCollider(convexShape);
+	gameObject->GetCollider()->getMaterial().setBounciness(0.1f);
 
-		gameObject->GetRigidbody()->setUserData(gameObject);
-	}
+	gameObject->GetRigidbody()->setUserData(gameObject);
 
 	gameWorld->AddGameObject(gameObject);
 
@@ -572,6 +570,61 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeom
 		gameWorld->AddPaintableObject(gameObject);
 
 	return gameObject;
+}
+
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddPropObject(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+{
+	PaintableObject* dynamicProp = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
+	dynamicProp->GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(scale);
+
+	//dynamicProp->SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z));
+
+	dynamicProp->SetRenderObject(new ToonRenderObject(&dynamicProp->GetTransform(), mesh, mat, GetShader("scene")));
+	dynamicProp->GetRenderObject()->SetMinimapColour(minimapColour);
+
+	if (addAsFloor) dynamicProp->SetAsFloor();
+
+	reactphysics3d::CollisionShape* collisionShape = nullptr;
+	switch (collisionData->shapeType)
+	{
+		case BasicCollisionShapeType::Shape_Box:
+		{
+			BoxCollisionShapeData* boxData = static_cast<BoxCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createBoxShape(ToonUtils::ConvertToRP3DVector3(boxData->boxHalfSize));
+			break;
+		}
+
+		case BasicCollisionShapeType::Shape_Sphere:
+		{
+			SphereCollisionShapeData* sphereData = static_cast<SphereCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createSphereShape(sphereData->radius);
+			break;
+		}
+
+		case BasicCollisionShapeType::Shape_Capsule:
+		{
+			CapsuleCollisionShapeData* capsuleData = static_cast<CapsuleCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createCapsuleShape(capsuleData->radius, capsuleData->height);
+			break;
+		}
+	}
+
+	dynamicProp->AddRigidbody();
+	dynamicProp->GetRigidbody()->setType(rigidbodyType);
+	dynamicProp->GetRigidbody()->setMass(mass);
+	dynamicProp->GetRigidbody()->setIsAllowedToSleep(true);
+	dynamicProp->GetRigidbody()->setUserData(dynamicProp);
+
+	dynamicProp->SetCollider(collisionShape, collisionData->collisionTransform);
+	dynamicProp->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	gameWorld->AddGameObject(dynamicProp);
+	if (addAsPaintable) 
+		gameWorld->AddPaintableObject(dynamicProp);
+
+	return dynamicProp;
 }
 
 Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
