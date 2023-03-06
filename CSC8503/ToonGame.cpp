@@ -63,6 +63,7 @@ void ToonGame::StartGame() {
 	gameTime = 90.0f;
 	winner = nullptr;
 	allPlayers.clear();
+	world->MapNeedsChecking(true);
 	for (auto& [id, control] : playerControls)
 		delete control;
 	playerControls.clear();

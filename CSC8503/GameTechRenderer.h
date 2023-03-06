@@ -4,7 +4,7 @@
 #include "OGLTexture.h"
 #include "OGLMesh.h"
 #include "ToonGameWorld.h"
-#include "Light.h"
+//#include "Light.h"
 
 namespace NCL {
 	class Maths::Vector3;
@@ -13,6 +13,15 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class ToonFollowCamera;
+		struct LightStruct {
+			Vector4 lightColour;
+			Vector3 lightPosition;
+			float lightRadius;
+		};
+		struct ShaderLights {
+			LightStruct data[2];
+		};
+		
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
 		public:
@@ -98,7 +107,8 @@ namespace NCL {
 			int shadowSize;
 			Matrix4     shadowMatrix;
 
-			std::vector<Light> sceneLights;
+			ShaderLights shaderLight;
+			std::vector<LightStruct> sceneLights;
 			/*Vector4		lightColour;
 			float		lightRadius;
 			Vector3		lightPosition;*/

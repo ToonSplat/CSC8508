@@ -8,12 +8,13 @@ struct ImpactPoint{
 
 struct Light{
 	vec4 colour;
-	float radius;
 	vec3 position;
+	float radius;
 };
 
-#define SCENE_LIGHTS 4
+#define SCENE_LIGHTS 2
 layout (std140) uniform lights{
+	//uniform Light firstLight;
 	uniform Light sceneLights[SCENE_LIGHTS];
 };
 
@@ -26,9 +27,9 @@ uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
 uniform sampler2DShadow shadowTex;
 
-uniform vec3	lightPos;
-uniform float	lightRadius;
-uniform vec4	lightColour;
+//uniform vec3	lightPos;
+//uniform float	lightRadius;
+//uniform vec4	lightColour;
 
 uniform vec3	cameraPos;
 
@@ -81,7 +82,7 @@ void main(void)
 		shadow = textureProj(shadowTex , IN.shadowProj) * 0.7f;
 	}
 
-	vec3  incident = normalize ( lightPos - IN.worldPos );
+	vec3  incident = normalize ( sceneLights[1].position - IN.worldPos ); //lightPos
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
@@ -108,9 +109,9 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * lightColour.rgb * lambert * shadow; //diffuse light
+	fragColor.rgb += albedo.rgb * sceneLights[1].colour.rgb * lambert * shadow; //diffuse light //albedo.rgb * lightColour.rgb * lambert * shadow
 	
-	fragColor.rgb += lightColour.rgb * sFactor * shadow; //specular light
+	fragColor.rgb += sceneLights[1].colour.rgb * sFactor * shadow; //specular //light lightColour.rgb * sFactor * shadow
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	
