@@ -21,6 +21,7 @@ PushdownState::PushdownResult ToonCredits::OnUpdate(float dt, PushdownState** ne
 	m_Renderer->Render();
 	Debug::UpdateRenderables(dt);
 	DisplayText();
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack()) { return PushdownResult::Pop; }
 	return PushdownResult::NoChange;
 }
 
@@ -46,6 +47,7 @@ void ToonCredits::ParseData()
 	{
 		if (characterCount && (!(characterCount % m_MaxCharactersPerLine) || character == '\n'))
 		{
+			characterCount = 0;
 			m_DisplayTextVector.push_back(singleLineString);
 			singleLineString = "";
 		}

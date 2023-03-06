@@ -5,6 +5,7 @@
 #include "PushdownState.h"
 #include "ToonFileHandling.h"
 #include "Assets.h"
+#include "InputManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -19,7 +20,7 @@ class ToonCredits : public PushdownState
 		Window*					 m_Window;
 		ToonFileHandling*		 m_FileHandler;
 		const std::string		 m_FileName = NCL::Assets::DATADIR + "Credits.txt";
-		const int				 m_MaxCharactersPerLine = 50;
+		const int				 m_MaxCharactersPerLine = 80;
 
 	public:
 		ToonCredits(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
