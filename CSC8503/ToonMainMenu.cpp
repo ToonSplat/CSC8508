@@ -127,7 +127,8 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = GetSettingsScreenObject();
 		break;
 	case CREDITS:
-		return PushdownResult::NoChange;
+		*newState = GetCreditsScreenObject();
+		break;
 	case QUIT:
 		*newState = m_ToonConfirmationScreen;
 		break;
@@ -230,6 +231,12 @@ ToonGameSettings* ToonMainMenu::GetSettingsScreenObject()
 {
 	if (!m_SettingsScreenObject) { m_SettingsScreenObject = new ToonGameSettings(m_Renderer, m_World, m_Window); }
 	return m_SettingsScreenObject;
+}
+
+ToonCredits* ToonMainMenu::GetCreditsScreenObject()
+{
+	if (!m_ToonCredits) { m_ToonCredits = new ToonCredits(m_Renderer, m_World, m_Window); }
+	return m_ToonCredits;
 }
 
 PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()

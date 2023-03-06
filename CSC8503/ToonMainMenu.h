@@ -10,6 +10,7 @@
 #include "InputManager.h"
 #include "ToonConfirmationScreen.h"
 #include "ToonGameSettings.h"
+#include "ToonCredits.h"
 
 #include "AudioSystem.h"
 
@@ -88,6 +89,7 @@ private:
 
 	ToonConfirmationScreen*		m_ToonConfirmationScreen = NULL;
 	bool						m_ShouldQuitGame		 = false;
+	ToonCredits*				m_ToonCredits			 = NULL;
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
@@ -107,6 +109,7 @@ private:
 	void UpdateMosePointerState(bool isVisible);
 	void WakeMouseOnMovement();
 	ToonGameSettings* GetSettingsScreenObject();
+	ToonCredits* GetCreditsScreenObject();
 
 	//Delegates
 	PushdownState::PushdownResult DidSelectCancelButton() override;
