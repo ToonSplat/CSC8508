@@ -13,7 +13,7 @@ std::string ToonVirtualKeyboard::GetUserInputText()
 void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 {
 	DrawKeyboard();
-	if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		if (m_Keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::DeleteActionKey)
 		{

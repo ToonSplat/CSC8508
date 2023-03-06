@@ -30,6 +30,8 @@ ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, i
 	thisServer = nullptr;
 	thisClient = nullptr;
 
+	e = new AudioEmitter(Audio::GetSound("splash.wav"));
+
 	NetworkBase::Initialise();
 	timeToNextPacket = 0.0f;
 	packetsToSnapshot = 0;
@@ -40,6 +42,7 @@ ToonNetworkedGame::ToonNetworkedGame(GameTechRenderer* renderer, int a, int b, i
 ToonNetworkedGame::~ToonNetworkedGame() {
 	delete thisServer;
 	delete thisClient;
+	delete e;
 }
 
 void ToonNetworkedGame::StartAsServer() {
@@ -164,7 +167,6 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			PlayerControl* playersControl = player.second.controls;
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
-				playersControl->shooting = false;
 				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
@@ -443,6 +445,12 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		Team* team = world->GetTeams()[realPacket->teamID];
 		for (ToonGameObject* p : world->GetPaintableObjects()) {
 			if (p->GetWorldID() == realPacket->objectID) {
+				e->SetPriority(SoundPriority::LOW);
+				e->SetLooping(false);
+				e->ResetSound();
+				e->SetTarget(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f));
+				AudioSystem::GetAudioSystem()->AddSoundEmitter(e);
+        
 				if (dynamic_cast<PaintableObject*>(p)) {
 					PaintableObject* object = (PaintableObject*)p;
 					object->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));

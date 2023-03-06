@@ -71,7 +71,8 @@ NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::M
 ;}
 
 bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
-	if (playerControls->shooting && ammoInUse > 0)
+	if (shootTimer > 0) shootTimer -= dt;
+	if (playerControls->shooting && ammoInUse > 0 && shootTimer <= 0)
 		status = isFiring;
 	else if (ammoInUse <= 0 || Window::GetKeyboard()->KeyPressed(NCL::KeyboardKeys::R))
 		status = isReloading;
@@ -89,7 +90,6 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 					orientation.normalize();
 					reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
 					FireBullet(position, orientation);
-					playerControls->shooting = false;
 				}
 				return true;
 		case isReloading:
@@ -175,6 +175,7 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 	const float PAINTBALL_RADIUS = 0.25f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
 
+	shootTimer = 1.0f/fireRate;
 	ammoInUse--;
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);

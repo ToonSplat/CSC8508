@@ -1,4 +1,5 @@
 #include "Camera.h"
+
 #include "ToonGame.h"
 #include "ToonUtils.h"
 #include "ToonFollowCamera.h"
@@ -20,7 +21,7 @@ using namespace NCL;
 using namespace CSC8503;
 
 
-ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(2), offline(offline)
+ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
 	world = new ToonGameWorld();
 	ToonDebugManager::Instance().SetGameWorld(world);
@@ -29,23 +30,23 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
-	baseWeapon = new PaintBallClass(world, levelManager, 15, 5000, 0.5f, 1.0f, 5);
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 5000, 4.0f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 
-	if (localPlayerCount != 1) {
-		// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
-		for (int i = localPlayerCount; i > 0; i--) {
-			if (XInputGetState(i - 1, nullptr) == ERROR_SUCCESS)
-				InputManager::GetInstance().AddInput(i, new XboxControllerInput(i - 1));
-			else {
-				for (int j = i; j > 1; j--) {
-					InputManager::GetInstance().AddInput(j, new XboxControllerInput(j - 2));
-				}
-				InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
-				break;
+	// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
+	for (int i = localPlayerCount; i > 0; i--) {
+		XINPUT_STATE controllerState;
+		if (XInputGetState(i - 1, &controllerState) == ERROR_SUCCESS)
+			InputManager::GetInstance().AddInput(i, new XboxControllerInput(i - 1));
+		else {
+			for (int j = i; j > 1; j--) {
+				InputManager::GetInstance().AddInput(j, new XboxControllerInput(j - 2));
 			}
+			InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+			break;
 		}
 	}
+
 	StartGame();
 }
 
@@ -238,19 +239,10 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	if (world->GetMainCameraCount() > 1) {
-		Debug::Print("[]", Vector2(48.5f / 2.0f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
-		Debug::Print(output, NCL::Maths::Vector2(47.5f / 2, 5.0f));
-		if (winner != nullptr)
-			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f / 2, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
-	}
-	else
-	{
-		Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
-		Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
-		if (winner != nullptr)
-			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
-	}
+	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+	if (winner != nullptr)
+		Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
@@ -274,12 +266,7 @@ ToonConfirmationScreen* NCL::CSC8503::ToonGame::GetToonConfirmationScreen()
 {
 	if (!m_ToonConfirmationScreen)
 	{
-		if (world->GetMainCameraCount() > 1) {
-			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(10, 20), Vector2(30, 20)), m_WindowSize, renderer, "Quit the game?");
-		}
-		else {
-			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
-		}
+		m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
 		m_ToonConfirmationScreen->delegate = this;
 	}
 	return m_ToonConfirmationScreen;

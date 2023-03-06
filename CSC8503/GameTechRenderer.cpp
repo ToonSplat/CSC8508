@@ -139,16 +139,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	NewRenderLines();
-	NewRenderLinesOnOrthographicView();
-	NewRenderText();
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void GameTechRenderer::RenderScene() {
@@ -243,19 +233,23 @@ void GameTechRenderer::RenderScene() {
 
 void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 {
+	screenAspect = ((float)windowWidth / 2) / (float)windowHeight;
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
 		currentFBO = &splitFBO[i];
 		glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+		glViewport(i * (windowWidth / 2), 0, windowWidth / 2, windowHeight);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
 		DrawMainScene();
+		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
 {
+	screenAspect = (float)windowWidth / (float)windowHeight;
 	currentFBO = &sceneFBO;
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -354,6 +348,19 @@ void GameTechRenderer::PresentScene(){
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
 	}
+
+	
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
+	NewRenderText();
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
@@ -507,8 +514,13 @@ void GameTechRenderer::RenderShadowMap() {
 
 		(*i).Draw(*this);
 	}
-
-	glViewport(0, 0, windowWidth, windowHeight);
+	if (*currentFBO == splitFBO[0] || *currentFBO == splitFBO[1]) {
+		glViewport(0, 0, windowWidth / 2, windowHeight);
+	}
+	else {
+		glViewport(0, 0, windowWidth, windowHeight);
+	}
+	
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
@@ -529,7 +541,7 @@ void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 		glBindTexture(GL_TEXTURE_2D, splitColourTexture[i]);
 		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
-		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5 + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + i, 0, 0)) * Matrix4::Scale(Vector3(0.5, 1.0, 1.0));
 		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 		BindMesh(fullScreenQuad);
