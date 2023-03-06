@@ -64,6 +64,8 @@ void ToonGame::StartGame() {
 	gameTime = 90.0f;
 	winner = nullptr;
 	allPlayers.clear();
+	world->MapNeedsChecking(true);
+	world->GameStarted();
 	for (auto& [id, control] : playerControls)
 		delete control;
 	playerControls.clear();
@@ -130,6 +132,7 @@ PushdownState::PushdownResult ToonGame::DidSelectCancelButton()
 PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 {
 	m_ShouldQuitGame = true;
+	world->GameEnded();
 	return PushdownState::Pop;
 }
 

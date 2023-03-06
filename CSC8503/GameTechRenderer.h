@@ -57,6 +57,8 @@ namespace NCL {
 
 			void DrawMainScene();
 
+			void RenderRectical();
+
 			OGLShader*		defaultShader;
 
 			ToonGameWorld*	gameWorld = nullptr;			
@@ -152,7 +154,7 @@ namespace NCL {
 			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
-			OGLMesh* minimapQuad;
+			OGLMesh* squareQuad;
 			OGLMesh* minimapStencilQuad;
 
 			OGLMesh* scoreQuad;
