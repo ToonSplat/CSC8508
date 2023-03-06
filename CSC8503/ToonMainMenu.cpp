@@ -195,8 +195,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case CREDITS:
 		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
-
-		return PushdownResult::NoChange;
 		*newState = GetCreditsScreenObject();
 		break;
 	case QUIT:
