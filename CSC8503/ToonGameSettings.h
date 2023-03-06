@@ -31,14 +31,16 @@ class ToonGameSettings : public PushdownState
 		std::string		  text;
 		bool			  hasToggle;
 		ToonToggleButton* toggleButton = NULL;
+		Vector2			  windowSize;
 
-		SettingsDataStructure(Coordinates coord, std::string txt, bool hasToggle = true, int toggleButtonID = -1, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, std::vector<std::string>toggleValueText = { "OFF", "ON" }, Coordinates toggleCoord = Coordinates())
+		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, bool hasToggle = true, int toggleButtonID = -1, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, std::vector<std::string>toggleValueText = { "OFF", "ON" }, Coordinates toggleCoord = Coordinates())
 		{
 			coordinates					  = coord;
 			text						  = txt;
 			this->hasToggle				  = hasToggle;
+			this->windowSize			  = windowSize;
 			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 20.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
-			toggleButton = new ToonToggleButton(toggleCoordinates, toggleButtonID, toggleState, true, toggleValueText);
+			toggleButton = new ToonToggleButton(toggleCoordinates, windowSize, toggleButtonID, toggleState, true, toggleValueText);
 		}
 	};
 
