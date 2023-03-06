@@ -61,14 +61,6 @@ hide or show the
 
 */
 
-void AddAudioFiles() {
-	Audio::AddSound("splatter.wav");
-	Audio::AddSound("gameTune.wav");
-	Audio::AddSound("menuTune.wav");
-	Audio::AddSound("splash.wav");
-	Audio::AddSound("click.wav");
-}
-
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
@@ -111,7 +103,6 @@ int main()
 {
 	//Audio
 	NCL::CSC8503::AudioSystem::Initialise();
-	AddAudioFiles();
 
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();

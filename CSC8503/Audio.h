@@ -25,17 +25,15 @@ namespace NCL
 		static class Audio {
 
 		public:;
-			static void AddSound(const char* filename);
+			static Sound* AddSound(const char* filename);
 			static Sound* GetSound(std::string filename);
 
 			static bool RemoveSound(std::string filename);
 
-			static void DeleteSounds();
+			static void DeleteSound(Sound* sound);
 		private:
 			Audio();
 			~Audio();
-
-			static std::map<std::string, Sound*> soundEffectBuffers;
 		};
 	}
 }
