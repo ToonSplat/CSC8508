@@ -9,7 +9,7 @@ void ToonToggleButton::DrawButton()
 }
 
 
-ToonToggleButton::ToonToggleButton(Coordinates coordinates, int toggleButtonID, ToggleButtonStates currentState, bool shouldDrawValue, std::vector<std::string> valueTextVector)
+ToonToggleButton::ToonToggleButton(Coordinates coordinates, Vector2 windowSize, int toggleButtonID, ToggleButtonStates currentState, bool shouldDrawValue, std::vector<std::string> valueTextVector)
 {
 	m_CurrentState	   = ToggleButtonStates::ToggleOff;
 	m_Coordinates	   = coordinates;
@@ -18,7 +18,8 @@ ToonToggleButton::ToonToggleButton(Coordinates coordinates, int toggleButtonID, 
 	m_ShouldDrawValue  = shouldDrawValue;
 	m_CurrentState	   = currentState;
 	m_ToggleButtonID   = toggleButtonID;
-	m_ToggleButtonHead = new ToonToggleButtonHead(m_HalfSize, m_CurrentState);
+	m_WindowSize	   = windowSize;
+	m_ToggleButtonHead = new ToonToggleButtonHead(m_HalfSize, m_CurrentState, m_WindowSize);
 	m_ValueTextVector  = valueTextVector;
 }
 
@@ -49,14 +50,14 @@ void ToonToggleButton::HandleEvents()
 
 void ToonToggleButton::DrawOffToggle()
 {
-	Debug::DrawFilledQuad(m_HalfSize.origin, m_HalfSize.size, m_ToggleOnColour);
+	Debug::DrawFilledQuad(m_HalfSize.origin, m_HalfSize.size, 100.0f/m_WindowSize.y, m_ToggleOnColour);
 }
 
 void ToonToggleButton::DrawOnToggle()
 {
 	Vector2 origin = m_Coordinates.origin;
 	origin.x	  += m_HalfSize.size.x;
-	Debug::DrawFilledQuad(origin, m_HalfSize.size, m_ToggleOffColour);
+	Debug::DrawFilledQuad(origin, m_HalfSize.size, 100.0f / m_WindowSize.y, m_ToggleOffColour);
 }
 
 void ToonToggleButton::DrawValue()
