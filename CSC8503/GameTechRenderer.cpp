@@ -737,6 +737,11 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 			ImGui::TableNextColumn();
 
 
+			ImGui::Text("Audio Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::TableNextColumn();
+
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
 			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());

@@ -25,6 +25,14 @@ void ToonDebugManager::EndFrame() {
 	frameTimeTaken = ConvertTimeTaken(frameStart, frameEnd);
 }
 
+void ToonDebugManager::StartAudio() {
+	audioStart = high_resolution_clock::now();
+}
+void ToonDebugManager::EndAudio() {
+	audioEnd = high_resolution_clock::now();
+	audioTimeTaken = ConvertTimeTaken(audioStart, audioEnd);
+}
+
 void ToonDebugManager::StartNetworking() {
 	networkingStart = high_resolution_clock::now();
 }

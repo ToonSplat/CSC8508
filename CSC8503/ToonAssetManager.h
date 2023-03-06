@@ -11,6 +11,7 @@
 #include "OGLTexture.h"
 #include "Assets.h"
 #include "ToonMeshMaterial.h"
+#include "Audio.h"
 
 using std::map;
 using std::string;
@@ -34,11 +35,12 @@ namespace NCL {
 		}
 
 		void LoadAssets(void);
-		Rendering::TextureBase* GetTexture(const string& name);
-		MeshGeometry* GetMesh(const string& name);
-		Rendering::OGLShader* GetShader(const string& name);
-		MeshAnimation* GetAnimation(const string& name);
-		ToonMeshMaterial* GetMaterial(const string& name);
+		Rendering::TextureBase*	GetTexture(const string& name);
+		MeshGeometry*			GetMesh(const string& name);
+		Rendering::OGLShader*	GetShader(const string& name);
+		MeshAnimation*			GetAnimation(const string& name);
+		ToonMeshMaterial*		GetMaterial(const string& name);
+		CSC8503::Sound*			GetSound(const string& name);
 
 	protected:
 		ToonAssetManager(void);
@@ -52,6 +54,7 @@ namespace NCL {
 			const string& geometryShader = "", const string& domainShader = "", const string& hullShader = "");
 		MeshAnimation*				AddAnimation(const string& name, const string& fileName);
 		ToonMeshMaterial*			AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount);
+		CSC8503::Sound*				AddSound(const string& name, const string& fileName);
 		
 		MeshGeometry* CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor);
 
@@ -60,5 +63,6 @@ namespace NCL {
 		map<string, Rendering::OGLShader*> shaders;
 		map<string, MeshAnimation*> animations;
 		map<string, ToonMeshMaterial*> materials;
+		map<string, CSC8503::Sound*> sounds;
 	};
 }
