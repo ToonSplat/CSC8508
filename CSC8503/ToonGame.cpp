@@ -238,21 +238,10 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	if (world->GetMainCameraCount() > 1) {
-		//Debug::Print("[]", Vector2(48.5f / 2.0f, 50.0f), Debug::RED);	//TODO: Hardcoded for now. To be changed later.
-		Debug::Print(output, NCL::Maths::Vector2(47.5f / 2, 5.0f));
-		if (winner != nullptr)
-			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f / 2, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
-	}
-	else
-	{
-			//TODO: Hardcoded for now. To be changed later.
-		Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
-		if (winner != nullptr)
-			Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
-	}
+	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+	if (winner != nullptr)
+		Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 
-	Debug::Print("[]", Vector2(48.5f, 50.0f), Debug::RED);
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
@@ -276,12 +265,7 @@ ToonConfirmationScreen* NCL::CSC8503::ToonGame::GetToonConfirmationScreen()
 {
 	if (!m_ToonConfirmationScreen)
 	{
-		if (world->GetMainCameraCount() > 1) {
-			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(10, 20), Vector2(30, 20)), m_WindowSize, renderer, "Quit the game?");
-		}
-		else {
-			m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
-		}
+		m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_WindowSize, renderer, "Are you sure, you want to quit the game?");
 		m_ToonConfirmationScreen->delegate = this;
 	}
 	return m_ToonConfirmationScreen;
