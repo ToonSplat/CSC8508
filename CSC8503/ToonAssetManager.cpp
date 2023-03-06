@@ -22,7 +22,7 @@ ToonAssetManager::~ToonAssetManager(void) {
 	for (auto& [name, mat] : materials)
 		delete mat;
 	for (auto& [name, sound] : sounds)
-		Audio::DeleteSound(sound);
+		Audio::RemoveSound(sound);
 }
 
 void ToonAssetManager::LoadAssets(void) {
@@ -38,7 +38,7 @@ void ToonAssetManager::LoadAssets(void) {
 	for (auto& [name, mat] : materials)
 		delete mat;
 	for (auto& [name, sound] : sounds)
-		Audio::DeleteSound(sound);
+		Audio::RemoveSound(sound);
 	textures.clear();
 	meshes.clear();
 	shaders.clear();

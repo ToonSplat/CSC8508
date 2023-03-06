@@ -4,12 +4,6 @@
 using namespace NCL;
 using namespace CSC8503;
 
-void Audio::DeleteSound(Sound* sound) {
-    alDeleteBuffers(1, sound->buffer);
-    delete sound->buffer;
-    delete sound;
-}
-
 Sound* Audio::AddSound(const char* filename)
 {
     ALenum err, format;
@@ -97,15 +91,13 @@ Sound* Audio::AddSound(const char* filename)
     }
    
     Sound* s = new Sound(buffer, len);
-    soundEffectBuffers.insert({ filename,s});
     return s;
 }
 
-bool Audio::RemoveSound(std::string filename) {
-    alDeleteBuffers(1, soundEffectBuffers.find(filename)->second->buffer);
-    delete soundEffectBuffers.find(filename)->second->buffer;
-    delete soundEffectBuffers.find(filename)->second;
-    soundEffectBuffers.erase(filename);
+bool Audio::RemoveSound(Sound* sound) {
+    alDeleteBuffers(1, sound->buffer);
+    delete sound->buffer;
+    delete sound;
     return true;
 }
 

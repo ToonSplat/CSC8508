@@ -30,11 +30,17 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 
 ToonMainMenu::~ToonMainMenu()
 {
-if (gameTune)
-		delete gameTune;
-	if (mainMenuTune)
-		delete mainMenuTune;
+	if (gameTune) {
+		gameTune->DetachSource();
+		std::cout << "deleted\n";
+		/*alDeleteSources(1, &gameTune->GetSource()->source);*/
+	}
+	if (mainMenuTune) {
+		mainMenuTune->DetachSource();
+		//alDeleteSources(1, &mainMenuTune->GetSource()->source);
+	}
 	delete m_SettingsScreenObject;
+	AudioSystem::GetAudioSystem()->AddSoundEmitter(mainMenuTune);
 	m_SettingsScreenObject = NULL;
 }
 

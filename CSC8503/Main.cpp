@@ -45,9 +45,6 @@ using namespace CSC8503;
 #include <thread>
 #include <sstream>
 
-//Audio sounds
-std::map<std::string, NCL::CSC8503::Sound*> NCL::CSC8503::Audio::soundEffectBuffers;
-
 /*
 
 The main function should look pretty familar to you!
@@ -150,6 +147,7 @@ int main()
 
 	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, new ToonGameWorld(), w);
 	StartPushdownAutomata(w, mainMenu);
+	delete mainMenu;
 
 	ToonAssetManager::Destroy();
 	ToonDebugManager::Destroy();
@@ -160,6 +158,5 @@ int main()
 	ImGui::DestroyContext();
 
 	//Audio
-	Audio::DeleteSounds();
 	NCL::CSC8503::AudioSystem::Destroy();
 }

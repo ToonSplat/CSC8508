@@ -47,13 +47,13 @@ AudioSystem::AudioSystem(unsigned int channels) {
 
 AudioSystem::~AudioSystem() {
 
-    alcMakeContextCurrent(NULL);
     for (std::vector < OALSource* >::iterator i = sources.begin();
         i != sources.end(); ++i) {
         alDeleteSources(1, &(*i)->source);
         delete (*i);
     }
     alcDestroyContext(context);
+    alcMakeContextCurrent(NULL);
     alcCloseDevice(device);
 }
 
