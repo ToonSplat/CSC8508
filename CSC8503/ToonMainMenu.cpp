@@ -175,32 +175,32 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	switch (navigationScreenIndex)
 	{
 	case PLAY:
-optionClick->ResetSound();
+		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
     
 		*newState = GetLocalMenuSceenObject();
 		break;
 	case MULTIPLAY:
-  optionClick->ResetSound();
+		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
     
 		*newState = GetMultiMenuSceenObject();
 		break;
 	case SETTINGS:
-  optionClick->ResetSound();
+		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
     
 		*newState = GetSettingsScreenObject();
 		break;
-		//return PushdownResult::NoChange;
 	case CREDITS:
 		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
+
 		return PushdownResult::NoChange;
 	case QUIT:
 		optionClick->ResetSound();
 		AudioSystem::GetAudioSystem()->AddSoundEmitter(optionClick);
-		optionClick->DeleteThis();
+
 		*newState = m_ToonConfirmationScreen;
 		break;
 	case LAUNCH1PLAYER:
@@ -252,13 +252,13 @@ optionClick->ResetSound();
 
 ToonMainMenu* ToonMainMenu::GetLocalMenuSceenObject()
 {
-	if (!m_LocalMenuScreenObject) { m_LocalMenuScreenObject = new ToonMainMenu(m_Renderer, m_LocalMainMenuData, GameStates::LAUNCH1PLAYER, m_World, m_Window); }
+	if (!m_LocalMenuScreenObject) { m_LocalMenuScreenObject = new ToonMainMenu(m_Renderer, m_LocalMainMenuData, GameStates::LAUNCH1PLAYER, m_World, m_Window, optionClick); }
 	return m_LocalMenuScreenObject;
 }
 
 ToonMainMenu* ToonMainMenu::GetMultiMenuSceenObject()
 {
-	if (!m_MultiMenuScreenObject) { m_MultiMenuScreenObject = new ToonMainMenu(m_Renderer, m_MultiMainMenuData, GameStates::LAUNCHASSERVER, m_World, m_Window); }
+	if (!m_MultiMenuScreenObject) { m_MultiMenuScreenObject = new ToonMainMenu(m_Renderer, m_MultiMainMenuData, GameStates::LAUNCHASSERVER, m_World, m_Window, optionClick); }
 	return m_MultiMenuScreenObject;
 }
 
