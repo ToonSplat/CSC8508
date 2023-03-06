@@ -269,6 +269,7 @@ void ToonMainMenu::DrawMainMenu()
 		float	y						  = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
 		float	x						  = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
 		Vector2 mousePositionWithinBounds = Vector2(x, y);
+		int		lastIndex = m_CurrentSelectedIndex;
 		int		index					  = 0;
 		for (auto data : m_mainMenuData)
 		{
@@ -278,5 +279,7 @@ void ToonMainMenu::DrawMainMenu()
 			Debug::Print(data.text, data.coordinates.position, data.colour);
 			index++;
 		}
+		if (m_CurrentSelectedIndex != lastIndex)
+			AudioSystem::GetAudioSystem()->SelectMenuOption();
 	}
 }
