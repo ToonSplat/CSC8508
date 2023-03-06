@@ -75,8 +75,10 @@ public:
 
 private:
 	AudioEmitter* mainMenuTune,* gameTune,* optionClick;
-	void ToonMainMenuAudio();
-	void ToonMenuSoundS();
+	void ToonMainMenuAudioInitialise();
+
+	void SetAudioToGame();
+	void SetAudioToMenu();
 
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
