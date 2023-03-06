@@ -52,6 +52,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
+	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
 	GenerateAtomicBuffer();
@@ -79,8 +80,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	fullScreenQuad->UploadToGPU();
 	
 	squareQuad = new OGLMesh();
-	squareQuad->SetVertexPositions({Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f), Vector3(0.5f, -0.8f, -1.0f), Vector3(0.5f, 0.8f, -1.0f)
-});
+	squareQuad->SetVertexPositions({Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f), Vector3(0.5f, -0.8f, -1.0f), Vector3(0.5f, 0.8f, -1.0f)});
 	squareQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	squareQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	squareQuad->UploadToGPU();
@@ -115,11 +115,14 @@ void GameTechRenderer::RenderFrame() {
 	if (!gameWorld) return; // Safety Check
 
 	switch (gameWorld->GetMainCameraCount()) {
+	case 1:
+		RenderSinglePlayer();
+		break;
 	case 2:
 		RenderSplitScreen();
 		break;
 	default:
-		RenderSinglePlayer();
+		Render4Player();
 		break;
 	}
 
@@ -271,6 +274,46 @@ void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
+void NCL::CSC8503::GameTechRenderer::Render4Player()
+{
+	
+	//screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
+	//float width = windowWidth / 2;
+	//float height = windowHeight / 2;
+	//for (int j = 0; j < gameWorld->GetMainCameraCount(); j++)
+	//{
+	//	int modular = j % 2;
+	//	currentFBO = &quadFBO[j];
+	//	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
+	//	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+	//	glViewport(modular * width, (j >= 2 ? 1 : 0) * height, width, height);
+	//	currentRenderCamera = gameWorld->GetMainCamera(j + 1);
+	//	DrawMainScene();
+	//	glViewport(0, 0, windowWidth, windowHeight);
+	//	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	//}
+	screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
+	float width = windowWidth / 2;
+	float height = windowHeight / 2;
+	int currentPlayer = 1;
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < gameWorld->GetMainCameraCount() - 2; j++)
+		{
+			currentFBO = &quadFBO[j + i];
+			glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
+			glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+			glViewport(i * width, j * height, width, height);
+			currentRenderCamera = gameWorld->GetMainCamera(currentPlayer);
+			DrawMainScene();
+			glViewport(0, 0, windowWidth, windowHeight);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			currentPlayer++;
+		}
+	}
+	
+}
 
 void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
 {
@@ -365,6 +408,12 @@ void GameTechRenderer::PresentScene(){
 	case 2:
 		PresentSplitScreen();
 		break;
+	case 3:
+		Present3Player();
+		break;
+	case 4:
+		Present4Player();
+		break;
 	default:
 		PresentSinglePlayer();
 		break;
@@ -373,7 +422,6 @@ void GameTechRenderer::PresentScene(){
 
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
-		
 	}
 
 	
@@ -545,8 +593,11 @@ void GameTechRenderer::RenderShadowMap() {
 	if (*currentFBO == splitFBO[0] || *currentFBO == splitFBO[1]) {
 		glViewport(0, 0, windowWidth / 2, windowHeight);
 	}
-	else {
+	else if (*currentFBO == sceneFBO) {
 		glViewport(0, 0, windowWidth, windowHeight);
+	}
+	else {
+		glViewport(0, 0, windowWidth / 2, windowHeight / 2);
 	}
 	
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
@@ -576,6 +627,54 @@ void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
+		
+	}
+}
+void NCL::CSC8503::GameTechRenderer::Present3Player()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, quadColourTexture[i]);
+		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + i, -0.5f, 0)) * Matrix4::Scale(Vector3(0.5, 0.5, 1.0));
+		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+		BindMesh(fullScreenQuad);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, quadColourTexture[2]);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+	Matrix4 modelMatrix = Matrix4::Translation(Vector3(0, 0.5f, 0)) * Matrix4::Scale(Vector3(0.5, 0.5, 1.0));
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+	BindMesh(fullScreenQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+}
+void NCL::CSC8503::GameTechRenderer::Present4Player()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		for (int j = 0; j < 2; j++)
+		{
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, quadColourTexture[i + j]);
+			glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+
+			Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + i, -0.5f + j, 0)) * Matrix4::Scale(Vector3(0.5, 0.5, 1.0));
+			int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+			glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+			BindMesh(fullScreenQuad);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
 		
 	}
 }
@@ -1334,6 +1433,50 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 		glObjectLabel(GL_TEXTURE, splitDepthTexture[i], -1, "Split Depth Texture");
 
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !splitDepthTexture[i] || !splitColourTexture[i]) {
+			return;
+		}
+	}
+
+
+
+	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		glGenFramebuffers(1, &quadFBO[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, quadFBO[i]);
+
+
+		glGenTextures(1, &quadColourTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, quadColourTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, quadColourTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, quadColourTexture[i], -1, "quad Colour Texture");
+
+		glGenTextures(1, &quadDepthTexture[i]);
+		glBindTexture(GL_TEXTURE_2D, quadDepthTexture[i]);
+
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
+
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, quadDepthTexture[i], 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, quadDepthTexture[i], 0);
+		glObjectLabel(GL_TEXTURE, quadDepthTexture[i], -1, "Split Depth Texture");
+
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !quadDepthTexture[i] || !quadColourTexture[i]) {
 			return;
 		}
 	}

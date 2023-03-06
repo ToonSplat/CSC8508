@@ -36,9 +36,12 @@ namespace NCL {
 			void RenderFrame()	override;
 			void RenderSplitScreen();
 			void RenderSinglePlayer();
+			void Render4Player();
 			
 			void PresentSinglePlayer();
 			void PresentSplitScreen();
+			void Present3Player();
+			void Present4Player();
 			
 			void RenderImGUI();
 
@@ -142,6 +145,11 @@ namespace NCL {
 			GLuint splitColourTexture[2];
 			GLuint splitDepthTexture[2];
 			void GenerateSplitFBO(int width, int height);
+
+			GLuint quadFBO[4];
+			GLuint quadColourTexture[4];
+			GLuint quadDepthTexture[4];
+			void GenerateQuadFBO(int width, int height);
 
 			GLuint* currentFBO;
 
