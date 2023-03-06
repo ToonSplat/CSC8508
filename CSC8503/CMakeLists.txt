@@ -298,10 +298,10 @@ set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ReactPhysics3D::ReactPhysics3D"
 )
 
-find_library(XINPUT_LIBRARY NAMES XInput)
-if(NOT XINPUT_LIBRARY)
-    message(FATAL_ERROR "XInput library not found")
-endif()
+# find_library(XINPUT_LIBRARY NAMES XInput)
+# if(NOT XINPUT_LIBRARY)
+#     message(FATAL_ERROR "XInput library not found")
+# endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${XINPUT_LIBRARY})
 
@@ -311,6 +311,7 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDEN
 ################################################################################
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Winmm.lib")
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "xinput.lib")
 endif()
 
 include_directories("../OpenGLRendering/")
