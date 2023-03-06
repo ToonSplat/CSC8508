@@ -4,12 +4,9 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
-    "NetworkedGame.h"
-    "NetworkPlayer.h"
+    "ApplyPaint.h"
     "PaintableObject.h"
-    "StateGameObject.h"
     "Team.h"
-    "TutorialGame.h"
     "PaintBallClass.h"
     "PaintBallProjectile.h"
     "Player.h"
@@ -26,27 +23,20 @@ set(Header_Files
     "ToonGameWorld.h"
     "ToonRaycastCallback.h"
     "ToonUtils.h"
-    "ToonFollowCamera.h"
-    "ToonMinimapCamera.h"
     "PlayerControl.h"
     "ToonMapCamera.h"
-    "ToonMainMenu.h"
-    "ToonMinimapCamera.h"
-    "ToonTextInput.h"
-    "ToonVirtualKeyboard.h"
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
+    "ToonDebugManager.h"
+    "ToonSettingsManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "ApplyPaint.cpp"
     "Main.cpp"
-    "NetworkedGame.cpp"
-    "NetworkPlayer.cpp"
     "PaintableObject.cpp"
-    "StateGameObject.cpp"
     "Team.cpp"
-    "TutorialGame.cpp"
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"
@@ -60,13 +50,9 @@ set(Source_Files
     "ToonEventListener.cpp"
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
-    "ToonFollowCamera.cpp"
-    "ToonMinimapCamera.cpp"
-    "ToonMapCamera.cpp"
-    "ToonMainMenu.cpp"
-    "ToonTextInput.cpp"
-    "ToonVirtualKeyboard.cpp"
     "ToonGameObjectAnim.cpp"
+    "ToonDebugManager.cpp"
+    "ToonSettingsManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -80,6 +66,8 @@ set(Networking_Files
 source_group("Networking Files" FILES ${Networking_Files})
 
 set(Rendering_Files
+    "ToonMeshMaterial.h"
+    "ToonMeshMaterial.cpp"
     "ToonAssetManager.h"
     "ToonAssetManager.cpp"
     "GameTechRenderer.h"
@@ -88,6 +76,51 @@ set(Rendering_Files
     "ToonRenderObject.cpp"
 )
 source_group("Rendering Files" FILES ${Rendering_Files})
+
+set(Inputs_Files
+    "PlayerControl.h"
+    "PlayerControl.cpp"
+    "BaseInput.h"
+    "BaseInput.cpp"
+    "KeyboardInput.h"
+    "KeyboardInput.cpp"
+    "XboxControllerInput.h"
+    "XboxControllerInput.cpp"
+)
+source_group("Inputs Files" FILES ${Inputs_Files})
+
+set(Camera_Files
+    "ToonFollowCamera.h"
+    "ToonMinimapCamera.h"
+    "ToonObserverCamera.h"
+    "ToonMapCamera.h"
+    "ToonFollowCamera.cpp"
+    "ToonMinimapCamera.cpp"
+    "ToonObserverCamera.cpp"
+    "ToonMapCamera.cpp"
+)
+source_group("Camera Files" FILES ${Camera_Files})
+
+set(Menu_Files
+    "Toon2DCoordinates.h"
+
+    "ToonMainMenu.h"
+    "ToonTextInput.h"
+    "ToonVirtualKeyboard.h"
+    "ToonConfirmationScreen.h"
+    "ToonGameSettings.h"
+    "ToonToggleButton.h"
+    "ToonFileHandling.h"
+
+    "ToonMainMenu.cpp"
+    "ToonTextInput.cpp"
+    "ToonVirtualKeyboard.cpp"
+    "ToonConfirmationScreen.cpp"
+    "ToonGameSettings.cpp"
+    "ToonToggleButton.cpp"
+    "ToonFileHandling.cpp"
+)
+source_group("Menu Files" FILES ${Menu_Files})
 
 if(USE_VULKAN)
 list(APPEND Header_Files "GameTechVulkanRenderer.h")
@@ -102,6 +135,9 @@ set(ALL_FILES
     ${Source_Files}
     ${Networking_Files}
     ${Rendering_Files}
+    ${Inputs_Files}
+    ${Camera_Files}
+    ${Menu_Files}
 )
 
 if(USE_VULKAN)
@@ -110,6 +146,9 @@ if(USE_VULKAN)
         ${Source_Files}
         ${Networking_Files}
         ${Rendering_Files}
+        ${Inputs_Files}
+        ${Camera_Files}
+        ${Menu_Files}
         ${SHADER_FILES}
     )
 
@@ -265,12 +304,20 @@ set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ReactPhysics3D::ReactPhysics3D"
 )
 
+# find_library(XINPUT_LIBRARY NAMES XInput)
+# if(NOT XINPUT_LIBRARY)
+#     message(FATAL_ERROR "XInput library not found")
+# endif()
+
+target_link_libraries(${PROJECT_NAME} PRIVATE ${XINPUT_LIBRARY})
+
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDENCIES}")
 ################################################################################
 # Dependencies
 ################################################################################
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Winmm.lib")
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "xinput.lib")
 endif()
 
 include_directories("../OpenGLRendering/")

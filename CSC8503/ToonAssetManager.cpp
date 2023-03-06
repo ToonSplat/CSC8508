@@ -1,6 +1,6 @@
 #include "ToonAssetManager.h"
-#include "TextureLoader.h"
 #include <stb/stb_image.h>
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 
@@ -19,9 +19,12 @@ ToonAssetManager::~ToonAssetManager(void) {
 		delete shader;
 	for (auto& [name, animation] : animations)
 		delete animation;
+	for (auto& [name, mat] : materials)
+		delete mat;
 }
 
 void ToonAssetManager::LoadAssets(void) {
+	ToonDebugManager::Instance().StartLoad();
 	for (auto& [name, texture] : textures)
 		delete texture;
 	for (auto& [name, mesh] : meshes)
@@ -30,16 +33,21 @@ void ToonAssetManager::LoadAssets(void) {
 		delete shader;
 	for (auto& [name, animation] : animations)
 		delete animation;
-	textures.clear();
+	for (auto& [name, mat] : materials)
+		delete mat; materials.clear();
 	meshes.clear();
 	shaders.clear();
 	animations.clear();
+	materials.clear();
 	//-----------------------------------------------------------
 	//		Textures
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
-	AddTexture("player", "Boss_diffuse.png", true);
+	/*AddTexture("player", "Boss_diffuse.png", true);
+	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
+	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
+	AddTexture("tex_arena_lights", "RB_Level_Arena_Lights.png", true);*/
 
 	//-----------------------------------------------------------
 	//		Meshes
@@ -47,8 +55,20 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arrow", "Minimap_Arrow.msh");
 	AddMesh("player", "Character_Boss.msh");
 	AddMesh("sphere", "sphere.msh");
-	AddMesh("floorMain", "FloorsMain.msh");
-	AddMesh("platformMain", "Level_Platform.msh");
+	AddMesh("arena_main", "Level_Arena.msh");
+	AddMesh("arena_lights", "Level_Arena_Lights.msh");
+	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
+	AddMesh("arena_ramps", "Level_Arena_Ramps.msh");
+	AddMesh("arena_decos", "Level_Arena_Decos.msh");
+	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
+
+	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
+	AddMesh("player_mesh_2", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_PURPLE_PRAWNS, 1.0f)));
+	AddMesh("player_mesh_3", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_BLUE_BULLDOGS, 1.0f)));
+	AddMesh("player_mesh_4", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_ORANGE_OTTERS, 1.0f)));
+	//AddMesh("floorMain", "FloorsMain.msh");
+	//AddMesh("platformMain", "Level_Platform.msh");
+	
 	//-----------------------------------------------------------
 	//		Shaders
 	AddShader("debug", "debug.vert", "debug.frag");
@@ -74,6 +94,17 @@ void ToonAssetManager::LoadAssets(void) {
 	AddAnimation("Player_Run_Aim_B", "Boss_Gun_Run_Aim_B.anm");
 	AddAnimation("Player_Run_Aim_BL", "Boss_Gun_Run_Aim_BL.anm");
 	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");
+
+	//-----------------------------------------------------------
+	//		Materials
+	AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());
+	AddMaterial("mat_arena", "Level_Arena.mat", GetMesh("arena_main")->GetSubMeshCount());
+	AddMaterial("mat_arena_obstacles", "Level_Arena_Obstables.mat", GetMesh("arena_obstacles")->GetSubMeshCount());
+	AddMaterial("mat_arena_ramps", "Level_Arena_Ramps.mat", GetMesh("arena_ramps")->GetSubMeshCount());
+	AddMaterial("mat_arena_lights", "Level_Arena_Lights.mat", GetMesh("arena_lights")->GetSubMeshCount());
+	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
+	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+	ToonDebugManager::Instance().EndLoad();
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
@@ -128,6 +159,14 @@ MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileNa
 	return mesh;
 }
 
+void NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
+{
+	if (newMesh == nullptr)
+		return;
+
+	meshes.emplace(name, newMesh);
+}
+
 Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {
 
 	map<string, Rendering::OGLShader*>::iterator i = shaders.find(name);
@@ -160,6 +199,7 @@ MeshAnimation* ToonAssetManager::GetAnimation(const string& name) {
 	return nullptr;
 }
 
+
 MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& fileName) {
 	
 	MeshAnimation* animation = GetAnimation(name);
@@ -170,4 +210,57 @@ MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& 
 	animations.emplace(name, animation);
 
 	return animation;
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
+{
+	map<string, ToonMeshMaterial*>::iterator i = materials.find(name);
+
+	if (i != materials.end())
+		return i->second;
+	return nullptr;
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
+{
+	ToonMeshMaterial* mat = GetMaterial(name);
+	if (mat != nullptr) return mat;
+
+	mat = new ToonMeshMaterial(fileName, subMeshCount);
+	materials.emplace(name, mat);
+
+	return mat;
+}
+
+MeshGeometry* NCL::ToonAssetManager::CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor)
+{
+	MeshGeometry* copyPlayerMesh = new OGLMesh(fileName);
+	if (copyPlayerMesh == nullptr) return nullptr;
+
+	std::vector<Vector4> vertexColours;
+	const std::vector<unsigned int> indices = copyPlayerMesh->GetIndexData();
+	for (size_t i = 0; i < copyPlayerMesh->GetVertexCount(); i++)
+		vertexColours.emplace_back(Debug::WHITE);
+
+	const SubMesh* clothesSubMesh = copyPlayerMesh->GetSubMesh(4);
+	if (clothesSubMesh == nullptr) return nullptr;
+
+	int start = clothesSubMesh->start;
+	int end = start + clothesSubMesh->count;
+
+	for (int i = start; i < end; i += 3)
+	{
+		int A = indices[i + 0];
+		int B = indices[i + 1];
+		int C = indices[i + 2];
+
+		vertexColours[A] = teamColor;
+		vertexColours[B] = teamColor;
+		vertexColours[C] = teamColor;
+	}
+
+	copyPlayerMesh->SetVertexColours(vertexColours);
+	copyPlayerMesh->UploadToGPU();
+
+	return copyPlayerMesh;
 }

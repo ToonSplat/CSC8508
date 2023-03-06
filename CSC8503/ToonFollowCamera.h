@@ -3,8 +3,7 @@
 #include "GameTechRenderer.h"
 #include "ToonGameObject.h"
 #include "Player.h"
-
-#include <thread>
+#include "BaseInput.h"
 
 namespace NCL
 {
@@ -14,10 +13,10 @@ namespace NCL
 		class ToonFollowCamera : public Camera
 		{
 		public:
-			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target);
+			ToonFollowCamera(ToonGameWorld* gameWorld, ToonGameObject* target, float fov = 45.0f);
 			~ToonFollowCamera() {};
 
-			virtual void UpdateCamera(float dt) override;
+			virtual void UpdateCamera(float dt, BaseInput* inputs) override;
 
 			float GetPitchOffset() const { return pitchOffset; }
 			void SetPitchOffset(const float& newPitchOffset) { pitchOffset = newPitchOffset; }
@@ -37,6 +36,8 @@ namespace NCL
 			float GetSmoothness() const { return smoothness; }
 			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
 
+			Vector3 followOffset2;
+
 		protected:
 			ToonGameWorld* gameWorld;
 			ToonGameObject* followTarget;
@@ -45,15 +46,13 @@ namespace NCL
 		private:
 			Vector3 followOffset, targetOffset, aimOffset;
 			Vector3 refVel;
-			Vector3 up, right, forward;
+			Vector3 up, right, forward;			
 			
 			float requiredRayDistance, defaultRayDistance;
 			float pitchOffset;
-			float h, v;
 			float smoothness;
 			float distanceThresholdMoving, distanceThresholdStanding;
-
-			std::thread first;
+			float startFOV, aimFOV, vFov, zoomSmoothess;
 
 			bool reached;
 		};

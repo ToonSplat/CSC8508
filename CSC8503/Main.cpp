@@ -10,13 +10,8 @@
 #include "GameServer.h"
 #include "GameClient.h"
 
-#include "NavigationGrid.h"
-#include "NavigationMesh.h"
-
-#include "TutorialGame.h"
 #include "ToonGame.h"
 #include "ToonNetworkedGame.h"
-#include "NetworkedGame.h"
 
 #include "PushdownMachine.h"
 
@@ -29,6 +24,15 @@
 #include "ToonMainMenu.h"
 
 #include "AudioSystem.h"
+#include "KeyboardInput.h"
+#include "XboxControllerInput.h"
+#include "InputManager.h"
+
+#include "ToonDebugManager.h"
+#include "ToonSettingsManager.h"
+
+#include <Windows.h>
+#include <Xinput.h>
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -68,6 +72,9 @@ void AddAudioFiles() {
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
+		ToonDebugManager::Instance().EndFrame();
+		ToonDebugManager::Instance().StartFrame();
+		ToonDebugManager::Instance().Update();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		AudioSystem::GetAudioSystem()->Update(dt);
 		if (dt > 0.1f) {
@@ -92,7 +99,8 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		}
 
 
-		w->SetTitle("Gametech frame time:" + std::to_string(1000.0f * dt));
+		w->SetTitle("ToonSplat frame time:" + std::to_string(1000.0f * dt));
+		InputManager::GetInstance().Update();
 		if (!machine.Update(dt)) {
 			return;
 		}
@@ -107,8 +115,27 @@ int main()
 
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
+	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	ToonSettingsManager::SetRenderer(renderer);
+	ToonSettingsManager::ApplySettings();
+#ifndef _DEBUG
+	w->ShowConsole(false);
+#endif
 
+	// Controller settings
+	XINPUT_STATE controllerState;
+	DWORD result = XInputGetState(0, &controllerState);
+	if (result == ERROR_SUCCESS)
+	{
+		std::cout << "Controller detected." << std::endl;
+		InputManager::GetInstance().AddInput(1, new XboxControllerInput(0));
+	}
+	else
+	{
+		std::cout << "No controller detected. Using keyboard input." << std::endl;
+		InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+	}
 	//Imgui 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -134,6 +161,7 @@ int main()
 	StartPushdownAutomata(w, mainMenu);
 
 	ToonAssetManager::Destroy();
+	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
 	//Imgui 
 	ImGui_ImplOpenGL3_Shutdown();

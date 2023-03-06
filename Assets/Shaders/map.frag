@@ -1,4 +1,4 @@
-#version 420
+#version 420 core
 
 layout (binding = 0, offset = 0) uniform atomic_uint scoreCount1[5];
 layout (binding = 1, offset = 0) uniform atomic_uint scoreCount2[5];
@@ -39,8 +39,6 @@ in Vertex
 	vec4 localPos;
 } IN;
 
-//out vec4 fragColor;
-
 vec4 modulus(vec4 x){return x - floor(x * (1.0/289.0)) * 289.0;}
 vec4 permutate(vec4 x){return modulus(((x * 34.0) + 1.0) * x);}
 
@@ -75,7 +73,7 @@ void main(void)
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		if (distanceBetween <= impactPoints[i].radius - SplatNoise(IN.localPos.xyz)){
+		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
@@ -112,7 +110,4 @@ void main(void)
 		if (albedo.rgb == team4Colour) atomicCounterIncrement(scoreCount3[4]);
 
 	}
-	
-	
-
 }

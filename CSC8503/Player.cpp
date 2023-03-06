@@ -26,6 +26,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	if (!LoadAnim("Player_Run_Aim_B")) return;
 	if (!LoadAnim("Player_Run_Aim_BL")) return;
 	if (!LoadAnim("Player_Run_Aim_BR")) return;
+
 	PlayAnim("Player_Idle");
 
 	audiosystem = AudioSystem::GetAudioSystem();
@@ -46,7 +47,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (Window::GetKeyboard()->KeyDown(KeyboardKeys::F5))
 		renderObject->GetShader()->ReloadShader();
 
-	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, controls->direction[1] / 1000.0f, controls->direction[2] / 1000.0f);
+	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, 0, controls->direction[1] / 1000.0f);
 	linearMovement.normalize();
 
 	isMoving = linearMovement.length() >= 0.1f;
@@ -65,7 +66,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 	if (controls->jumping) {
-		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 500.0f);
+		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 		controls->jumping = false;
 	}
 

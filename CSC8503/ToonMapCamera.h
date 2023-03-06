@@ -10,7 +10,7 @@ namespace NCL::CSC8503 {
 		ToonMapCamera();
 		~ToonMapCamera() {}
 
-		void UpdateCamera(float dt) override;
+		void UpdateCamera(float dt, BaseInput* inputs) override;
 	protected:
 		float zoomFactor = 5.0f;
 		float distanceFromFocus = 300.0f;

@@ -45,5 +45,35 @@ namespace NCL {
 				Clamp(a.z, mins.z, maxs.z)
 			);
 		}
+
+		float SmoothDamp(float current, float target, float& currentVelocity, float smoothTime, float maxSpeed, float deltaTime)
+		{
+			// Based on Game Programming Gems 4 Chapter 1.10
+			smoothTime = std::max(0.0001F, smoothTime);
+			float omega = 2.0F / smoothTime;
+
+			float x = omega * deltaTime;
+			float exp = 1.0F / (1.0F + x + 0.48F * x * x + 0.235F * x * x * x);
+			float change = current - target;
+			float originalTo = target;
+
+			// Clamp maximum speed
+			float maxChange = maxSpeed * smoothTime;
+			change = std::clamp(change, -maxChange, maxChange);
+			target = current - change;
+
+			float temp = (currentVelocity + omega * change) * deltaTime;
+			currentVelocity = (currentVelocity - omega * temp) * exp;
+			float output = target + (change + temp) * exp;
+
+			// Prevent overshooting
+			if (originalTo - current > 0.0F == output > originalTo)
+			{
+				output = originalTo;
+				currentVelocity = (output - originalTo) / deltaTime;
+			}
+
+			return output;
+		}
 	}
 }

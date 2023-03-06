@@ -108,5 +108,7 @@ namespace NCL {
 		float FloatAreaOfTri(const Vector3 &a, const Vector3 &b, const Vector3 & c);
 
 		float CrossAreaOfTri(const Vector3 &a, const Vector3 &b, const Vector3 & c);
+
+		float SmoothDamp(float current, float target, float& currentVelocity, float smoothTime, float maxSpeed, float deltaTime);
 	}
 }

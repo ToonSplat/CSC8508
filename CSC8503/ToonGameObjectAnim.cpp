@@ -3,7 +3,7 @@
 #include "OGLShader.h"
 #include "ToonAssetManager.h"
 
-
+int index = 0;
 NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld)
 {
 	hasSkin = true;
@@ -26,6 +26,13 @@ void NCL::CSC8503::ToonGameObjectAnim::Update(float dt)
 		nextFrame = (currentFrame + 1) % currentAnim->GetFrameCount();
 		frameTime += 1.0f / currentAnim->GetFrameRate();
 	}
+
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::L))
+	{
+		index++;
+		index %= renderObject->GetMesh()->GetSubMeshCount();
+		std::cout << index << std::endl;
+	}
 }
 
 void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
@@ -38,32 +45,39 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
 		r.BindMesh(minimapMesh);
 
-		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
 			r.DrawBoundMesh(i);
 
 		return;
 	}
 
 	OGLMesh* mesh = (OGLMesh*)renderObject->GetMesh();
-	OGLShader* shader = (OGLShader*)renderObject->GetShader();
+	OGLShader* shader = r.GetBoundShader();
+	if (shader == (OGLShader*)renderObject->GetShader()) {
 
-	const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
-	const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
+		const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
+		const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
 
-	for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
-		frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 
-	int j = glGetUniformLocation(shader->GetProgramID(), "joints");
-	glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
+		int j = glGetUniformLocation(shader->GetProgramID(), "joints");
+		glUniformMatrix4fv(j, frameMatrices.size(), false, (float*)frameMatrices.data());
 
-	frameMatrices.clear();
+		frameMatrices.clear();
+	}
 
 	r.BindMesh(mesh);
-	for (int i = 0; i < mesh->GetSubMeshCount(); i++)
+	for (int i = 0; i < (int)mesh->GetSubMeshCount(); i++)
 	{
-		//To Add Textures
+		if (renderObject->GetMaterial() != nullptr)
+		{
+			if ((int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+		}
+
 		r.DrawBoundMesh(i);
-	}	
+	}
 }
 
 void NCL::CSC8503::ToonGameObjectAnim::PlayAnim(const std::string& anim, float animSpeed)

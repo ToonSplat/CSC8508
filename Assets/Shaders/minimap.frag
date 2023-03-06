@@ -11,6 +11,7 @@ uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 uniform int impactPointCount;
 
 uniform vec4 		objectColour;
+uniform vec4 		objectMinimapColour;
 uniform sampler2D 	mainTex;
 
 uniform bool hasTexture;
@@ -54,17 +55,15 @@ float SplatNoise(vec3 inWorldPos){
 
 void main(void)
 {
-	vec4 albedo = objectColour;
+	vec4 albedo = objectMinimapColour;
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		if (distanceBetween <= impactPoints[i].radius - SplatNoise(IN.localPos.xyz)){
+		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
-	
-	
-	
+
 	fragColor = albedo;
 
 }

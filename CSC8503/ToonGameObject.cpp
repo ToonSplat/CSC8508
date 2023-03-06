@@ -45,17 +45,21 @@ void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
 		r.BindMesh(minimapMesh);
 
-		for (int i = 0; i < minimapMesh->GetSubMeshCount(); ++i)
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
 			r.DrawBoundMesh(i);
-	}
-	else
-	{
-		OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
-		r.BindMesh(boundMesh);
 
-		for (int i = 0; i < boundMesh->GetSubMeshCount(); ++i)
-			r.DrawBoundMesh(i);
-	}	
+		return;
+	}
+		
+	OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
+	r.BindMesh(boundMesh);
+	for (int i = 0; i < (int)boundMesh->GetSubMeshCount(); ++i)
+	{
+		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
+			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+
+		r.DrawBoundMesh(i);
+	}
 }
 
 void NCL::CSC8503::ToonGameObject::AddRigidbody()
@@ -71,7 +75,7 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 	collider = rigidBody->addCollider(RP3D_CollisionShape, collisionTransform);
 	SetColliderLayer(ToonCollisionLayer::Default);
 
-	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
+	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character | ToonCollisionLayer::Paintball | ToonCollisionLayer::Hitsphere;
 	SetColliderLayerMask(ToonCollisionLayer(everythingMask));
 }
 

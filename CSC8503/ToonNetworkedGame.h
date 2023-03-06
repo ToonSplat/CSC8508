@@ -47,7 +47,11 @@ namespace NCL {
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
-			void SendImpactPoint(ImpactPoint point, PaintableObject* object, int playerID = -1);
+			void SendImpactPoint(ImpactPoint point, ToonGameObject* object, int playerID = -1);
+
+			void UpdateCall(float dt) override;
+			PushdownState::PushdownResult DidSelectCancelButton() override;
+			PushdownState::PushdownResult DidSelectOkButton() override;
 
 		protected:
 			void UpdateAsServer(float dt);
@@ -63,7 +67,6 @@ namespace NCL {
 
 			float serverClosed = -256.0f;
 			int myID;
-			int winner;
 			int myState;
 
 			std::vector<ToonNetworkObject*> networkObjects;
@@ -71,7 +74,10 @@ namespace NCL {
 			std::map<int, PlayerDetails> serverPlayers;
 
 			AudioEmitter* e;
+      
+			ToonConfirmationScreen* m_ConfirmationScreen;
+			bool					m_ShouldShowConfirmationScreen = false;		//Just for showing confirmation screen
+			bool					m_MoveBackOnConfirmation = false;		//For moving back if the player selects yes on confirmation
 		};
 	}
 }
-

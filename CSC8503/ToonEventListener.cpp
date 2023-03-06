@@ -62,12 +62,19 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         // Check if collision involves HitSpheres 
         for (HitSphere* i : gameWorld->GetHitSpheres()) {
             if (i == body1 || i == body2) {
-                for (PaintableObject* p : gameWorld->GetPaintableObjects()) {
+                for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
                     if (p == body1 || p == body2) {
                         Vector3 localPosition;
                         localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
                             p->GetRigidbody()->getTransform().getPosition());
-                        p->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                        if (dynamic_cast<PaintableObject*>(p)) {
+                            PaintableObject* object = (PaintableObject*)p;
+                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                        }
+                        else {
+                            Player* object = (Player*)p;
+                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                        }
                         if (server)
                             server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }

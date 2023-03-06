@@ -3,7 +3,6 @@
 #include "Maths.h"
 #include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
-#include <reactphysics3d/reactphysics3d.h>
 
 NCL::CSC8503::ToonMapCamera::ToonMapCamera()
 {
@@ -35,7 +34,7 @@ NCL::CSC8503::ToonMapCamera::ToonMapCamera()
 }
 
 
-void NCL::CSC8503::ToonMapCamera::UpdateCamera(float dt)
+void NCL::CSC8503::ToonMapCamera::UpdateCamera(float dt, BaseInput* inputs)
 {
 	
 	

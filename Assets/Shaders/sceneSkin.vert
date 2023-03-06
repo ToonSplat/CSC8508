@@ -14,11 +14,9 @@ layout(location = 5) in vec4 jointWeights;
 layout(location = 6) in ivec4 jointIndices;
 
 uniform mat4 joints[128];
+
 uniform vec4 objectColour = vec4(1,1,1,1);
-
-//uniform mat4 	otherJoints[128];
-
-uniform float frameLerp;
+uniform bool hasVertexColours = false;
 
 out Vertex {
 	vec4 colour;
@@ -40,6 +38,9 @@ void main(void)
 	OUT.normal 		= normalize(normalMatrix * normalize (normal));
 	OUT.texCoord 	= texCoord;
 	OUT.colour		= objectColour;
+
+	if(hasVertexColours)
+		OUT.colour	= objectColour * colour;
 
 	vec4 localNormal = vec4(normal, 1.0f);
 	vec4 localPos 	= vec4(position, 1.0f);
