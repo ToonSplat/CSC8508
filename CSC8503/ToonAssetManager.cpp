@@ -50,7 +50,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
-	AddTexture("crosshair", "crosshair.png",true);
+	AddTexture("crosshair", "crosshair2.png",true);
 	/*AddTexture("player", "Boss_diffuse.png", true);
 	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
 	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
