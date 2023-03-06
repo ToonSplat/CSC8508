@@ -139,16 +139,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	NewRenderLines();
-	NewRenderLinesOnOrthographicView();
-	NewRenderText();
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void GameTechRenderer::RenderScene() {
@@ -259,6 +249,7 @@ void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 
 void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
 {
+	screenAspect = (float)windowWidth / (float)windowHeight;
 	currentFBO = &sceneFBO;
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
@@ -357,6 +348,19 @@ void GameTechRenderer::PresentScene(){
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
 	}
+
+	
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
+	NewRenderText();
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentGameScene(){

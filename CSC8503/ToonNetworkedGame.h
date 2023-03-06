@@ -73,6 +73,8 @@ namespace NCL {
 
 			std::map<int, PlayerDetails> serverPlayers;
 
+			AudioEmitter* e;
+      
 			ToonConfirmationScreen* m_ConfirmationScreen;
 			bool					m_ShouldShowConfirmationScreen = false;		//Just for showing confirmation screen
 			bool					m_MoveBackOnConfirmation = false;		//For moving back if the player selects yes on confirmation
