@@ -16,26 +16,22 @@ namespace NCL
 	namespace CSC8503
 	{
 		struct Sound {
-			Sound();
+			Sound() {}
 			Sound(ALuint* buf, float len) { buffer = buf; length = len; }
 			ALuint* buffer;
 			float length;
 		};
 		
-		static class Audio {
+		class Audio {
 
-		public:;
-			static void AddSound(const char* filename);
+		public:
+			static Sound* AddSound(const char* filename);
 			static Sound* GetSound(std::string filename);
 
-			static bool RemoveSound(std::string filename);
-
-			static void DeleteSounds();
+			static bool RemoveSound(Sound* sound);
 		private:
 			Audio();
-			~Audio();
-
-			static std::map<std::string, Sound*> soundEffectBuffers;
+			~Audio() {}
 		};
 	}
 }

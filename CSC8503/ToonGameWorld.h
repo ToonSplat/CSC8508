@@ -99,6 +99,10 @@ namespace NCL
 				updateMap = needsUpdating;
 			}
 
+			void GameStarted()  { gameStarted = true;}
+			void GameEnded()	{ gameStarted = false;}
+
+			bool HasGameStarted() { return gameStarted; }
 		protected:
 			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
@@ -121,6 +125,7 @@ namespace NCL
 			int		worldStateCounter;
 
 			bool updateMap = true;
+			bool gameStarted = false;
 
 		private:
 			bool showCursor;

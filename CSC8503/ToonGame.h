@@ -44,7 +44,6 @@ namespace NCL
 			void ShowUI(float time);
 			Team* DetermineWinner(std::map<int, float> teamScores);
 			ToonConfirmationScreen* GetToonConfirmationScreen();
-
 		protected:
 			ToonFollowCamera* followCamera;
 
@@ -68,7 +67,6 @@ namespace NCL
 			double accumulator;
 			bool					m_ShouldQuitGame = false;
 			ToonConfirmationScreen* m_ToonConfirmationScreen = NULL;
-
 		public:
 			Vector2 m_WindowSize;
 		};

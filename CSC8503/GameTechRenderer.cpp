@@ -78,11 +78,12 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	fullScreenQuad->UploadToGPU();
 	
-	minimapQuad = new OGLMesh();
-	minimapQuad->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
-	minimapQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
-	minimapQuad->SetVertexIndices({ 0,1,2,2,3,0 });
-	minimapQuad->UploadToGPU();
+	squareQuad = new OGLMesh();
+	squareQuad->SetVertexPositions({Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f), Vector3(0.5f, -0.8f, -1.0f), Vector3(0.5f, 0.8f, -1.0f)
+});
+	squareQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
+	squareQuad->SetVertexIndices({ 0,1,2,2,3,0 });
+	squareQuad->UploadToGPU();
 
 	minimapStencilQuad = new OGLMesh();
 	minimapStencilQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f) , Vector3(0.5f, -0.8f, -1.0f) , Vector3(0.5f, 0.8f, -1.0f) });
@@ -123,7 +124,6 @@ void GameTechRenderer::RenderFrame() {
 	}
 
 	DrawMap();
-	
 	PresentScene();
 
 	RenderImGUI();
@@ -139,6 +139,30 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
+	RenderRectical();
+}
+
+void GameTechRenderer::RenderRectical()
+{
+	if (!gameWorld->HasGameStarted()) return;
+	BindShader(textureShader);
+
+	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("crosshair"), "diffuseTex", 0);
+	Matrix4 minimapModelMatrix = Matrix4::Scale(Vector3(0.1f, 0.1f, 1.0f));
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 2, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	BindMesh(squareQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_STENCIL_TEST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void GameTechRenderer::RenderScene() {
@@ -233,6 +257,7 @@ void GameTechRenderer::RenderScene() {
 
 void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 {
+	
 	screenAspect = ((float)windowWidth / 2) / (float)windowHeight;
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
@@ -345,8 +370,10 @@ void GameTechRenderer::PresentScene(){
 		break;
 	}
 
+
 	if (gameWorld->GetMapCamera()) {
 		DrawScoreBar();
+		
 	}
 
 	
@@ -383,6 +410,7 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
+
 	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
@@ -392,13 +420,13 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glStencilFunc(GL_EQUAL, 2, ~0);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	BindMesh(minimapQuad);
+	BindMesh(squareQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glDisable(GL_STENCIL_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
@@ -547,6 +575,8 @@ void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
 		BindMesh(fullScreenQuad);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 		glBindTexture(GL_TEXTURE_2D, 0);
+
+		
 	}
 }
 
@@ -706,6 +736,11 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
 			ImGui::TableNextColumn();
 
+
+			ImGui::Text("Audio Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();

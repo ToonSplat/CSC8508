@@ -21,7 +21,7 @@ class ToonMainMenu : public /*PushdownState*/ToonConfirmationScreen
 {
 	enum GameStates
 	{
-		PLAY,
+		LOCALPLAY,
 		MULTIPLAY,
 		SETTINGS,
 		CREDITS,
@@ -93,16 +93,10 @@ private:
 
 public:
 	ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);
-	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win, AudioEmitter* e);
+	ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruct> menuData, int baseCurrentSelectedIndex, ToonGameWorld* world, Window* win);
 	~ToonMainMenu();
 
 private:
-	AudioEmitter* mainMenuTune,* gameTune,* optionClick;
-	void ToonMainMenuAudioInitialise();
-
-	void SetAudioToGame();
-	void SetAudioToMenu();
-
 	PushdownResult OnUpdate(float dt, PushdownState** newState) override;
 	void OnAwake() override;
 	void OnSleep() override;
