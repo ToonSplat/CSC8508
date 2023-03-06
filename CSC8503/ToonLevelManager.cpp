@@ -59,7 +59,9 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arena_deco_cats_hull")) return false;
 
 	if (!LoadModel("arena_deco_chair")) return false;
-	if (!LoadModel("arena_deco_chair_hull")) return false;
+	if (!LoadModel("arena_deco_chair_throne")) return false;
+	if (!LoadModel("arena_deco_table")) return false;
+	if (!LoadModel("arena_deco_screen")) return false;
 
 	if (!LoadModel("arena_obstacles")) return false;
 	if (!LoadModel("arena_obstacles_hulls")) return false;
@@ -68,6 +70,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arena_decos_hulls")) return false;
 	if (!LoadModel("arena_border_wall")) return false;
 	if (!LoadModel("arena_cameras")) return false;
+	if (!LoadModel("arena_cameras_hulls")) return false;
 	if (!LoadModel("arena_toonsplat_Box")) return false;
 	//if (!LoadModel("floorMain")) return false;
 	//if (!LoadModel("platformMain")) return false;
@@ -84,6 +87,7 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	//All Shaders
 	if (!LoadShader("scene")) return false;
 	if (!LoadShader("animated")) return false;
+	if (!LoadShader("screenScreen")) return false;
 
 	//All Materials
 	if (!LoadMaterial("mat_player")) return false;
@@ -118,12 +122,15 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadMaterial("mat_arena_deco_cats_hull")) return false;
 
 	if (!LoadMaterial("mat_arena_deco_chair")) return false;
-	if (!LoadMaterial("mat_arena_deco_chair_hull")) return false;
+	if (!LoadMaterial("mat_arena_deco_chair_throne")) return false;
+	if (!LoadMaterial("mat_arena_deco_table")) return false;
+	if (!LoadMaterial("mat_arena_deco_screen")) return false;
 	
 	if (!LoadMaterial("mat_arena_decos")) return false;
 	if (!LoadMaterial("mat_arena_decos_hulls")) return false;
 	if (!LoadMaterial("mat_arena_border_wall")) return false;
 	if (!LoadMaterial("mat_arena_cameras")) return false;
+	if (!LoadMaterial("mat_arena_cameras_hulls")) return false;
 	if (!LoadMaterial("mat_arena_toonsplat_Box")) return false;
 
 	std::cout << "ToonLevelManager: All files successfully loaded\n";
@@ -266,28 +273,42 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_lights"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_lights"), arenaLightsColor, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_decos"), GetMesh("arena_decos_hulls"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_decos"), arenaDecosColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_cameras"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_cameras"), arenaDecosColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_cameras"), GetMesh("arena_cameras_hulls"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_cameras"), arenaDecosColour, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_border_wall"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_border_wall"), arenaDecosColour, 0.0f, false, false);
 	
 	AddConcaveObjectToWorld(GetMesh("arena_deco_cats"), GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats"), arenaLightsColor, 0.0f, true, false);
-	//AddDynamicConcaveObjectToWorld(GetMesh("arena_deco_chair"), GetMesh("arena_deco_chair_hull"), Vector3(10.0f, 10.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_chair"), arenaLightsColor, 0.0f, true, false, true);
-	//AddConcaveObjectToWorld(GetMesh("arena_deco_cats_hull"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_deco_cats_hull"), arenaLightsColor, 0.0f, true, false, true);
-
+	
 	//Those Boxes with ToonSplat logos on it
 	BoxCollisionShapeData* boxData = new BoxCollisionShapeData(Vector3(2.65f, 2.65f, 2.65f));
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
 
 	BoxCollisionShapeData* chairData = new BoxCollisionShapeData(Vector3(1.5f, 2.35f, 1.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 0.25f, 0.0f)), reactphysics3d::Quaternion::identity()));
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, -5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, -5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 1.0f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, -5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, -5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 5.0f), Vector3(0, 180.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
+	
+	BoxCollisionShapeData* throneChairData = new BoxCollisionShapeData(Vector3(2.0f, 4.3f, 2.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 2.25f, 0.0f)), reactphysics3d::Quaternion::identity()));
+	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 0.0f), Vector3(0, 0.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 0.0f), Vector3(0, 0.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false);
+	
+	BoxCollisionShapeData* tableData = new BoxCollisionShapeData(Vector3(5.0f, 1.5f, 3.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 1.5f, 3.0f)), reactphysics3d::Quaternion::identity()));
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, -32.0f), Vector3(0.0f, -45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, -32.0f), Vector3(0.0f, 45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, 32.0f), Vector3(0.0f, -180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, 32.0f), Vector3(0.0f, 180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
+	
+	BoxCollisionShapeData* screenData = new BoxCollisionShapeData(Vector3(12.0f, 5.6f, 1.5f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 0.0f, 0.0f)), reactphysics3d::Quaternion::identity()));
+	AddPropScreen(GetMesh("arena_deco_screen"), screenData, reactphysics3d::BodyType::STATIC, Vector3(0.0f, 15.0f, -52.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), GetMaterial("mat_arena_deco_screen"), arenaDecosColour, 0.1f, true, false);
+	AddPropScreen(GetMesh("arena_deco_screen"), screenData, reactphysics3d::BodyType::STATIC, Vector3(0.0f, 15.0f, 52.0f), Vector3(0.0f, 3.14f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), GetMaterial("mat_arena_deco_screen"), arenaDecosColour, 0.1f, true, false);
 
 	//Delete these "now" useless data to avoid leaks
 	delete boxData;
 	delete chairData;
+	delete throneChairData;
+	delete screenData;
 
 	return true;
 }
@@ -622,6 +643,61 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddPropObject(MeshGeometry* mes
 
 	gameWorld->AddGameObject(dynamicProp);
 	if (addAsPaintable) 
+		gameWorld->AddPaintableObject(dynamicProp);
+
+	return dynamicProp;
+}
+
+ToonScreen* NCL::CSC8503::ToonLevelManager::AddPropScreen(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+{
+	ToonScreen* dynamicProp = new ToonScreen(gameWorld->GetPhysicsWorld(), gameWorld);
+	dynamicProp->GetTransform().SetPosition(position).
+		SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z)).
+		SetScale(scale);
+
+	//dynamicProp->SetOrientation(reactphysics3d::Quaternion::fromEulerAngles(rotationEuler.x, rotationEuler.y, rotationEuler.z));
+
+	dynamicProp->SetRenderObject(new ToonRenderObject(&dynamicProp->GetTransform(), mesh, mat, GetShader("sceneScreen")));
+	dynamicProp->GetRenderObject()->SetMinimapColour(minimapColour);
+
+	if (addAsFloor) dynamicProp->SetAsFloor();
+
+	reactphysics3d::CollisionShape* collisionShape = nullptr;
+	switch (collisionData->shapeType)
+	{
+		case BasicCollisionShapeType::Shape_Box:
+		{
+			BoxCollisionShapeData* boxData = static_cast<BoxCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createBoxShape(ToonUtils::ConvertToRP3DVector3(boxData->boxHalfSize));
+			break;
+		}
+
+		case BasicCollisionShapeType::Shape_Sphere:
+		{
+			SphereCollisionShapeData* sphereData = static_cast<SphereCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createSphereShape(sphereData->radius);
+			break;
+		}
+
+		case BasicCollisionShapeType::Shape_Capsule:
+		{
+			CapsuleCollisionShapeData* capsuleData = static_cast<CapsuleCollisionShapeData*>(collisionData);
+			collisionShape = gameWorld->GetPhysicsCommon().createCapsuleShape(capsuleData->radius, capsuleData->height);
+			break;
+		}
+	}
+
+	dynamicProp->AddRigidbody();
+	dynamicProp->GetRigidbody()->setType(rigidbodyType);
+	dynamicProp->GetRigidbody()->setMass(mass);
+	dynamicProp->GetRigidbody()->setIsAllowedToSleep(true);
+	dynamicProp->GetRigidbody()->setUserData(dynamicProp);
+
+	dynamicProp->SetCollider(collisionShape, collisionData->collisionTransform);
+	dynamicProp->GetCollider()->getMaterial().setBounciness(0.1f);
+
+	gameWorld->AddGameObject(dynamicProp);
+	if (addAsPaintable)
 		gameWorld->AddPaintableObject(dynamicProp);
 
 	return dynamicProp;

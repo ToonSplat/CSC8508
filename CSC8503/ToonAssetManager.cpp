@@ -44,6 +44,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
+	AddTexture("screenTex", "RB_Animated_Screen.png", true);
 	/*AddTexture("player", "Boss_diffuse.png", true);
 	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
 	AddTexture("tex_arena_wall2", "RB_Level_Arena_Wall2.png", true);
@@ -82,8 +83,10 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_deco_cats", "Level_Arena_Cats.msh");
 	AddMesh("arena_deco_cats_hull", "Level_Arena_Cats_Hull.msh");
 
-	AddMesh("arena_deco_chair", "Level_Deco_Chair.msh");
-	AddMesh("arena_deco_chair_hull", "Level_Deco_Chair_Hull.msh");
+	AddMesh("arena_deco_chair", "Level_Deco_Chair.msh");	
+	AddMesh("arena_deco_chair_throne", "Level_Deco_Throne_Chair.msh");
+	AddMesh("arena_deco_table", "Level_Deco_Table.msh");
+	AddMesh("arena_deco_screen", "Level_Deco_Screen.msh");
 
 	AddMesh("arena_obstacles", "Level_Arena_Obstables.msh");
 	AddMesh("arena_obstacles_hulls", "Level_Arena_Obstacles_Hulls.msh");
@@ -92,6 +95,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMesh("arena_decos_hulls", "Level_Arena_Decos_Hulls.msh");
 	AddMesh("arena_border_wall", "Level_Arena_Border.msh");
 	AddMesh("arena_cameras", "Level_Arena_Cameras.msh");
+	AddMesh("arena_cameras_hulls", "Level_Arena_Cameras_Convex_Hulls.msh");
 	AddMesh("arena_toonsplat_Box", "Level_ToonSplat_Box.msh");
 
 	AddMesh("player_mesh_1", CreateCharacterTeamMesh("Character_Boss.msh", Vector4(Team::T_GREEN_GOBLINS, 1.0f)));
@@ -108,6 +112,7 @@ void ToonAssetManager::LoadAssets(void) {
 	AddShader("minimap", "minimap.vert", "minimap.frag");
 	AddShader("texture", "Texture.vert", "Texture.frag");
 	AddShader("scene", "scene.vert", "scene.frag");
+	AddShader("sceneScreen", "sceneScreen.vert", "scene.frag");
 	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
 	AddShader("fullMap", "map.vert", "map.frag");
 	AddShader("skybox", "skybox.vert", "skybox.frag");
@@ -161,12 +166,18 @@ void ToonAssetManager::LoadAssets(void) {
 	AddMaterial("mat_arena_deco_cats_hull", "Level_Arena_Cats_Hull.mat", GetMesh("arena_deco_cats_hull")->GetSubMeshCount());
 	
 	AddMaterial("mat_arena_deco_chair", "Level_Deco_Chair.mat", GetMesh("arena_deco_chair")->GetSubMeshCount());
-	AddMaterial("mat_arena_deco_chair_hull", "Level_Deco_Chair_Hull.mat", GetMesh("arena_deco_chair_hull")->GetSubMeshCount());
+	AddMaterial("mat_arena_deco_chair_throne", "Level_Deco_Throne_Chair.mat", GetMesh("arena_deco_chair_throne")->GetSubMeshCount());
+	AddMaterial("mat_arena_deco_table", "Level_Deco_Table.mat", GetMesh("arena_deco_table")->GetSubMeshCount());
+	AddMaterial("mat_arena_deco_screen", "Level_Deco_Screen.mat", GetMesh("arena_deco_screen")->GetSubMeshCount());
 	
 	AddMaterial("mat_arena_decos", "Level_Arena_Decos.mat", GetMesh("arena_decos")->GetSubMeshCount());
 	AddMaterial("mat_arena_decos_hulls", "Level_Arena_Decos_Hulls.mat", GetMesh("arena_decos_hulls")->GetSubMeshCount());
+
 	AddMaterial("mat_arena_border_wall", "Level_Arena_Border.mat", GetMesh("arena_border_wall")->GetSubMeshCount());
+
 	AddMaterial("mat_arena_cameras", "Level_Arena_Cameras.mat", GetMesh("arena_cameras")->GetSubMeshCount());
+	AddMaterial("mat_arena_cameras_hulls", "Level_Arena_Cameras_Convex_Hulls.mat", GetMesh("arena_cameras_hulls")->GetSubMeshCount());
+	
 	AddMaterial("mat_arena_toonsplat_Box", "Level_ToonSplat_Box.mat", GetMesh("arena_toonsplat_Box")->GetSubMeshCount());
 
 	ToonDebugManager::Instance().EndLoad();

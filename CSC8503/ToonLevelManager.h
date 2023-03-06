@@ -2,6 +2,7 @@
 #include "ToonAssetManager.h"
 #include "PaintableObject.h"
 #include "ToonGameWorld.h"
+#include "ToonScreen.h"
 #include "Player.h"
 #include "PaintBallProjectile.h"
 #include "HitSphere.h"
@@ -156,6 +157,8 @@ namespace NCL
 			PaintableObject* AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
 
 			PaintableObject* AddPropObject(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+
+			ToonScreen* AddPropScreen(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;
