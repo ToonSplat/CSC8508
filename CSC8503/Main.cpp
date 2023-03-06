@@ -105,6 +105,7 @@ int main()
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	AudioSystem::GetAudioSystem()->SetMenuSounds();
 	ToonSettingsManager::SetRenderer(renderer);
 	ToonSettingsManager::ApplySettings();
 #ifndef _DEBUG
