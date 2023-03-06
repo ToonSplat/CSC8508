@@ -150,6 +150,7 @@ int main()
 	StartPushdownAutomata(w, mainMenu);
 	delete mainMenu;
 
+	AudioSystem::GetAudioSystem()->DetachAllSources();
 	ToonAssetManager::Destroy();
 	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
@@ -157,7 +158,5 @@ int main()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-
-	//Audio
 	NCL::CSC8503::AudioSystem::Destroy();
 }

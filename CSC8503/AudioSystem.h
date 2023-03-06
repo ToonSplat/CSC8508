@@ -22,6 +22,8 @@ namespace NCL {
 			void ApplyIngame();
 			void SelectMenuOption();
 
+			void DetachAllSources();
+
 			static void Destroy() { delete instance;}
 
 			inline static AudioSystem* GetAudioSystem() { return instance; }

@@ -50,11 +50,6 @@ AudioSystem::AudioSystem(unsigned int channels) {
 }
 
 AudioSystem::~AudioSystem() {
-    menuMusic->DetachSource();
-    gameMusic->DetachSource();
-    //for (auto& emitter : emitters) {
-    //    emitter->DetachSource(); // Not working???
-    //}
     for (std::vector < OALSource* >::iterator i = sources.begin();
         i != sources.end(); ++i) {
         alDeleteSources(1, &(*i)->source);
@@ -63,6 +58,12 @@ AudioSystem::~AudioSystem() {
     alcDestroyContext(context);
     alcMakeContextCurrent(NULL);
     alcCloseDevice(device);
+}
+
+void AudioSystem::DetachAllSources() {
+    for (auto& emitter : emitters) {
+        emitter->DetachSource(); // Not working???
+    }
 }
 
 void AudioSystem::SetMasterVolume(float value) {
