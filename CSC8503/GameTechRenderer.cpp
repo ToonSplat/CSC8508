@@ -591,7 +591,6 @@ void NCL::CSC8503::GameTechRenderer::Present1Player()
 	PresentGameScene();
 	PresentMinimap();
 }
-
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
 	for (int i = 0; i < 2; i++)
@@ -670,8 +669,8 @@ void GameTechRenderer::RenderSkybox() {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
+	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
 
 	BindShader(skyboxShader);
 
