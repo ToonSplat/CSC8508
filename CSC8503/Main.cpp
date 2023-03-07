@@ -45,9 +45,6 @@ using namespace CSC8503;
 #include <thread>
 #include <sstream>
 
-//Audio sounds
-std::map<std::string, NCL::CSC8503::Sound*> NCL::CSC8503::Audio::soundEffectBuffers;
-
 /*
 
 The main function should look pretty familar to you!
@@ -60,14 +57,6 @@ This time, we've added some extra functionality to the window class - we can
 hide or show the 
 
 */
-
-void AddAudioFiles() {
-	Audio::AddSound("splatter.wav");
-	Audio::AddSound("gameTune.wav");
-	Audio::AddSound("menuTune.wav");
-	Audio::AddSound("splash.wav");
-	Audio::AddSound("click.wav");
-}
 
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
@@ -111,12 +100,12 @@ int main()
 {
 	//Audio
 	NCL::CSC8503::AudioSystem::Initialise();
-	AddAudioFiles();
 
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	AudioSystem::GetAudioSystem()->SetMenuSounds();
 	ToonSettingsManager::SetRenderer(renderer);
 	ToonSettingsManager::ApplySettings();
 #ifndef _DEBUG
@@ -159,7 +148,9 @@ int main()
 
 	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, new ToonGameWorld(), w);
 	StartPushdownAutomata(w, mainMenu);
+	delete mainMenu;
 
+	AudioSystem::GetAudioSystem()->DetachAllSources();
 	ToonAssetManager::Destroy();
 	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
@@ -167,8 +158,5 @@ int main()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
-
-	//Audio
-	Audio::DeleteSounds();
 	NCL::CSC8503::AudioSystem::Destroy();
 }

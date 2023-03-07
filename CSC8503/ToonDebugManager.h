@@ -37,6 +37,9 @@ namespace NCL
 			void StartFrame();
 			void EndFrame();
 
+			void StartAudio();
+			void EndAudio();
+
 			void StartNetworking();
 			void EndNetworking();
 
@@ -62,6 +65,7 @@ namespace NCL
 			string GetPhysicalUsagebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
 			string GetLoadTimeTaken() { return std::to_string(loadTimeTaken / 1000.0f) + " ms"; }
 			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken / 1000.0f) + " ms"; }
+			string GetAudioTimeTaken() { return std::to_string(audioTimeTaken / 1000.0f) + " ms"; }
 			string GetNetworkingTimeTaken() { return std::to_string(networkingTimeTaken / 1000.0f) + " ms"; }
 			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken / 1000.0f) + " ms"; }
 			string GetAnimationTimeTaken() { return std::to_string(animationTimeTaken / 1000.0f) + " ms"; }
@@ -94,6 +98,9 @@ namespace NCL
 			high_resolution_clock::time_point frameStart;
 			high_resolution_clock::time_point frameEnd;
 
+			high_resolution_clock::time_point audioStart;
+			high_resolution_clock::time_point audioEnd;
+
 			high_resolution_clock::time_point networkingStart;
 			high_resolution_clock::time_point networkingEnd;
 
@@ -110,6 +117,7 @@ namespace NCL
 
 			double loadTimeTaken;
 			double frameTimeTaken;
+			double audioTimeTaken;
 			double networkingTimeTaken;
 			double physicsTimeTaken;
 			double animationTimeTaken;

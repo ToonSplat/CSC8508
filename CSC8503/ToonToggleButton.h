@@ -35,15 +35,17 @@ class ToonToggleButtonHead
 		AnimationDirection m_AnimationDirection;
 		const Vector4	   m_HeadColour		= Debug::WHITE;
 		const float		   m_AnimationSpeed = 0.5f;
+		Vector2			   m_WindowSize;
 		
 	public:
-		ToonToggleButtonHead(Coordinates coordinates, ToggleButtonStates initialState)
+		ToonToggleButtonHead(Coordinates coordinates, ToggleButtonStates initialState, Vector2 windowSize)
 		{
 			m_StartLocation		 = coordinates.origin;
 			m_EndLoacation		 = Vector2(coordinates.origin.x + coordinates.size.x, coordinates.origin.y);
 			m_CurrentLocation	 = initialState == ToggleButtonStates::ToggleOff ? m_StartLocation : m_EndLoacation;
 			m_Size				 = coordinates.size;
 			m_AnimationDirection = AnimationDirection::NoAnimation;
+			m_WindowSize		 = windowSize;
 		}
 
 		void TriggerAnimation() { UpdateAnimationDirection(); }
@@ -70,7 +72,7 @@ class ToonToggleButtonHead
 		void DrawHead()
 		{
 			m_CurrentLocation.x += GetIncrement();
-			Debug::DrawFilledQuad(m_CurrentLocation, m_Size, m_HeadColour);
+			Debug::DrawFilledQuad(m_CurrentLocation, m_Size, 100.0f / m_WindowSize.y, m_HeadColour);
 			if (m_CurrentLocation.x <= m_StartLocation.x || m_CurrentLocation.x >= m_EndLoacation.x)
 			{
 				m_AnimationDirection = AnimationDirection::NoAnimation;
@@ -92,13 +94,14 @@ class ToonToggleButton
 		bool				  m_IsAnimating		 = false;
 		ToonToggleButtonHead* m_ToggleButtonHead = NULL;
 		std::vector<std::string> m_ValueTextVector;
+		Vector2					 m_WindowSize;
 		
 	public:
 		bool m_IsActive		 = false;
 		int m_ToggleButtonID = -1;
 
 	public:
-		ToonToggleButton(Coordinates coordinates, int toggleButtonID = -1, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false, std::vector<std::string> valueTextVector = { "OFF", "ON" });
+		ToonToggleButton(Coordinates coordinates, Vector2 windowSize, int toggleButtonID = -1, ToggleButtonStates currentState = ToggleButtonStates::ToggleOff, bool shouldDrawValue = false, std::vector<std::string> valueTextVector = { "OFF", "ON" });
 		~ToonToggleButton();
 		ToggleButtonStates GetButtonState();
 		void UpdateButtonDraw();

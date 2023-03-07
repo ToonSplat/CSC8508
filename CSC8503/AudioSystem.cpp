@@ -1,9 +1,13 @@
 #include "AudioSystem.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
 AudioSystem* AudioSystem::instance = NULL;
+AudioEmitter* AudioSystem::menuMusic = nullptr;
+AudioEmitter* AudioSystem::gameMusic = nullptr;
+AudioEmitter* AudioSystem::menuSelect = nullptr;
 
 AudioSystem::AudioSystem(unsigned int channels) {
 	masterVolume = 1.0f;
@@ -46,15 +50,20 @@ AudioSystem::AudioSystem(unsigned int channels) {
 }
 
 AudioSystem::~AudioSystem() {
-
-    alcMakeContextCurrent(NULL);
     for (std::vector < OALSource* >::iterator i = sources.begin();
         i != sources.end(); ++i) {
         alDeleteSources(1, &(*i)->source);
         delete (*i);
     }
     alcDestroyContext(context);
+    alcMakeContextCurrent(NULL);
     alcCloseDevice(device);
+}
+
+void AudioSystem::DetachAllSources() {
+    for (auto& emitter : emitters) {
+        emitter->DetachSource(); // Not working???
+    }
 }
 
 void AudioSystem::SetMasterVolume(float value) {
@@ -82,7 +91,61 @@ void AudioSystem::UpdateListener() {
     alListenerfv(AL_ORIENTATION, (float*)&dirup);
 }
 
+void AudioSystem::SetMenuSounds() {
+    menuMusic = new AudioEmitter();
+    menuMusic->SetLooping(true);
+    menuMusic->SetPriority(SoundPriority::ALWAYS);
+    menuMusic->SetMusic();
+    //mainMenuTune->SetVolume(0.2f);
+    menuMusic->SetRadius(10000.0f);
+    menuMusic->SetSound(Audio::GetSound("menuTune.wav"));
+    AudioSystem::GetAudioSystem()->AddSoundEmitter(menuMusic);
+    menuMusic->Pause();
+
+    gameMusic = new AudioEmitter();
+    gameMusic->SetLooping(true);
+    gameMusic->SetPriority(SoundPriority::ALWAYS);
+    gameMusic->SetMusic();
+    //gameTune->SetVolume(0.002f);
+    gameMusic->SetRadius(1000000.0f);
+    gameMusic->SetSound(Audio::GetSound("gameTune.wav"));
+    AudioSystem::GetAudioSystem()->AddSoundEmitter(gameMusic);
+    gameMusic->Pause();
+
+    menuSelect = new AudioEmitter();
+    menuSelect->SetPriority(SoundPriority::ALWAYS);
+    menuSelect->SetMusic();
+    menuSelect->SetVolume(1.0f);
+    menuSelect->SetRadius(1000000.0f);
+    menuSelect->SetLooping(false);
+    menuSelect->SetSound(Audio::GetSound("splash.wav"));
+}
+
+void AudioSystem::ApplyMainMenu() {
+    if (mainMenu) return;
+    mainMenu = true;
+
+    menuMusic->ResetSound();
+    gameMusic->Pause();
+
+    menuMusic->Play();
+}
+void AudioSystem::ApplyIngame() {
+    if (!mainMenu) return;
+    mainMenu = false;
+
+    gameMusic->ResetSound();
+    menuMusic->Pause();
+
+    gameMusic->Play();
+}
+void AudioSystem::SelectMenuOption() {
+    menuSelect->ResetSound();
+    AudioSystem::GetAudioSystem()->AddSoundEmitter(menuSelect);
+}
+
 void AudioSystem::Update(float msec) {
+    ToonDebugManager::Instance().StartAudio();
     UpdateListener();
 
     for (int i = 0; i < emitters.size(); i++) {
@@ -113,6 +176,7 @@ void AudioSystem::Update(float msec) {
         AttachSources(frameEmitters.begin(), frameEmitters.end());
     }
     frameEmitters.clear();
+    ToonDebugManager::Instance().EndAudio();
 }
 
 void AudioSystem::CullNodes() {

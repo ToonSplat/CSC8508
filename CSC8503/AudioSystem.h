@@ -17,6 +17,13 @@ namespace NCL {
 				if (!instance) { instance = new AudioSystem(channels);}
 			}
 
+			void SetMenuSounds();
+			void ApplyMainMenu();
+			void ApplyIngame();
+			void SelectMenuOption();
+
+			void DetachAllSources();
+
 			static void Destroy() { delete instance;}
 
 			inline static AudioSystem* GetAudioSystem() { return instance; }
@@ -61,6 +68,10 @@ namespace NCL {
 			void CullNodes();
 
 			OALSource* GetSource();
+
+			static AudioEmitter* menuMusic;
+			static AudioEmitter* gameMusic;
+			static AudioEmitter* menuSelect;
 		};
 	}
 }

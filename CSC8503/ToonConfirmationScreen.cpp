@@ -164,7 +164,7 @@ void ToonConfirmationScreen::DrawBackground()
 	backgroundCoordinates.size.y	 += 2 * verticalPadding;
 	backgroundCoordinates.size.x	 += 2 * horizontalPadding;
 	backgroundCoordinates.origin.x	 -= horizontalPadding;
-	Debug::DrawFilledQuad(backgroundCoordinates.origin, backgroundCoordinates.size, Vector4(0.2f, 0.2f, 0.2f, 1.0f));
+	Debug::DrawFilledQuad(backgroundCoordinates.origin, backgroundCoordinates.size, 100.0f/m_WindowSize.y, Vector4(0.2f, 0.2f, 0.2f, 1.0f));
 }
 
 void ToonConfirmationScreen::PrintText(bool withBackground)

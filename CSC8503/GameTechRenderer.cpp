@@ -151,7 +151,8 @@ void GameTechRenderer::RenderRectical()
 	BindShader(textureShader);
 
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("crosshair"), "diffuseTex", 0);
-	Matrix4 minimapModelMatrix = Matrix4::Scale(Vector3(0.1f, 0.07f, 1.0f));
+	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.05f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.1f, 0.07f, 1.0f));
+
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
@@ -819,6 +820,11 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
 			ImGui::TableNextColumn();
 
+
+			ImGui::Text("Audio Time");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();

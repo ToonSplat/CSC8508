@@ -1,18 +1,10 @@
 #include "Audio.h"
+#include "ToonAssetManager.h"
 
 using namespace NCL;
 using namespace CSC8503;
 
-void Audio::DeleteSounds() {
-    for (std::map<std::string, Sound*>::iterator it = soundEffectBuffers.begin(); it != soundEffectBuffers.end(); ++it) {
-        alDeleteBuffers(1, it->second->buffer);
-        delete it->second->buffer;
-        delete it->second;
-    }
-    soundEffectBuffers.clear();
-}
-
-void Audio::AddSound(const char* filename)
+Sound* Audio::AddSound(const char* filename)
 {
     ALenum err, format;
     ALuint* buffer = new ALuint;
@@ -31,13 +23,13 @@ void Audio::AddSound(const char* filename)
     if (!sndfile)
     {
         fprintf(stderr, "Could not open audio in %s: %s\n", filepath, sf_strerror(sndfile));
-        return;
+        return nullptr;
     }
     if (sfinfo.frames < 1 || sfinfo.frames >(sf_count_t)(INT_MAX / sizeof(short)) / sfinfo.channels)
     {
         fprintf(stderr, "Bad sample count in %s (%" PRId64 ")\n", filepath, sfinfo.frames);
         sf_close(sndfile);
-        return;
+        return nullptr;
     }
 
     /* Get the sound format, and figure out the OpenAL format */
@@ -60,7 +52,7 @@ void Audio::AddSound(const char* filename)
     {
         fprintf(stderr, "Unsupported channel count: %d\n", sfinfo.channels);
         sf_close(sndfile);
-        return;
+        return nullptr;
     }
 
     /* Decode the whole audio file to a buffer. */
@@ -72,15 +64,15 @@ void Audio::AddSound(const char* filename)
         free(membuf);
         sf_close(sndfile);
         fprintf(stderr, "Failed to read samples in %s (%" PRId64 ")\n", filepath, num_frames);
-        return;
+        return nullptr;
     }
 
 
     num_bytes = (ALsizei)(num_frames * sfinfo.channels) * (ALsizei)sizeof(short);
     float len = (float)sfinfo.frames / (float)sfinfo.samplerate;
     /* Buffer the audio data into a new buffer object, then free the data and
-     * close the file.
-     */
+        * close the file.
+        */
 
     alGenBuffers(1, buffer);
     alBufferData(*buffer, format, membuf, num_bytes, sfinfo.samplerate);
@@ -95,22 +87,21 @@ void Audio::AddSound(const char* filename)
         fprintf(stderr, "OpenAL Error: %s\n", alGetString(err));
         if (buffer && alIsBuffer(*buffer))
             alDeleteBuffers(1, buffer);
-        return;
+        return nullptr;
     }
    
     Sound* s = new Sound(buffer, len);
-   soundEffectBuffers.insert({ filename,s});
+    return s;
 }
 
-bool Audio::RemoveSound(std::string filename) {
-    alDeleteBuffers(1, soundEffectBuffers.find(filename)->second->buffer);
-    delete soundEffectBuffers.find(filename)->second->buffer;
-    delete soundEffectBuffers.find(filename)->second;
-    soundEffectBuffers.erase(filename);
+bool Audio::RemoveSound(Sound* sound) {
+    alDeleteBuffers(1, sound->buffer);
+    delete sound->buffer;
+    delete sound;
     return true;
 }
 
 Sound* Audio::GetSound(std::string filename) {
-    return soundEffectBuffers.find(filename)->second;
+    return ToonAssetManager::Instance().GetSound(filename);
 }
 
