@@ -145,9 +145,15 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = m_Game;
 		break;
 	case LAUNCH3PLAYER:
-		return PushdownResult::NoChange;
+		m_Game = new ToonGame(m_Renderer, 3);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
 	case LAUNCH4PLAYER:
-		return PushdownResult::NoChange;
+		m_Game = new ToonGame(m_Renderer, 4);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
 	case BACKLOCAL:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
