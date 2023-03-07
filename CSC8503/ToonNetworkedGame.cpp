@@ -98,7 +98,7 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 	}
 
 
-	if (m_MoveBackOnConfirmation)
+	if (m_MoveBackOnConfirmation || closeGame)
 	{
 		if (thisServer && serverClosed == -256.0f) {
 			std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
@@ -107,15 +107,16 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 			serverClosed = 3.0f;
 			return PushdownResult::NoChange;
 		}
-		else if (thisClient && thisClient->IsConnected()) {
-			thisClient->DisconnectFromServer();
+		else if (thisClient) {
+			if(thisClient->IsConnected())
+				thisClient->DisconnectFromServer();
 			ToonDebugManager::Instance().SetGameWorld(nullptr);
 			return PushdownResult::Pop;
 		}
 	}
 
 
-	if (InputManager::GetInstance().GetInputs()[1]->IsBack() || closeGame) {
+	if (InputManager::GetInstance().GetInputs()[1]->IsBack()) {
 		m_ShouldShowConfirmationScreen = true;
 		//if (thisServer && serverClosed == -256.0f) {
 		//	std::cout << "Beginning server shutdown, will be closed in 3 seconds\n";
