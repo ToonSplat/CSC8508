@@ -1,0 +1,241 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{377775AB-0B3D-3A52-A566-5F43D39F5FD1}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>NCLCoreClasses</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\x64\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NCLCoreClasses.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NCLCoreClasses</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.lib</TargetExt>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\x64\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NCLCoreClasses.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NCLCoreClasses</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.lib</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SDLCheck>true</SDLCheck>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_MBCS;ASSETROOTLOCATION="C:/Users/b8027218/source/repos/CSC8508/Assets/";CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;_MBCS;ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\";CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SDLCheck>true</SDLCheck>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;ASSETROOTLOCATION="C:/Users/b8027218/source/repos/CSC8508/Assets/";CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_CRT_SECURE_NO_WARNINGS;_MBCS;ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\";CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\..\ThirdParty\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Lib>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/b8027218/source/repos/CSC8508/NCLCoreClasses/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"\\campus\home\home2018\b8027218\Downloads\cmake-3.25.0-windows-x86_64 (1)\cmake-3.25.0-windows-x86_64\bin\cmake.exe" -SC:/Users/b8027218/source/repos/CSC8508 "-BC:/Users/b8027218/source/repos/CSC8508/New folder" --check-stamp-file "C:/Users/b8027218/source/repos/CSC8508/New folder/NCLCoreClasses/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\CMake\Default.cmake;C:\Users\b8027218\source\repos\CSC8508\CMake\DefaultCXX.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\New folder\NCLCoreClasses\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/b8027218/source/repos/CSC8508/NCLCoreClasses/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"\\campus\home\home2018\b8027218\Downloads\cmake-3.25.0-windows-x86_64 (1)\cmake-3.25.0-windows-x86_64\bin\cmake.exe" -SC:/Users/b8027218/source/repos/CSC8508 "-BC:/Users/b8027218/source/repos/CSC8508/New folder" --check-stamp-file "C:/Users/b8027218/source/repos/CSC8508/New folder/NCLCoreClasses/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\CMake\Default.cmake;C:\Users\b8027218\source\repos\CSC8508\CMake\DefaultCXX.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\New folder\NCLCoreClasses\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Assets.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Assets.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\SimpleFont.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\SimpleFont.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureLoader.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureLoader.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureWriter.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureWriter.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Camera.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Maths.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Maths.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix2.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix2.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix3.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix3.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix4.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix4.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Plane.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Plane.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Quaternion.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Quaternion.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector2.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector2.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector3.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector3.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector4.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector4.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshAnimation.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshAnimation.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshGeometry.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshGeometry.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshMaterial.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshMaterial.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\RendererBase.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\RendererBase.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\ShaderBase.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\ShaderBase.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureBase.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureBase.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Camera.cpp" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\GameTimer.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\GameTimer.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Keyboard.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Keyboard.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Mouse.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Mouse.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Window.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Window.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Keyboard.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Keyboard.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Mouse.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Mouse.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Window.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Window.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imconfig.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui.cpp" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_demo.cpp" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_draw.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3_loader.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_win32.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_win32.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_internal.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_tables.cpp" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_widgets.cpp" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_rectpack.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_textedit.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_truetype.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\b8027218\source\repos\CSC8508\New folder\ZERO_CHECK.vcxproj">
+      <Project>{069FB143-E542-35E4-B356-EFC22B44F108}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

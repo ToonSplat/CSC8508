@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Assets.cpp">
+      <Filter>Asset Handling</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\SimpleFont.cpp">
+      <Filter>Asset Handling</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureLoader.cpp">
+      <Filter>Asset Handling</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureWriter.cpp">
+      <Filter>Asset Handling</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Maths.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix2.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix3.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix4.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Plane.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Quaternion.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector2.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector3.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector4.cpp">
+      <Filter>Maths</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshAnimation.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshGeometry.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshMaterial.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\RendererBase.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\ShaderBase.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureBase.cpp">
+      <Filter>Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\GameTimer.cpp">
+      <Filter>Windowing and Input</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Keyboard.cpp">
+      <Filter>Windowing and Input</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Mouse.cpp">
+      <Filter>Windowing and Input</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Window.cpp">
+      <Filter>Windowing and Input</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Keyboard.cpp">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Mouse.cpp">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Window.cpp">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_demo.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_draw.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_win32.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_tables.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_widgets.cpp">
+      <Filter>Imgui Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Assets.h">
+      <Filter>Asset Handling</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\SimpleFont.h">
+      <Filter>Asset Handling</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureLoader.h">
+      <Filter>Asset Handling</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureWriter.h">
+      <Filter>Asset Handling</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Maths.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix2.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix3.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Matrix4.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Plane.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Quaternion.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector2.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector3.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Vector4.h">
+      <Filter>Maths</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshAnimation.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshGeometry.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\MeshMaterial.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\RendererBase.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\ShaderBase.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\TextureBase.h">
+      <Filter>Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\GameTimer.h">
+      <Filter>Windowing and Input</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Keyboard.h">
+      <Filter>Windowing and Input</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Mouse.h">
+      <Filter>Windowing and Input</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Window.h">
+      <Filter>Windowing and Input</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Keyboard.h">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Mouse.h">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\Win32Window.h">
+      <Filter>Windowing and Input\Win32</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imconfig.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_opengl3_loader.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_impl_win32.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imgui_internal.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_rectpack.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_textedit.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\ThirdParty\imgui\imstb_truetype.h">
+      <Filter>Imgui Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\b8027218\source\repos\CSC8508\NCLCoreClasses\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Asset Handling">
+      <UniqueIdentifier>{69C6755D-E366-3726-8DE6-AB21082B40AE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{00460446-12DA-39A1-BB6B-A46B01B8D95F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Imgui Files">
+      <UniqueIdentifier>{22286C55-FA7A-3563-AD02-D09507C6BCDD}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Maths">
+      <UniqueIdentifier>{08A7CEEC-FEC6-3A0C-9F32-130FB02C76F7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering">
+      <UniqueIdentifier>{351EF951-1F11-300C-A2E9-A7C163A1EC60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{35D7A8A8-AEB9-3363-A125-B99394101DEE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing and Input">
+      <UniqueIdentifier>{510A0C45-1A0C-3831-82A6-F90313AB4980}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Windowing and Input\Win32">
+      <UniqueIdentifier>{A10A0AE1-9FAF-3242-B556-851B03511028}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1218 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "C:/Users/b8027218/source/repos/CSC8508/x64/Debug/CSC8503.exe"
+		},
+		{
+			"path" : "C:/Users/b8027218/source/repos/CSC8508/x64/Debug/CSC8503.pdb"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_executable",
+			"target_link_libraries",
+			"target_compile_options",
+			"add_compile_definitions",
+			"target_compile_definitions",
+			"include_directories",
+			"target_precompile_headers"
+		],
+		"files" : 
+		[
+			"CSC8503/CMakeLists.txt",
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 195,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 308,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 313,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 314,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 321,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 322,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 323,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 269,
+				"parent" : 0
+			},
+			{
+				"file" : 1
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 61,
+				"parent" : 9
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 211,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 317,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 318,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 319,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 0,
+				"line" : 223,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/permissive-"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/std:c++latest"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/sdl"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/W3"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/Zi"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/EHsc"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/Y-"
+				},
+				{
+					"fragment" : "-std:c++latest"
+				},
+				{
+					"fragment" : "/YcC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.hxx /FpC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/./cmake_pch.cxx.pch /FIC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.hxx"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 10,
+					"define" : "ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\""
+				},
+				{
+					"backtrace" : 11,
+					"define" : "NOMINMAX"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "WIN32_LEAN_AND_MEAN"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_CRT_SECURE_NO_WARNINGS"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCK2API_"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCKAPI_"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCK_DEPRECATED_NO_WARNINGS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../OpenGLRendering"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../CSC8503CoreClasses"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/ReactPhysics3D/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					2
+				],
+				"standard" : "23"
+			},
+			"precompileHeaders" : 
+			[
+				{
+					"backtrace" : 15,
+					"header" : "<vector>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<map>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<stack>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<string>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<list>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<thread>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<atomic>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<functional>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<iostream>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<set>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector2.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector3.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector4.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Quaternion.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Plane.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix2.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix3.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix4.h"
+				}
+			],
+			"sourceIndexes" : 
+			[
+				0
+			]
+		},
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/permissive-"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/std:c++latest"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/sdl"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/W3"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/Zi"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/EHsc"
+				},
+				{
+					"backtrace" : 8,
+					"fragment" : "/Y-"
+				},
+				{
+					"fragment" : "-std:c++latest"
+				},
+				{
+					"fragment" : "/YuC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.hxx /FpC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/./cmake_pch.cxx.pch /FIC:/Users/b8027218/source/repos/CSC8508/out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.hxx"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 10,
+					"define" : "ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\""
+				},
+				{
+					"backtrace" : 11,
+					"define" : "NOMINMAX"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "WIN32_LEAN_AND_MEAN"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_CRT_SECURE_NO_WARNINGS"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_UNICODE"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCK2API_"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCKAPI_"
+				},
+				{
+					"backtrace" : 11,
+					"define" : "_WINSOCK_DEPRECATED_NO_WARNINGS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 12,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../OpenGLRendering"
+				},
+				{
+					"backtrace" : 13,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses"
+				},
+				{
+					"backtrace" : 14,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../CSC8503CoreClasses"
+				},
+				{
+					"backtrace" : 2,
+					"isSystem" : true,
+					"path" : "C:/Users/b8027218/source/repos/CSC8508/ReactPhysics3D/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					2
+				],
+				"standard" : "23"
+			},
+			"precompileHeaders" : 
+			[
+				{
+					"backtrace" : 15,
+					"header" : "<vector>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<map>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<stack>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<string>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<list>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<thread>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<atomic>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<functional>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<iostream>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "<set>"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector2.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector3.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Vector4.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Quaternion.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Plane.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix2.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix3.h"
+				},
+				{
+					"backtrace" : 15,
+					"header" : "C:/Users/b8027218/source/repos/CSC8508/CSC8503/../NCLCoreClasses/Matrix4.h"
+				}
+			],
+			"sourceIndexes" : 
+			[
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39,
+				41,
+				43,
+				47,
+				49,
+				51,
+				53,
+				54,
+				56,
+				58,
+				60,
+				63,
+				64,
+				65,
+				66,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 5,
+			"id" : "NCLCoreClasses::@d19657c61aeecf4bdae3"
+		},
+		{
+			"backtrace" : 6,
+			"id" : "CSC8503CoreClasses::@4d875e53a28d04205b4e"
+		},
+		{
+			"backtrace" : 7,
+			"id" : "OpenGLRendering::@33dc503a5a1af3fe7d7b"
+		}
+	],
+	"id" : "CSC8503::@6219ac6a3c5e7ef5b3a0",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "/DWIN32 /D_WINDOWS /GR /EHsc /Zi /Ob0 /Od /RTC1 -MDd",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "/machine:x64 /debug /INCREMENTAL /subsystem:console",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 2,
+				"fragment" : "..\\..\\..\\ReactPhysics3D\\lib\\Debug\\reactphysics3d.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "Winmm.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "xinput.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "..\\..\\..\\x64\\Debug\\NCLCoreClasses.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 6,
+				"fragment" : "..\\..\\..\\x64\\Debug\\CSC8503CoreClasses.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 7,
+				"fragment" : "..\\..\\..\\x64\\Debug\\OpenGLRendering.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "ws2_32.lib",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 5,
+				"fragment" : "..\\..\\..\\x64\\Debug\\NCLCoreClasses.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "opengl32.lib",
+				"role" : "libraries"
+			},
+			{
+				"fragment" : "kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "CSC8503",
+	"nameOnDisk" : "CSC8503.exe",
+	"paths" : 
+	{
+		"build" : "CSC8503",
+		"source" : "CSC8503"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29,
+				30,
+				31,
+				32,
+				33,
+				34,
+				35,
+				36,
+				37,
+				38,
+				39
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				15,
+				16,
+				20,
+				21,
+				22
+			]
+		},
+		{
+			"name" : "Inputs Files",
+			"sourceIndexes" : 
+			[
+				17,
+				54,
+				55,
+				56,
+				57,
+				58,
+				59,
+				60
+			]
+		},
+		{
+			"name" : "Camera Files",
+			"sourceIndexes" : 
+			[
+				18,
+				19,
+				61,
+				62,
+				63,
+				64,
+				65,
+				66
+			]
+		},
+		{
+			"name" : "Networking Files",
+			"sourceIndexes" : 
+			[
+				40,
+				41,
+				42,
+				43,
+				44,
+				45
+			]
+		},
+		{
+			"name" : "Rendering Files",
+			"sourceIndexes" : 
+			[
+				46,
+				47,
+				48,
+				49,
+				50,
+				51,
+				52,
+				53
+			]
+		},
+		{
+			"name" : "Menu Files",
+			"sourceIndexes" : 
+			[
+				67,
+				68,
+				69,
+				70,
+				71,
+				72,
+				73,
+				74,
+				75,
+				76,
+				77,
+				78,
+				79,
+				80,
+				81
+			]
+		},
+		{
+			"name" : "Precompile Header File",
+			"sourceIndexes" : 
+			[
+				82
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 0,
+			"compileGroupIndex" : 0,
+			"path" : "out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.cxx",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ApplyPaint.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/PaintableObject.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/Team.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/PaintBallClass.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/PaintBallProjectile.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/Player.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ImpactPoint.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonLevelManager.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonGame.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/HitSphere.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonGameObject.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonEventListener.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonTransform.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonGameWorld.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonRaycastCallback.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonUtils.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/PlayerControl.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonMapCamera.h",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonMinimapCamera.h",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonGameObjectAnim.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonDebugManager.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonSettingsManager.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ApplyPaint.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/Main.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/PaintableObject.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/Team.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/PaintBallClass.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/PaintBallProjectile.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/Player.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonLevelManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonGame.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/HitSphere.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonGameObject.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonEventListener.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonTransform.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonGameWorld.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonGameObjectAnim.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonDebugManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonSettingsManager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonNetworkedGame.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonNetworkedGame.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonNetworkObject.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonNetworkObject.cpp",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonObjectState.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonNetworkPackets.h",
+			"sourceGroupIndex" : 4
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonMeshMaterial.h",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonMeshMaterial.cpp",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonAssetManager.h",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonAssetManager.cpp",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/GameTechRenderer.h",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/GameTechRenderer.cpp",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonRenderObject.h",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonRenderObject.cpp",
+			"sourceGroupIndex" : 5
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/PlayerControl.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/BaseInput.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/BaseInput.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/KeyboardInput.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/KeyboardInput.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/XboxControllerInput.h",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/XboxControllerInput.cpp",
+			"sourceGroupIndex" : 2
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonFollowCamera.h",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonObserverCamera.h",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonFollowCamera.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonMinimapCamera.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonObserverCamera.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonMapCamera.cpp",
+			"sourceGroupIndex" : 3
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/Toon2DCoordinates.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonMainMenu.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonTextInput.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonVirtualKeyboard.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonConfirmationScreen.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonGameSettings.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonToggleButton.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"path" : "CSC8503/ToonFileHandling.h",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonMainMenu.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonTextInput.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonVirtualKeyboard.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonConfirmationScreen.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonGameSettings.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonToggleButton.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 1,
+			"path" : "CSC8503/ToonFileHandling.cpp",
+			"sourceGroupIndex" : 6
+		},
+		{
+			"backtrace" : 0,
+			"path" : "out/build/x64-Debug/CSC8503/CMakeFiles/CSC8503.dir/cmake_pch.hxx",
+			"sourceGroupIndex" : 7
+		}
+	],
+	"type" : "EXECUTABLE"
+}

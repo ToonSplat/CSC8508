@@ -1,0 +1,423 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D5D9F374-691E-320D-A016-52F1B80A0493}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22621.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>CSC8503</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\x64\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CSC8503.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">CSC8503</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\x64\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CSC8503.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">CSC8503</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/b8027218/source/repos/CSC8508/ReactPhysics3D/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CSC8503.dir/Debug/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SDLCheck>true</SDLCheck>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;UNICODE;_UNICODE;NOMINMAX;WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;_WINSOCK2API_;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ASSETROOTLOCATION="C:/Users/b8027218/source/repos/CSC8508/Assets/";CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;UNICODE;_UNICODE;NOMINMAX;WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;_WINSOCK2API_;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\";CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\Debug\reactphysics3d.lib;Winmm.lib;xinput.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Debug\NCLCoreClasses.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Debug\CSC8503CoreClasses.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Debug\OpenGLRendering.lib;ws2_32.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Debug\NCLCoreClasses.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/b8027218/source/repos/CSC8508/x64/Debug/CSC8503.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/b8027218/source/repos/CSC8508/x64/Debug/CSC8503.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /external:I "C:/Users/b8027218/source/repos/CSC8508/ReactPhysics3D/include"</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <ConformanceMode>true</ConformanceMode>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <ExternalWarningLevel>TurnOffAllWarnings</ExternalWarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <Optimization>MaxSpeed</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CSC8503.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <SDLCheck>true</SDLCheck>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;NOMINMAX;WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;_WINSOCK2API_;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ASSETROOTLOCATION="C:/Users/b8027218/source/repos/CSC8508/Assets/";CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;UNICODE;_UNICODE;NOMINMAX;WIN32_LEAN_AND_MEAN;_WINSOCKAPI_;_WINSOCK2API_;_CRT_SECURE_NO_WARNINGS;_WINSOCK_DEPRECATED_NO_WARNINGS;ASSETROOTLOCATION=\"C:/Users/b8027218/source/repos/CSC8508/Assets/\";CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\OpenGLRendering;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\NCLCoreClasses;C:\Users\b8027218\source\repos\CSC8508\CSC8503\..\CSC8503CoreClasses;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\Release\reactphysics3d.lib;Winmm.lib;xinput.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Release\NCLCoreClasses.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Release\CSC8503CoreClasses.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Release\OpenGLRendering.lib;ws2_32.lib;C:\Users\b8027218\source\repos\CSC8508\x64\Release\NCLCoreClasses.lib;opengl32.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/Users/b8027218/source/repos/CSC8508/x64/Release/CSC8503.lib</ImportLibrary>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ProgramDataBaseFile>C:/Users/b8027218/source/repos/CSC8508/x64/Release/CSC8503.pdb</ProgramDataBaseFile>
+      <SubSystem>Console</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/b8027218/source/repos/CSC8508/CSC8503/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"\\campus\home\home2018\b8027218\Downloads\cmake-3.25.0-windows-x86_64 (1)\cmake-3.25.0-windows-x86_64\bin\cmake.exe" -SC:/Users/b8027218/source/repos/CSC8508 "-BC:/Users/b8027218/source/repos/CSC8508/New folder" --check-stamp-file "C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\CMake\Default.cmake;C:\Users\b8027218\source\repos\CSC8508\CMake\DefaultCXX.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig-debug.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig-release.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/b8027218/source/repos/CSC8508/CSC8503/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"\\campus\home\home2018\b8027218\Downloads\cmake-3.25.0-windows-x86_64 (1)\cmake-3.25.0-windows-x86_64\bin\cmake.exe" -SC:/Users/b8027218/source/repos/CSC8508 "-BC:/Users/b8027218/source/repos/CSC8508/New folder" --check-stamp-file "C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\CMake\Default.cmake;C:\Users\b8027218\source\repos\CSC8508\CMake\DefaultCXX.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig-debug.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig-release.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfig.cmake;C:\Users\b8027218\source\repos\CSC8508\ReactPhysics3D\lib\cmake\ReactPhysics3D\ReactPhysics3DConfigVersion.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\cmake_pch.cxx">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CSC8503.dir/Debug/cmake_pch.pch</PrecompiledHeaderOutputFile>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CSC8503.dir/Release/cmake_pch.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ApplyPaint.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintableObject.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Team.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallClass.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallProjectile.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Player.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ImpactPoint.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonLevelManager.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGame.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\HitSphere.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObject.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonEventListener.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTransform.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameWorld.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRaycastCallback.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonUtils.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PlayerControl.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMapCamera.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMinimapCamera.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObjectAnim.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonDebugManager.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonSettingsManager.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ApplyPaint.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Main.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintableObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Team.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallClass.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallProjectile.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Player.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonLevelManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGame.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\HitSphere.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonEventListener.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTransform.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameWorld.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObjectAnim.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonDebugManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonSettingsManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkedGame.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkedGame.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkObject.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObjectState.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkPackets.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMeshMaterial.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMeshMaterial.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonAssetManager.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonAssetManager.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\GameTechRenderer.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\GameTechRenderer.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRenderObject.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRenderObject.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PlayerControl.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\BaseInput.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\BaseInput.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\KeyboardInput.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\KeyboardInput.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\XboxControllerInput.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\XboxControllerInput.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFollowCamera.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObserverCamera.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFollowCamera.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMinimapCamera.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObserverCamera.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMapCamera.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Toon2DCoordinates.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMainMenu.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTextInput.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonVirtualKeyboard.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonConfirmationScreen.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameSettings.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonToggleButton.h" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFileHandling.h" />
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMainMenu.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTextInput.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonVirtualKeyboard.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonConfirmationScreen.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameSettings.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonToggleButton.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFileHandling.cpp">
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Debug/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <ForcedIncludeFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir/Release/cmake_pch.hxx;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+    </ClCompile>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx" />
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\Release\cmake_pch.hxx" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="C:\Users\b8027218\source\repos\CSC8508\New folder\ZERO_CHECK.vcxproj">
+      <Project>{069FB143-E542-35E4-B356-EFC22B44F108}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503CoreClasses\CSC8503CoreClasses.vcxproj">
+      <Project>{FBB4560E-8A63-36D3-B47F-221DF8E6DE49}</Project>
+      <Name>CSC8503CoreClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\b8027218\source\repos\CSC8508\New folder\NCLCoreClasses\NCLCoreClasses.vcxproj">
+      <Project>{377775AB-0B3D-3A52-A566-5F43D39F5FD1}</Project>
+      <Name>NCLCoreClasses</Name>
+    </ProjectReference>
+    <ProjectReference Include="C:\Users\b8027218\source\repos\CSC8508\New folder\OpenGLRendering\OpenGLRendering.vcxproj">
+      <Project>{851E977B-169F-357A-A0C7-49EE90DC3537}</Project>
+      <Name>OpenGLRendering</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

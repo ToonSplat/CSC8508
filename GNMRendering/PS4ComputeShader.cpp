@@ -1,0 +1,13 @@
+
+#include "PS4ComputeShader.h"
+using namespace NCL;
+using namespace PS4;
+
+PS4ComputeShader::PS4ComputeShader()
+{
+}
+
+
+PS4ComputeShader::~PS4ComputeShader()
+{
+}

@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\cmake_pch.cxx">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ApplyPaint.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintableObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Team.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallClass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallProjectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Player.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonLevelManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\HitSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonEventListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameWorld.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObjectAnim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonDebugManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonSettingsManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkedGame.cpp">
+      <Filter>Networking Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkObject.cpp">
+      <Filter>Networking Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMeshMaterial.cpp">
+      <Filter>Rendering Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonAssetManager.cpp">
+      <Filter>Rendering Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\GameTechRenderer.cpp">
+      <Filter>Rendering Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRenderObject.cpp">
+      <Filter>Rendering Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PlayerControl.cpp">
+      <Filter>Inputs Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\BaseInput.cpp">
+      <Filter>Inputs Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\KeyboardInput.cpp">
+      <Filter>Inputs Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\XboxControllerInput.cpp">
+      <Filter>Inputs Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFollowCamera.cpp">
+      <Filter>Camera Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMinimapCamera.cpp">
+      <Filter>Camera Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObserverCamera.cpp">
+      <Filter>Camera Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMapCamera.cpp">
+      <Filter>Camera Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMainMenu.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTextInput.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonVirtualKeyboard.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonConfirmationScreen.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameSettings.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonToggleButton.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFileHandling.cpp">
+      <Filter>Menu Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ApplyPaint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintableObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Team.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallClass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PaintBallProjectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Player.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ImpactPoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonLevelManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\HitSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonEventListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTransform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameWorld.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRaycastCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\PlayerControl.h">
+      <Filter>Inputs Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMapCamera.h">
+      <Filter>Camera Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMinimapCamera.h">
+      <Filter>Camera Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameObjectAnim.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonDebugManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonSettingsManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkedGame.h">
+      <Filter>Networking Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkObject.h">
+      <Filter>Networking Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObjectState.h">
+      <Filter>Networking Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonNetworkPackets.h">
+      <Filter>Networking Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMeshMaterial.h">
+      <Filter>Rendering Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonAssetManager.h">
+      <Filter>Rendering Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\GameTechRenderer.h">
+      <Filter>Rendering Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonRenderObject.h">
+      <Filter>Rendering Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\BaseInput.h">
+      <Filter>Inputs Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\KeyboardInput.h">
+      <Filter>Inputs Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\XboxControllerInput.h">
+      <Filter>Inputs Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFollowCamera.h">
+      <Filter>Camera Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonObserverCamera.h">
+      <Filter>Camera Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\Toon2DCoordinates.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonMainMenu.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonTextInput.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonVirtualKeyboard.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonConfirmationScreen.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonGameSettings.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonToggleButton.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\ToonFileHandling.h">
+      <Filter>Menu Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\Debug\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\b8027218\source\repos\CSC8508\New folder\CSC8503\CMakeFiles\CSC8503.dir\Release\cmake_pch.hxx">
+      <Filter>Precompile Header File</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\b8027218\source\repos\CSC8508\CSC8503\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Camera Files">
+      <UniqueIdentifier>{DA3EB028-65E1-3378-92CA-A59483CA5D88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{00460446-12DA-39A1-BB6B-A46B01B8D95F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inputs Files">
+      <UniqueIdentifier>{746F7691-6F72-3F08-94FE-9595D5353EE0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Menu Files">
+      <UniqueIdentifier>{122F9C61-0C50-3DAA-8D49-27A4DD8D26D4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Networking Files">
+      <UniqueIdentifier>{691C7447-8020-3DC6-BA9B-1CE348D46445}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Precompile Header File">
+      <UniqueIdentifier>{9CB0C9DD-10AD-387C-9A6B-3CDE03AEC015}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Rendering Files">
+      <UniqueIdentifier>{89A22BF0-8B04-3FAD-9A84-3D71A28BE954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{35D7A8A8-AEB9-3363-A125-B99394101DEE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
