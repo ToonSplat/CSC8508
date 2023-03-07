@@ -6,12 +6,12 @@ using namespace NCL;
 
 void XboxControllerInput::UpdateState() {
 	UpdateLastState();
-	XINPUT_STATE state;;
+	XINPUT_STATE state;
 	
 	DWORD result = XInputGetState(index, &state);
 	if (result == ERROR_SUCCESS) {
 		inputs.moveDir = GetStickMovement(state.Gamepad.sThumbLX, state.Gamepad.sThumbLY);
-		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY) * CONTROLLER_SENSITIVITY;
+		inputs.relativeMousePosition = GetStickMovement(state.Gamepad.sThumbRX, state.Gamepad.sThumbRY) * controllerSensitivity;
 		inputs.relativeMousePosition.y *= -1; // Default is inverted!
 		inputs.aiming = (state.Gamepad.bLeftTrigger > 0);
 		inputs.shooting = (state.Gamepad.bRightTrigger > 0);
