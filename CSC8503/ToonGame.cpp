@@ -78,7 +78,7 @@ void ToonGame::UpdateGame(float dt){
 		}
 	}
 
-	UpdateAnimations(dt);
+	//UpdateAnimations(dt);
 
 	UpdatePhysics(dt);
 
@@ -167,9 +167,9 @@ void ToonGame::UpdatePhysics(float dt) {
 
 void ToonGame::UpdateAnimations(float dt) {
 	ToonDebugManager::Instance().StartAnimation();
-	for (auto& player : allPlayers) {
+	/*for (auto& player : allPlayers) {
 		player->AnimationUpdate(dt);
-	}
+	}*/
 	ToonDebugManager::Instance().EndAnimation();
 }
 

@@ -22,7 +22,7 @@ namespace NCL::CSC8503
 		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld);
 		~ToonGameObject();
 
-		virtual void Update(float dt) { std::cout << "Base class update\n"; };
+		virtual void Update(float dt) { /*std::cout << "Base class update\n";*/ };
 		virtual void Draw(OGLRenderer& r, bool isMinimap = false);
 
 		const std::string& GetName() const { return name; }

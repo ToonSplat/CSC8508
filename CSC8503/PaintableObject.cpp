@@ -7,9 +7,9 @@ using namespace NCL::CSC8503;
 PaintableObject::PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld) {
 }
 
-void PaintableObject::Update(float dt) {
-
-}
+//void PaintableObject::Update(float dt) {
+//
+//}
 
 
 void PaintableObject::AddImpactPoint(ImpactPoint point) { //Impact point with world space cooridnates passed in; convert to local space.

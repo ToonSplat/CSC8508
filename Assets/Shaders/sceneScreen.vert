@@ -37,7 +37,8 @@ void main(void)
 	OUT.localPos =  modelMatrix * vec4(position, 1.0);
 	OUT.normal 		= normalize ( normalMatrix * normalize ( normal ));
 	
-	OUT.texCoord	= (texCoord / numberOfRows) + offset;
+	vec2 texCoordInv = vec2(texCoord.x, 1.0f - texCoord.y);
+	OUT.texCoord	= (texCoordInv / numberOfRows) + offset;
 	OUT.colour		= objectColour;
 
 	if(hasVertexColours) {

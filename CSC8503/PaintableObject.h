@@ -9,7 +9,7 @@ namespace NCL {
 			PaintableObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld);
 			~PaintableObject(void) = default;
 
-			void Update(float dt) override;
+			//void Update(float dt) override;
 
 			void AddImpactPoint(ImpactPoint point);
 

@@ -3,9 +3,6 @@
 
 NCL::CSC8503::ToonScreen::ToonScreen(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : PaintableObject(RP3D_World, gameWorld)
 {
-	renderObject->SetShader(ToonAssetManager::Instance().GetShader("sceneScreen"));
-	renderObject->SetDefaultTexture(ToonAssetManager::Instance().GetTexture("screenTex"));
-
 	index = 0;
 	maxIndex = 15;
 
@@ -21,6 +18,9 @@ NCL::CSC8503::ToonScreen::~ToonScreen()
 
 void NCL::CSC8503::ToonScreen::Update(float dt)
 {
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F5))
+		renderObject->GetShader()->ReloadShader();
+
 	updateTimer += dt;
 	if (updateTimer >= updateTimerLimit)
 	{
@@ -33,7 +33,40 @@ void NCL::CSC8503::ToonScreen::Update(float dt)
 
 void NCL::CSC8503::ToonScreen::Draw(OGLRenderer& r, bool isMinimap)
 {
-	if (isMinimap) return;
+	if (!renderObject || !renderObject->GetMesh())
+		return;
+
+	if (isMinimap)
+	{
+		OGLMesh* minimapMesh = (OGLMesh*)renderObject->GetMinimapMesh();
+		r.BindMesh(minimapMesh);
+
+		for (int i = 0; i < (int)minimapMesh->GetSubMeshCount(); ++i)
+			r.DrawBoundMesh(i);
+
+		return;
+	}
+
+	OGLMesh* boundMesh = (OGLMesh*)renderObject->GetMesh();
+	OGLShader* shader = r.GetBoundShader();
+	if (shader == (OGLShader*)renderObject->GetShader())
+	{
+		int r = glGetUniformLocation(shader->GetProgramID(), "numberOfRows");
+		glUniform1f(r, (float)numberOfRows);
+
+		Vector2 texOffset = GetTextureOffset();
+		int offsetLoc = glGetUniformLocation(shader->GetProgramID(), "offset");
+		glUniform2fv(offsetLoc, 1, (float*)&texOffset);
+	}
+
+	r.BindMesh(boundMesh);
+	for (int i = 0; i < (int)boundMesh->GetSubMeshCount(); ++i)
+	{
+		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
+			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+
+		r.DrawBoundMesh(i);
+	}
 }
 
 Vector2 NCL::CSC8503::ToonScreen::GetTextureOffset()

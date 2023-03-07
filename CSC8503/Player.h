@@ -20,7 +20,7 @@ public:
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
-	void AnimationUpdate(float dt);
+	virtual void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
@@ -37,6 +37,7 @@ public:
 
 protected:
 	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
+	bool IsGrounded();
 
 protected:
 	Team* team;
@@ -51,7 +52,7 @@ protected:
 	float sprintMulitplier = 5.0f;
 
 	PaintBallClass weapon;
-	bool isAiming, isMoving;
+	bool isAiming, isMoving, isGrounded;
 	/*
 	* Future Implementations:
 	*

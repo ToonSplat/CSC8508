@@ -125,6 +125,9 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
 	}
+
+	for (auto& object : gameObjects)
+		object->Update(dt);
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)
