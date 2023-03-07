@@ -1,4 +1,4 @@
-set(PROJECT_NAME OpenGLRendering)
+set(PROJECT_NAME GNMRendering)
 
 ################################################################################
 # Source groups
@@ -6,7 +6,7 @@ set(PROJECT_NAME OpenGLRendering)
 set(Header_Files
     "PS4ComputeShader.h"
     "PS4Mesh.h"
-    "PS4Renderer.h"
+ 
     "PS4Shader.h"
     "PS4Texture.h"
 "PS4AudioEmitter.h"
@@ -22,9 +22,9 @@ set(Header_Files
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
-    "PS4ComputeShader..cpp"
+    "PS4ComputeShader.cpp"
     "PS4Mesh.cpp"
-    "PS4Renderer.cpp"
+    
     "PS4Shader.cpp"
     "PS4Texture.cpp"
 "PS4AudioEmitter.cpp"
@@ -53,7 +53,7 @@ set_source_files_properties(${ALL_FILES} PROPERTIES LANGUAGE CXX)
 add_library(${PROJECT_NAME} STATIC ${ALL_FILES})
 
 use_props(${PROJECT_NAME} "${CMAKE_CONFIGURATION_TYPES}" "${DEFAULT_CXX_PROPS}")
-set(ROOT_NAMESPACE OpenGLRendering)
+set(ROOT_NAMESPACE GNMRendering)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
     VS_GLOBAL_KEYWORD "Win32Proj"
