@@ -30,6 +30,7 @@ PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* level
 	shootTimer = 0.0f;
 	reloadTimer = 0.0f;
 	status = isIdle;
+	std::cout << "WEAPON CONSTUCTOR " << this << std::endl;
 	for (int i = 0; i < trajectoryPoints; i++)
 	{
 		bullet[i] = nullptr;

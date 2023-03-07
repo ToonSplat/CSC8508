@@ -380,7 +380,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 				break;
 			}
 		}
-		world->RemoveGameObject(removingPlayer, true);
+		world->RemoveGameObject(removingPlayer, false);
 		world->RemovePaintableObject(removingPlayer);
 		if (thisServer) {
 			delete serverPlayers.find(receivedID)->second.controls;
@@ -439,60 +439,68 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		shootingPlayer->GetWeapon().FireBullet(reactphysics3d::Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f),
 			reactphysics3d::Vector3(realPacket->orientation[0] / 1000.0f, realPacket->orientation[1] / 1000.0f, realPacket->orientation[2] / 1000.0f));
 	}
-	else if (type == Impact) {
-		ImpactPacket* realPacket = (ImpactPacket*)payload;
-		std::cout << "Recieved ImpactPacket for object " << realPacket->objectID << std::endl;
-		Team* team = world->GetTeams()[realPacket->teamID];
-		for (ToonGameObject* p : world->GetPaintableObjects()) {
-			if (p->GetWorldID() == realPacket->objectID) {
-				e->SetPriority(SoundPriority::LOW);
-				e->SetLooping(false);
-				e->ResetSound();
-				e->SetTarget(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f));
-				AudioSystem::GetAudioSystem()->AddSoundEmitter(e);
-        
-				if (dynamic_cast<PaintableObject*>(p)) {
-					PaintableObject* object = (PaintableObject*)p;
-					object->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
-				}
-				else {
-					Player* object = (Player*)p;
-					object->AddImpactPoint(ImpactPoint(Vector3(realPacket->position[0] / 1000.0f, realPacket->position[1] / 1000.0f, realPacket->position[2] / 1000.0f), team, (float)(realPacket->radius) / 10.0f));
-				}
-        world->MapNeedsChecking(true);
+	else if (type == Impact) 
+		HandleImpactPacket((ImpactPacket*)payload);
+	else if (type == Message)
+		HandleMessagePacket((MessagePacket*)payload);
+
+	else std::cout << "Recieved unknown packet\n";
+}
+
+void ToonNetworkedGame::HandleImpactPacket(ImpactPacket* packet) {
+	//std::cout << "Recieved ImpactPacket for object " << realPacket->objectID << std::endl;
+
+	Team* team = world->GetTeams()[packet->teamID];
+	Vector3 realPosition(packet->position[0] / 1000.0f, packet->position[1] / 1000.0f, packet->position[2] / 1000.0f);
+	float impactRadius = (float)(packet->radius) / 10.0f;
+
+	for (ToonGameObject* p : world->GetPaintableObjects())
+		if (p->GetWorldID() == packet->objectID) {
+			e->SetPriority(SoundPriority::LOW);
+			e->SetLooping(false);
+			e->ResetSound();
+			e->SetTarget(realPosition);
+			AudioSystem::GetAudioSystem()->AddSoundEmitter(e);
+
+			if (dynamic_cast<PaintableObject*>(p)) {
+				PaintableObject* object = (PaintableObject*)p;
+				object->AddImpactPoint(ImpactPoint(realPosition, team, impactRadius));
+			}
+			else {
+				Player* object = (Player*)p;
+				object->AddImpactPoint(ImpactPoint(realPosition, team, impactRadius));
+			}
+			world->MapNeedsChecking(true);
+			break;
+		}
+}
+
+void ToonNetworkedGame::HandleMessagePacket(MessagePacket* packet) {
+	//std::cout << "Recieved MessagePacket" << std::endl;
+
+	switch (packet->messageID) {
+	case(1):
+		myState = 0;
+		StartGame();
+		break;
+	case(2):
+		for (auto& player : allPlayers) 
+			if (player->GetNetworkObject()->GetNetworkID() == -packet->playerID) {
+				player->SetAiming((packet->messageValue == 0 ? false : true));
 				break;
 			}
-		}
+		break;
+	case(3):
+		if (packet->messageValue == 0)
+			winner = tieTeam;
+		else winner = world->GetTeams().find(packet->messageValue)->second;
+		break;
+	case(4):
+		gameTime = packet->messageValue / 10.0f;
+		break;
+	default:
+		std::cout << "Recieved unknown message\n";
 	}
-	else if (type == Message) {
-		MessagePacket* realPacket = (MessagePacket*)payload;
-		switch (realPacket->messageID) {
-		case(1):
-			myState = 0;
-			StartGame();
-			break;
-		case(2):
-			for (auto& player : allPlayers) {
-				if (player->GetNetworkObject()->GetNetworkID() == -realPacket->playerID) {
-					player->SetAiming((realPacket->messageValue == 0 ? false : true));
-					break;
-				}
-			}
-			std::cout << "Break time\n";
-			break;
-		case(3):
-			if (realPacket->messageValue == 0)
-				winner = tieTeam;
-			else winner = world->GetTeams().find(realPacket->messageValue)->second;
-			break;
-		case(4):
-			gameTime = realPacket->messageValue / 10.0f;
-			break;
-		default:
-			std::cout << "Recieved unknown message\n";
-		}
-	}
-	else std::cout << "Recieved unknown packet\n";
 }
 
 void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, ToonGameObject* object, int playerID){
@@ -510,18 +518,18 @@ void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, ToonGameObject* objec
 	}
 }
 
-void NCL::CSC8503::ToonNetworkedGame::UpdateCall(float dt)
+void ToonNetworkedGame::UpdateCall(float dt)
 {
 	UpdateGame(dt);
 }
 
-PushdownState::PushdownResult NCL::CSC8503::ToonNetworkedGame::DidSelectCancelButton()
+PushdownState::PushdownResult ToonNetworkedGame::DidSelectCancelButton()
 {
 	m_ShouldShowConfirmationScreen = false;
 	return PushdownResult::Pop;
 }
 
-PushdownState::PushdownResult NCL::CSC8503::ToonNetworkedGame::DidSelectOkButton()
+PushdownState::PushdownResult ToonNetworkedGame::DidSelectOkButton()
 {
 	m_ShouldShowConfirmationScreen = false;
 	m_MoveBackOnConfirmation = true;

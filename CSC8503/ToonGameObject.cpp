@@ -19,17 +19,21 @@ NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_
 NCL::CSC8503::ToonGameObject::~ToonGameObject()
 {
 	if (rigidBody) {
-		if (collider)
+		if (collider) {
 			rigidBody->removeCollider(collider); // Not clear if need to delete Collider seperately, doing for safety
+		}
 		physicsWorld.destroyRigidBody(rigidBody);
 	}
 	
-	if(collisionShapeSphere)
+	if (collisionShapeSphere) {
 		gameWorld->GetPhysicsCommon().destroySphereShape(collisionShapeSphere);
-	if(collisionShapeBox)
+	}
+	if (collisionShapeBox) {
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
-	if(collisionShapeCapsule)
+	}
+	if (collisionShapeCapsule) {
 		gameWorld->GetPhysicsCommon().destroyCapsuleShape(collisionShapeCapsule);
+	}
 	
 	delete renderObject;
 	delete networkObject;

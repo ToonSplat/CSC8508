@@ -120,7 +120,6 @@ void Player::AnimationUpdate(float dt) {
 
 void Player::SetWeapon(PaintBallClass* base) {
 	weapon = base->MakeInstance();
-	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
 }

@@ -60,6 +60,9 @@ namespace NCL {
 			void BroadcastSnapshot(bool deltaFrame);
 			void UpdateMinimumState();
 
+			void HandleImpactPacket(ImpactPacket* packet);
+			void HandleMessagePacket(MessagePacket* packet);
+
 			GameServer* thisServer;
 			GameClient* thisClient;
 			float timeToNextPacket;
