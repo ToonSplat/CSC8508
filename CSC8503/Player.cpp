@@ -133,7 +133,7 @@ void Player::SetWeapon(PaintBallClass* base) {
 bool Player::IsGrounded()
 {
 	NCL::Maths::Vector3 startPos = GetPosition() + NCL::Maths::Vector3(0, 1.0f, 0);
-	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(GetPosition() + NCL::Maths::Vector3(0, -5.0f, 0)));
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(GetPosition() + NCL::Maths::Vector3(0, -10.0f, 0)));
 	ToonRaycastCallback wallHitData;
 	gameWorld->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
 
