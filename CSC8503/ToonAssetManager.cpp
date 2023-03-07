@@ -132,6 +132,8 @@ void ToonAssetManager::LoadAssets(void) {
 	AddAnimation("Player_Run_Aim_BL", "Boss_Gun_Run_Aim_BL.anm");
 	AddAnimation("Player_Run_Aim_BR", "Boss_Gun_Run_Aim_BR.anm");
 	AddAnimation("Player_Jump", "Boss_Gun_Jump.anm");
+	AddAnimation("Player_Defeat", "Boss_Gun_Defeated.anm");
+	AddAnimation("Player_Dance", "Boss_Gun_Dance.anm");
 
 	//-----------------------------------------------------------
 	//		Materials

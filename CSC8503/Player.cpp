@@ -29,6 +29,8 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	if (!LoadAnim("Player_Run_Aim_BL")) return;
 	if (!LoadAnim("Player_Run_Aim_BR")) return;
 	if (!LoadAnim("Player_Jump")) return;
+	if (!LoadAnim("Player_Dance")) return;
+	if (!LoadAnim("Player_Defeat")) return;
 
 	PlayAnim("Player_Idle");
 }
