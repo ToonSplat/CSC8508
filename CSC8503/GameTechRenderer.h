@@ -34,12 +34,12 @@ namespace NCL {
 
 
 			void RenderFrame()	override;
-			void RenderSplitScreen();
-			void RenderSinglePlayer();
-			void Render4Player();
+			void Render2Player();
+			void Render1Player();
+			void Render3or4Player();
 			
-			void PresentSinglePlayer();
-			void PresentSplitScreen();
+			void Present1Player();
+			void Present2Player();
 			void Present3Player();
 			void Present4Player();
 			

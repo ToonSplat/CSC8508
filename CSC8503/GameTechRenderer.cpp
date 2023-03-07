@@ -116,13 +116,13 @@ void GameTechRenderer::RenderFrame() {
 
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
-		RenderSinglePlayer();
+		Render1Player();
 		break;
 	case 2:
-		RenderSplitScreen();
+		Render2Player();
 		break;
 	default:
-		Render4Player();
+		Render3or4Player();
 		break;
 	}
 
@@ -151,7 +151,7 @@ void GameTechRenderer::RenderRectical()
 	BindShader(textureShader);
 
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("crosshair"), "diffuseTex", 0);
-	Matrix4 minimapModelMatrix = Matrix4::Scale(Vector3(0.1f, 0.1f, 1.0f));
+	Matrix4 minimapModelMatrix = Matrix4::Scale(Vector3(0.1f, 0.07f, 1.0f));
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
@@ -258,7 +258,7 @@ void GameTechRenderer::RenderScene() {
 	}
 }
 
-void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
+void NCL::CSC8503::GameTechRenderer::Render2Player()
 {
 	
 	screenAspect = ((float)windowWidth / 2) / (float)windowHeight;
@@ -274,7 +274,7 @@ void NCL::CSC8503::GameTechRenderer::RenderSplitScreen()
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 }
-void NCL::CSC8503::GameTechRenderer::Render4Player()
+void NCL::CSC8503::GameTechRenderer::Render3or4Player()
 {
 	screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
 	float width = windowWidth / 2;
@@ -294,7 +294,7 @@ void NCL::CSC8503::GameTechRenderer::Render4Player()
 	
 }
 
-void NCL::CSC8503::GameTechRenderer::RenderSinglePlayer()
+void NCL::CSC8503::GameTechRenderer::Render1Player()
 {
 	screenAspect = (float)windowWidth / (float)windowHeight;
 	currentFBO = &sceneFBO;
@@ -385,7 +385,7 @@ void GameTechRenderer::PresentScene(){
 
 	switch (gameWorld->GetMainCameraCount()) {
 	case 2:
-		PresentSplitScreen();
+		Present2Player();
 		break;
 	case 3:
 		Present3Player();
@@ -394,7 +394,7 @@ void GameTechRenderer::PresentScene(){
 		Present4Player();
 		break;
 	default:
-		PresentSinglePlayer();
+		Present1Player();
 		break;
 	}
 
@@ -585,13 +585,13 @@ void GameTechRenderer::RenderShadowMap() {
 	glCullFace(GL_BACK);
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentSinglePlayer()
+void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
 	PresentMinimap();
 }
 
-void NCL::CSC8503::GameTechRenderer::PresentSplitScreen()
+void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
 	for (int i = 0; i < 2; i++)
 	{
@@ -643,16 +643,18 @@ void NCL::CSC8503::GameTechRenderer::Present3Player()
 void NCL::CSC8503::GameTechRenderer::Present4Player()
 {
 
-
+	Vector3 translations[4] = { 
+		Vector3(-0.5, 0.5, 0.0),  // Player 1
+		Vector3(0.5, 0.5, 0.0),   // Player 2
+		Vector3(-0.5, -0.5, 0.0), // Player 3
+		Vector3(0.5, -0.5, 0.0)   // Player 4
+	};
 	for (int i = 0; i < 4; i++)
 	{
-		int modular = i % 2;
-
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, quadColourTexture[i]);
 		glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
-
-		Matrix4 modelMatrix = Matrix4::Translation(Vector3(-0.5f + modular, -0.5f + (1 - modular), 0)) * Matrix4::Scale(Vector3(0.5, 0.5, 1.0));
+		Matrix4 modelMatrix = Matrix4::Translation(translations[i]) * Matrix4::Scale(Vector3(0.5, 0.5, 1.0));
 		int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 		BindMesh(fullScreenQuad);
