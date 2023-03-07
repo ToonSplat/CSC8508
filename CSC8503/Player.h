@@ -37,7 +37,7 @@ public:
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
 	Team* GetTeam() const { return team; }
-	PaintBallClass GetWeapon() { return weapon; }
+	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
 protected:
