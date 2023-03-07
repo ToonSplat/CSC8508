@@ -19,7 +19,7 @@ namespace NCL::CSC8503 {
 		int		fullID = -1;
 		int		objectID = -1;
 		short	pos[3];
-		short	orientation[4];
+		short	orientation[4]; // TODO: Can this be char?
 		short	linVel[3];
 		short	angVel[3];
 
@@ -31,7 +31,7 @@ namespace NCL::CSC8503 {
 
 	struct ClientPacket : public GamePacket {
 		int		lastID;
-		int		playerID;
+		int		playerID; // TODO This can probably be short. Can maybe refactor playerID stuff to make it char
 		PlayerControl controls;
 
 		ClientPacket() {
@@ -41,9 +41,9 @@ namespace NCL::CSC8503 {
 	};
 
 	struct ShootPacket : public GamePacket {
-		int		playerID;
+		int		playerID; // TODO This can probably be short. Can maybe refactor playerID stuff to make it char
 		int		position[3];
-		int		orientation[3];
+		int		orientation[3]; // TODO This can probably be char. Can maybe be char
 
 		ShootPacket() {
 			type = Shoot;
