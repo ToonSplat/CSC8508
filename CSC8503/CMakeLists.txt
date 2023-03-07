@@ -33,6 +33,7 @@ source_group("Header Files" FILES ${Header_Files})
 set(Source_Files
     "ApplyPaint.cpp"
     "Main.cpp"
+    "Team.cpp"
     "PaintableObject.cpp"
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"

@@ -36,7 +36,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	ToonAssetManager::Instance().LoadLoadingScreenAssets();
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
 		// Add the loading screen update here!
-		std::cout << "Loading next asset\n";
+		RenderFrameLoading();
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 	ToonDebugManager::Instance().EndLoad();
@@ -321,6 +321,14 @@ void GameTechRenderer::LoadSkybox() {
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
+
+void GameTechRenderer::RenderFrameLoading() {
+	BeginFrame();
+	// Loading Screen Stuff
+
+	EndFrame();
+	SwapBuffers();
 }
 
 void GameTechRenderer::RenderFrame() {

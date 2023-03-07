@@ -31,7 +31,7 @@ namespace NCL {
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
 
-
+			void RenderFrameLoading();
 			void RenderFrame()	override;
 			void RenderImGUI();
 
