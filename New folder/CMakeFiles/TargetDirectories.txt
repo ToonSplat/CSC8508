@@ -1,6 +1,0 @@
-C:/Users/b8027218/source/repos/CSC8508/New folder/CMakeFiles/ALL_BUILD.dir
-C:/Users/b8027218/source/repos/CSC8508/New folder/CMakeFiles/ZERO_CHECK.dir
-C:/Users/b8027218/source/repos/CSC8508/New folder/NCLCoreClasses/CMakeFiles/NCLCoreClasses.dir
-C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503CoreClasses/CMakeFiles/CSC8503CoreClasses.dir
-C:/Users/b8027218/source/repos/CSC8508/New folder/OpenGLRendering/CMakeFiles/OpenGLRendering.dir
-C:/Users/b8027218/source/repos/CSC8508/New folder/CSC8503/CMakeFiles/CSC8503.dir
