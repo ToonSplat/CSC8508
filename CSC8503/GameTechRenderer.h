@@ -63,7 +63,7 @@ namespace NCL {
 
 			void RenderSkybox();
 
-			void LoadSkybox();
+			void LoadSkybox(string fileName = "");
 
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);

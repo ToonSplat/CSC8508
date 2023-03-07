@@ -34,13 +34,23 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	// Load everything needed for the loading screen here!
 	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
 	ToonAssetManager::Instance().LoadLoadingScreenAssets();
+	debugShader = ToonAssetManager::Instance().GetShader("debug");
+	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
+	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
+	textureShader = ToonAssetManager::Instance().GetShader("texture");
+	sceneShader = ToonAssetManager::Instance().GetShader("scene");
+	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
+	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
+	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
+	SetupStuffs();
+	LoadSkybox("Boss_diffuse.png");
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
 		// Add the loading screen update here!
 		RenderFrameLoading();
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
+	LoadSkybox();
 	ToonDebugManager::Instance().EndLoad();
-	SetupStuffs();
 	team1Percentage = 0;
 	team2Percentage = 0;
 	team3Percentage = 0;
@@ -106,7 +116,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	scoreQuad->UploadToGPU();
 	
-	LoadSkybox();
+	//LoadSkybox();
 
 	glGenVertexArrays(1, &lineVAO);
 	glGenVertexArrays(1, &textVAO);
@@ -283,14 +293,14 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 }
 
 
-void GameTechRenderer::LoadSkybox() {
+void GameTechRenderer::LoadSkybox(string fileName) {
 	string filenames[6] = {
-		"/Cubemap/skyrender0004.png",
-		"/Cubemap/skyrender0001.png",
-		"/Cubemap/skyrender0003.png",
-		"/Cubemap/skyrender0006.png",
-		"/Cubemap/skyrender0002.png",
-		"/Cubemap/skyrender0005.png"
+		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0003.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0006.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0002.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0005.png"  : Assets::TEXTUREDIR + fileName
 	};
 
 	int width[6] = { 0 };
@@ -326,7 +336,7 @@ void GameTechRenderer::LoadSkybox() {
 void GameTechRenderer::RenderFrameLoading() {
 	BeginFrame();
 	// Loading Screen Stuff
-
+	RenderSkybox();
 	EndFrame();
 	SwapBuffers();
 }
@@ -346,9 +356,8 @@ void GameTechRenderer::RenderFrame() {
 		DrawMinimap();
 	}
 	PresentScene();
-	
-	
 	RenderImGUI();
+
 	ToonDebugManager::Instance().EndRendering();
 }
 
@@ -743,8 +752,8 @@ void GameTechRenderer::RenderSkybox() {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? gameWorld->GetMainCamera()->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	BindShader(skyboxShader);
 

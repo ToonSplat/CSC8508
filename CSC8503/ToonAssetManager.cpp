@@ -27,6 +27,15 @@ ToonAssetManager::~ToonAssetManager(void) {
 }
 
 void ToonAssetManager::LoadLoadingScreenAssets(void) {
+	AddShader("debug", "debug.vert", "debug.frag");
+	AddShader("shadow", "shadowSkin.vert", "shadow.frag");
+	AddShader("minimap", "minimap.vert", "minimap.frag");
+	AddShader("texture", "Texture.vert", "Texture.frag");
+	AddShader("scene", "scene.vert", "scene.frag");
+	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
+	AddShader("fullMap", "map.vert", "map.frag");
+	AddShader("skybox", "skybox.vert", "skybox.frag");
+	AddShader("animated", "sceneSkin.vert", "scene.frag");
 	// Everything that is added here, should be removed from the file.
 
 	//-----------------------------------------------------------
