@@ -92,6 +92,12 @@ namespace NCL::Maths {
 			return Vector3((a.y*b.z) - (a.z*b.y), (a.z*b.x) - (a.x*b.z), (a.x*b.y) - (a.y*b.x));
 		}
 
+		static Vector3 ProjectOnPlane(const Vector3& dir, const Vector3& normal)
+		{
+			Vector3 project = normal * (Dot(dir, normal) / normal.LengthSquared());
+			return dir - project;
+		}
+
 		inline Vector3  operator+(const Vector3  &a) const {
 			return Vector3(x + a.x, y + a.y, z + a.z);
 		}

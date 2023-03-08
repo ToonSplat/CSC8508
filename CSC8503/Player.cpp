@@ -1,10 +1,9 @@
-
 #include "Player.h"
 #include "Maths.h"
-#include "ToonUtils.h"
 #include "ToonRaycastCallback.h"
 
 using namespace NCL;
+using namespace NCL::Maths;
 using namespace CSC8503;
 
 Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : ToonGameObjectAnim(RP3D_World, gameWorld), team(team)
@@ -53,8 +52,19 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F5))
 		renderObject->GetShader()->ReloadShader();
 
+	isGrounded = IsGrounded();	
+
 	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, 0, controls->direction[1] / 1000.0f);
 	linearMovement.normalize();
+
+	if (isGrounded)
+	{
+		groundDir = NCL::Maths::Vector3::ProjectOnPlane(ToonUtils::ConvertToNCLVector3(linearMovement), groundNormal);
+		groundDir.Normalise();
+		Debug::DrawLine(GetPosition(), GetPosition() + groundNormal, Debug::GREEN);
+		Debug::DrawLine(GetPosition(), GetPosition() + NCL::Maths::Vector3::Cross(groundNormal, groundDir), Debug::RED);
+		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);
+	}
 
 	isMoving = linearMovement.length() >= 0.1f;
 	isAiming = controls->aiming;
@@ -93,7 +103,6 @@ void Player::Update(float dt) {
 	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
 	
 	ToonGameObjectAnim::Update(dt);
-	isGrounded = IsGrounded();
 	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 	linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
 	linVel.y = 0;
@@ -160,14 +169,16 @@ void Player::SetWeapon(PaintBallClass* base) {
 
 bool Player::IsGrounded()
 {
-	NCL::Maths::Vector3 startPos = GetPosition() + NCL::Maths::Vector3(0, 1.0f, 0);
-	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(GetPosition() + NCL::Maths::Vector3(0, -10.0f, 0)));
-	ToonRaycastCallback wallHitData;
-	gameWorld->GetPhysicsWorld().raycast(ray, &wallHitData, ToonCollisionLayer::Default);
+	NCL::Maths::Vector3 startPos = GetPosition() + NCL::Maths::Vector3(0, 2.0f, 0);
+	Debug::DrawBox(startPos, NCL::Maths::Vector3(0.5f, 0.5f, 0.5f), Debug::CYAN);
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(GetPosition() + NCL::Maths::Vector3(0, -20.0f, 0)));	
+	ToonRaycastCallback groundHitData;
+	gameWorld->GetPhysicsWorld().raycast(ray, &groundHitData, ToonCollisionLayer::Default);
 
-	if (wallHitData.IsHit())
+	if (groundHitData.IsHit())
 	{
-		float distance = std::abs((wallHitData.GetHitWorldPos() - startPos).Length());
+		float distance = std::abs((groundHitData.GetHitWorldPos() - startPos).Length());
+		groundNormal = groundHitData.GetHitNormal();
 		return distance <= 2.5f;
 	}
 

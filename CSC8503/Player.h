@@ -63,6 +63,8 @@ protected:
 	AudioSystem* audiosystem;
 
 	bool isAiming, isMoving, isGrounded;
+	NCL::Maths::Vector3 groundDir;
+	NCL::Maths::Vector3 groundNormal;
 	/*
 	* Future Implementations:
 	*
