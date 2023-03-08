@@ -7,13 +7,18 @@
 #include "Window.h"
 #include "Debug.h"
 #include <vector>
+
+#include "AudioSystem.h"
+
 #include "PaintBallClass.h"
 #include "PlayerControl.h"
+#include "ApplyPaint.h"
+
 
 using namespace NCL;
 using namespace CSC8503;
 
-class Player : public ToonGameObjectAnim {
+class Player : public ToonGameObjectAnim, public ApplyPaint {
 public:
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
@@ -32,7 +37,7 @@ public:
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
 	Team* GetTeam() const { return team; }
-	PaintBallClass GetWeapon() { return weapon; }
+	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
 protected:
@@ -51,7 +56,10 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 
+
 	PaintBallClass weapon;
+	AudioSystem* audiosystem;
+
 	bool isAiming, isMoving, isGrounded;
 	/*
 	* Future Implementations:

@@ -17,6 +17,12 @@ namespace NCL {
 			}
 		}
 
+		void AddInput(int player, BaseInput* inputScheme) {
+			if (playerInputs.find(player) != playerInputs.end())
+				delete playerInputs.find(player)->second;
+			playerInputs[player] = inputScheme;
+		}
+
 		std::map<int, BaseInput*>& GetInputs() { return playerInputs; }
 
 	private:

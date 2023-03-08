@@ -4,6 +4,7 @@ set(PROJECT_NAME CSC8503)
 # Source groups
 ################################################################################
 set(Header_Files
+    "ApplyPaint.h"
     "PaintableObject.h"
     "Team.h"
     "PaintBallClass.h"
@@ -12,6 +13,9 @@ set(Header_Files
     "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
+    "Audio.h"
+    "AudioEmitter.h"
+    "AudioSystem.h"
     "HitSphere.h"
     "ToonGameObject.h"
     "ToonEventListener.h"
@@ -25,12 +29,12 @@ set(Header_Files
     "ToonMinimapCamera.h"
     "ToonGameObjectAnim.h"
     "ToonDebugManager.h"
-    "ToonConfirmationScreen.h"
-    "Toon2DCoordinates"
+    "ToonSettingsManager.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
+    "ApplyPaint.cpp"
     "Main.cpp"
     "PaintableObject.cpp"
     "Team.cpp"
@@ -39,6 +43,9 @@ set(Source_Files
     "Player.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
+    "Audio.cpp"
+    "AudioEmitter.cpp"
+    "AudioSystem.cpp"
     "HitSphere.cpp"
     "ToonGameObject.cpp"
     "ToonEventListener.cpp"
@@ -47,7 +54,7 @@ set(Source_Files
     "ToonScreen.cpp"
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
-    "ToonConfirmationScreen.cpp"
+    "ToonSettingsManager.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -76,10 +83,11 @@ set(Inputs_Files
     "PlayerControl.h"
     "PlayerControl.cpp"
     "BaseInput.h"
+    "BaseInput.cpp"
     "KeyboardInput.h"
     "KeyboardInput.cpp"
-    "ControllerInput.h"
-    "ControllerInput.cpp"
+    "XboxControllerInput.h"
+    "XboxControllerInput.cpp"
 )
 source_group("Inputs Files" FILES ${Inputs_Files})
 
@@ -96,12 +104,25 @@ set(Camera_Files
 source_group("Camera Files" FILES ${Camera_Files})
 
 set(Menu_Files
+    "Toon2DCoordinates.h"
+
     "ToonMainMenu.h"
     "ToonTextInput.h"
     "ToonVirtualKeyboard.h"
+    "ToonConfirmationScreen.h"
+    "ToonGameSettings.h"
+    "ToonToggleButton.h"
+    "ToonFileHandling.h"
+    "ToonCredits.h"
+
     "ToonMainMenu.cpp"
     "ToonTextInput.cpp"
     "ToonVirtualKeyboard.cpp"
+    "ToonConfirmationScreen.cpp"
+    "ToonGameSettings.cpp"
+    "ToonToggleButton.cpp"
+    "ToonFileHandling.cpp"
+    "ToonCredits.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 
@@ -287,10 +308,10 @@ set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ReactPhysics3D::ReactPhysics3D"
 )
 
-find_library(XINPUT_LIBRARY NAMES XInput)
-if(NOT XINPUT_LIBRARY)
-    message(FATAL_ERROR "XInput library not found")
-endif()
+# find_library(XINPUT_LIBRARY NAMES XInput)
+# if(NOT XINPUT_LIBRARY)
+#     message(FATAL_ERROR "XInput library not found")
+# endif()
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ${XINPUT_LIBRARY})
 
@@ -300,15 +321,22 @@ target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "${ADDITIONAL_LIBRARY_DEPENDEN
 ################################################################################
 if(MSVC)
     target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "Winmm.lib")
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC  "xinput.lib")
 endif()
 
 include_directories("../OpenGLRendering/")
 include_directories("../NCLCoreClasses/")
 include_directories("../CSC8503CoreClasses/")
+include_directories("../openal-soft/")
+include_directories("../libsndfile/")
+
 
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC NCLCoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC CSC8503CoreClasses)
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC OpenGLRendering)
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "OpenAL32.lib")
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC "sndfile.lib")
+
 
 if(USE_VULKAN)
 include_directories("../VulkanRendering/")

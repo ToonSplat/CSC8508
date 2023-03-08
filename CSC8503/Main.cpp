@@ -23,11 +23,13 @@
 #include "BehaviourAction.h"
 #include "ToonMainMenu.h"
 
+#include "AudioSystem.h"
 #include "KeyboardInput.h"
-#include "ControllerInput.h"
+#include "XboxControllerInput.h"
 #include "InputManager.h"
 
 #include "ToonDebugManager.h"
+#include "ToonSettingsManager.h"
 
 #include <Windows.h>
 #include <Xinput.h>
@@ -63,6 +65,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		ToonDebugManager::Instance().StartFrame();
 		ToonDebugManager::Instance().Update();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
+		AudioSystem::GetAudioSystem()->Update(dt);
 		if (dt > 0.1f) {
 			std::cout << "Skipping large time delta" << std::endl;
 			continue; //must have hit a breakpoint or something to have a 1 second frame time!
@@ -77,6 +80,13 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
 			w->SetWindowPosition(0, 0);
 		}
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::X)) {
+			AudioSystem::GetAudioSystem()->SetMasterVolume(0.0f);
+		}
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Z)) {
+			AudioSystem::GetAudioSystem()->SetMasterVolume(1.0f);
+		}
+
 
 		w->SetTitle("ToonSplat frame time:" + std::to_string(1000.0f * dt));
 		InputManager::GetInstance().Update();
@@ -88,10 +98,16 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 
 int main()
 {
+	//Audio
+	NCL::CSC8503::AudioSystem::Initialise();
+
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
+	AudioSystem::GetAudioSystem()->SetMenuSounds();
+	ToonSettingsManager::SetRenderer(renderer);
+	ToonSettingsManager::ApplySettings();
 #ifndef _DEBUG
 	w->ShowConsole(false);
 #endif
@@ -102,12 +118,12 @@ int main()
 	if (result == ERROR_SUCCESS)
 	{
 		std::cout << "Controller detected." << std::endl;
-		InputManager::GetInstance().GetInputs().emplace(1, new ControllerInput(0));
+		InputManager::GetInstance().AddInput(1, new XboxControllerInput(0));
 	}
 	else
 	{
 		std::cout << "No controller detected. Using keyboard input." << std::endl;
-		InputManager::GetInstance().GetInputs().emplace(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
+		InputManager::GetInstance().AddInput(1, new KeyboardInput(Window::GetKeyboard(), Window::GetMouse()));
 	}
 	//Imgui 
 	IMGUI_CHECKVERSION();
@@ -116,6 +132,8 @@ int main()
 	ImGui::StyleColorsDark();
 	ImGui_ImplWin32_Init(dynamic_cast<NCL::Win32Code::Win32Window*>(w)->GetHandle());
 	ImGui_ImplOpenGL3_Init();
+
+	
 
 	if (!w->HasInitialised()) {
 		return -1;
@@ -130,7 +148,9 @@ int main()
 
 	ToonMainMenu* mainMenu = new ToonMainMenu(renderer, new ToonGameWorld(), w);
 	StartPushdownAutomata(w, mainMenu);
+	delete mainMenu;
 
+	AudioSystem::GetAudioSystem()->DetachAllSources();
 	ToonAssetManager::Destroy();
 	ToonDebugManager::Destroy();
 	Window::DestroyGameWindow();
@@ -138,4 +158,5 @@ int main()
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplWin32_Shutdown();
 	ImGui::DestroyContext();
+	NCL::CSC8503::AudioSystem::Destroy();
 }

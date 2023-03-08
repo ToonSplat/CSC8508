@@ -67,10 +67,16 @@ endif()
 ################################################################################
 # Sub-projects
 ################################################################################
+link_directories("./openal-soft/Debug/OpenAL")
+link_directories("./libsndfile/Debug/SndFile")
 add_subdirectory(NCLCoreClasses)
 add_subdirectory(CSC8503CoreClasses)
 add_subdirectory(OpenGLRendering)
 add_subdirectory(CSC8503)
+
+file(COPY ./openal-soft/Debug/OpenAL/OpenAL32.dll DESTINATION ./CSC8503)
+
+
 if(USE_VULKAN)
     add_subdirectory(VulkanRendering)
 endif()

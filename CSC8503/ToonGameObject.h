@@ -12,7 +12,9 @@ namespace NCL::CSC8503
 	{
 		Nothing = 0,
 		Default = 1,
-		Character = 2
+		Character = 2,
+		Paintball = 4,
+		Hitsphere = 8
 	};
 
 	class ToonGameWorld;

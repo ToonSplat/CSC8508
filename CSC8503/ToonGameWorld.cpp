@@ -18,7 +18,7 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	teams.emplace(2, new Team("The Purple Prawns", Team::T_PURPLE_PRAWNS, 2));
 	teams.emplace(3, new Team("The Blue Bulldogs", Team::T_BLUE_BULLDOGS, 3));
 	teams.emplace(4, new Team("The Orange Otters", Team::T_ORANGE_OTTERS, 4));
-	mainCamera = new Camera();
+	mainCameras[1] = new Camera();
 }
 
 NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
@@ -26,7 +26,8 @@ NCL::CSC8503::ToonGameWorld::~ToonGameWorld()
 	ClearAndErase();
 	physicsCommon.destroyPhysicsWorld(physicsWorld);
 	delete eventListener;
-	delete mainCamera;
+	for (auto& [id, camera] : mainCameras)
+		delete camera;
 	delete minimapCamera;
 	for (auto& [id, team] : teams)
 		delete team;
@@ -50,7 +51,7 @@ void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 			delete (Player*)i;
 		else delete i;
 	}
-	
+
 	Clear();
 }
 
@@ -88,12 +89,13 @@ void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	activeHitSpheres.erase(hitSphere);
 	objectsToDelete.insert(hitSphere);
+	updateMap = true;
 }
 
-void ToonGameWorld::AddPaintableObject(PaintableObject* paintableObject) {
+void ToonGameWorld::AddPaintableObject(ToonGameObject* paintableObject) {
 	paintableObjects.emplace(paintableObject);
 }
-void ToonGameWorld::RemovePaintableObject(PaintableObject* paintableObject) {
+void ToonGameWorld::RemovePaintableObject(ToonGameObject* paintableObject) {
 	paintableObjects.erase(paintableObject);
 	objectsToDelete.insert(paintableObject);
 }
@@ -105,7 +107,9 @@ void ToonGameWorld::GetGameObjects(void) const {
 
 void ToonGameWorld::DeleteMarkedObjects() {
 	for (auto& object : objectsToDelete)
-		delete object;
+		if (dynamic_cast<Player*>(object))
+			delete (Player*)object;
+		else delete object;
 	objectsToDelete.clear();
 }
 

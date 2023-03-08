@@ -13,8 +13,9 @@ std::string ToonVirtualKeyboard::GetUserInputText()
 void ToonVirtualKeyboard::UpdateAndHandleInputEvents()
 {
 	DrawKeyboard();
-	if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(m_MousePositionWithinBounds.x, m_MousePositionWithinBounds.y) && InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
+		AudioSystem::GetAudioSystem()->SelectMenuOption();
 		if (m_Keys[m_CurrentSelectedKeyIndex.row][m_CurrentSelectedKeyIndex.coloumn].identifier == ActionKeysIdentifiers::DeleteActionKey)
 		{
 			if (m_UserInputText.length()) { m_UserInputText.pop_back(); }
@@ -168,7 +169,11 @@ void ToonVirtualKeyboard::DrawKeyboard()
 		{
 			if (m_IsMousePointerVisible && IsMouseInsideKeyboardArea(x, y))
 			{
-				if (x >= key.coordinates.origin.x && x <= key.coordinates.origin.x + key.coordinates.size.x && y >= key.coordinates.origin.y && y <= key.coordinates.origin.y + key.coordinates.size.y) { m_CurrentSelectedKeyIndex = Index2D(rowIndex, ColoumnIndex); }
+				if (x >= key.coordinates.origin.x && x <= key.coordinates.origin.x + key.coordinates.size.x && y >= key.coordinates.origin.y && y <= key.coordinates.origin.y + key.coordinates.size.y) { 
+					Index2D lastIndex = m_CurrentSelectedKeyIndex;
+					m_CurrentSelectedKeyIndex = Index2D(rowIndex, ColoumnIndex); 
+					if(lastIndex != m_CurrentSelectedKeyIndex) AudioSystem::GetAudioSystem()->SelectMenuOption();
+				}
 			}
 			//else { m_CurrentSelectedKeyIndex = 0; }
 			DrawSingleKey(key.text, key.coordinates, Index2D(rowIndex, ColoumnIndex));
@@ -202,6 +207,7 @@ void ToonVirtualKeyboard::WakeMouseOnMovement()
 
 void ToonVirtualKeyboard::UpdateCurrentSelectedKeyPositionUsingKeys(KeyboardKeys key)
 {
+	AudioSystem::GetAudioSystem()->SelectMenuOption();
 	m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 	UpdateMosePointerState(false);
 	int totalKeys		= (int)m_Keys.size();

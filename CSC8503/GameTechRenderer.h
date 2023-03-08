@@ -3,7 +3,6 @@
 #include "OGLShader.h"
 #include "OGLTexture.h"
 #include "OGLMesh.h"
-
 #include "ToonGameWorld.h"
 
 namespace NCL {
@@ -23,24 +22,34 @@ namespace NCL {
 			void ShowMinimap(bool visible = true) { minimapEnabled = visible; }
 			bool IsMinimapVisible() { return minimapEnabled; }
 			void RetrieveAtomicValues();
+			void SetShadowSize(int size) { shadowSize = size; }
+			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
 		protected:
 
 			void SetupStuffs();
-			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
 
 
 			void RenderFrame()	override;
+			void Render2Player();
+			void Render1Player();
+			void Render3or4Player();
+			
+			void Present1Player();
+			void Present2Player();
+			void Present3Player();
+			void Present4Player();
+			
 			void RenderImGUI();
 
 			void PresentScene();
 
 			void PresentGameScene();
 
-			void PresentMinimap(int modelLocation);
+			void PresentMinimap();
 
 			void DrawMinimap();
 			void DrawScoreBar();
@@ -51,6 +60,8 @@ namespace NCL {
 
 			void DrawMainScene();
 
+			void RenderRectical();
+
 			OGLShader*		defaultShader;
 
 			ToonGameWorld*	gameWorld = nullptr;			
@@ -59,8 +70,9 @@ namespace NCL {
 			void SortObjectList();
 			void RenderShadowMap();
 
-			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
-			void PassImpactPointDetails(PaintableObject* const& paintedObject, OGLShader* shader);
+			void RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
+			void RenderScene();
+			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
 			void RenderSkybox();
 
@@ -87,6 +99,7 @@ namespace NCL {
 			OGLShader*	shadowShader;
 			GLuint		shadowTex;
 			GLuint		shadowFBO;
+			int shadowSize;
 			Matrix4     shadowMatrix;
 
 			Vector4		lightColour;
@@ -128,6 +141,18 @@ namespace NCL {
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
+			GLuint splitFBO[2];
+			GLuint splitColourTexture[2];
+			GLuint splitDepthTexture[2];
+			void GenerateSplitFBO(int width, int height);
+
+			GLuint quadFBO[4];
+			GLuint quadColourTexture[4];
+			GLuint quadDepthTexture[4];
+			void GenerateQuadFBO(int width, int height);
+
+			GLuint* currentFBO;
+
 			GLuint atomicsBuffer[3];
 			void GenerateAtomicBuffer();
 			void ResetAtomicBuffer();
@@ -137,7 +162,7 @@ namespace NCL {
 			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
-			OGLMesh* minimapQuad;
+			OGLMesh* squareQuad;
 			OGLMesh* minimapStencilQuad;
 
 			OGLMesh* scoreQuad;
@@ -156,7 +181,8 @@ namespace NCL {
 			GLuint currentAtomicGPU;
 			GLuint curretAtomicReset;
 
-			
+			Camera* currentRenderCamera;
+			float screenAspect;
 		};
 	}
 }

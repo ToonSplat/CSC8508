@@ -21,6 +21,8 @@ ToonAssetManager::~ToonAssetManager(void) {
 		delete animation;
 	for (auto& [name, mat] : materials)
 		delete mat;
+	for (auto& [name, sound] : sounds)
+		Audio::RemoveSound(sound);
 }
 
 void ToonAssetManager::LoadAssets(void) {
@@ -34,16 +36,21 @@ void ToonAssetManager::LoadAssets(void) {
 	for (auto& [name, animation] : animations)
 		delete animation;
 	for (auto& [name, mat] : materials)
-		delete mat; materials.clear();
+		delete mat;
+	for (auto& [name, sound] : sounds)
+		Audio::RemoveSound(sound);
+	textures.clear();
 	meshes.clear();
 	shaders.clear();
 	animations.clear();
 	materials.clear();
+	sounds.clear();
 	//-----------------------------------------------------------
 	//		Textures
 	AddTexture("mesh", "checkerboard.png");
 	AddTexture("basic", "Prefab_Grey50.png", true);
 	AddTexture("basicPurple", "Prefab_Purple.png", true);
+	AddTexture("crosshair", "crosshair2.png",true);
 	AddTexture("screenTex", "RB_Animated_Screen.png", true);
 	/*AddTexture("player", "Boss_diffuse.png", true);
 	AddTexture("tex_arena_wall", "RB_Level_Arena_Wall.png", true);
@@ -183,6 +190,15 @@ void ToonAssetManager::LoadAssets(void) {
 	
 	AddMaterial("mat_arena_toonsplat_Box", "Level_ToonSplat_Box.mat", GetMesh("arena_toonsplat_Box")->GetSubMeshCount());
 
+
+	//-----------------------------------------------------------
+	//		Sounds
+	AddSound("splatter", "splatter.wav");
+	AddSound("gameMusic", "gameTune.wav");
+	AddSound("menuMusic", "menuTune.wav");
+	AddSound("splash", "splash.wav");
+	AddSound("click", "click.wav");
+
 	ToonDebugManager::Instance().EndLoad();
 }
 
@@ -291,7 +307,7 @@ MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& 
 	return animation;
 }
 
-ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
+ToonMeshMaterial* ToonAssetManager::GetMaterial(const string& name)
 {
 	map<string, ToonMeshMaterial*>::iterator i = materials.find(name);
 
@@ -300,7 +316,7 @@ ToonMeshMaterial* NCL::ToonAssetManager::GetMaterial(const string& name)
 	return nullptr;
 }
 
-ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
+ToonMeshMaterial* ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
 {
 	ToonMeshMaterial* mat = GetMaterial(name);
 	if (mat != nullptr) return mat;
@@ -311,7 +327,27 @@ ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const s
 	return mat;
 }
 
-MeshGeometry* NCL::ToonAssetManager::CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor)
+CSC8503::Sound* ToonAssetManager::GetSound(const string& name)
+{
+	map<string, Sound*>::iterator i = sounds.find(name);
+
+	if (i != sounds.end())
+		return i->second;
+	return nullptr;
+}
+
+CSC8503::Sound* ToonAssetManager::AddSound(const string& name, const string& fileName)
+{
+	CSC8503::Sound* sound = GetSound(name);
+	if (sound != nullptr) return sound;
+
+	sound = Audio::AddSound(fileName.c_str());
+	sounds.emplace(fileName, sound); // Filename is placeholder
+
+	return sound;
+}
+
+MeshGeometry* ToonAssetManager::CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor)
 {
 	MeshGeometry* copyPlayerMesh = new OGLMesh(fileName);
 	if (copyPlayerMesh == nullptr) return nullptr;

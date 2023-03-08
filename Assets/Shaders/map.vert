@@ -1,4 +1,4 @@
-#version 400 core
+#version 420 core
 
 uniform mat4 modelMatrix 	= mat4(1.0f);
 uniform mat4 viewMatrix 	= mat4(1.0f);
@@ -13,8 +13,6 @@ layout(location = 3) in vec3 normal;
 uniform vec4 		objectColour = vec4(1,1,1,1);
 
 uniform bool hasVertexColours = false;
-
-
 
 out Vertex
 {

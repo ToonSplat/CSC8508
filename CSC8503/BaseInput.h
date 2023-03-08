@@ -5,6 +5,9 @@
 #include "Camera.h"
 #include <map>
 
+#define MINIMUM_MOVEMENT 0.15f
+#define CONTROLLER_SENSITIVITY 1.5f
+
 namespace NCL {
 	using namespace Maths;
 	struct InputState {
@@ -55,7 +58,11 @@ namespace NCL {
 		BaseInput() {}
 		virtual ~BaseInput() {}
 
-		virtual void UpdateState() { std::cout << "Base Input Update Called\n"; }
+		virtual void UpdateState() { 
+			if (BaseInput::invert) {
+				inputs.relativeMousePosition.y *= -1;
+			}
+		}
 		void UpdateGameControls(PlayerControl* controls, Camera* camera) {
 			Vector3 forward = camera->GetForward();
 			Vector3 right = camera->GetRight();
@@ -78,7 +85,8 @@ namespace NCL {
 
 		Vector2 GetMovement() const	{ return inputs.moveDir; }
 		bool IsAiming() const		{ return inputs.aiming; }
-		bool IsShooting() const		{ return inputs.shooting && !inputs.lastShooting; }
+		bool IsShooting() const		{ return inputs.shooting; }
+		bool IsShootingOnce() const	{ return inputs.shooting && !inputs.lastShooting; }
 		bool IsJumping() const		{ return inputs.jumping && !inputs.lastJumping; }
 
 		Vector2 GetMousePosition() const { return inputs.mousePosition; }
@@ -86,16 +94,20 @@ namespace NCL {
 		bool IsSelecting() const	{ return inputs.selecting && inputs.lastSelecting == false; }
 		bool IsBack() const			{ return inputs.back && inputs.lastBack == false; }
 
-		bool IsPushingUp() const	{ return (inputs.moveDir.y > 0 && inputs.lastUp == false); }
-		bool IsPushingDown() const	{ return (inputs.moveDir.y < 0 && inputs.lastDown == false); }
-		bool IsPushingLeft() const	{ return (inputs.moveDir.x < 0 && inputs.lastLeft == false); }
-		bool IsPushingRight() const { return (inputs.moveDir.x > 0 && inputs.lastRight == false); }
+		bool IsPushingUp() const	{ return (inputs.moveDir.y > MINIMUM_MOVEMENT && inputs.lastUp == false); }
+		bool IsPushingDown() const	{ return (inputs.moveDir.y < -MINIMUM_MOVEMENT && inputs.lastDown == false); }
+		bool IsPushingLeft() const	{ return (inputs.moveDir.x < -MINIMUM_MOVEMENT && inputs.lastLeft == false); }
+		bool IsPushingRight() const { return (inputs.moveDir.x > MINIMUM_MOVEMENT && inputs.lastRight == false); }
+
+		static void SetInverted(bool inverted) {
+			invert = inverted;
+		}
 	protected:
 		void UpdateLastState() {
-			if (inputs.moveDir.y > 0) inputs.lastUp = true; else inputs.lastUp = false;
-			if (inputs.moveDir.y < 0) inputs.lastDown = true; else inputs.lastDown = false;
-			if (inputs.moveDir.x > 0) inputs.lastRight = true; else inputs.lastRight = false;
-			if (inputs.moveDir.x < 0) inputs.lastLeft = true; else inputs.lastLeft = false;
+			if (inputs.moveDir.y > MINIMUM_MOVEMENT) inputs.lastUp = true; else inputs.lastUp = false;
+			if (inputs.moveDir.y < -MINIMUM_MOVEMENT) inputs.lastDown = true; else inputs.lastDown = false;
+			if (inputs.moveDir.x > MINIMUM_MOVEMENT) inputs.lastRight = true; else inputs.lastRight = false;
+			if (inputs.moveDir.x < -MINIMUM_MOVEMENT) inputs.lastLeft = true; else inputs.lastLeft = false;
 			inputs.mousePosition = Vector2(0, 0);
 			inputs.lastShooting = inputs.shooting;
 			inputs.lastJumping = inputs.jumping;
@@ -103,5 +115,6 @@ namespace NCL {
 			inputs.lastBack = inputs.back;
 		}
 		InputState inputs;
+		static bool invert;
 	};
 }

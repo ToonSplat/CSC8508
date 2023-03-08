@@ -1,3 +1,4 @@
+
 #include "Player.h"
 #include "Maths.h"
 #include "ToonUtils.h"
@@ -33,16 +34,18 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	if (!LoadAnim("Player_Defeat")) return;
 
 	PlayAnim("Player_Idle");
+
+	audiosystem = AudioSystem::GetAudioSystem();
 }
 
-Player::~Player() 
+Player::~Player()
 {
 	team->RemovePlayer();
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
 {
-    return weapon.Update(dt, controls);
+	return weapon.Update(dt, controls);
 }
 
 void Player::MovementUpdate(float dt, PlayerControl* controls) {
@@ -72,6 +75,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 		controls->jumping = false;
 	}
+
+	audiosystem->SetListenerTransform(GetTransform().GetMatrix());
+	
 }
 
 void Player::Update(float dt) {

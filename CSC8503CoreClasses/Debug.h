@@ -32,7 +32,7 @@ namespace NCL {
 
 		static void Draw2DLine(const Vector2& startPos, const Vector2& endPos, const Vector4& colour = Vector4(1, 1, 1, 1));
 		static void DrawQuad(const Vector2& origin, const Vector2& size, const Vector4& colour = Vector4(1, 1, 1, 1));
-		static void DrawFilledQuad(const Vector2& origin, const Vector2& size, const Vector4& colour = Vector4(1, 1, 1, 1));
+		static void DrawFilledQuad(const Vector2& origin, const Vector2& size, const float& pixelHeightOfLine, const Vector4& colour = Vector4(1, 1, 1, 1));
 
 		static void DrawAxisLines(const Matrix4& modelMatrix, float scaleBoost = 1.0f, float time = 0.0f);
 
