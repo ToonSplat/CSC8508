@@ -14,6 +14,10 @@ namespace NCL {
 		class ToonFollowCamera;
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
+		
+		struct textureStruct {
+			GLuint64 values[64];
+		}textures;
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -183,6 +187,11 @@ namespace NCL {
 
 			Camera* currentRenderCamera;
 			float screenAspect;
+
+			unsigned int textureUBO;
+			vector<GLuint> texturesIDs;
+			void CreateMatrixUBO();
+
 		};
 	}
 }

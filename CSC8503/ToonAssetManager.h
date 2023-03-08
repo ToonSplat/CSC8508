@@ -64,5 +64,7 @@ namespace NCL {
 		map<string, MeshAnimation*> animations;
 		map<string, ToonMeshMaterial*> materials;
 		map<string, CSC8503::Sound*> sounds;
+
+		std::vector<unsigned int> bindlessTextureIndex;
 	};
 }

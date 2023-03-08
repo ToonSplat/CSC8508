@@ -11,9 +11,10 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 		for (unsigned int i = 0; i < subMeshCount; i++)
 		{
 			const MeshMaterialEntry* matEntry = material->GetMaterialForLayer(i);
+			//Vector2 gpuMaterial(0, 1);
 			LoadTextures("Diffuse", matEntry, texturesDiffuse);
 			LoadTextures("Bump", matEntry, texturesBump);
-			
+			//subMeshMaterials.push_back(gpuMaterial);
 #pragma region MOVED TO LoadTextures()
 			/*const std::string* diffuseFileName = nullptr;
 			matEntry->GetEntry("Diffuse", &diffuseFileName);
@@ -55,6 +56,8 @@ void NCL::ToonMeshMaterial::LoadTextures(const std::string& entryName, const Mes
 	{
 		std::string filePath = Assets::TEXTUREDIR + *textureFileName;
 		Rendering::TextureBase* tex = ToonAssetManager::Instance().AddTexture(*textureFileName, filePath, true);
+
+		//NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
 
 		if (tex != nullptr)
 		{

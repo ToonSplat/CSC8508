@@ -55,6 +55,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
+	CreateMatrixUBO();
 	GenerateAtomicBuffer();
 
 	screenAspect = (float)windowWidth / (float)windowHeight;
@@ -1475,5 +1476,29 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
+
+void NCL::CSC8503::GameTechRenderer::CreateMatrixUBO()
+{
+	int index = 0;
+	for (auto const& tex : texturesIDs) {
+		GLuint64 handler = glGetTextureHandleARB(tex);
+		glMakeTextureHandleResidentARB(handler);
+		textures.values[index] = handler;
+		index++;
+	}
+
+	glGenBuffers(1, &textureUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, textureUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(textureStruct), textures.values, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "textures");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, textureUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
+}
+
 
 

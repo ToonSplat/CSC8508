@@ -19,5 +19,8 @@ namespace NCL
 		MeshMaterial* material;
 		std::vector<Rendering::TextureBase*> texturesDiffuse;
 		std::vector<Rendering::TextureBase*> texturesBump;
+
+		//std::vector<unsigned int> bindlessTextureIndex;
+		std::vector<Vector2> subMeshMaterials;
 	};
 }
