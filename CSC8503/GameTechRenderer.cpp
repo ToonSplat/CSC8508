@@ -55,7 +55,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
-	CreateMatrixUBO();
+	CreateTextureUBO();
 	GenerateAtomicBuffer();
 
 	screenAspect = (float)windowWidth / (float)windowHeight;
@@ -1478,7 +1478,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 }
 
 
-void NCL::CSC8503::GameTechRenderer::CreateMatrixUBO()
+void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
 	int index = 0;
 	for (auto const& tex : texturesIDs) {

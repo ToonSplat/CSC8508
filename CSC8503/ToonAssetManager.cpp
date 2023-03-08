@@ -270,10 +270,11 @@ ToonMeshMaterial* ToonAssetManager::AddMaterial(const string& name, const string
 	mat = new ToonMeshMaterial(fileName, subMeshCount);
 	materials.emplace(name, mat);
 
-	vector<const Vector2> meshIndexes = mat->GetSubMaterials();
-
-	for (auto& material : meshIndexes) {
+	int index = gpuMaterials.size();
+	for (auto& material : mat->GetSubMaterials()) {
 		gpuMaterials.push_back(material);
+		mat->AddMaterialIndex(index);
+		index++;
 	}
 
 	return mat;

@@ -190,7 +190,7 @@ namespace NCL {
 
 			unsigned int textureUBO;
 			vector<GLuint> texturesIDs;
-			void CreateMatrixUBO();
+			void CreateTextureUBO();
 
 		};
 	}
