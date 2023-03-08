@@ -48,6 +48,7 @@ namespace NCL {
 		static ToonAssetManager* instance;
 
 		Rendering::TextureBase*		AddTexture(const string& name, const string& fileName, const bool& invert = false);
+		Rendering::TextureBase*		AddTexture(const string& name, const string& fileName, int& textureIndex, const bool& invert = false);
 		MeshGeometry*				AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type = GeometryPrimitive::Triangles);
 		void						AddMesh(const string& name, MeshGeometry* newMesh);
 		Rendering::OGLShader*		AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
@@ -65,6 +66,6 @@ namespace NCL {
 		map<string, ToonMeshMaterial*> materials;
 		map<string, CSC8503::Sound*> sounds;
 
-		std::vector<unsigned int> bindlessTextureIndex;
+		vector<Vector2> gpuMaterials;
 	};
 }
