@@ -82,14 +82,20 @@ void main(void)
 		shadow = textureProj(shadowTex , IN.shadowProj) * 0.7f;
 	}
 
-	vec3  incident = normalize ( sceneLights[1].position - IN.worldPos ); //lightPos
+	vec3  incident = normalize ( sceneLights[0].position - IN.worldPos ); 
 	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
+	vec3 incident2 = normalize(sceneLights[1].position - IN.worldPos); //New
+	float lambert2 = max(0.0, dot(incident2, IN.normal)) * 0.9; //New
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
+	vec3 halfDir2 = normalize (incident2 + viewDir); //New
 
 	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
 	float sFactor = pow ( rFactor , 80.0 );
+	float rFactor2 = max(0.0, dot(halfDir2, IN.normal)); //New
+	float sFactor2 = pow(rFactor2, 80.0); //New
+
 	
 	vec4 albedo = IN.colour;
 	
@@ -109,9 +115,11 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * sceneLights[1].colour.rgb * lambert * shadow; //diffuse light //albedo.rgb * lightColour.rgb * lambert * shadow
+	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light Light 1
+	fragColor.rgb += albedo.rgb * sceneLights[1].colour.rgb * lambert2 * shadow; //Light 2
 	
-	fragColor.rgb += sceneLights[1].colour.rgb * sFactor * shadow; //specular //light lightColour.rgb * sFactor * shadow
+	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow; //specular //light lightColour.rgb * sFactor * shadow
+	fragColor.rgb += sceneLights[1].colour.rgb * sFactor2 * shadow;
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	

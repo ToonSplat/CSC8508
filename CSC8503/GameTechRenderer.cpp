@@ -61,8 +61,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	glClearColor(1, 1, 1, 1);
 
 	shaderLight = ShaderLights();
-	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(-300.0f, 500.0f, -300.0f), 1000.0f);
-	shaderLight.data[1] = LightStruct(Vector4(1.0f, 0.0f, 0.0f, 1.0f), Vector3(300.0f, 500.0f, 300.0f), 1000.0f);
+	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(-45.5f, 26.0f, -43.5f), 1000.0f); //Vector3(-300.0f, 500.0f, -300.0f)
+	shaderLight.data[1] = LightStruct(Vector4(0.8f, 0.0f, 0.0f, 1.0f), Vector3(45.5f, 26.0f, 42.5f), 1000.0f); // Vector3(300.0f, 500.0f, 300.0f)
 
 	//Skybox!
 	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
@@ -486,8 +486,8 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 75), Vector3(15, 15, 0), Vector3(0, 1, 0));
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 300.0f, 1, 60.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(-40.5, 26.5, -43.5), Vector3(15, 15, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(1.0f, 100.0f, 1, 60.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 

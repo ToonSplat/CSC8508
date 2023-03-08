@@ -108,10 +108,6 @@ namespace NCL {
 			Matrix4     shadowMatrix;
 
 			ShaderLights shaderLight;
-			std::vector<LightStruct> sceneLights;
-			/*Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;*/
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;
