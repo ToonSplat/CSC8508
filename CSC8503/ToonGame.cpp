@@ -73,7 +73,7 @@ void ToonGame::StartGame() {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		for (int i = 1; i <= localPlayerCount; i++) {
-			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers() /*world->GetTeams()[4]*/);
 			players[i] = player;
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();

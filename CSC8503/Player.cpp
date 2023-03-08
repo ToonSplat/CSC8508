@@ -81,6 +81,13 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 }
 
 void Player::Update(float dt) {
+	
+	string pos = std::to_string(GetPosition().x);
+	pos += ", " + std::to_string(GetPosition().y);
+	pos += ", " + std::to_string(GetPosition().z);
+	
+	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
+	
 	ToonGameObjectAnim::Update(dt);
 	isGrounded = IsGrounded();
 	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();

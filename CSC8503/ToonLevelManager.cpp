@@ -710,7 +710,9 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
-	player->SetPosition(position);
+	TeamSpawnPointData spawnPoint = team->GetRandomSpawnPoint();
+	player->SetPosition(spawnPoint.GetPosition());
+	player->SetOrientation(spawnPoint.GetRotation());
 	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
