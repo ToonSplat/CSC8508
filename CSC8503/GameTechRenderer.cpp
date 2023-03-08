@@ -34,16 +34,8 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	// Load everything needed for the loading screen here!
 	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
 	ToonAssetManager::Instance().LoadLoadingScreenAssets();
-	debugShader = ToonAssetManager::Instance().GetShader("debug");
-	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
-	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
-	textureShader = ToonAssetManager::Instance().GetShader("texture");
-	sceneShader = ToonAssetManager::Instance().GetShader("scene");
-	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
-	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
-	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
-	SetupStuffs();
 	LoadSkybox("Boss_diffuse.png");
+	SetupStuffs();
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
 		// Add the loading screen update here!
 		RenderFrameLoading();
@@ -335,14 +327,22 @@ void GameTechRenderer::LoadSkybox(string fileName) {
 
 void GameTechRenderer::RenderFrameLoading() {
 	BeginFrame();
-	// Loading Screen Stuff
-	RenderSkybox();
+	//RenderSkybox();
+	//static float y = 20.0f;
+	//y += 1.0f;
+	NewRenderText();
+	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
+	Debug::UpdateRenderables(0.1f);
+	BindShader(debugShader);
+	//Debug::Print("Test", Vector2(10, y), Debug::GREEN);
 	EndFrame();
 	SwapBuffers();
 }
 
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
+	
 	if (!gameWorld) return; // Safety Check
 
 	DrawMainScene();
@@ -781,6 +781,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 	BindShader(shader);
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
+
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr) {
 			continue;
@@ -885,6 +886,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		
 		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
+
 }
 
 void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader)
