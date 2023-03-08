@@ -86,6 +86,10 @@ namespace NCL::CSC8503
 		Matrix4 GetModelMatrix() const { return modelMatrix; }
 		Matrix4 GetModelMatrixNoRotation() const;
 
+		Vector3 Up() { return Vector3(modelMatrix.GetColumn(1)); }
+		Vector3 Right() {return Vector3(modelMatrix.GetColumn(0)); }
+		Vector3 Forward() { return -Vector3(modelMatrix.GetColumn(2)); }
+
 		int GetColliderLayer() const 
 		{ 
 			if (collider)

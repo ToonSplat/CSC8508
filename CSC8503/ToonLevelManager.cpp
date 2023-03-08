@@ -3,6 +3,7 @@
 #include "ToonLevelManager.h"
 #include "ToonGameWorld.h"
 #include <reactphysics3d/reactphysics3d.h>
+#include "Maths.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -710,9 +711,7 @@ Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team)
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
-	TeamSpawnPointData spawnPoint = team->GetRandomSpawnPoint();
-	player->SetPosition(spawnPoint.GetPosition());
-	player->SetOrientation(spawnPoint.GetRotation());
+	player->SetPosition(position);
 	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);

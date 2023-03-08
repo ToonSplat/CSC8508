@@ -82,11 +82,15 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 
 void Player::Update(float dt) {
 	
-	string pos = std::to_string(GetPosition().x);
+	/*string pos = std::to_string(GetPosition().x);
 	pos += ", " + std::to_string(GetPosition().y);
 	pos += ", " + std::to_string(GetPosition().z);
 	
-	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
+	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
+
+	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
+	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
+	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
 	
 	ToonGameObjectAnim::Update(dt);
 	isGrounded = IsGrounded();
@@ -136,6 +140,15 @@ void Player::Update(float dt) {
 	}
 	else
 		PlayAnim("Player_Jump");
+}
+
+void Player::SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCamera)
+{
+	SetPosition(spawnPoint.GetPosition());
+	SetOrientation(spawnPoint.GetRotation());
+
+	followCamera->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
+	targetAngle = RadiansToDegrees(spawnPoint.GetRotation().y);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

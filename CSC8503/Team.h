@@ -41,11 +41,7 @@ namespace NCL {
 			static const Vector3 T_BLUE_BULLDOGS;
 			static const Vector3 T_ORANGE_OTTERS;
 
-			void AddSpawnPoint(const TeamSpawnPointData& data) 
-			{
-				std::cout << "Added Spawn Point for Team ID: " << teamID << std::endl;
-				spawnPointsData.emplace_back(data); 
-			}
+			void AddSpawnPoint(const TeamSpawnPointData& data) { spawnPointsData.emplace_back(data); }
 			const TeamSpawnPointData GetRandomSpawnPoint()
 			{
 				std::random_device rd;

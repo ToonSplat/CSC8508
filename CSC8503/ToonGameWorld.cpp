@@ -19,33 +19,21 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 	teams.emplace(3, new Team("The Blue Bulldogs", Team::T_BLUE_BULLDOGS, 3));
 	teams.emplace(4, new Team("The Orange Otters", Team::T_ORANGE_OTTERS, 4));
 
-	TeamSpawnPointData greenSpawnPoint1(Vector3(45.0f, 12.0f, 0.0f), Vector3(0.0f, 1.57f, 0.0f));
-	TeamSpawnPointData greenSpawnPoint2(Vector3(42.0f, 4.0f, 14.0f), Vector3(0.0f, 1.57f, 0.0f));
-	TeamSpawnPointData greenSpawnPoint3(Vector3(42.0f, 4.0f, -14.0f), Vector3(0.0f, 1.57f, 0.0f));
-	teams[1]->AddSpawnPoint(greenSpawnPoint1);
-	teams[1]->AddSpawnPoint(greenSpawnPoint2);
-	teams[1]->AddSpawnPoint(greenSpawnPoint3);
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(45.0f, 12.0f, 0.0f), Vector3(0.0f, 1.57f, 0.0f)));
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(42.0f, 4.0f, 14.0f), Vector3(0.0f, 1.57f, 0.0f)));
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(42.0f, 4.0f, -14.0f), Vector3(0.0f, 1.57f, 0.0f)));
 
-	TeamSpawnPointData purpleSpawnPoint1(Vector3(-45.0f, 12.0f, 0.0f), Vector3(0.0f, -1.57f, 0.0f));
-	TeamSpawnPointData purpleSpawnPoint2(Vector3(-42.0f, 4.0f, 14.0f), Vector3(0.0f, -1.57f, 0.0f));
-	TeamSpawnPointData purpleSpawnPoint3(Vector3(-42.0f, 4.0f, -14.0f), Vector3(0.0f, -1.57f, 0.0f));
-	teams[2]->AddSpawnPoint(purpleSpawnPoint1);
-	teams[2]->AddSpawnPoint(purpleSpawnPoint2);
-	teams[2]->AddSpawnPoint(purpleSpawnPoint3);
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-45.0f, 12.0f, 0.0f), Vector3(0.0f, -1.57f, 0.0f)));
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-42.0f, 4.0f, 14.0f), Vector3(0.0f, -1.57f, 0.0f)));
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-42.0f, 4.0f, -14.0f), Vector3(0.0f, -1.57f, 0.0f)));
 
-	TeamSpawnPointData blueSpawnPoint1(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f));
-	TeamSpawnPointData blueSpawnPoint2(Vector3(0.0f, 9.5f, -45.0f), Vector3(0.0f, 3.14f, 0.0f));
-	TeamSpawnPointData blueSpawnPoint3(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f));
-	teams[3]->AddSpawnPoint(blueSpawnPoint1);
-	teams[3]->AddSpawnPoint(blueSpawnPoint2);
-	teams[3]->AddSpawnPoint(blueSpawnPoint3);
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f)));
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(0.0f, 9.5f, -45.0f), Vector3(0.0f, 3.14f, 0.0f)));
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f)));
 
-	TeamSpawnPointData orangeSpawnPoint1(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f));
-	TeamSpawnPointData orangeSpawnPoint2(Vector3(0.0f, 9.5f, 45.0f), Vector3(0.0f, 0.0f, 0.0f));
-	TeamSpawnPointData orangeSpawnPoint3(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f));
-	teams[4]->AddSpawnPoint(orangeSpawnPoint1);
-	teams[4]->AddSpawnPoint(orangeSpawnPoint2);
-	teams[4]->AddSpawnPoint(orangeSpawnPoint3);
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f)));
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(0.0f, 9.5f, 45.0f), Vector3(0.0f, 0.0f, 0.0f)));
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f)));
 
 	mainCameras[1] = new Camera();
 }

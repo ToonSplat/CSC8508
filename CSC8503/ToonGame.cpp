@@ -78,9 +78,15 @@ void ToonGame::StartGame() {
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
 			player->SetWeapon(baseWeapon);
-			world->SetMainCamera(i, new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f)));
+
+			TeamSpawnPointData spawnPoint = player->GetTeam()->GetRandomSpawnPoint();
+			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 60.0f));
+			world->SetMainCamera(i, followCamera);
+			player->SetPositionRotation(spawnPoint, followCamera);
+
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+			
 		}
 	}
 	else {

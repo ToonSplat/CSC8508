@@ -32,6 +32,8 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
+	void SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCamera);
+
 	bool IsAiming() const { return isAiming; }
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
