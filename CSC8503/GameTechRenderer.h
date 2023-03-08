@@ -33,7 +33,7 @@ namespace NCL {
 			bool IsMinimapVisible() { return minimapEnabled; }
 			void RetrieveAtomicValues();
 			void SetShadowSize(int size) { shadowSize = size; }
-			void GenerateShadowFBO();
+			void GenerateShadowFBO(bool whichTex);
 			std::map<int, float> GetTeamScores();
 		protected:
 
@@ -104,6 +104,8 @@ namespace NCL {
 			OGLShader*	shadowShader;
 			GLuint		shadowTex;
 			GLuint		shadowFBO;
+			GLuint		shadowTex2;
+			GLuint		shadowFBO2;
 			int shadowSize;
 			Matrix4     shadowMatrix;
 

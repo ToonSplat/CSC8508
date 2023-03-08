@@ -49,7 +49,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
 	shadowSize = 2048;
-	GenerateShadowFBO();
+	GenerateShadowFBO(true);
+	GenerateShadowFBO(false);
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
@@ -61,8 +62,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	glClearColor(1, 1, 1, 1);
 
 	shaderLight = ShaderLights();
-	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(-45.5f, 26.0f, -43.5f), 1000.0f); //Vector3(-300.0f, 500.0f, -300.0f)
-	shaderLight.data[1] = LightStruct(Vector4(0.8f, 0.0f, 0.0f, 1.0f), Vector3(45.5f, 26.0f, 42.5f), 1000.0f); // Vector3(300.0f, 500.0f, 300.0f)
+	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(-45.5f, 26.0f, -43.5f), 100.0f); //Vector3(-300.0f, 500.0f, -300.0f)
+	shaderLight.data[1] = LightStruct(Vector4(0.8f, 0.0f, 0.0f, 1.0f), Vector3(45.5f, 26.0f, 42.5f), 100.0f); // Vector3(300.0f, 500.0f, 300.0f)
 
 	//Skybox!
 	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
@@ -1097,14 +1098,24 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 	}
 }
 
-void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
+void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO(bool whichTex)
 {
 	if (shadowTex != 0) {
 		glDeleteTextures(1, &shadowTex);
 		glDeleteFramebuffers(1, &shadowFBO);
+		glDeleteTextures(1, &shadowTex2);
+		glDeleteFramebuffers(1, &shadowFBO2);
 	}
-	glGenTextures(1, &shadowTex);
-	glBindTexture(GL_TEXTURE_2D, shadowTex);
+	if (whichTex) {
+		glGenTextures(1, &shadowTex);
+		glBindTexture(GL_TEXTURE_2D, shadowTex);
+	}
+	else {
+		glGenTextures(1, &shadowTex2);
+		glBindTexture(GL_TEXTURE_2D, shadowTex2);
+	}
+	/*glGenTextures(1, &shadowTex);
+	glBindTexture(GL_TEXTURE_2D, shadowTex);*/
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -1115,9 +1126,19 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glGenFramebuffers(1, &shadowFBO);
+	if (whichTex) {
+		glGenFramebuffers(1, &shadowFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+	}
+	else {
+		glGenFramebuffers(1, &shadowFBO2);
+		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO2);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex2, 0);
+	}
+	/*glGenFramebuffers(1, &shadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);*/
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
