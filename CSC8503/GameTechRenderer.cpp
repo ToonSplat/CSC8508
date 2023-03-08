@@ -137,7 +137,8 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	BuildObjectList();
-	RenderShadowMap();
+	RenderShadowMap(shadow1Pos, true);
+	RenderShadowMap(shadow2Pos, false);
 	RenderSkybox();
 	RenderScene();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
@@ -475,8 +476,8 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glDisable(GL_BLEND);
 }
 
-void GameTechRenderer::RenderShadowMap() {
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
+void GameTechRenderer::RenderShadowMap(Vector3& position, bool whichMatrix) {
+	glBindFramebuffer(GL_FRAMEBUFFER, whichMatrix ? shadowFBO : shadowFBO2);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glViewport(0, 0, shadowSize, shadowSize);
@@ -487,16 +488,20 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(-40.5, 26.5, -43.5), Vector3(15, 15, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(1.0f, 100.0f, 1, 60.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(position, Vector3(0, 0, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(5.0f, 100.0f, 1, 75.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
-	shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
-
+	if (whichMatrix) {
+		shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
+	}
+	else {
+		shadowMatrix2 = biasMatrix * mvMatrix;
+	}
+		
 	for (const auto& i : activeObjects)
 	{
-
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -1100,7 +1105,7 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 
 void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO(bool whichTex)
 {
-	if (shadowTex != 0) {
+	if (shadowTex != 0 && shadowTex2 != 0) {
 		glDeleteTextures(1, &shadowTex);
 		glDeleteFramebuffers(1, &shadowFBO);
 		glDeleteTextures(1, &shadowTex2);
@@ -1110,7 +1115,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO(bool whichTex)
 		glGenTextures(1, &shadowTex);
 		glBindTexture(GL_TEXTURE_2D, shadowTex);
 	}
-	else {
+	else if(!whichTex) {
 		glGenTextures(1, &shadowTex2);
 		glBindTexture(GL_TEXTURE_2D, shadowTex2);
 	}
@@ -1130,11 +1135,13 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO(bool whichTex)
 		glGenFramebuffers(1, &shadowFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex) std::cout << "Error Creating 1st Buffer" << std::endl;
 	}
-	else {
+	else if(!whichTex) {
 		glGenFramebuffers(1, &shadowFBO2);
 		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO2);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex2, 0);
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex2) std::cout << "Error Creating 2nd Buffer" << std::endl;
 	}
 	/*glGenFramebuffers(1, &shadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);

@@ -73,7 +73,7 @@ namespace NCL {
 
 			void BuildObjectList();
 			void SortObjectList();
-			void RenderShadowMap();
+			void RenderShadowMap(Vector3& position, bool whichMatrix);
 
 			void RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void RenderScene();
@@ -108,6 +108,9 @@ namespace NCL {
 			GLuint		shadowFBO2;
 			int shadowSize;
 			Matrix4     shadowMatrix;
+			Matrix4		shadowMatrix2;
+			Vector3 shadow1Pos = Vector3(-40.5, 26.5, -43.5);
+			Vector3 shadow2Pos = Vector3(40.5, 26.5, 42.5);
 
 			ShaderLights shaderLight;
 
