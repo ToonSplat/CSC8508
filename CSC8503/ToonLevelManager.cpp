@@ -495,7 +495,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConcaveObjectToWorld(MeshGeo
 	gameObject->GetRigidbody()->setMass(mass);
 	gameObject->GetRigidbody()->setIsAllowedToSleep(true);
 	gameObject->SetRenderObject(new ToonRenderObject(&gameObject->GetTransform(), mesh, cubeTex, GetShader("scene")));
-	gameObject->GetRenderObject()->SetColour(minimapColour);
+	gameObject->GetRenderObject()->SetMinimapColour(minimapColour);
 
 	reactphysics3d::ConcaveMeshShape* concaveShape = CreateConcaveMeshShape(mesh, scale);
 
