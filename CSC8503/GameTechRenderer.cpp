@@ -27,6 +27,8 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()){
 	ToonAssetManager::Instance().LoadAssets();
 	SetupStuffs();
+	textures.values;
+	materials.values;
 	team1Percentage = 0;
 	team2Percentage = 0;
 	team3Percentage = 0;
@@ -56,6 +58,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
 	CreateTextureUBO();
+	CreateMaterialUBO();
 	GenerateAtomicBuffer();
 
 	screenAspect = (float)windowWidth / (float)windowHeight;
@@ -1481,18 +1484,10 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
 	int index = 0;
-	/*for (auto const& tex : texturesIDs) {
-		GLuint64 handler = glGetTextureHandleARB(tex);
-		glMakeTextureHandleResidentARB(handler);
-		textures.values[index] = handler;
-		index++;
-	}*/
 	std::vector<const Rendering::TextureBase*> texBase = ToonAssetManager::Instance().GetTextures();
 	for (auto const& tex : texBase)
 	{
-		if (index == 10) {
-			std::cout << "bad texture" << std::endl;
-		}
+		
 		NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
 		GLuint64 handler = glGetTextureHandleARB(texture->GetObjectID());
 		glMakeTextureHandleResidentARB(handler);
@@ -1507,13 +1502,29 @@ void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 
 	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "textures");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, textureUBO);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, textureUBO);
 
-	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 0);
 }
 
 void GameTechRenderer::CreateMaterialUBO() {
+	int index = 0;
+	for (auto const& mat : *ToonAssetManager::Instance().GetGPUMaterials())
+	{
+		materials.values[index] = mat;
+		index++;
+	}
 
+	glGenBuffers(1, &materialUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, materialUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(materialStruct), materials.values, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "materials");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
 }
 
 

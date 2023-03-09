@@ -3,8 +3,12 @@
 
 layout(bindless_sampler) uniform sampler2D bindless;
 uniform textures{
-    sampler2D arr[24];
-} terrain;
+    sampler2D arr[30];
+} bindless_textures;
+
+uniform materials{
+	vec2 key[100];
+} materialReferencer;
 
 struct ImpactPoint{
 	vec3 position;
@@ -15,6 +19,7 @@ struct ImpactPoint{
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
+uniform int materialIndex;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
@@ -85,10 +90,13 @@ void main(void)
 	float sFactor = pow ( rFactor , 80.0 );
 	
 	vec4 albedo = IN.colour;
-	
-	if(hasTexture) {
-	 albedo *= texture(mainTex, IN.texCoord);
-	}
+	//if(hasTexture) {
+	// albedo *= texture(mainTex, IN.texCoord);
+	//}
+	vec2 linkedMaterial = materialReferencer.key[materialIndex];
+	//fragColor = vec4(linkedMaterial, 0, 1.0);
+	//return;
+	albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);

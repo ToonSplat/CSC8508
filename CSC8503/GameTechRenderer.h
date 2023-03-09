@@ -16,11 +16,11 @@ namespace NCL {
 		#define ATOMIC_COUNT 5
 		
 		struct textureStruct {
-			GLuint64 values[64];
+			GLuint64 values[30];
 		}textures;
 
 		struct materialStruct {
-			Vector2 values[64];
+			Vector2 values[100];
 		} materials;
 		public:
 			GameTechRenderer();		
@@ -193,8 +193,9 @@ namespace NCL {
 			float screenAspect;
 
 			unsigned int textureUBO;
-			vector<GLuint> texturesIDs;
 			void CreateTextureUBO();
+
+			unsigned int materialUBO;
 			void CreateMaterialUBO();
 
 		};

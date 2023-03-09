@@ -45,13 +45,16 @@ namespace NCL {
 		std::vector<const Rendering::TextureBase*> GetTextures() const {
 			std::vector<const Rendering::TextureBase*> allTextures;
 			for (auto& [first, second] : textures) {
-				if (first == "mesh") {
+				/*if (first == "mesh") {
 					continue;
-				}
+				}*/
 				allTextures.push_back(second);
 			}
 			return allTextures;
+		}
 
+		std::vector<Vector2>* GetGPUMaterials() {
+			return &gpuMaterials;
 		}
 
 	protected:
