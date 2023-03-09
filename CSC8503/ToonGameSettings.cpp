@@ -104,7 +104,7 @@ bool ToonGameSettings::isInside(Vector2 mousePosition, Coordinates menuDataCoord
 
 PushdownState::PushdownResult ToonGameSettings::HandleNavigation(PushdownState** newState)
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsShooting() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
+	if (InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || InputManager::GetInstance().GetInputs()[1]->IsSelecting())
 	{
 		switch (m_CurrentSelectedIndex)
 		{
@@ -140,10 +140,10 @@ void ToonGameSettings::PopulateSettingsData()
 	m_SettingsDS.ParseData(fileContent);
 
 	m_SettingsData = {
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), "Invert Camera", true, InvertCamera, m_SettingsDS.invertCameraState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), "Shadow Quality", true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), "Resize Window", false),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), "Back",		     false)
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Invert Camera",  true, InvertCamera, m_SettingsDS.invertCameraState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window",  false),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back",		      false)
 					 };
 }
 

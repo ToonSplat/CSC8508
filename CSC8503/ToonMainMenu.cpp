@@ -7,6 +7,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, ToonGameWorld* world, Win
 	m_World = world;
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
+
 	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(50, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
@@ -19,7 +20,7 @@ ToonMainMenu::ToonMainMenu(GameTechRenderer* renderer, std::vector<MenuDataStruc
 	m_CurrentSelectedIndex = 0;
 	m_Window = win;
 	m_World = world;
-	m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
+  m_ToonConfirmationScreen = new ToonConfirmationScreen(Coordinates(Vector2(30, 20), Vector2(20, 20)), m_Window->GetScreenSize(), m_Renderer);
 	m_ToonConfirmationScreen->delegate = this;
 }
 
@@ -29,17 +30,18 @@ ToonMainMenu::~ToonMainMenu()
 	m_SettingsScreenObject = NULL;
 }
 
-
 PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** newState)
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown())
 	{
+		AudioSystem::GetAudioSystem()->SelectMenuOption();
 		m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex = (m_CurrentSelectedIndex + 1) % m_mainMenuData.size();
 	}
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingUp())
 	{
+		AudioSystem::GetAudioSystem()->SelectMenuOption();
 		m_MouseLastPosition = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
 		UpdateMosePointerState(false);
 		m_CurrentSelectedIndex -= 1;
@@ -59,7 +61,7 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 		else { return PushdownResult::Pop; }
 	}
 
-	if (InputManager::GetInstance().GetInputs()[1]->IsSelecting() || InputManager::GetInstance().GetInputs()[1]->IsShooting() || m_HasUserInitiatedScreenNavigation)
+	if (InputManager::GetInstance().GetInputs()[1]->IsSelecting() || InputManager::GetInstance().GetInputs()[1]->IsShootingOnce() || m_HasUserInitiatedScreenNavigation)
 	{
 		return NavigateToScreen(newState);
 	}
@@ -73,6 +75,8 @@ PushdownState::PushdownResult ToonMainMenu::OnUpdate(float dt, PushdownState** n
 
 void ToonMainMenu::OnAwake()
 {
+	AudioSystem::GetAudioSystem()->ApplyMainMenu();
+
 	UpdateMosePointerState(true);
 	Window::GetWindow()->LockMouseToWindow(true);
 	if (m_Game)
@@ -80,10 +84,15 @@ void ToonMainMenu::OnAwake()
 		delete m_Game;
 		m_Game = NULL;
 	}
-	if (m_SubMenuScreenObject)
+	if (m_LocalMenuScreenObject)
 	{
-		delete m_SubMenuScreenObject;
-		m_SubMenuScreenObject = NULL;
+		delete m_LocalMenuScreenObject;
+		m_LocalMenuScreenObject = NULL;
+	}
+	if (m_MultiMenuScreenObject)
+	{
+		delete m_MultiMenuScreenObject;
+		m_MultiMenuScreenObject = NULL;
 	}
 }
 
@@ -105,26 +114,51 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	std::vector<int> ipAddressVector;
 	int navigationScreenIndex = m_CurrentSelectedIndex + (!m_HasUserInitiatedScreenNavigation ? m_BaseCurrentSelectdIndex : 0);
 	m_HasUserInitiatedScreenNavigation = false;
+	AudioSystem::GetAudioSystem()->SelectMenuOption();
 	switch (navigationScreenIndex)
 	{
-	case PLAY:
-		m_Game = new ToonGame(m_Renderer);
-		m_Game->m_WindowSize = m_Window->GetScreenSize();
-		*newState = m_Game;
+	case LOCALPLAY:
+		*newState = GetLocalMenuSceenObject();
 		break;
 	case MULTIPLAY:
-		*newState = GetSubMenuSceenObject();
+		*newState = GetMultiMenuSceenObject();
 		break;
 	case SETTINGS:
 		*newState = GetSettingsScreenObject();
 		break;
-		//return PushdownResult::NoChange;
 	case CREDITS:
-		return PushdownResult::NoChange;
+		*newState = GetCreditsScreenObject();
+		break;
 	case QUIT:
 		*newState = m_ToonConfirmationScreen;
 		break;
+	case LAUNCH1PLAYER:
+		AudioSystem::GetAudioSystem()->ApplyIngame();
+
+		m_Game = new ToonGame(m_Renderer);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case LAUNCH2PLAYER:
+		m_Game = new ToonGame(m_Renderer, 2);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case LAUNCH3PLAYER:
+		m_Game = new ToonGame(m_Renderer, 3);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case LAUNCH4PLAYER:
+		m_Game = new ToonGame(m_Renderer, 4);
+		m_Game->m_WindowSize = m_Window->GetScreenSize();
+		*newState = m_Game;
+		break;
+	case BACKLOCAL:
+		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
+		AudioSystem::GetAudioSystem()->ApplyIngame();
+
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
@@ -132,9 +166,11 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case LAUNCHASCLIENT:
 		*newState = GetUserInputScreenObject();
 		break;
-	case BACK:
+	case BACKMULTI:
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
+		AudioSystem::GetAudioSystem()->ApplyIngame();
+
 		ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
 		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
@@ -147,10 +183,16 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	return PushdownResult::Push;
 }
 
-ToonMainMenu* ToonMainMenu::GetSubMenuSceenObject()
+ToonMainMenu* ToonMainMenu::GetLocalMenuSceenObject()
 {
-	if (!m_SubMenuScreenObject) { m_SubMenuScreenObject = new ToonMainMenu(m_Renderer, m_SubMainMenuData, (int)(m_mainMenuData.size()), m_World, m_Window); }
-	return m_SubMenuScreenObject;
+	if (!m_LocalMenuScreenObject) { m_LocalMenuScreenObject = new ToonMainMenu(m_Renderer, m_LocalMainMenuData, GameStates::LAUNCH1PLAYER, m_World, m_Window); }
+	return m_LocalMenuScreenObject;
+}
+
+ToonMainMenu* ToonMainMenu::GetMultiMenuSceenObject()
+{
+	if (!m_MultiMenuScreenObject) { m_MultiMenuScreenObject = new ToonMainMenu(m_Renderer, m_MultiMainMenuData, GameStates::LAUNCHASSERVER, m_World, m_Window); }
+	return m_MultiMenuScreenObject;
 }
 
 ToonTextInput* ToonMainMenu::GetUserInputScreenObject()
@@ -197,6 +239,12 @@ ToonGameSettings* ToonMainMenu::GetSettingsScreenObject()
 	return m_SettingsScreenObject;
 }
 
+ToonCredits* ToonMainMenu::GetCreditsScreenObject()
+{
+	if (!m_ToonCredits) { m_ToonCredits = new ToonCredits(m_Renderer, m_World, m_Window); }
+	return m_ToonCredits;
+}
+
 PushdownState::PushdownResult ToonMainMenu::DidSelectCancelButton()
 {
 	return PushdownResult::Pop;
@@ -227,6 +275,7 @@ void ToonMainMenu::DrawMainMenu()
 		float	y						  = ((mousePosition.y / windowSize.y) * 100) + 5.0f;
 		float	x						  = ((mousePosition.x / windowSize.x) * 100) + 5.0f;
 		Vector2 mousePositionWithinBounds = Vector2(x, y);
+		int		lastIndex = m_CurrentSelectedIndex;
 		int		index					  = 0;
 		for (auto data : m_mainMenuData)
 		{
@@ -236,5 +285,7 @@ void ToonMainMenu::DrawMainMenu()
 			Debug::Print(data.text, data.coordinates.position, data.colour);
 			index++;
 		}
+		if (m_CurrentSelectedIndex != lastIndex)
+			AudioSystem::GetAudioSystem()->SelectMenuOption();
 	}
 }

@@ -106,7 +106,9 @@ void ToonGameWorld::GetGameObjects(void) const {
 
 void ToonGameWorld::DeleteMarkedObjects() {
 	for (auto& object : objectsToDelete)
-		delete object;
+		if (dynamic_cast<Player*>(object))
+			delete (Player*)object;
+		else delete object;
 	objectsToDelete.clear();
 }
 

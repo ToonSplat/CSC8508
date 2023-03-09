@@ -85,7 +85,8 @@ namespace NCL {
 
 		Vector2 GetMovement() const	{ return inputs.moveDir; }
 		bool IsAiming() const		{ return inputs.aiming; }
-		bool IsShooting() const		{ return inputs.shooting && !inputs.lastShooting; }
+		bool IsShooting() const		{ return inputs.shooting; }
+		bool IsShootingOnce() const	{ return inputs.shooting && !inputs.lastShooting; }
 		bool IsJumping() const		{ return inputs.jumping && !inputs.lastJumping; }
 
 		Vector2 GetMousePosition() const { return inputs.mousePosition; }

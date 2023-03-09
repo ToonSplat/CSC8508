@@ -51,10 +51,10 @@ void Debug::DrawQuad(const Vector2& origin, const Vector2& size, const Vector4& 
 	Draw2DLine(origin,			bottomLeftPoint,  colour);//Left
 }
 
-void Debug::DrawFilledQuad(const Vector2& origin, const Vector2& size, const Vector4& colour)
+void Debug::DrawFilledQuad(const Vector2& origin, const Vector2& size, const float& pixelHeightOfLine, const Vector4& colour)
 {
 	float loopTill = size.y;
-	for (float i = 0.0f; i < loopTill; i += 0.1)
+	for (float i = 0.0f; i < loopTill; i += pixelHeightOfLine)
 	{
 		Vector2 startPosition = origin + Vector2(0.0f, i);
 		Vector2 endPosition   = startPosition + Vector2(size.x, 0.0f);

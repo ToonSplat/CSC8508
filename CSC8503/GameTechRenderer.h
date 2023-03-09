@@ -43,11 +43,14 @@ namespace NCL {
 			void CreateLightUBO();
 
 			void RenderFrame()	override;
-			void RenderSplitScreen();
-			void RenderSinglePlayer();
+			void Render2Player();
+			void Render1Player();
+			void Render3or4Player();
 			
-			void PresentSinglePlayer();
-			void PresentSplitScreen();
+			void Present1Player();
+			void Present2Player();
+			void Present3Player();
+			void Present4Player();
 			
 			void RenderImGUI();
 
@@ -65,6 +68,8 @@ namespace NCL {
 			void DrawMap();
 
 			void DrawMainScene();
+
+			void RenderRectical();
 
 			OGLShader*		defaultShader;
 
@@ -148,6 +153,11 @@ namespace NCL {
 			GLuint splitDepthTexture[2];
 			void GenerateSplitFBO(int width, int height);
 
+			GLuint quadFBO[4];
+			GLuint quadColourTexture[4];
+			GLuint quadDepthTexture[4];
+			void GenerateQuadFBO(int width, int height);
+
 			GLuint* currentFBO;
 
 			GLuint atomicsBuffer[3];
@@ -159,7 +169,7 @@ namespace NCL {
 			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
-			OGLMesh* minimapQuad;
+			OGLMesh* squareQuad;
 			OGLMesh* minimapStencilQuad;
 
 			OGLMesh* scoreQuad;
