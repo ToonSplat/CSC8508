@@ -36,12 +36,15 @@ namespace NCL {
 			std::map<int, float> GetTeamScores();
 		protected:
 
-			void SetupStuffs();
+			void SetupLoadingScreen();
+			void SetupMain();
+			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
-			void CreateLightUBO();
 
+			void RenderFrameLoading();
+			void CreateLightUBO();
 			void RenderFrame()	override;
 			void Render2Player();
 			void Render1Player();
@@ -83,12 +86,14 @@ namespace NCL {
 			void RenderScene();
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
-			void RenderSkybox();
+			void RenderSkybox(bool enableTests = true);
 
-			void LoadSkybox();
+			void LoadSkybox(string fileName = "");
 
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
+
+			void DrawLoader();
 
 			vector<ToonGameObject*> activeObjects;
 

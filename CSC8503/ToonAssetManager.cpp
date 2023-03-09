@@ -7,7 +7,16 @@ using namespace NCL;
 ToonAssetManager* ToonAssetManager::instance = NULL;
 
 ToonAssetManager::ToonAssetManager(void) {
-	
+	file = std::ifstream(Assets::DATADIR + "ItemsToLoad.csv");
+	if (!file.is_open()) {
+		std::cerr << "Failed to open the file\n";
+	}
+	string line;
+	while (getline(file, line)) {
+		loadingData.assetCountTotal++;
+	}
+	file.clear();
+	file.seekg(0, std::ios::beg);
 }
 
 ToonAssetManager::~ToonAssetManager(void) {
@@ -122,8 +131,10 @@ void ToonAssetManager::LoadAssets(void) {
 	AddShader("sceneScreen", "sceneScreen.vert", "scene.frag");
 	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
 	AddShader("fullMap", "map.vert", "map.frag");
+void ToonAssetManager::LoadLoadingScreenAssets(void) {
+	AddShader("debug", "debug.vert", "debug.frag");
 	AddShader("skybox", "skybox.vert", "skybox.frag");
-	AddShader("animated", "sceneSkin.vert", "scene.frag");
+}
 
 	//-----------------------------------------------------------
 	//		Animations
@@ -200,6 +211,36 @@ void ToonAssetManager::LoadAssets(void) {
 	AddSound("click", "click.wav");
 
 	ToonDebugManager::Instance().EndLoad();
+void ToonAssetManager::LoadNextAsset(void) {
+	vector<string> tokens = SplitLine();
+	
+	if (tokens[0] == "Texture")
+		AddTexture(tokens);
+	else if (tokens[0] == "Mesh")
+		AddMesh(tokens);
+	else if (tokens[0] == "Shader")
+		AddShader(tokens);
+	else if (tokens[0] == "Animation")
+		AddAnimation(tokens);
+	else if (tokens[0] == "Material")
+		AddMaterial(tokens);
+	else
+		std::cout << "Error: Unknown asset type\n";
+}
+
+vector<string> ToonAssetManager::SplitLine() {
+	vector<string> result;
+	size_t pos = 0;
+	while (pos != string::npos) {
+		size_t next_pos = currentLine.find(',', pos);
+		if (next_pos == string::npos) {
+			result.push_back(currentLine.substr(pos));
+			break;
+		}
+		result.push_back(currentLine.substr(pos, next_pos - pos));
+		pos = next_pos + 1;
+	}
+	return result;
 }
 
 Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
@@ -209,6 +250,19 @@ Rendering::TextureBase* ToonAssetManager::GetTexture(const string& name) {
 	if (i != textures.end())
 		return i->second;
 	return nullptr;
+}
+
+Rendering::TextureBase* ToonAssetManager::AddTexture(vector<string> tokens) {
+	string name, fileName;
+	bool invert;
+
+	name = tokens[1];
+	fileName = tokens[2];
+	if (tokens.size() >= 4)
+		invert = (tokens[3] == "TRUE");
+	else invert = false;
+
+	return AddTexture(name, fileName, invert);
 }
 
 Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const string& fileName, const bool& invert) {
@@ -239,6 +293,28 @@ MeshGeometry* ToonAssetManager::GetMesh(const string& name) {
 	return nullptr;
 }
 
+MeshGeometry* ToonAssetManager::AddMesh(vector<string> tokens) {
+	string name, fileName;
+	if (tokens[1] != "Character") {
+
+		name = tokens[1];
+		fileName = tokens[2];
+		// For now not doing type... but it can be done
+
+		return AddMesh(name, fileName);
+	}
+	else {
+		float r, g, b;
+		name = tokens[2];
+		fileName = tokens[3];
+		r = stof(tokens[4]);
+		g = stof(tokens[5]);
+		b = stof(tokens[6]);
+		return AddMesh(name, CreateCharacterTeamMesh(fileName, Vector4(r, g, b, 1.0f)));
+	}
+}
+
+
 MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type) {
 
 	MeshGeometry* mesh = GetMesh(name);
@@ -254,12 +330,14 @@ MeshGeometry* ToonAssetManager::AddMesh(const string& name, const string& fileNa
 	return mesh;
 }
 
-void NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
+MeshGeometry* NCL::ToonAssetManager::AddMesh(const string& name, MeshGeometry* newMesh)
 {
 	if (newMesh == nullptr)
-		return;
+		return nullptr;
 
 	meshes.emplace(name, newMesh);
+
+	return newMesh;
 }
 
 Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {
@@ -269,6 +347,22 @@ Rendering::OGLShader* ToonAssetManager::GetShader(const string& name) {
 	if (i != shaders.end())
 		return i->second;
 	return nullptr;
+}
+
+Rendering::OGLShader* ToonAssetManager::AddShader(vector<string> tokens) {
+	string name, vertex, fragment, geometry, domain, hull;
+	name = tokens[1];
+	vertex = tokens[2];
+	fragment = tokens[3];
+	if (tokens.size() >= 5)
+		geometry = tokens[4];
+	if (tokens.size() >= 6)
+		domain = tokens[5];
+	if (tokens.size() >= 7)
+		hull = tokens[6];
+	// For now not doing type... but it can be done
+
+	return AddShader(name, vertex, fragment, geometry, domain, hull);
 }
 
 Rendering::OGLShader* ToonAssetManager::AddShader(const string& name, const string& vertexShader, const string& fragmentShader,
@@ -294,6 +388,15 @@ MeshAnimation* ToonAssetManager::GetAnimation(const string& name) {
 	return nullptr;
 }
 
+MeshAnimation* ToonAssetManager::AddAnimation(vector<string> tokens) {
+	string name, fileName;
+
+	name = tokens[1];
+	fileName = tokens[2];
+
+	return AddAnimation(name, fileName);
+}
+
 
 MeshAnimation* ToonAssetManager::AddAnimation(const string& name, const string& fileName) {
 	
@@ -316,7 +419,17 @@ ToonMeshMaterial* ToonAssetManager::GetMaterial(const string& name)
 	return nullptr;
 }
 
-ToonMeshMaterial* ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
+ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(vector<string> tokens) {
+	string name, fileName, mesh;
+
+	name = tokens[1];
+	fileName = tokens[2];
+	mesh = tokens[3];
+
+	return AddMaterial(name, fileName, GetMesh(mesh)->GetSubMeshCount());
+}
+
+ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const string& fileName, const unsigned int& subMeshCount)
 {
 	ToonMeshMaterial* mat = GetMaterial(name);
 	if (mat != nullptr) return mat;
