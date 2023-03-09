@@ -982,8 +982,8 @@ void GameTechRenderer::NewRenderLines() {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 
