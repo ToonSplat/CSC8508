@@ -34,9 +34,9 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 	//if (!LoadModel("arena_main")) return false;
 	if (!LoadModel("arena_floor_part_a")) return false;
-	if (!LoadModel("arena_floor_part_b")) return false;
+	/*if (!LoadModel("arena_floor_part_b")) return false;
 	if (!LoadModel("arena_floor_part_c")) return false;
-	if (!LoadModel("arena_floor_part_d")) return false;
+	if (!LoadModel("arena_floor_part_d")) return false;*/
 
 	if (!LoadModel("arena_wall_part_a")) return false;
 	if (!LoadModel("arena_wall_part_b")) return false;
@@ -44,14 +44,14 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 	if (!LoadModel("arena_wall_part_d")) return false;
 
 	if (!LoadModel("arena_platform_floor_high_l")) return false;
-	if (!LoadModel("arena_platform_floor_high_r")) return false;
 	if (!LoadModel("arena_platform_wall_high_l")) return false;
-	if (!LoadModel("arena_platform_wall_high_r")) return false;
+	//if (!LoadModel("arena_platform_floor_high_r")) return false;
+	//if (!LoadModel("arena_platform_wall_high_r")) return false;
 
 	if (!LoadModel("arena_platform_floor_low_top")) return false;
-	if (!LoadModel("arena_platform_floor_low_bottom")) return false;
 	if (!LoadModel("arena_platform_wall_low_top")) return false;
-	if (!LoadModel("arena_platform_wall_low_bottom")) return false;
+	//if (!LoadModel("arena_platform_floor_low_bottom")) return false;
+	//if (!LoadModel("arena_platform_wall_low_bottom")) return false;
 
 
 	if (!LoadModel("arena_lights")) return false;
@@ -95,24 +95,24 @@ bool NCL::CSC8503::ToonLevelManager::LoadAssets()
 
 	//if (!LoadMaterial("mat_arena")) return false;
 	if (!LoadMaterial("mat_arena_floor_part_a")) return false;
-	if (!LoadMaterial("mat_arena_floor_part_b")) return false;
+	/*if (!LoadMaterial("mat_arena_floor_part_b")) return false;
 	if (!LoadMaterial("mat_arena_floor_part_c")) return false;
-	if (!LoadMaterial("mat_arena_floor_part_d")) return false;
+	if (!LoadMaterial("mat_arena_floor_part_d")) return false;*/
 
 	if (!LoadMaterial("mat_arena_wall_part_a")) return false;
 	if (!LoadMaterial("mat_arena_wall_part_b")) return false;
-	if (!LoadMaterial("mat_arena_wall_part_c")) return false;
-	if (!LoadMaterial("mat_arena_wall_part_d")) return false;
+	//if (!LoadMaterial("mat_arena_wall_part_c")) return false;
+	//if (!LoadMaterial("mat_arena_wall_part_d")) return false;
 
 	if (!LoadMaterial("mat_arena_platform_floor_high_l")) return false;
-	if (!LoadMaterial("mat_arena_platform_floor_high_r")) return false;
 	if (!LoadMaterial("mat_arena_platform_wall_high_l")) return false;
-	if (!LoadMaterial("mat_arena_platform_wall_high_r")) return false;
+	//if (!LoadMaterial("mat_arena_platform_floor_high_r")) return false;
+	//if (!LoadMaterial("mat_arena_platform_wall_high_r")) return false;
 
 	if (!LoadMaterial("mat_arena_platform_floor_low_top")) return false;
-	if (!LoadMaterial("mat_arena_platform_floor_low_bottom")) return false;
 	if (!LoadMaterial("mat_arena_platform_wall_low_top")) return false;
-	if (!LoadMaterial("mat_arena_platform_wall_low_bottom")) return false;
+	//if (!LoadMaterial("mat_arena_platform_floor_low_bottom")) return false;
+	//if (!LoadMaterial("mat_arena_platform_wall_low_bottom")) return false;
 
 	if (!LoadMaterial("mat_arena_obstacles")) return false;
 	if (!LoadMaterial("mat_arena_obstacles_hulls")) return false;
@@ -251,24 +251,24 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	Vector3 arenaSize = Vector3(1.0f, 1.0f, 1.0f);
 	//AddConcaveObjectToWorld(GetMesh("arena_main"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena"), arenaColour, 0.0f);
 	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
-	AddConcaveObjectToWorld(GetMesh("arena_floor_part_b"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_b"), arenaColour, 0.0f, true, true);
-	AddConcaveObjectToWorld(GetMesh("arena_floor_part_c"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_c"), arenaColour, 0.0f, true, true);
-	AddConcaveObjectToWorld(GetMesh("arena_floor_part_d"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_floor_part_d"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 1.57f, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 3.14f, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_floor_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 4.71f, 0), arenaSize, GetMaterial("mat_arena_floor_part_a"), arenaColour, 0.0f, true, true);
 	
-	AddConcaveObjectToWorld(GetMesh("arena_wall_part_a"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_a"), arenaColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_wall_part_b"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_b"), arenaColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_wall_part_c"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_c"), arenaColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_wall_part_d"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_wall_part_d"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_a"), Vector3(0, 0.0f, 0), Vector3(0.0f, 0.0f, 0.0f), arenaSize, GetMaterial("mat_arena_wall_part_a"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_b"), Vector3(0, 0.0f, 0), Vector3(0.0f, 0.0f, 0.0f), arenaSize, GetMaterial("mat_arena_wall_part_b"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_c"), Vector3(0, 0.0f, 0), Vector3(0.0f, 0.0f, 0.0f), arenaSize, GetMaterial("mat_arena_wall_part_a"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_wall_part_d"), Vector3(0, 0.0f, 0), Vector3(0.0f, 0.0f, 0.0f), arenaSize, GetMaterial("mat_arena_wall_part_b"), arenaColour, 0.0f, true, false);
 	
 	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_high_l"), arenaColour, 0.0f, true, true);
-	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_high_r"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_high_r"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 3.14f, 0), arenaSize, GetMaterial("mat_arena_platform_floor_high_l"), arenaColour, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_high_l"), arenaColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_high_r"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_high_r"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_high_l"), Vector3(0, 0.0f, 0), Vector3(0, 3.14f, 0), arenaSize, GetMaterial("mat_arena_platform_wall_high_l"), arenaColour, 0.0f, true, false);
 	
 	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_low_top"), arenaColour, 0.0f, true, true);
-	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_low_bottom"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_floor_low_bottom"), arenaColour, 0.0f, true, true);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_floor_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 3.14f, 0), arenaSize, GetMaterial("mat_arena_platform_floor_low_top"), arenaColour, 0.0f, true, true);
 	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_top"), arenaColour, 0.0f, true, false);
-	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_bottom"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_bottom"), arenaColour, 0.0f, true, false);
+	AddConcaveObjectToWorld(GetMesh("arena_platform_wall_low_top"), Vector3(0, 0.0f, 0), Vector3(0, 3.14f, 0), arenaSize, GetMaterial("mat_arena_platform_wall_low_top"), arenaColour, 0.0f, true, false);
 	
 	AddConcaveObjectToWorld(GetMesh("arena_obstacles"), GetMesh("arena_obstacles_hulls"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_obstacles"), arenaObstaclesColor, 0.0f, true, false);
 	AddConcaveObjectToWorld(GetMesh("arena_ramps"), Vector3(0, 0.0f, 0), Vector3(0, 0, 0), arenaSize, GetMaterial("mat_arena_ramps"), arenaRampColor, 0.0f, true, true);
