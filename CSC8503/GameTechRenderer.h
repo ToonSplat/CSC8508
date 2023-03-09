@@ -38,7 +38,6 @@ namespace NCL {
 
 			void SetupLoadingScreen();
 			void SetupMain();
-			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
