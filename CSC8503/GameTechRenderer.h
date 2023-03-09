@@ -12,6 +12,15 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class ToonFollowCamera;
+		struct LightStruct {
+			Vector4 lightColour;
+			Vector3 lightPosition;
+			float lightRadius;
+		};
+		struct ShaderLights {
+			LightStruct data[1];
+		};
+		
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
 		public:
@@ -31,7 +40,7 @@ namespace NCL {
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
-
+			void CreateLightUBO();
 
 			void RenderFrame()	override;
 			void Render2Player();
@@ -97,14 +106,12 @@ namespace NCL {
 
 			//shadow mapping things
 			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
+			GLuint shadowFBO;
+			GLuint shadowTex;
+			Matrix4 shadowMatrix;
 			int shadowSize;
-			Matrix4     shadowMatrix;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
+			ShaderLights shaderLight;
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;
@@ -183,6 +190,8 @@ namespace NCL {
 
 			Camera* currentRenderCamera;
 			float screenAspect;
+
+			unsigned int lightMatrix;
 		};
 	}
 }

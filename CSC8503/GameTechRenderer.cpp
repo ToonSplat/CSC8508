@@ -61,10 +61,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 
 	glClearColor(1, 1, 1, 1);
 
-	//Set up the light properties
-	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
-	lightRadius = 10000.0f;
-	lightPosition = Vector3(-300.0f, 500.0f, -300.0f);
+	shaderLight = ShaderLights();
+	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f); //Vector3(-300.0f, 500.0f, -300.0f)
 
 	//Skybox!
 	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
@@ -97,6 +95,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	scoreQuad->UploadToGPU();
 	
 	LoadSkybox();
+	CreateLightUBO();
 
 	glGenVertexArrays(1, &lineVAO);
 	glGenVertexArrays(1, &textVAO);
@@ -220,10 +219,6 @@ void GameTechRenderer::RenderScene() {
 
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-			glUniform3fv(lightPosLocation, 1, (float*)&lightPosition);
-			glUniform4fv(lightColourLocation, 1, (float*)&lightColour);
-			glUniform1f(lightRadiusLocation, lightRadius);
 
 			int shadowTexLocation = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
 			glUniform1i(shadowTexLocation, 1);
@@ -542,6 +537,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 }
 
 void GameTechRenderer::RenderShadowMap() {
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -553,16 +549,15 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 75), Vector3(15, 15, 0), Vector3(0, 1, 0));
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 300.0f, 1, 60.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(1, 55, 1), Vector3(0, 0, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(20.0f, 75.0f, 1, 100.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
-	shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
+	shadowMatrix = biasMatrix * mvMatrix;
 
 	for (const auto& i : activeObjects)
 	{
-
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -584,6 +579,7 @@ void GameTechRenderer::RenderShadowMap() {
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
 	glCullFace(GL_BACK);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::Present1Player()
@@ -1237,23 +1233,27 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 		glDeleteTextures(1, &shadowTex);
 		glDeleteFramebuffers(1, &shadowFBO);
 	}
+	
 	glGenTextures(1, &shadowTex);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		shadowSize, shadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glGenFramebuffers(1, &shadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex) std::cout << "Error Creating Buffer" << std::endl;
+
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void GameTechRenderer::GenerateSceneFBO(int width, int height)
@@ -1432,6 +1432,18 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
+	glGenBuffers(1, &lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
+}
+
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {
 	for (int i = 0; i < 4; i++)
@@ -1475,5 +1487,4 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
 
