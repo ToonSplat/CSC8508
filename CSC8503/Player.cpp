@@ -61,9 +61,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	{
 		groundDir = NCL::Maths::Vector3::ProjectOnPlane(ToonUtils::ConvertToNCLVector3(linearMovement), groundNormal);
 		groundDir.Normalise();
-		Debug::DrawLine(GetPosition(), GetPosition() + groundNormal, Debug::GREEN);
+		/*Debug::DrawLine(GetPosition(), GetPosition() + groundNormal, Debug::GREEN);
 		Debug::DrawLine(GetPosition(), GetPosition() + NCL::Maths::Vector3::Cross(groundNormal, groundDir), Debug::RED);
-		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);
+		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);*/
 	}
 
 	isMoving = linearMovement.length() >= 0.1f;
@@ -81,7 +81,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
-	if (controls->jumping) {
+	if (controls->jumping && isGrounded) {
 		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 		controls->jumping = false;
 	}
@@ -170,8 +170,9 @@ void Player::SetWeapon(PaintBallClass* base) {
 bool Player::IsGrounded()
 {
 	NCL::Maths::Vector3 startPos = GetPosition() + NCL::Maths::Vector3(0, 2.0f, 0);
-	Debug::DrawBox(startPos, NCL::Maths::Vector3(0.5f, 0.5f, 0.5f), Debug::CYAN);
-	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(GetPosition() + NCL::Maths::Vector3(0, -20.0f, 0)));	
+	NCL::Maths::Vector3 endPos = startPos + NCL::Maths::Vector3(0, -10.0f, 0);
+	
+	reactphysics3d::Ray ray(ToonUtils::ConvertToRP3DVector3(startPos), ToonUtils::ConvertToRP3DVector3(endPos));
 	ToonRaycastCallback groundHitData;
 	gameWorld->GetPhysicsWorld().raycast(ray, &groundHitData, ToonCollisionLayer::Default);
 
@@ -179,7 +180,7 @@ bool Player::IsGrounded()
 	{
 		float distance = std::abs((groundHitData.GetHitWorldPos() - startPos).Length());
 		groundNormal = groundHitData.GetHitNormal();
-		return distance <= 2.5f;
+		return distance <= 3.5f;
 	}
 
 	return false;

@@ -80,7 +80,7 @@ void ToonGame::StartGame() {
 			player->SetWeapon(baseWeapon);
 
 			TeamSpawnPointData spawnPoint = player->GetTeam()->GetRandomSpawnPoint();
-			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 60.0f));
+			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
 			world->SetMainCamera(i, followCamera);
 			player->SetPositionRotation(spawnPoint, followCamera);
 
