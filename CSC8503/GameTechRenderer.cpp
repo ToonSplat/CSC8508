@@ -682,14 +682,14 @@ void NCL::CSC8503::GameTechRenderer::Present4Player()
 	}
 }
 
-void GameTechRenderer::RenderSkybox() {
+void GameTechRenderer::RenderSkybox(bool enableTests) {
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
-	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? currentRenderCamera->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? currentRenderCamera->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	BindShader(skyboxShader);
 
@@ -772,76 +772,6 @@ void GameTechRenderer::RenderFrameLoading() {
 	Debug::UpdateRenderables(0.1f);
 	EndFrame();
 	SwapBuffers();
-}
-
-void GameTechRenderer::RenderFrame() {
-	ToonDebugManager::Instance().StartRendering();
-	
-	if (!gameWorld) return; // Safety Check
-
-	DrawMainScene();
-	if (gameWorld->GetMapCamera()) {
-		DrawMap();
-
-	}
-	if (gameWorld->GetMinimapCamera())
-	{
-		
-		DrawMinimap();
-	}
-	PresentScene();
-	RenderImGUI();
-
-	ToonDebugManager::Instance().EndRendering();
-}
-
-void NCL::CSC8503::GameTechRenderer::DrawMainScene()
-{
-	glEnable(GL_DEPTH_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, sceneFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, sceneColourTexture, 0);
-	glEnable(GL_CULL_FACE);
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BuildObjectList();
-	RenderShadowMap();
-	RenderSkybox();
-
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
-	RenderScene(sceneShader, viewMatrix, projMatrix);
-
-	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
-	glDisable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	NewRenderLines();
-	NewRenderLinesOnOrthographicView();
-	NewRenderText();
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
-
-void NCL::CSC8503::GameTechRenderer::DrawMinimap()
-{
-	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
-
-	glEnable(GL_CULL_FACE);
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
-	RenderScene(minimapShader, viewMatrix, projMatrix);
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderImGUI()
@@ -1046,51 +976,14 @@ void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObje
 	}
 }
 
-//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader) {
-//	int i = 1;
-//}
-
-//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader)
-//{
-//	int impactPointsLocation = 0;
-//	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
-//
-//	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
-//
-//	glUniform1i(impactPointCountLocation, (GLint)objImpactPoints->size());
-//
-//	if (objImpactPoints->empty()) return;
-//
-//	GLuint i = 0;
-//	for (ImpactPoint& point : *objImpactPoints) {
-//		char buffer[64];
-//
-//		sprintf_s(buffer, "impactPoints[%i].position", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		Vector3 impactLocation = point.GetImpactLocation();
-//		glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
-//
-//		sprintf_s(buffer, "impactPoints[%i].colour", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		Vector3 impactColour = point.GetImpactColour();
-//		glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
-//
-//		sprintf_s(buffer, "impactPoints[%i].radius", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		glUniform1f(impactPointsLocation, point.GetImpactRadius());
-//
-//		i++;
-//	}
-//}
-
 void GameTechRenderer::NewRenderLines() {
 	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetDebugLines();
 	if (lines.empty()) {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 
@@ -1605,7 +1498,13 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::DrawLoader()
+{
+	Vector2		position = Vector2(10.0f, 80.0f);
+	const float width = 50.0f;
+	const float height = 5.0f;
+
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
 	Debug::Print("Loading " + ToonAssetManager::Instance().loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }

@@ -92,6 +92,7 @@ namespace NCL {
 		ToonMeshMaterial*			AddMaterial(vector<string> tokens);
 
 		CSC8503::Sound*				AddSound(const string& name, const string& fileName);
+		CSC8503::Sound*				AddSound(vector<string> tokens);
 		
 		MeshGeometry* CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor);
 		vector<string> SplitLine();
