@@ -25,7 +25,8 @@ namespace NCL {
 			std::map<int, float> GetTeamScores();
 		protected:
 
-			void SetupStuffs();
+			void SetupLoadingScreen();
+			void SetupMain();
 			void GenerateShadowFBO();
 			void NewRenderLines();
 			void NewRenderText();

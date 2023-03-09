@@ -31,22 +31,17 @@ Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
 	ToonDebugManager::Instance().StartLoad();
-	// Load everything needed for the loading screen here!
-	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
-	ToonAssetManager::Instance().LoadLoadingScreenAssets();
-	LoadSkybox("Boss_diffuse.png");
-	SetupStuffs();
+
+	SetupLoadingScreen();
+
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
-		// Add the loading screen update here!
 		RenderFrameLoading();
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
-	LoadSkybox();
+
 	ToonDebugManager::Instance().EndLoad();
-	team1Percentage = 0;
-	team2Percentage = 0;
-	team3Percentage = 0;
-	team4Percentage = 0;
+
+	SetupMain();
 }
 
 GameTechRenderer::~GameTechRenderer()	{
@@ -54,10 +49,37 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteFramebuffers(1, &shadowFBO);
 }
 
-void NCL::CSC8503::GameTechRenderer::SetupStuffs()
+void GameTechRenderer::SetupLoadingScreen() {
+	// Get the bare minimum assets needed for loadingscreen
+	ToonAssetManager::Instance().LoadLoadingScreenAssets();
+
+	// Text and Drawing
+	debugShader = ToonAssetManager::Instance().GetShader("debug");
+
+	glGenVertexArrays(1, &lineVAO);
+	glGenVertexArrays(1, &textVAO);
+
+	glGenBuffers(1, &lineVertVBO);
+	glGenBuffers(1, &textVertVBO);
+	glGenBuffers(1, &textColourVBO);
+	glGenBuffers(1, &textTexVBO);
+
+	SetDebugStringBufferSizes(10000);
+	SetDebugLineBufferSizes(1000);
+
+	// Background is done as a skybox
+	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
+
+	skyboxMesh = new OGLMesh();
+	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
+	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
+	skyboxMesh->UploadToGPU();
+	LoadSkybox("Boss_diffuse.png");
+}
+
+void NCL::CSC8503::GameTechRenderer::SetupMain()
 {
 	glEnable(GL_DEPTH_TEST);
-	debugShader = ToonAssetManager::Instance().GetShader("debug");
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
 	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
@@ -77,13 +99,6 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
 	lightRadius = 10000.0f;
 	lightPosition = Vector3(-300.0f, 500.0f, -300.0f);
-
-	//Skybox!
-	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
-	skyboxMesh = new OGLMesh();
-	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
-	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
-	skyboxMesh->UploadToGPU();
 
 	fullScreenQuad = new OGLMesh();
 	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
@@ -108,21 +123,12 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	scoreQuad->UploadToGPU();
 	
-	//LoadSkybox();
+	LoadSkybox();
 
-	glGenVertexArrays(1, &lineVAO);
-	glGenVertexArrays(1, &textVAO);
-
-	glGenBuffers(1, &lineVertVBO);
-	glGenBuffers(1, &textVertVBO);
-	glGenBuffers(1, &textColourVBO);
-	glGenBuffers(1, &textTexVBO);
-
-	SetDebugStringBufferSizes(10000);
-	SetDebugLineBufferSizes(1000);
-
-
-
+	team1Percentage = 0;
+	team2Percentage = 0;
+	team3Percentage = 0;
+	team4Percentage = 0;
 }
 
 void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
@@ -286,6 +292,7 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 
 
 void GameTechRenderer::LoadSkybox(string fileName) {
+	// TODO: Move the texture loading into TAM? Not sure if possible without major refactor
 	string filenames[6] = {
 		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::TEXTUREDIR + fileName,
 		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::TEXTUREDIR + fileName,
