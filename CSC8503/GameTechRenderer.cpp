@@ -329,6 +329,7 @@ void GameTechRenderer::RenderFrameLoading() {
 	BeginFrame();
 	RenderSkybox(false);
 	//BindShader(debugShader);
+	ToonAssetManager::Instance().DrawLoader();
 	NewRenderLines();
 	NewRenderLinesOnOrthographicView();
 	NewRenderText();

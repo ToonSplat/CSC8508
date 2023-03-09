@@ -81,8 +81,6 @@ void ToonAssetManager::LoadNextAsset(void) {
 		AddMaterial(tokens);
 	else
 		std::cout << "Error: Unknown asset type\n";
-
-	DrawLoader();
 }
 
 void ToonAssetManager::DrawLoader()
