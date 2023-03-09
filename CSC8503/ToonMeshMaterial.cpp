@@ -11,8 +11,8 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 		for (unsigned int i = 0; i < subMeshCount; i++)
 		{
 			const MeshMaterialEntry* matEntry = material->GetMaterialForLayer(i);
-			int diffuseIndex;
-			int bumpIndex;
+			int diffuseIndex = -1;
+			int bumpIndex = -1;
 			LoadTextures("Diffuse", matEntry, texturesDiffuse, diffuseIndex);
 			LoadTextures("Bump", matEntry, texturesBump, bumpIndex);
 			subMeshMaterials.push_back(Vector2(diffuseIndex, bumpIndex));

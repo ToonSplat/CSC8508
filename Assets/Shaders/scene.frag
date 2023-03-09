@@ -1,4 +1,10 @@
 #version 400 core
+#extension GL_ARB_bindless_texture : enable
+
+layout(bindless_sampler) uniform sampler2D bindless;
+uniform textures{
+    sampler2D arr[24];
+} terrain;
 
 struct ImpactPoint{
 	vec3 position;

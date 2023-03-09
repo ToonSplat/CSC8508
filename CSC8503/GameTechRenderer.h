@@ -18,6 +18,10 @@ namespace NCL {
 		struct textureStruct {
 			GLuint64 values[64];
 		}textures;
+
+		struct materialStruct {
+			Vector2 values[64];
+		} materials;
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -191,6 +195,7 @@ namespace NCL {
 			unsigned int textureUBO;
 			vector<GLuint> texturesIDs;
 			void CreateTextureUBO();
+			void CreateMaterialUBO();
 
 		};
 	}

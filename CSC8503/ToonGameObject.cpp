@@ -57,6 +57,10 @@ void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 	{
 		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
 			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetSubMaterials().size() > 0) {
+			int materialIndexLocations = glGetUniformLocation(r.GetBoundShader()->GetProgramID(), "materialIndex");
+			glUniform1i(materialIndexLocations, renderObject->GetMaterial()->GetMaterialIndex()[i]);
+		}
 
 		r.DrawBoundMesh(i);
 	}

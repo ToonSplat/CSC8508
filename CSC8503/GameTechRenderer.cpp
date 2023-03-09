@@ -1481,8 +1481,20 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
 	int index = 0;
-	for (auto const& tex : texturesIDs) {
+	/*for (auto const& tex : texturesIDs) {
 		GLuint64 handler = glGetTextureHandleARB(tex);
+		glMakeTextureHandleResidentARB(handler);
+		textures.values[index] = handler;
+		index++;
+	}*/
+	std::vector<const Rendering::TextureBase*> texBase = ToonAssetManager::Instance().GetTextures();
+	for (auto const& tex : texBase)
+	{
+		if (index == 10) {
+			std::cout << "bad texture" << std::endl;
+		}
+		NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
+		GLuint64 handler = glGetTextureHandleARB(texture->GetObjectID());
 		glMakeTextureHandleResidentARB(handler);
 		textures.values[index] = handler;
 		index++;
@@ -1498,6 +1510,10 @@ void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, textureUBO);
 
 	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
+}
+
+void GameTechRenderer::CreateMaterialUBO() {
+
 }
 
 
