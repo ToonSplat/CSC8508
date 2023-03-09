@@ -159,7 +159,7 @@ void Player::SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCa
 	followCamera->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
 	targetAngle = RadiansToDegrees(spawnPoint.GetRotation().y);
 
-	gameWorld->GetMinimapCamera()->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
+	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
