@@ -327,15 +327,12 @@ void GameTechRenderer::LoadSkybox(string fileName) {
 
 void GameTechRenderer::RenderFrameLoading() {
 	BeginFrame();
-	//RenderSkybox();
-	//static float y = 20.0f;
-	//y += 1.0f;
-	NewRenderText();
+	RenderSkybox(false);
+	//BindShader(debugShader);
 	NewRenderLines();
 	NewRenderLinesOnOrthographicView();
+	NewRenderText();
 	Debug::UpdateRenderables(0.1f);
-	BindShader(debugShader);
-	//Debug::Print("Test", Vector2(10, y), Debug::GREEN);
 	EndFrame();
 	SwapBuffers();
 }
@@ -746,7 +743,7 @@ void GameTechRenderer::RenderShadowMap() {
 	glCullFace(GL_BACK);
 }
 
-void GameTechRenderer::RenderSkybox() {
+void GameTechRenderer::RenderSkybox(bool enableTests) {
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
@@ -771,9 +768,12 @@ void GameTechRenderer::RenderSkybox() {
 	BindMesh(skyboxMesh);
 	DrawBoundMesh();
 
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	if (enableTests)
+	{
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)

@@ -61,7 +61,7 @@ namespace NCL {
 			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
-			void RenderSkybox();
+			void RenderSkybox(bool enableTests = true);
 
 			void LoadSkybox(string fileName = "");
 
