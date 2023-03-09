@@ -169,7 +169,7 @@ MeshGeometry::MeshGeometry(const std::string&filename) {
 	file >> filetype;
 
 	if (filetype != "MeshGeometry") {
-		std::cout << __FUNCTION__ << " File is not a MeshGeometry file!\n";
+		std::cout << __FUNCTION__ << " File is not a MeshGeometry file! File: " << filename << std::endl;
 		return;
 	}
 
@@ -221,6 +221,19 @@ MeshGeometry::MeshGeometry(const std::string&filename) {
 
 MeshGeometry::~MeshGeometry()
 {
+}
+
+int NCL::MeshGeometry::FindVertexIndex(const std::vector<Vector3>& vertices, const Vector3& vertex)
+{
+	for (size_t i = 0; i < vertices.size(); i++) 
+	{
+		if (vertices[i] == vertex) 
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 bool MeshGeometry::HasTriangle(unsigned int i) const {

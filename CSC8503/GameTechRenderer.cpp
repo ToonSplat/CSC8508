@@ -10,6 +10,7 @@
 #include "ToonUtils.h"
 #include <iostream>
 #include <algorithm>
+#include <reactphysics3d/reactphysics3d.h>
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
 #include "Player.h"

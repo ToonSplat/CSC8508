@@ -3,8 +3,9 @@ MeshMat
 1
 4
 M_Light
-1
-Diffuse:/RB_Level_Arena_Lights.png
+2
+Diffuse:/RB_Level_Arena_Lights_D.png
+Bump:/RB_Level_Arena_Lights_N.png
 0
 0
 0

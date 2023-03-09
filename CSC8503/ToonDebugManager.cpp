@@ -105,8 +105,19 @@ void ToonDebugManager::DisplayCollisionBoxes() {
 	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_POINT, true);
 	dbr.setIsDebugItemDisplayed(reactphysics3d::DebugRenderer::DebugItem::CONTACT_NORMAL, true);
 
-	for (int i = 0; i < (int)dbr.getNbLines(); i++) {
+	/*for (int i = 0; i < (int)dbr.getNbLines(); i++) {
 		Debug::DrawLine(Vector3(dbr.getLines()[i].point1.x, dbr.getLines()[i].point1.y, dbr.getLines()[i].point1.z), Vector3(dbr.getLines()[i].point2.x, dbr.getLines()[i].point2.y, dbr.getLines()[i].point2.z), Debug::RED);
+	}*/
+
+	int numTri = (int)dbr.getNbTriangles();
+	if (numTri > 0)
+	{
+		const reactphysics3d::DebugRenderer::DebugTriangle* tri = world->GetPhysicsWorld().getDebugRenderer().getTrianglesArray();
+		for (int i = 0; i < numTri; i++)
+		{
+			Debug::DrawTriangle(ToonUtils::ConvertToNCLVector3(tri->point1), ToonUtils::ConvertToNCLVector3(tri->point2), ToonUtils::ConvertToNCLVector3(tri->point2), Debug::YELLOW, 0.0f);
+			tri++;
+		}
 	}
 
 	dbr.reset();
