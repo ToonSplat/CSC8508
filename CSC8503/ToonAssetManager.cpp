@@ -13,7 +13,7 @@ ToonAssetManager::ToonAssetManager(void) {
 	}
 	string line;
 	while (getline(file, line)) {
-		assetCountTotal++;
+		loadingData.assetCountTotal++;
 	}
 	file.clear();
 	file.seekg(0, std::ios::beg);
@@ -83,16 +83,16 @@ void ToonAssetManager::LoadNextAsset(void) {
 		std::cout << "Error: Unknown asset type\n";
 }
 
-void ToonAssetManager::DrawLoader()
-{
-	Vector2		position = Vector2(10.0f, 80.0f);
-	const float width    = 50.0f;
-	const float height   = 5.0f;
-
-	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(assetCountDone++ * (width / assetCountTotal), height), Debug::GREEN);
-	Debug::Print("Loading " + loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
-}
+//void ToonAssetManager::DrawLoader()
+//{
+//	Vector2		position = Vector2(10.0f, 80.0f);
+//	const float width    = 50.0f;
+//	const float height   = 5.0f;
+//
+//	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
+//	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone++ * (width / loadingData.assetCountTotal), height), Debug::GREEN);
+//	Debug::Print("Loading " + loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+//}
 
 vector<string> ToonAssetManager::SplitLine() {
 	vector<string> result;

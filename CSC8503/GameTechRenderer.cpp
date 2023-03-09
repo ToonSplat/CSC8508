@@ -329,7 +329,7 @@ void GameTechRenderer::RenderFrameLoading() {
 	BeginFrame();
 	RenderSkybox(false);
 	//BindShader(debugShader);
-	ToonAssetManager::Instance().DrawLoader();
+	DrawLoader();
 	NewRenderLines();
 	NewRenderLinesOnOrthographicView();
 	NewRenderText();
@@ -1245,4 +1245,13 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 	}
 }
 
+void NCL::CSC8503::GameTechRenderer::DrawLoader()
+{
+	Vector2		position = Vector2(10.0f, 80.0f);
+	const float width = 50.0f;
+	const float height = 5.0f;
 
+	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), Debug::GREEN);
+	Debug::Print("Loading " + ToonAssetManager::Instance().loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+}

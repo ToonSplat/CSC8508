@@ -19,6 +19,13 @@ using std::string;
 
 namespace NCL {
 	class ToonAssetManager {
+	private:
+		struct LoadingDataStructure
+		{
+			int assetCountTotal;
+			int assetCountDone;
+			std::string loadingText = "";
+		};
 	public:
 		friend class ToonMeshMaterial;
 
@@ -46,7 +53,7 @@ namespace NCL {
 					newString += currentLine[index];
 					index++;
 				}
-				loadingText = newString;
+				loadingData.loadingText = newString;
 				return true;
 			}
 			else return false;
@@ -57,7 +64,9 @@ namespace NCL {
 		Rendering::OGLShader* GetShader(const string& name);
 		MeshAnimation* GetAnimation(const string& name);
 		ToonMeshMaterial* GetMaterial(const string& name);
-		void DrawLoader();
+		//void DrawLoader();
+
+		LoadingDataStructure loadingData;
 
 	protected:
 		ToonAssetManager(void);
@@ -86,9 +95,9 @@ namespace NCL {
 
 		std::ifstream file;
 		string currentLine;
-		int assetCountTotal;
+		/*int assetCountTotal;
 		int assetCountDone;
-		std::string loadingText = "";
+		std::string loadingText = "";*/
 
 		map<string, Rendering::TextureBase*> textures;
 		map<string, MeshGeometry*> meshes;
