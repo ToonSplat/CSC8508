@@ -11,6 +11,12 @@ ToonAssetManager::ToonAssetManager(void) {
 	if (!file.is_open()) {
 		std::cerr << "Failed to open the file\n";
 	}
+	string line;
+	while (getline(file, line)) {
+		assetCountTotal++;
+	}
+	file.clear();
+	file.seekg(0, std::ios::beg);
 }
 
 ToonAssetManager::~ToonAssetManager(void) {
@@ -61,54 +67,32 @@ void ToonAssetManager::LoadLoadingScreenAssets(void) {
 }
 
 void ToonAssetManager::LoadNextAsset(void) {
-	std::string loadingText = "";
 	vector<string> tokens = SplitLine();
-	float loadingIndex	  = 1.0f;
 	
 	if (tokens[0] == "Texture")
-	{
 		AddTexture(tokens);
-		loadingText  = "Textures";
-		loadingIndex = 1;
-	}
 	else if (tokens[0] == "Mesh")
-	{
 		AddMesh(tokens);
-		loadingText  = "Meshes";
-		loadingIndex = 2;
-	}
 	else if (tokens[0] == "Shader")
-	{
 		AddShader(tokens);
-		loadingText  = "Shaders";
-		loadingIndex = 3;
-	}
 	else if (tokens[0] == "Animation")
-	{
 		AddAnimation(tokens);
-		loadingText  = "Animation Files";
-		loadingIndex = 4;
-	}
 	else if (tokens[0] == "Material")
-	{
 		AddMaterial(tokens);
-		loadingText  = "Material Files";
-		loadingIndex = 5;
-	}
-	else {
+	else
 		std::cout << "Error: Unknown asset type\n";
-	}
-	DrawLoader(loadingIndex, loadingText);
+
+	DrawLoader();
 }
 
-void ToonAssetManager::DrawLoader(int loadingIndex, std::string loadingText)
+void ToonAssetManager::DrawLoader()
 {
 	Vector2		position = Vector2(10.0f, 80.0f);
 	const float width    = 50.0f;
 	const float height   = 5.0f;
 
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(loadingIndex * (width / 5.0f), height), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(assetCountDone++ * (width / assetCountTotal), height), Debug::GREEN);
 	Debug::Print("Loading " + loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }
 
