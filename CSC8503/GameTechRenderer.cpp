@@ -34,13 +34,15 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 	// Load everything needed for the loading screen here!
 	// These should not be in the ItemsToLoad file but hard coded, shouldn't be much
 	ToonAssetManager::Instance().LoadLoadingScreenAssets();
+	LoadSkybox("Boss_diffuse.png");
+	SetupStuffs();
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
 		// Add the loading screen update here!
-		std::cout << "Loading next asset\n";
+		RenderFrameLoading();
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
+	LoadSkybox();
 	ToonDebugManager::Instance().EndLoad();
-	SetupStuffs();
 	team1Percentage = 0;
 	team2Percentage = 0;
 	team3Percentage = 0;
@@ -106,7 +108,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs()
 	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	scoreQuad->UploadToGPU();
 	
-	LoadSkybox();
+	//LoadSkybox();
 
 	glGenVertexArrays(1, &lineVAO);
 	glGenVertexArrays(1, &textVAO);
@@ -283,14 +285,14 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 }
 
 
-void GameTechRenderer::LoadSkybox() {
+void GameTechRenderer::LoadSkybox(string fileName) {
 	string filenames[6] = {
-		"/Cubemap/skyrender0004.png",
-		"/Cubemap/skyrender0001.png",
-		"/Cubemap/skyrender0003.png",
-		"/Cubemap/skyrender0006.png",
-		"/Cubemap/skyrender0002.png",
-		"/Cubemap/skyrender0005.png"
+		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0003.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0006.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0002.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0005.png"  : Assets::TEXTUREDIR + fileName
 	};
 
 	int width[6] = { 0 };
@@ -323,8 +325,22 @@ void GameTechRenderer::LoadSkybox() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
+void GameTechRenderer::RenderFrameLoading() {
+	BeginFrame();
+	RenderSkybox(false);
+	//BindShader(debugShader);
+	ToonAssetManager::Instance().DrawLoader();
+	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
+	NewRenderText();
+	Debug::UpdateRenderables(0.1f);
+	EndFrame();
+	SwapBuffers();
+}
+
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
+	
 	if (!gameWorld) return; // Safety Check
 
 	DrawMainScene();
@@ -338,9 +354,8 @@ void GameTechRenderer::RenderFrame() {
 		DrawMinimap();
 	}
 	PresentScene();
-	
-	
 	RenderImGUI();
+
 	ToonDebugManager::Instance().EndRendering();
 }
 
@@ -729,14 +744,14 @@ void GameTechRenderer::RenderShadowMap() {
 	glCullFace(GL_BACK);
 }
 
-void GameTechRenderer::RenderSkybox() {
+void GameTechRenderer::RenderSkybox(bool enableTests) {
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? gameWorld->GetMainCamera()->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? gameWorld->GetMainCamera()->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	BindShader(skyboxShader);
 
@@ -754,9 +769,12 @@ void GameTechRenderer::RenderSkybox() {
 	BindMesh(skyboxMesh);
 	DrawBoundMesh();
 
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	if (enableTests)
+	{
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix)
@@ -764,6 +782,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 	BindShader(shader);
 	glActiveTexture(GL_TEXTURE0 + 1);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
+
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr) {
 			continue;
@@ -868,6 +887,7 @@ void GameTechRenderer::RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix
 		
 		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
+
 }
 
 void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader)

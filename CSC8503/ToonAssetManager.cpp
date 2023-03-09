@@ -11,6 +11,12 @@ ToonAssetManager::ToonAssetManager(void) {
 	if (!file.is_open()) {
 		std::cerr << "Failed to open the file\n";
 	}
+	string line;
+	while (getline(file, line)) {
+		assetCountTotal++;
+	}
+	file.clear();
+	file.seekg(0, std::ios::beg);
 }
 
 ToonAssetManager::~ToonAssetManager(void) {
@@ -27,6 +33,15 @@ ToonAssetManager::~ToonAssetManager(void) {
 }
 
 void ToonAssetManager::LoadLoadingScreenAssets(void) {
+	AddShader("debug", "debug.vert", "debug.frag");
+	AddShader("shadow", "shadowSkin.vert", "shadow.frag");
+	AddShader("minimap", "minimap.vert", "minimap.frag");
+	AddShader("texture", "Texture.vert", "Texture.frag");
+	AddShader("scene", "scene.vert", "scene.frag");
+	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
+	AddShader("fullMap", "map.vert", "map.frag");
+	AddShader("skybox", "skybox.vert", "skybox.frag");
+	AddShader("animated", "sceneSkin.vert", "scene.frag");
 	// Everything that is added here, should be removed from the file.
 
 	//-----------------------------------------------------------
@@ -53,6 +68,7 @@ void ToonAssetManager::LoadLoadingScreenAssets(void) {
 
 void ToonAssetManager::LoadNextAsset(void) {
 	vector<string> tokens = SplitLine();
+	
 	if (tokens[0] == "Texture")
 		AddTexture(tokens);
 	else if (tokens[0] == "Mesh")
@@ -63,9 +79,19 @@ void ToonAssetManager::LoadNextAsset(void) {
 		AddAnimation(tokens);
 	else if (tokens[0] == "Material")
 		AddMaterial(tokens);
-	else {
+	else
 		std::cout << "Error: Unknown asset type\n";
-	}
+}
+
+void ToonAssetManager::DrawLoader()
+{
+	Vector2		position = Vector2(10.0f, 80.0f);
+	const float width    = 50.0f;
+	const float height   = 5.0f;
+
+	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(assetCountDone++ * (width / assetCountTotal), height), Debug::GREEN);
+	Debug::Print("Loading " + loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }
 
 vector<string> ToonAssetManager::SplitLine() {

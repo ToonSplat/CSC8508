@@ -38,7 +38,17 @@ namespace NCL {
 		void LoadLoadingScreenAssets(void);
 		bool AreAssetsRemaining(void) {
 			if (std::getline(file, currentLine))
+			{
+				std::string newString = "";
+				int index = 0;
+				while (currentLine[index] != ',')
+				{
+					newString += currentLine[index];
+					index++;
+				}
+				loadingText = newString;
 				return true;
+			}
 			else return false;
 		}
 		void LoadNextAsset();
@@ -47,6 +57,7 @@ namespace NCL {
 		Rendering::OGLShader* GetShader(const string& name);
 		MeshAnimation* GetAnimation(const string& name);
 		ToonMeshMaterial* GetMaterial(const string& name);
+		void DrawLoader();
 
 	protected:
 		ToonAssetManager(void);
@@ -75,6 +86,9 @@ namespace NCL {
 
 		std::ifstream file;
 		string currentLine;
+		int assetCountTotal;
+		int assetCountDone;
+		std::string loadingText = "";
 
 		map<string, Rendering::TextureBase*> textures;
 		map<string, MeshGeometry*> meshes;

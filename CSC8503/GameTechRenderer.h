@@ -31,7 +31,7 @@ namespace NCL {
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
 
-
+			void RenderFrameLoading();
 			void RenderFrame()	override;
 			void RenderImGUI();
 
@@ -61,9 +61,9 @@ namespace NCL {
 			void RenderScene(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
-			void RenderSkybox();
+			void RenderSkybox(bool enableTests = true);
 
-			void LoadSkybox();
+			void LoadSkybox(string fileName = "");
 
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
