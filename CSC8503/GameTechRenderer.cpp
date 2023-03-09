@@ -688,8 +688,8 @@ void GameTechRenderer::RenderSkybox(bool enableTests) {
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
-	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? currentRenderCamera->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? currentRenderCamera->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	BindShader(skyboxShader);
 
@@ -1505,6 +1505,6 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	const float height = 5.0f;
 
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), 100.0f/height), windowHeight);
+	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
 	Debug::Print("Loading " + ToonAssetManager::Instance().loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }

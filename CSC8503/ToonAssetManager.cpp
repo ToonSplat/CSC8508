@@ -52,8 +52,10 @@ void ToonAssetManager::LoadNextAsset(void) {
 		AddAnimation(tokens);
 	else if (tokens[0] == "Material")
 		AddMaterial(tokens);
+	else if (tokens[0] == "Sound")
+		AddSound(tokens);
 	else
-		std::cout << "Error: Unknown asset type\n";
+		throw "Error: Unknown asset type\n";
 }
 
 vector<string> ToonAssetManager::SplitLine() {
@@ -275,6 +277,15 @@ CSC8503::Sound* ToonAssetManager::GetSound(const string& name)
 	if (i != sounds.end())
 		return i->second;
 	return nullptr;
+}
+
+CSC8503::Sound* NCL::ToonAssetManager::AddSound(vector<string> tokens) {
+	string name, fileName;
+
+	name = tokens[1];
+	fileName = tokens[2];
+
+	return AddSound(name, fileName);
 }
 
 CSC8503::Sound* ToonAssetManager::AddSound(const string& name, const string& fileName)
