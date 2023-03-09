@@ -63,11 +63,8 @@ void ToonAssetManager::LoadLoadingScreenAssets(void) {
 void ToonAssetManager::LoadNextAsset(void) {
 	std::string loadingText = "";
 	vector<string> tokens = SplitLine();
-	Vector2 position	  = Vector2(10.0f, 70.0f);
-	const float width	  = 50.0f;
-	const float height	  = 5.0f;
 	float loadingIndex	  = 1.0f;
-	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
+	
 	if (tokens[0] == "Texture")
 	{
 		AddTexture(tokens);
@@ -101,6 +98,16 @@ void ToonAssetManager::LoadNextAsset(void) {
 	else {
 		std::cout << "Error: Unknown asset type\n";
 	}
+	DrawLoader(loadingIndex, loadingText);
+}
+
+void ToonAssetManager::DrawLoader(int loadingIndex, std::string loadingText)
+{
+	Vector2		position = Vector2(10.0f, 80.0f);
+	const float width    = 50.0f;
+	const float height   = 5.0f;
+
+	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
 	Debug::DrawFilledQuad(position, Vector2(loadingIndex * (width / 5.0f), height), Debug::GREEN);
 	Debug::Print("Loading " + loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }

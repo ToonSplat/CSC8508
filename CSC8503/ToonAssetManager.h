@@ -47,6 +47,7 @@ namespace NCL {
 		Rendering::OGLShader* GetShader(const string& name);
 		MeshAnimation* GetAnimation(const string& name);
 		ToonMeshMaterial* GetMaterial(const string& name);
+		void DrawLoader(int loadingIndex, std::string loadingText);
 
 	protected:
 		ToonAssetManager(void);
