@@ -49,8 +49,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 
 	shadowSize = 2048;
-	GenerateShadowFBO(true);
-	GenerateShadowFBO(false);
+	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateMinimapFBO(windowWidth, windowHeight);
@@ -62,8 +61,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	glClearColor(1, 1, 1, 1);
 
 	shaderLight = ShaderLights();
-	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(-45.5f, 26.0f, -43.5f), 100.0f); //Vector3(-300.0f, 500.0f, -300.0f)
-	shaderLight.data[1] = LightStruct(Vector4(0.8f, 0.0f, 0.0f, 1.0f), Vector3(45.5f, 26.0f, 42.5f), 100.0f); // Vector3(300.0f, 500.0f, 300.0f)
+	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f); //Vector3(-300.0f, 500.0f, -300.0f)
 
 	//Skybox!
 	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
@@ -137,8 +135,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	BuildObjectList();
-	RenderShadowMap(shadow1Pos, true);
-	RenderShadowMap(shadow2Pos, false);
+	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
 	glDisable(GL_CULL_FACE); //Todo - text indices are going the wrong way...
@@ -476,8 +473,9 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	glDisable(GL_BLEND);
 }
 
-void GameTechRenderer::RenderShadowMap(Vector3& position, bool whichMatrix) {
-	glBindFramebuffer(GL_FRAMEBUFFER, whichMatrix ? shadowFBO : shadowFBO2);
+void GameTechRenderer::RenderShadowMap() {
+	
+	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glViewport(0, 0, shadowSize, shadowSize);
@@ -488,18 +486,13 @@ void GameTechRenderer::RenderShadowMap(Vector3& position, bool whichMatrix) {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(position, Vector3(0, 0, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(5.0f, 100.0f, 1, 75.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(1, 55, 1), Vector3(0, 0, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(20.0f, 75.0f, 1, 100.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
-	if (whichMatrix) {
-		shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
-	}
-	else {
-		shadowMatrix2 = biasMatrix * mvMatrix;
-	}
-		
+	shadowMatrix = biasMatrix * mvMatrix;
+
 	for (const auto& i : activeObjects)
 	{
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
@@ -515,6 +508,7 @@ void GameTechRenderer::RenderShadowMap(Vector3& position, bool whichMatrix) {
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
 	glCullFace(GL_BACK);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentSinglePlayer()
@@ -1103,51 +1097,33 @@ void GameTechRenderer::SetDebugLineBufferSizes(size_t newVertCount) {
 	}
 }
 
-void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO(bool whichTex)
+void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 {
-	if (shadowTex != 0 && shadowTex2 != 0) {
+	if (shadowTex != 0) {
 		glDeleteTextures(1, &shadowTex);
 		glDeleteFramebuffers(1, &shadowFBO);
-		glDeleteTextures(1, &shadowTex2);
-		glDeleteFramebuffers(1, &shadowFBO2);
 	}
-	if (whichTex) {
-		glGenTextures(1, &shadowTex);
-		glBindTexture(GL_TEXTURE_2D, shadowTex);
-	}
-	else if(!whichTex) {
-		glGenTextures(1, &shadowTex2);
-		glBindTexture(GL_TEXTURE_2D, shadowTex2);
-	}
-	/*glGenTextures(1, &shadowTex);
-	glBindTexture(GL_TEXTURE_2D, shadowTex);*/
+	
+	glGenTextures(1, &shadowTex);
+	glBindTexture(GL_TEXTURE_2D, shadowTex);
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		shadowSize, shadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	if (whichTex) {
-		glGenFramebuffers(1, &shadowFBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex) std::cout << "Error Creating 1st Buffer" << std::endl;
-	}
-	else if(!whichTex) {
-		glGenFramebuffers(1, &shadowFBO2);
-		glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO2);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex2, 0);
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex2) std::cout << "Error Creating 2nd Buffer" << std::endl;
-	}
-	/*glGenFramebuffers(1, &shadowFBO);
+	glGenFramebuffers(1, &shadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);*/
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex) std::cout << "Error Creating Buffer" << std::endl;
+
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void GameTechRenderer::GenerateSceneFBO(int width, int height)
@@ -1329,7 +1305,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateMatrixUBO() {
 	glGenBuffers(1, &uboMatrix);
 	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, 4 * sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");

@@ -34,8 +34,7 @@ namespace NCL
 						BaseInput::SetInverted(result[1] == "1");
 					else if (result[0] == SHADOW_STRING) {
 						renderer->SetShadowSize((result[1] == "1" ? 8092 : 2048));
-						renderer->GenerateShadowFBO(true);
-						renderer->GenerateShadowFBO(false);
+						renderer->GenerateShadowFBO();
 					}
 				}
 			}
