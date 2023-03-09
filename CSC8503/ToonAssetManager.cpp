@@ -34,36 +34,7 @@ ToonAssetManager::~ToonAssetManager(void) {
 
 void ToonAssetManager::LoadLoadingScreenAssets(void) {
 	AddShader("debug", "debug.vert", "debug.frag");
-	AddShader("shadow", "shadowSkin.vert", "shadow.frag");
-	AddShader("minimap", "minimap.vert", "minimap.frag");
-	AddShader("texture", "Texture.vert", "Texture.frag");
-	AddShader("scene", "scene.vert", "scene.frag");
-	AddShader("scoreBar", "ScoreBar.vert", "ScoreBar.frag");
-	AddShader("fullMap", "map.vert", "map.frag");
 	AddShader("skybox", "skybox.vert", "skybox.frag");
-	AddShader("animated", "sceneSkin.vert", "scene.frag");
-	// Everything that is added here, should be removed from the file.
-
-	//-----------------------------------------------------------
-	//		Textures
-	/*AddTexture("player", "Boss_diffuse.png", true);*/
-
-	//-----------------------------------------------------------
-	//		Meshes
-	/*AddMesh("cube", "cube.msh");
-
-	//-----------------------------------------------------------
-	//		Shaders
-	/*AddShader("debug", "debug.vert", "debug.frag");*/
-
-	//-----------------------------------------------------------
-	//		Animations
-	/*AddAnimation("Player_Idle", "Boss_Gun_Idle.anm");*/
-
-	//-----------------------------------------------------------
-	//		Materials
-	/*AddMaterial("mat_player", "Character_Boss.mat", GetMesh("player")->GetSubMeshCount());*/
-	
 }
 
 void ToonAssetManager::LoadNextAsset(void) {

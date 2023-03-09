@@ -74,7 +74,7 @@ void GameTechRenderer::SetupLoadingScreen() {
 	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
 	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
 	skyboxMesh->UploadToGPU();
-	LoadSkybox("Boss_diffuse.png");
+	LoadSkybox("ToonSplat_Background.png");
 }
 
 void NCL::CSC8503::GameTechRenderer::SetupMain()
@@ -309,7 +309,17 @@ void GameTechRenderer::LoadSkybox(string fileName) {
 
 	vector<char*> texData(6, nullptr);
 
-	for (int i = 0; i < 6; ++i) {
+	if (fileName.empty()) {
+		TextureLoader::LoadTexture(filenames[0], texData[0], width[0], height[0], channels[0], flags[0]);
+		for (int i = 0; i < 6; i++) {
+			texData[i] = texData[0];
+			width[i] = width[0];
+			height[i] = height[0];
+			channels[i] = channels[0];
+			flags[i] = flags[0];
+		}
+	}
+	else for (int i = 0; i < 6; ++i) {
 		TextureLoader::LoadTexture(filenames[i], texData[i], width[i], height[i], channels[i], flags[i]);
 		if (i > 0 && (width[i] != width[0] || height[0] != height[0])) {
 			std::cout << __FUNCTION__ << " cubemap input textures don't match in size?\n";
