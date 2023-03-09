@@ -94,7 +94,7 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	scoreQuad->UploadToGPU();
 	
 	LoadSkybox();
-	CreateMatrixUBO();
+	CreateLightUBO();
 
 	glGenVertexArrays(1, &lineVAO);
 	glGenVertexArrays(1, &textVAO);
@@ -1302,15 +1302,15 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::CreateMatrixUBO() {
-	glGenBuffers(1, &uboMatrix);
-	glBindBuffer(GL_UNIFORM_BUFFER, uboMatrix);
+void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
+	glGenBuffers(1, &lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, uboMatrix);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
 	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
 }
 
