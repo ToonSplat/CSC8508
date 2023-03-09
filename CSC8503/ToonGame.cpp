@@ -248,9 +248,12 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+	Debug::Print(output, NCL::Maths::Vector2(50 - output.size(), 5.0f));
 	if (winner != nullptr)
-		Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+	{
+		const std::string winnerText = "WINNER:" + winner->GetTeamName();
+		Debug::Print(winnerText, Vector2(50 - winnerText.size(), 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+	}
 
 }
 
