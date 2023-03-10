@@ -157,7 +157,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 	Rendering::TextureBase* texture = GetTexture(name);
 
 	if (texture != nullptr) {
-		textureIndex = distance(textures.begin(), textures.find(name)) - 1;
+		textureIndex = distance(textures.begin(), textures.find(name));
 		return texture;
 	}
 
@@ -170,7 +170,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 		texture = TextureLoader::LoadAPITexture(name);
 
 	textures.emplace(name, texture);
-	textureIndex = distance(textures.begin(), textures.find(name)) - 1;
+	textureIndex = distance(textures.begin(), textures.find(name));
 	return texture;
 }
 
