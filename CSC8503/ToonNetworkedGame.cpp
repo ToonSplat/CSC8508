@@ -298,6 +298,7 @@ void ToonNetworkedGame::StartGame() {
 	winner = nullptr;
 	gameTime = 90.0f;
 	levelManager->ResetLevel(&networkObjects);
+	int i = 1;
 }
 
 void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {

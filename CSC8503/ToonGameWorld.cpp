@@ -75,7 +75,8 @@ void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)
 {
 	gameObjects.emplace_back(o);
-	o->SetWorldID(worldIDCounter++);
+	if (!dynamic_cast<Player*>(o))
+		o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
 }
 
