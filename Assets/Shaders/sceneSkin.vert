@@ -9,6 +9,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 colour;
 layout(location = 2) in vec2 texCoord;
 layout(location = 3) in vec3 normal;
+layout(location = 4) in vec4 tangent;
 
 layout(location = 5) in vec4 jointWeights;
 layout(location = 6) in ivec4 jointIndices;
@@ -23,6 +24,8 @@ out Vertex {
 	vec2 texCoord;
 	vec4 shadowProj;
 	vec3 normal;
+	vec3 tangent;
+    vec3 binormal;
 	vec3 worldPos;
 	vec4 localPos;
 } OUT;
@@ -57,6 +60,13 @@ void main(void)
 		//skelNormal += joints[jointIndex] * localNormal * jointWeight;
 	}
 	//skelPos.xyz = position.xyz;
+
+	vec3 wNormal = normalize(normalMatrix * normalize(normal));
+    vec3 wTangent = normalize(normalMatrix * normalize(tangent.xyz));
+
+    OUT.normal = wNormal;
+    OUT.tangent = wTangent;
+    OUT.binormal = cross(wTangent, wNormal) * tangent.w;
 
 
 	//OUT.normal = mat3(modelMatrix) * normalize(skelNormal.xyz);	

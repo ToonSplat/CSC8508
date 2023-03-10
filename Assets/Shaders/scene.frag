@@ -1,4 +1,4 @@
-#version 400 core
+#version 420 core
 
 struct ImpactPoint{
 	vec3 position;
@@ -23,7 +23,8 @@ uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 uniform int impactPointCount;
 
 uniform vec4 		objectColour;
-uniform sampler2D 	mainTex;
+layout(binding = 5) uniform sampler2D 	mainTex;
+layout(binding = 6) uniform sampler2D	bumpTex;
 uniform sampler2DShadow shadowTex;
 
 uniform vec3	cameraPos;
@@ -38,6 +39,8 @@ in Vertex
 	vec2 texCoord;
 	vec4 shadowProj;
 	vec3 normal;
+	vec3 tangent;
+    vec3 binormal;
 	vec3 worldPos;
 	vec4 localPos;
 } IN;
@@ -77,13 +80,23 @@ void main(void)
 		shadow = textureProj(shadowTex , IN.shadowProj);
 	}
 
+	mat3 TBN = mat3(normalize(IN.tangent), normalize(IN.binormal), normalize(IN.normal));
+	
+	vec3 bumpNormal;
+	if(hasTexture) {
+		bumpNormal = texture(bumpTex, IN.texCoord).rgb;
+		bumpNormal = normalize(TBN * normalize(bumpNormal * 2.0 - 1.0));
+	}
+	else{
+		bumpNormal = IN.normal;
+	}
 	vec3  incident = normalize ( sceneLights[0].position - IN.worldPos ); 
-	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
+	float lambert  = max (0.0 , dot ( incident , bumpNormal )) * 0.9; 
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
-	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
+	float rFactor = max (0.0 , dot ( halfDir , bumpNormal));
 	float sFactor = pow ( rFactor , 80.0 );
 
 	vec4 albedo = IN.colour;
