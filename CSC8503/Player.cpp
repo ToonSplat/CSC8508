@@ -199,7 +199,6 @@ bool Player::IsGrounded()
 	{
 		float distance = std::abs((groundHitData.GetHitWorldPos() - startPos).Length());
 		groundNormal = groundHitData.GetHitNormal();
-		std::cout << "ID " << GetWorldID() << ": distance is " << distance << std::endl;
 		return distance <= 3.5f;
 	}
 
