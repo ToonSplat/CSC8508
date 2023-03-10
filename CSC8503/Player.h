@@ -32,7 +32,7 @@ public:
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
 
-	void SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCamera);
+	void SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls);
 
 	bool IsAiming() const { return isAiming; }
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }

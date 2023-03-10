@@ -136,6 +136,31 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
+	switch (winning) {
+	case 1:
+		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
+		break;
+	case 2:
+		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
+		break;
+	case 3:
+		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
+		break;
+	case 4:
+		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
+		break;
+	case 5:
+		shaderLight.data[0].lightColour = defaultColour;
+		break;
+	default:
+		break;
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
 		Render1Player();
@@ -706,10 +731,11 @@ void GameTechRenderer::RenderSkybox(bool enableTests) {
 
 	BindMesh(skyboxMesh);
 	DrawBoundMesh();
-
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	if (enableTests) {
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 void GameTechRenderer::LoadSkybox(string fileName) {
@@ -1148,6 +1174,31 @@ void GameTechRenderer::ResetAtomicBuffer(){
 
 }
 
+int GameTechRenderer::GetWinningTeam(float& percentage) {
+	std::map<int, float> scores = GetTeamScores();
+	float winningPercentage = 0.0f;
+	float secondPercentage = 0.0f;
+	int winningTeam = 0;
+	
+	std::map<int, float>::iterator it;
+	for (it = scores.begin(); it != scores.end(); it++) {
+		if (it->second > winningPercentage) {
+			secondPercentage = winningPercentage;
+			winningPercentage = it->second;
+			winningTeam = it->first;
+		}
+		else if (it->second > secondPercentage) {
+			secondPercentage = it->second;
+		}
+		else if (it->second == winningPercentage) {
+			winningTeam = 5;
+		}
+	}
+
+	percentage = 1.0f / (winningPercentage / secondPercentage);
+	return winningTeam;
+}
+
 std::map<int, float> GameTechRenderer::GetTeamScores() {
 	std::map<int, float> scores;
 	scores.emplace(1, team1Percentage);
@@ -1504,7 +1555,9 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	const float width = 50.0f;
 	const float height = 5.0f;
 
+	NCL::ToonAssetManager::LoadingDataStructure loadingData = ToonAssetManager::Instance().loadingData;
+
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
-	Debug::Print("Loading " + ToonAssetManager::Instance().loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
+	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }

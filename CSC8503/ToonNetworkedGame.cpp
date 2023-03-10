@@ -146,6 +146,12 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			MessagePacket endGame(3);
 			endGame.messageValue = winner->GetTeamID();
 			thisServer->SendGlobalPacket(endGame, true);
+
+			for (auto& player : serverPlayers)
+			{
+				if (player.second.player->GetTeam() == winner) player.second.player->PlayVictory();
+				else player.second.player->PlayDefeat();
+			}
 		}
 		if (gameTime <= -5.0f) {
 			ServerStartGame();
@@ -265,14 +271,15 @@ void ToonNetworkedGame::UpdateMinimumState() {
 		i->UpdateStateHistory(minID);
 }
 
-Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team) {
-	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), team);
+Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team, PlayerControl* controls) {
+	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(team);
 	newPlayerCharacter->SetWorldID(-playerID);
 	ToonNetworkObject* netO = new ToonNetworkObject(newPlayerCharacter, -playerID, myState);
 	newPlayerCharacter->SetWeapon(baseWeapon);
 	serverPlayers.find(playerID)->second.player = newPlayerCharacter;
 	networkObjects.push_back(netO);
 	allPlayers.emplace(newPlayerCharacter);
+	newPlayerCharacter->SyncCamerasToSpawn(nullptr, controls);
 	return newPlayerCharacter;
 }
 
@@ -286,7 +293,7 @@ void ToonNetworkedGame::ServerStartGame() {
 	// Add all players in
 	for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
 		Team* team = (*i).second.team;
-		SpawnPlayer((*i).first, team);
+		SpawnPlayer((*i).first, team, i->second.controls);
 		ConnectPacket outPacket((*i).first, false, team->GetTeamID());
 		thisServer->SendGlobalPacket(outPacket, true);
 	}
@@ -295,9 +302,12 @@ void ToonNetworkedGame::ServerStartGame() {
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
 	allPlayers.clear();
+	world->MapNeedsChecking(true);
+	world->GameStarted();
 	winner = nullptr;
 	gameTime = 90.0f;
 	levelManager->ResetLevel(&networkObjects);
+	int i = 1;
 }
 
 void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source) {
@@ -340,7 +350,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 
 			// Have the server spawn the new player and add them to the networking lists
 			serverPlayers.emplace(receivedID, PlayerDetails(nullptr, new PlayerControl(), team));
-			Player* newPlayer = SpawnPlayer(receivedID, team);
+			Player* newPlayer = SpawnPlayer(receivedID, team, serverPlayers.find(receivedID)->second.controls);
 			return;
 		}
 
@@ -361,6 +371,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			playerControls[1] = new PlayerControl();
 			world->SetMainCamera(1, new ToonFollowCamera(world, players[1]));
 			world->SetMinimapCamera(new ToonMinimapCamera(*players[1]));
+			newPlayer->SyncCamerasToSpawn(world->GetMainCamera(1), playerControls[1]);
 		}
 	}
 	else if (type == Player_Disconnected) {
@@ -484,7 +495,18 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		case(3):
 			if (realPacket->messageValue == 0)
 				winner = tieTeam;
-			else winner = world->GetTeams().find(realPacket->messageValue)->second;
+			else {
+				winner = world->GetTeams().find(realPacket->messageValue)->second;
+				world->OperateOnContents([&](ToonGameObject* g) {
+					if (dynamic_cast<Player*>(g)) {
+						Player* player = (Player*)g;
+						if (player->GetTeam() == winner)
+							player->PlayVictory();
+						else 
+							player->PlayDefeat();
+					}
+					});
+			}
 			break;
 		case(4):
 			gameTime = realPacket->messageValue / 10.0f;

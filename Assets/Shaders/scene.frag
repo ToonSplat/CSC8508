@@ -14,7 +14,6 @@ struct Light{
 
 #define SCENE_LIGHTS 1
 layout (std140) uniform lights{
-	//uniform Light firstLight;
 	uniform Light sceneLights[SCENE_LIGHTS];
 };
 
@@ -26,10 +25,6 @@ uniform int impactPointCount;
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
 uniform sampler2DShadow shadowTex;
-
-//uniform vec3	lightPos;
-//uniform float	lightRadius;
-//uniform vec4	lightColour;
 
 uniform vec3	cameraPos;
 
@@ -109,9 +104,9 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light Light 1
+	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light
 	
-	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow; //specular //light lightColour.rgb * sFactor * shadow
+	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow * 0.1; //specular // Change once bump-maps are introduced
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	

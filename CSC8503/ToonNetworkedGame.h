@@ -37,7 +37,7 @@ namespace NCL {
 
 			void UpdateGame(float dt) override;
 
-			Player* SpawnPlayer(int playerID, Team* team);
+			Player* SpawnPlayer(int playerID, Team* team, PlayerControl* controls = nullptr);
 
 			void ServerStartGame();
 			void StartGame() override;

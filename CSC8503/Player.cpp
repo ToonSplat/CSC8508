@@ -53,8 +53,6 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F5))
 		renderObject->GetShader()->ReloadShader();
 
-	isGrounded = IsGrounded();	
-
 	reactphysics3d::Vector3 linearMovement = reactphysics3d::Vector3(controls->direction[0] / 1000.0f, 0, controls->direction[1] / 1000.0f);
 	linearMovement.normalize();
 
@@ -109,6 +107,8 @@ void Player::Update(float dt) {
 	linVel.y = 0;
 	isMoving = linVel.length() >= 0.5f;
 	linVel.normalize();
+
+	isGrounded = IsGrounded();
 	
 	if (!allowInput) return;
 
@@ -154,15 +154,17 @@ void Player::Update(float dt) {
 		PlayAnim("Player_Jump");
 }
 
-void Player::SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCamera)
+void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
 {
-	SetPosition(spawnPoint.GetPosition());
-	SetOrientation(spawnPoint.GetRotation());
+	NCL::Maths::Quaternion playerRot = ToonUtils::ConvertToNCLQuaternion(rigidBody->getTransform().getOrientation());
+	float yaw = playerRot.ToEuler().y;
+	if(followCamera)
+		followCamera->SetYaw(yaw);
+	targetAngle = yaw;
+	if(controls)
+		controls->camera[1] = yaw;
 
-	followCamera->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
-	targetAngle = RadiansToDegrees(spawnPoint.GetRotation().y);
-
-	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
+	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(yaw);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
@@ -197,6 +199,7 @@ bool Player::IsGrounded()
 	{
 		float distance = std::abs((groundHitData.GetHitWorldPos() - startPos).Length());
 		groundNormal = groundHitData.GetHitNormal();
+		std::cout << "ID " << GetWorldID() << ": distance is " << distance << std::endl;
 		return distance <= 3.5f;
 	}
 

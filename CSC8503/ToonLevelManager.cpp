@@ -281,25 +281,25 @@ bool NCL::CSC8503::ToonLevelManager::LoadArenaLevel(std::vector<ToonNetworkObjec
 	
 	//Those Boxes with ToonSplat logos on it
 	BoxCollisionShapeData* boxData = new BoxCollisionShapeData(Vector3(2.65f, 2.65f, 2.65f));
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 0, 0), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, -45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_toonsplat_Box"), boxData, reactphysics3d::BodyType::DYNAMIC, Vector3(0, 7.0f, 45.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_toonsplat_Box"), arenaDecosColour, 0.1f, true, false, networkObjectList);
 
 	BoxCollisionShapeData* chairData = new BoxCollisionShapeData(Vector3(1.5f, 2.35f, 1.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 0.25f, 0.0f)), reactphysics3d::Quaternion::identity()));
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, -5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, -5.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 5.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, -5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 5.0f), Vector3(0, 0, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, -5.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_chair"), chairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 5.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair"), arenaDecosColour, 0.1f, true, false, networkObjectList);
 	
 	BoxCollisionShapeData* throneChairData = new BoxCollisionShapeData(Vector3(2.0f, 4.3f, 2.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 2.25f, 0.0f)), reactphysics3d::Quaternion::identity()));
-	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 0.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 0.0f), Vector3(0, 0.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(50.0f, 16.0f, 0.0f), Vector3(0, 3.14f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_chair_throne"), throneChairData, reactphysics3d::BodyType::DYNAMIC, Vector3(-50.0f, 16.0f, 0.0f), Vector3(0, 0.0f, 0), Vector3(1, 1, 1), GetMaterial("mat_arena_deco_chair_throne"), arenaDecosColour, 0.1f, true, false, networkObjectList);
 	
 	BoxCollisionShapeData* tableData = new BoxCollisionShapeData(Vector3(5.0f, 1.5f, 3.0f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 1.5f, 3.0f)), reactphysics3d::Quaternion::identity()));
-	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, -32.0f), Vector3(0.0f, -45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, -32.0f), Vector3(0.0f, 45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, 32.0f), Vector3(0.0f, -180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
-	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, 32.0f), Vector3(0.0f, 180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, -32.0f), Vector3(0.0f, -45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, -32.0f), Vector3(0.0f, 45.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(-32.0f, -4.0f, 32.0f), Vector3(0.0f, -180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false, networkObjectList);
+	AddPropObject(GetMesh("arena_deco_table"), tableData, reactphysics3d::BodyType::DYNAMIC, Vector3(32.0f, -4.0f, 32.0f), Vector3(0.0f, 180.0f, 0.0f), Vector3(3.0f, 3.0f, 3.0f), GetMaterial("mat_arena_deco_table"), arenaDecosColour, 0.1f, true, false, networkObjectList);
 	
 	BoxCollisionShapeData* screenData = new BoxCollisionShapeData(Vector3(12.0f, 5.6f, 1.5f), reactphysics3d::Transform(ToonUtils::ConvertToRP3DVector3(Vector3(0.0f, 0.0f, 0.0f)), reactphysics3d::Quaternion::identity()));
 	AddPropScreen(GetMesh("arena_deco_screen"), screenData, reactphysics3d::BodyType::STATIC, Vector3(0.0f, 15.0f, -52.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), GetMaterial("mat_arena_deco_screen"), arenaDecosColour, 0.1f, true, false);
@@ -594,7 +594,7 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddConvexObjectToWorld(MeshGeom
 	return gameObject;
 }
 
-PaintableObject* NCL::CSC8503::ToonLevelManager::AddPropObject(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor)
+PaintableObject* NCL::CSC8503::ToonLevelManager::AddPropObject(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass, float addAsPaintable, float addAsFloor, std::vector<ToonNetworkObject*>* networkObjectList)
 {
 	PaintableObject* dynamicProp = new PaintableObject(gameWorld->GetPhysicsWorld(), gameWorld);
 	dynamicProp->GetTransform().SetPosition(position).
@@ -645,6 +645,11 @@ PaintableObject* NCL::CSC8503::ToonLevelManager::AddPropObject(MeshGeometry* mes
 	gameWorld->AddGameObject(dynamicProp);
 	if (addAsPaintable) 
 		gameWorld->AddPaintableObject(dynamicProp);
+
+	if (networkObjectList) {
+		ToonNetworkObject* netO = new ToonNetworkObject(dynamicProp, dynamicProp->GetWorldID());
+		networkObjectList->push_back(netO);
+	}
 
 	return dynamicProp;
 }
@@ -704,14 +709,18 @@ ToonScreen* NCL::CSC8503::ToonLevelManager::AddPropScreen(MeshGeometry* mesh, Ob
 	return dynamicProp;
 }
 
-Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
+Player* ToonLevelManager::AddPlayerToWorld(Team* team) 
 {
 	const float PLAYER_RADIUS = 2.0f;
 	const float PLAYER_HEIGHT = 0.38f;
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
-	player->SetPosition(position);
+	TeamSpawnPointData spawnPoint = player->GetTeam()->GetRandomSpawnPoint();
+
+	player->SetPosition(spawnPoint.GetPosition());
+	player->SetOrientation(spawnPoint.GetRotation());
+
 	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
