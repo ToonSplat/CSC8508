@@ -73,6 +73,7 @@ namespace NCL {
 			void DrawMainScene();
 
 			void RenderRectical();
+			void RenderWeapon();
 
 			OGLShader*		defaultShader;
 
@@ -103,6 +104,7 @@ namespace NCL {
 			OGLShader*	scoreBarShader;
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
+			OGLShader*  textureUIShader;
 			OGLShader*  sceneShader;
 
 

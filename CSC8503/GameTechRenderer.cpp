@@ -80,6 +80,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
 	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
+	textureUIShader = ToonAssetManager::Instance().GetShader("textureUI");
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
@@ -190,6 +191,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	RenderSkybox();
 	RenderScene();
 	RenderRectical();
+	RenderWeapon();
 }
 
 void GameTechRenderer::RenderRectical()
@@ -214,6 +216,35 @@ void GameTechRenderer::RenderRectical()
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_STENCIL_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderWeapon()
+{
+	if (!gameWorld->HasGameStarted()) return;
+	BindShader(textureShader);
+
+	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_weapon"), "diffuseTex", 0);
+	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(0.8f, -0.8f, 0.0f)) * Matrix4::Scale(Vector3(0.4f, 0.1f, 1.0f));
+
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+
+	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
+	glUniform1i(discardWhiteLoc, 0);
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 2, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	BindMesh(squareQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_STENCIL_TEST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glUniform1i(discardWhiteLoc, 1);
 }
 
 void GameTechRenderer::RenderScene() {
