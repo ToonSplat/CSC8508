@@ -73,7 +73,7 @@ void ToonGame::StartGame() {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		for (int i = 1; i <= localPlayerCount; i++) {
-			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers() /*world->GetTeams()[4]*/);
+			Player* player = levelManager->AddPlayerToWorld(world->GetTeamLeastPlayers() /*world->GetTeams()[4]*/);
 			players[i] = player;
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
@@ -82,10 +82,9 @@ void ToonGame::StartGame() {
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 
-			TeamSpawnPointData spawnPoint = player->GetTeam()->GetRandomSpawnPoint();
 			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
 			world->SetMainCamera(i, followCamera);
-			player->SetPositionRotation(spawnPoint, followCamera);
+			player->SyncCamerasToSpawn(followCamera, playerControls[i]);
 		}
 	}
 	else {

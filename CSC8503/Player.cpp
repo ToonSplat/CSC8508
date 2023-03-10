@@ -150,15 +150,17 @@ void Player::Update(float dt) {
 		PlayAnim("Player_Jump");
 }
 
-void Player::SetPositionRotation(TeamSpawnPointData spawnPoint, Camera* followCamera)
+void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
 {
-	SetPosition(spawnPoint.GetPosition());
-	SetOrientation(spawnPoint.GetRotation());
+	NCL::Maths::Quaternion playerRot = ToonUtils::ConvertToNCLQuaternion(rigidBody->getTransform().getOrientation());
+	float yaw = playerRot.ToEuler().y;
+	if(followCamera)
+		followCamera->SetYaw(yaw);
+	targetAngle = yaw;
+	if(controls)
+		controls->camera[1] = yaw;
 
-	followCamera->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
-	targetAngle = RadiansToDegrees(spawnPoint.GetRotation().y);
-
-	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(RadiansToDegrees(spawnPoint.GetRotation().y));
+	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(yaw);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

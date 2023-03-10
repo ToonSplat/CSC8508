@@ -265,14 +265,15 @@ void ToonNetworkedGame::UpdateMinimumState() {
 		i->UpdateStateHistory(minID);
 }
 
-Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team) {
-	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), team);
+Player* ToonNetworkedGame::SpawnPlayer(int playerID, Team* team, PlayerControl* controls) {
+	Player* newPlayerCharacter = levelManager->AddPlayerToWorld(team);
 	newPlayerCharacter->SetWorldID(-playerID);
 	ToonNetworkObject* netO = new ToonNetworkObject(newPlayerCharacter, -playerID, myState);
 	newPlayerCharacter->SetWeapon(baseWeapon);
 	serverPlayers.find(playerID)->second.player = newPlayerCharacter;
 	networkObjects.push_back(netO);
 	allPlayers.emplace(newPlayerCharacter);
+	newPlayerCharacter->SyncCamerasToSpawn(nullptr, controls);
 	return newPlayerCharacter;
 }
 
@@ -286,7 +287,7 @@ void ToonNetworkedGame::ServerStartGame() {
 	// Add all players in
 	for (auto i = serverPlayers.begin(); i != serverPlayers.end(); i++) {
 		Team* team = (*i).second.team;
-		SpawnPlayer((*i).first, team);
+		SpawnPlayer((*i).first, team, i->second.controls);
 		ConnectPacket outPacket((*i).first, false, team->GetTeamID());
 		thisServer->SendGlobalPacket(outPacket, true);
 	}
@@ -341,7 +342,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 
 			// Have the server spawn the new player and add them to the networking lists
 			serverPlayers.emplace(receivedID, PlayerDetails(nullptr, new PlayerControl(), team));
-			Player* newPlayer = SpawnPlayer(receivedID, team);
+			Player* newPlayer = SpawnPlayer(receivedID, team, serverPlayers.find(receivedID)->second.controls);
 			return;
 		}
 
@@ -362,6 +363,7 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			playerControls[1] = new PlayerControl();
 			world->SetMainCamera(1, new ToonFollowCamera(world, players[1]));
 			world->SetMinimapCamera(new ToonMinimapCamera(*players[1]));
+			newPlayer->SyncCamerasToSpawn(world->GetMainCamera(1), playerControls[1]);
 		}
 	}
 	else if (type == Player_Disconnected) {

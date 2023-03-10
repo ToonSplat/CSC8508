@@ -709,14 +709,18 @@ ToonScreen* NCL::CSC8503::ToonLevelManager::AddPropScreen(MeshGeometry* mesh, Ob
 	return dynamicProp;
 }
 
-Player* ToonLevelManager::AddPlayerToWorld(const Vector3& position, Team* team) 
+Player* ToonLevelManager::AddPlayerToWorld(Team* team) 
 {
 	const float PLAYER_RADIUS = 2.0f;
 	const float PLAYER_HEIGHT = 0.38f;
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
-	player->SetPosition(position);
+	TeamSpawnPointData spawnPoint = player->GetTeam()->GetRandomSpawnPoint();
+
+	player->SetPosition(spawnPoint.GetPosition());
+	player->SetOrientation(spawnPoint.GetRotation());
+
 	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
