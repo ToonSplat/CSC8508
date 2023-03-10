@@ -86,6 +86,8 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 		return;
 
 	collider = rigidBody->addCollider(RP3D_CollisionShape, collisionTransform);
+	rigidBody->updateLocalCenterOfMassFromColliders();
+
 	SetColliderLayer(ToonCollisionLayer::Default);
 
 	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character | ToonCollisionLayer::Paintball | ToonCollisionLayer::Hitsphere;

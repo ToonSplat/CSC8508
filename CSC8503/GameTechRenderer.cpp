@@ -756,7 +756,7 @@ void GameTechRenderer::LoadSkybox(string fileName) {
 
 	vector<char*> texData(6, nullptr);
 
-	if (fileName.empty()) {
+	if (!fileName.empty()) {
 		TextureLoader::LoadTexture(filenames[0], texData[0], width[0], height[0], channels[0], flags[0]);
 		for (int i = 0; i < 6; i++) {
 			texData[i] = texData[0];
