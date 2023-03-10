@@ -136,20 +136,20 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
-	float winningPercentage = 0.0f;
-	int winning = GetWinningTeam(winningPercentage);
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
 	switch (winning) {
 	case 1:
-		shaderLight.data[0].lightColour = teamColours[0] * (winningPercentage / 4);
+		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
 		break;
 	case 2:
-		shaderLight.data[0].lightColour = teamColours[1] * (winningPercentage / 4);
+		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
 		break;
 	case 3:
-		shaderLight.data[0].lightColour = teamColours[2] * (winningPercentage / 4);
+		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
 		break;
 	case 4:
-		shaderLight.data[0].lightColour = teamColours[3] * (winningPercentage / 4);
+		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
 		break;
 	case 5:
 		shaderLight.data[0].lightColour = defaultColour;
@@ -1176,8 +1176,8 @@ void GameTechRenderer::ResetAtomicBuffer(){
 
 int GameTechRenderer::GetWinningTeam(float& percentage) {
 	std::map<int, float> scores = GetTeamScores();
-	float winningPercentage = 0;
-	float secondPercentage = 0;
+	float winningPercentage = 0.0f;
+	float secondPercentage = 0.0f;
 	int winningTeam = 0;
 	
 	std::map<int, float>::iterator it;
@@ -1187,12 +1187,15 @@ int GameTechRenderer::GetWinningTeam(float& percentage) {
 			winningPercentage = it->second;
 			winningTeam = it->first;
 		}
+		else if (it->second > secondPercentage) {
+			secondPercentage = it->second;
+		}
 		else if (it->second == winningPercentage) {
 			winningTeam = 5;
 		}
 	}
 
-	percentage = winningPercentage - secondPercentage;
+	percentage = 1.0f / (winningPercentage / secondPercentage);
 	return winningTeam;
 }
 
