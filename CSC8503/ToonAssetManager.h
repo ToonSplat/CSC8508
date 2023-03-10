@@ -45,7 +45,7 @@ namespace NCL {
 		std::vector<const Rendering::TextureBase*> GetTextures() const {
 			std::vector<const Rendering::TextureBase*> allTextures;
 			for (auto& [first, second] : textures) {
-				/*if (first == "mesh") {
+			/*	if (first == "mesh") {
 					continue;
 				}*/
 				allTextures.push_back(second);
@@ -73,9 +73,6 @@ namespace NCL {
 		CSC8503::Sound*				AddSound(const string& name, const string& fileName);
 		
 		MeshGeometry* CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor);
-
-		
-
 
 		map<string, Rendering::TextureBase*> textures;
 		map<string, MeshGeometry*> meshes;

@@ -6,7 +6,7 @@ uniform textures{
     sampler2D arr[30];
 } bindless_textures;
 
-uniform materials{
+layout (std140) uniform materials{
 	vec2 key[100];
 } materialReferencer;
 

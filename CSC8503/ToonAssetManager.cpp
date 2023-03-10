@@ -157,7 +157,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 	Rendering::TextureBase* texture = GetTexture(name);
 
 	if (texture != nullptr) {
-		textureIndex = distance(textures.begin(), textures.find(name));
+		textureIndex = distance(textures.begin(), textures.find(name)) - 1;
 		return texture;
 	}
 
@@ -170,7 +170,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 		texture = TextureLoader::LoadAPITexture(name);
 
 	textures.emplace(name, texture);
-	textureIndex = distance(textures.begin(), textures.find(name));
+	textureIndex = distance(textures.begin(), textures.find(name)) - 1;
 	return texture;
 }
 
@@ -270,11 +270,11 @@ ToonMeshMaterial* ToonAssetManager::AddMaterial(const string& name, const string
 	mat = new ToonMeshMaterial(fileName, subMeshCount);
 	materials.emplace(name, mat);
 
-	int index = materials.size();
+	int index = gpuMaterials.size();
 	for (auto& material : mat->GetSubMaterials()) {
 		gpuMaterials.push_back(material);
-		mat->AddMaterialIndex(index);
 		index++;
+		mat->AddMaterialIndex(index);
 	}
 
 	return mat;
