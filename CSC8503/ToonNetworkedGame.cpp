@@ -146,6 +146,12 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			MessagePacket endGame(3);
 			endGame.messageValue = winner->GetTeamID();
 			thisServer->SendGlobalPacket(endGame, true);
+
+			for (auto& player : serverPlayers)
+			{
+				if (player.second.player->GetTeam() == winner) player.second.player->PlayVictory();
+				else player.second.player->PlayDefeat();
+			}
 		}
 		if (gameTime <= -5.0f) {
 			ServerStartGame();
@@ -296,6 +302,8 @@ void ToonNetworkedGame::ServerStartGame() {
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
 	allPlayers.clear();
+	world->MapNeedsChecking(true);
+	world->GameStarted();
 	winner = nullptr;
 	gameTime = 90.0f;
 	levelManager->ResetLevel(&networkObjects);
@@ -487,7 +495,18 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		case(3):
 			if (realPacket->messageValue == 0)
 				winner = tieTeam;
-			else winner = world->GetTeams().find(realPacket->messageValue)->second;
+			else {
+				winner = world->GetTeams().find(realPacket->messageValue)->second;
+				world->OperateOnContents([&](ToonGameObject* g) {
+					if (dynamic_cast<Player*>(g)) {
+						Player* player = (Player*)g;
+						if (player->GetTeam() == winner)
+							player->PlayVictory();
+						else 
+							player->PlayDefeat();
+					}
+					});
+			}
 			break;
 		case(4):
 			gameTime = realPacket->messageValue / 10.0f;

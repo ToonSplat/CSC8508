@@ -12,6 +12,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 	isAiming = false;
 	isMoving = false;
 	isGrounded = false;
+	allowInput = true;
 
 	moveSpeed = 1500.0f;
 	rotationSpeed = 6.0f;
@@ -106,7 +107,10 @@ void Player::Update(float dt) {
 	linVel.y = 0;
 	isMoving = linVel.length() >= 0.5f;
 	linVel.normalize();
+
 	isGrounded = IsGrounded();
+	
+	if (!allowInput) return;
 
 	if (isGrounded)
 	{
@@ -168,6 +172,18 @@ void Player::SetWeapon(PaintBallClass* base) {
 	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);
+}
+
+void Player::PlayVictory()
+{
+	allowInput = false;
+	PlayAnim("Player_Dance");
+}
+
+void Player::PlayDefeat()
+{
+	allowInput = false;
+	PlayAnim("Player_Defeat");
 }
 
 bool Player::IsGrounded()

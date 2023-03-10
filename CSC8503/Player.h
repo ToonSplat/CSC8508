@@ -42,6 +42,9 @@ public:
 	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
+	void PlayVictory();
+	void PlayDefeat();
+
 protected:
 	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
 	bool IsGrounded();
@@ -63,6 +66,8 @@ protected:
 	AudioSystem* audiosystem;
 
 	bool isAiming, isMoving, isGrounded;
+	bool allowInput;
+
 	NCL::Maths::Vector3 groundDir;
 	NCL::Maths::Vector3 groundNormal;
 	/*

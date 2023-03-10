@@ -136,6 +136,31 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
+	switch (winning) {
+	case 1:
+		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
+		break;
+	case 2:
+		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
+		break;
+	case 3:
+		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
+		break;
+	case 4:
+		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
+		break;
+	case 5:
+		shaderLight.data[0].lightColour = defaultColour;
+		break;
+	default:
+		break;
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
 		Render1Player();
@@ -419,31 +444,6 @@ void GameTechRenderer::PresentScene(){
 
 
 	if (gameWorld->GetMapCamera()) {
-		float winningPercentage = 0.0f;
-		int winning = GetWinningTeam(winningPercentage);
-		switch (winning) {
-		case 1:
-			shaderLight.data[0].lightColour = teamColours[0] * (winningPercentage / 4);
-			break;
-		case 2:
-			shaderLight.data[0].lightColour = teamColours[1] * (winningPercentage / 4);
-			break;
-		case 3:
-			shaderLight.data[0].lightColour = teamColours[2] * (winningPercentage / 4);
-			break;
-		case 4:
-			shaderLight.data[0].lightColour = teamColours[3] * (winningPercentage / 4);
-			break;
-		case 5:
-			shaderLight.data[0].lightColour = defaultColour;
-			break;
-		default:
-			break;
-		}
-		glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		
 		DrawScoreBar();
 	}
 
@@ -756,7 +756,7 @@ void GameTechRenderer::LoadSkybox(string fileName) {
 
 	vector<char*> texData(6, nullptr);
 
-	if (fileName.empty()) {
+	if (!fileName.empty()) {
 		TextureLoader::LoadTexture(filenames[0], texData[0], width[0], height[0], channels[0], flags[0]);
 		for (int i = 0; i < 6; i++) {
 			texData[i] = texData[0];
@@ -1176,21 +1176,26 @@ void GameTechRenderer::ResetAtomicBuffer(){
 
 int GameTechRenderer::GetWinningTeam(float& percentage) {
 	std::map<int, float> scores = GetTeamScores();
-	float winningPercentage = 0;
+	float winningPercentage = 0.0f;
+	float secondPercentage = 0.0f;
 	int winningTeam = 0;
 	
 	std::map<int, float>::iterator it;
 	for (it = scores.begin(); it != scores.end(); it++) {
 		if (it->second > winningPercentage) {
+			secondPercentage = winningPercentage;
 			winningPercentage = it->second;
 			winningTeam = it->first;
+		}
+		else if (it->second > secondPercentage) {
+			secondPercentage = it->second;
 		}
 		else if (it->second == winningPercentage) {
 			winningTeam = 5;
 		}
 	}
 
-	percentage = winningPercentage;
+	percentage = 1.0f / (winningPercentage / secondPercentage);
 	return winningTeam;
 }
 
