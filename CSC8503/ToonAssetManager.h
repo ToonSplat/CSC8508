@@ -21,13 +21,13 @@ using std::string;
 namespace NCL {
 	class ToonAssetManager {
 	private:
+	public:
 		struct LoadingDataStructure
 		{
 			int assetCountTotal;
 			int assetCountDone;
 			std::string loadingText = "";
 		};
-	public:
 		friend class ToonMeshMaterial;
 
 		static void Create() {

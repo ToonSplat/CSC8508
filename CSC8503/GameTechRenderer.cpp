@@ -731,10 +731,11 @@ void GameTechRenderer::RenderSkybox(bool enableTests) {
 
 	BindMesh(skyboxMesh);
 	DrawBoundMesh();
-
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	if (enableTests) {
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
 void GameTechRenderer::LoadSkybox(string fileName) {
@@ -1549,7 +1550,9 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	const float width = 50.0f;
 	const float height = 5.0f;
 
+	NCL::ToonAssetManager::LoadingDataStructure loadingData = ToonAssetManager::Instance().loadingData;
+
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
-	Debug::DrawFilledQuad(position, Vector2(ToonAssetManager::Instance().loadingData.assetCountDone++ * (width / ToonAssetManager::Instance().loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
-	Debug::Print("Loading " + ToonAssetManager::Instance().loadingData.loadingText, position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
+	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
 }

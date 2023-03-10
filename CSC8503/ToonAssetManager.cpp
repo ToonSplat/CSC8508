@@ -56,6 +56,7 @@ void ToonAssetManager::LoadNextAsset(void) {
 		AddSound(tokens);
 	else
 		throw "Error: Unknown asset type\n";
+	loadingData.assetCountDone++;
 }
 
 vector<string> ToonAssetManager::SplitLine() {
