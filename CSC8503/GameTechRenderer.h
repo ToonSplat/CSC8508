@@ -66,6 +66,7 @@ namespace NCL {
 			void DrawScoreBar();
 
 			void CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
+			int GetWinningTeam(float& percentage);
 
 			void DrawMap();
 

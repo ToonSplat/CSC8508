@@ -15,7 +15,6 @@ uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
 
-uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
 
 uniform vec3 team1Colour;
@@ -34,9 +33,9 @@ uniform int currentAtomicTarget;
 in Vertex
 {
 	vec4 colour;
-	vec2 texCoord;
-	vec3 worldPos;
 	vec4 localPos;
+	vec3 worldPos;
+	vec2 texCoord;
 } IN;
 
 vec4 modulus(vec4 x){return x - floor(x * (1.0/289.0)) * 289.0;}
@@ -69,7 +68,7 @@ layout(location = 1) out vec4 gScore;
 
 void main(void)
 {
-	vec4 albedo = objectColour;
+	vec4 albedo = IN.colour;
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);

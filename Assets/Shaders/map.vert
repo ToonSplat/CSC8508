@@ -17,9 +17,9 @@ uniform bool hasVertexColours = false;
 out Vertex
 {
 	vec4 colour;
-	vec2 texCoord;
-	vec3 worldPos;
 	vec4 localPos;
+	vec3 worldPos;
+	vec2 texCoord;
 } OUT;
 
 void main(void)
