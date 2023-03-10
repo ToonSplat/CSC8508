@@ -136,6 +136,31 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
+	float winningPercentage = 0.0f;
+	int winning = GetWinningTeam(winningPercentage);
+	switch (winning) {
+	case 1:
+		shaderLight.data[0].lightColour = teamColours[0] * (winningPercentage / 4);
+		break;
+	case 2:
+		shaderLight.data[0].lightColour = teamColours[1] * (winningPercentage / 4);
+		break;
+	case 3:
+		shaderLight.data[0].lightColour = teamColours[2] * (winningPercentage / 4);
+		break;
+	case 4:
+		shaderLight.data[0].lightColour = teamColours[3] * (winningPercentage / 4);
+		break;
+	case 5:
+		shaderLight.data[0].lightColour = defaultColour;
+		break;
+	default:
+		break;
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
 		Render1Player();
@@ -419,31 +444,6 @@ void GameTechRenderer::PresentScene(){
 
 
 	if (gameWorld->GetMapCamera()) {
-		float winningPercentage = 0.0f;
-		int winning = GetWinningTeam(winningPercentage);
-		switch (winning) {
-		case 1:
-			shaderLight.data[0].lightColour = teamColours[0] * (winningPercentage / 4);
-			break;
-		case 2:
-			shaderLight.data[0].lightColour = teamColours[1] * (winningPercentage / 4);
-			break;
-		case 3:
-			shaderLight.data[0].lightColour = teamColours[2] * (winningPercentage / 4);
-			break;
-		case 4:
-			shaderLight.data[0].lightColour = teamColours[3] * (winningPercentage / 4);
-			break;
-		case 5:
-			shaderLight.data[0].lightColour = defaultColour;
-			break;
-		default:
-			break;
-		}
-		glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-		
 		DrawScoreBar();
 	}
 
@@ -1177,11 +1177,13 @@ void GameTechRenderer::ResetAtomicBuffer(){
 int GameTechRenderer::GetWinningTeam(float& percentage) {
 	std::map<int, float> scores = GetTeamScores();
 	float winningPercentage = 0;
+	float secondPercentage = 0;
 	int winningTeam = 0;
 	
 	std::map<int, float>::iterator it;
 	for (it = scores.begin(); it != scores.end(); it++) {
 		if (it->second > winningPercentage) {
+			secondPercentage = winningPercentage;
 			winningPercentage = it->second;
 			winningTeam = it->first;
 		}
@@ -1190,7 +1192,7 @@ int GameTechRenderer::GetWinningTeam(float& percentage) {
 		}
 	}
 
-	percentage = winningPercentage;
+	percentage = winningPercentage - secondPercentage;
 	return winningTeam;
 }
 
