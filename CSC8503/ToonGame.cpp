@@ -102,7 +102,7 @@ void ToonGame::UpdateGame(float dt) {
 	world->UpdateWorld(dt);
 
 	for (auto& [id, player] : players) {
-		if (player) {
+		if (player && winner == nullptr) {
 			UpdateCameras(dt, id);
 			InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id));
 			if (offline) {
@@ -252,8 +252,13 @@ void ToonGame::ShowUI(float time) {
 	{
 		const std::string winnerText = "WINNER:" + winner->GetTeamName();
 		Debug::Print(winnerText, Vector2(50 - winnerText.size(), 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
-	}
 
+		for (auto& [id, player] : players)
+		{
+			if (player->GetTeam() == winner) player->PlayVictory();
+			else player->PlayDefeat();
+		}
+	}
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
