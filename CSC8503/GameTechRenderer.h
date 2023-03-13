@@ -45,6 +45,7 @@ namespace NCL {
 			void RenderFrameLoading();
 			void CreateLightUBO();
 			void RenderFrame()	override;
+			void UpdateLighting();
 			void Render2Player();
 			void Render1Player();
 			void Render3or4Player();
@@ -69,6 +70,7 @@ namespace NCL {
 			int GetWinningTeam(float& percentage);
 
 			void DrawMap();
+			void UpdateMap();
 
 			void DrawMainScene();
 
@@ -191,12 +193,15 @@ namespace NCL {
 
 			GLuint currentAtomicCPU;
 			GLuint currentAtomicGPU;
-			GLuint curretAtomicReset;
+			GLuint currentAtomicReset;
 
 			Camera* currentRenderCamera;
 			float screenAspect;
 
 			unsigned int lightMatrix;
+
+			bool mapInitialised = false;
+			bool updateScorebar;
 		};
 	}
 }

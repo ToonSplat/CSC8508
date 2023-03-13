@@ -136,6 +136,32 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
+	
+
+	UpdateLighting();
+	
+	switch (gameWorld->GetMainCameraCount()) {
+	case 1:
+		Render1Player();
+		break;
+	case 2:
+		Render2Player();
+		break;
+	default:
+		Render3or4Player();
+		break;
+	}
+
+	if (!mapInitialised) DrawMap();
+	UpdateMap();
+	PresentScene();
+
+	RenderImGUI();
+	ToonDebugManager::Instance().EndRendering();
+}
+
+void NCL::CSC8503::GameTechRenderer::UpdateLighting()
+{
 	float percentageScale = 0.0f;
 	int winning = GetWinningTeam(percentageScale);
 	switch (winning) {
@@ -157,27 +183,10 @@ void GameTechRenderer::RenderFrame() {
 	default:
 		break;
 	}
+
 	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	
-	switch (gameWorld->GetMainCameraCount()) {
-	case 1:
-		Render1Player();
-		break;
-	case 2:
-		Render2Player();
-		break;
-	default:
-		Render3or4Player();
-		break;
-	}
-
-	DrawMap();
-	PresentScene();
-
-	RenderImGUI();
-	ToonDebugManager::Instance().EndRendering();
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
@@ -521,7 +530,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMap(){
-	if (!gameWorld->GetMapCamera() || !gameWorld->DoesMapNeedChecking()) return;
+	if (!gameWorld->GetMapCamera()/* || !gameWorld->DoesMapNeedChecking()*/) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -534,20 +543,62 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 
 	RenderMaps(mapShader, viewMatrix, projMatrix);
 
+
+
+	mapInitialised = true;
+}
+
+void GameTechRenderer::UpdateMap() {
+	if (!gameWorld->GetMapCamera() || gameWorld->MapHitSpheres().size() != 0 || !mapInitialised) return;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
+	glEnable(GL_CULL_FACE);
+
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
+
+	OGLShader* shader = sceneShader; //needs changing
+	BindShader(shader);
+	for (const auto& i : gameWorld->MapHitSpheres()) {
+		if ((*i).GetRenderObject() == nullptr) continue;
+
+		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int paintLocation = glGetUniformLocation(shader->GetProgramID(), "paintColour");
+		
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+		float radius = i->GetRadius();
+		Matrix4 modelMatrix = Matrix4::Scale(radius, radius, radius);
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
+
+		BindMesh(ToonAssetManager::Instance().GetMesh("Sphere"));
+		DrawBoundMesh();
+	}
+
+	gameWorld->ClearMapHitSpheres();
+	updateScorebar = true;
+
 	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
 	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
-	curretAtomicReset = ((curretAtomicReset + 1) % 3);
+	currentAtomicReset = ((currentAtomicReset + 1) % 3);
 
 	glDisable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	if (gameWorld->DoesMapNeedChecking()) {
+	if (updateScorebar) {
 		RetrieveAtomicValues();
 
 		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
@@ -561,7 +612,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 
-		gameWorld->MapNeedsChecking(false);
+		updateScorebar = false;
 	}
 	
 	Matrix4 identityMatrix = Matrix4();
@@ -1137,7 +1188,7 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 	
 	currentAtomicCPU = 2;
-	curretAtomicReset = 1;
+	currentAtomicReset = 1;
 	currentAtomicGPU = 0;
 }
 	

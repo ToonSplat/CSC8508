@@ -103,6 +103,8 @@ void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {
 void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
 	AddGameObject(hitSphere);
 	activeHitSpheres.emplace(hitSphere);
+	mapHitSpheres.emplace(*hitSphere);
+	
 }
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	activeHitSpheres.erase(hitSphere);
