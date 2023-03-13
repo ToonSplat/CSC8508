@@ -132,7 +132,10 @@ Quaternion Quaternion::Lerp(const Quaternion &from, const Quaternion &to, float 
 Quaternion Quaternion::Slerp(const Quaternion &from, const Quaternion &to, float by) {
 	float t = by;// / 2.0f;
 
-	float dot = std::clamp(Quaternion::Dot(from,to), -1.0f, 1.0f);
+	//float dot = std::clamp(Quaternion::Dot(from,to), -1.0f, 1.0f);
+	float dot = Quaternion::Dot(from, to);
+	dot = std::max(dot, -1.0f);
+	dot = std::min(dot, 1.0f);
 
 	if (dot == 1.0f) {
 		return from;

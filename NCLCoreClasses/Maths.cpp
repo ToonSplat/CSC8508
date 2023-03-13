@@ -59,7 +59,10 @@ namespace NCL {
 
 			// Clamp maximum speed
 			float maxChange = maxSpeed * smoothTime;
-			change = std::clamp(change, -maxChange, maxChange);
+			Maths::Clamp(change, -maxChange, maxChange);
+			//change = std::clamp(change, -maxChange, maxChange);
+			change = std::max(change, -maxChange);
+			change = std::min(change, maxChange);
 			target = current - change;
 
 			float temp = (currentVelocity + omega * change) * deltaTime;
