@@ -104,14 +104,6 @@ namespace NCL
 
 			bool HasGameStarted() { return gameStarted; }
 
-			std::unordered_set<HitSphere*>& MapHitSpheres() {
-				return mapHitSpheres;
-			}
-
-			void ClearMapHitSpheres() {
-				mapHitSpheres.clear();
-			}
-
 		protected:
 			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
@@ -126,7 +118,7 @@ namespace NCL
 			std::unordered_set<ToonGameObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
 
-			std::unordered_set<HitSphere*> mapHitSpheres;
+			//vector<HitSphere> mapHitSpheres;
 
 			std::map<int, Team*> teams;
 

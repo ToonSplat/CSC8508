@@ -25,6 +25,7 @@ uniform int impactPointCount;
 uniform vec4 		objectColour;
 layout(binding = 5) uniform sampler2D 	mainTex;
 layout(binding = 6) uniform sampler2D	bumpTex;
+layout(binding = 7) uniform sampler2D 	mapTex;
 uniform sampler2DShadow shadowTex;
 
 uniform vec3	cameraPos;

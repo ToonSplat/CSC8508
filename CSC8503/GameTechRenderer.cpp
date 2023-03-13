@@ -14,6 +14,7 @@
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
 #include "Player.h"
+#include "HitSphere.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -83,6 +84,8 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
+	mapInitShader = ToonAssetManager::Instance().GetShader("map_initial");
+	mapUpdateShader = ToonAssetManager::Instance().GetShader("map_update");
 
 	shadowSize = 2048;
 	GenerateShadowFBO();
@@ -255,6 +258,10 @@ void GameTechRenderer::RenderScene() {
 
 		if ((*i).GetRenderObject()->GetDefaultTexture() != nullptr) BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
 
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
+		glUniform1i(glGetUniformLocation(shader->GetProgramID(), "mapTex"), 7);
+
 		if (activeShader != shader) {
 			projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
 			viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
@@ -329,9 +336,10 @@ void NCL::CSC8503::GameTechRenderer::Render2Player()
 }
 void NCL::CSC8503::GameTechRenderer::Render3or4Player()
 {
-	screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
 	float width = windowWidth / 2;
 	float height = windowHeight / 2;
+	screenAspect = (width) / (height);
+	
 
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
@@ -356,7 +364,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	currentRenderCamera = gameWorld->GetMainCamera(1);
 	DrawMainScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	DrawMinimap();
+	//DrawMinimap();
 }
 
 void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
@@ -541,15 +549,40 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
-	RenderMaps(mapShader, viewMatrix, projMatrix);
+	OGLShader* shader = mapInitShader;
+	BindShader(shader);
+	for (const auto& i : activeObjects) {
+		if ((*i).GetRenderObject() == nullptr ) continue;
 
+		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
+
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
+		
+
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
+
+		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
+	}
 
 
 	mapInitialised = true;
+	updateScorebar = true;
 }
 
 void GameTechRenderer::UpdateMap() {
-	if (!gameWorld->GetMapCamera() || gameWorld->MapHitSpheres().size() != 0 || !mapInitialised) return;
+	if (!gameWorld->GetMapCamera() || !mapInitialised) return;
 
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 	glEnable(GL_CULL_FACE);
@@ -558,30 +591,39 @@ void GameTechRenderer::UpdateMap() {
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
-	OGLShader* shader = sceneShader; //needs changing
+	OGLShader* shader = mapUpdateShader;
 	BindShader(shader);
-	for (const auto& i : gameWorld->MapHitSpheres()) {
-		if ((*i).GetRenderObject() == nullptr) continue;
 
+	for (const auto& i : gameWorld->GetHitSpheres()) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
+		glUniform1i(glGetUniformLocation(shader->GetProgramID(), "mapTex"), 0);
+
+		int paintLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
+
+		int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
+		glUniform1i(atomicLocation, currentAtomicGPU);
+
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
+		
 		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-		int paintLocation = glGetUniformLocation(shader->GetProgramID(), "paintColour");
-		
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
 		float radius = i->GetRadius();
-		Matrix4 modelMatrix = Matrix4::Scale(radius, radius, radius);
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
-		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
-
-		BindMesh(ToonAssetManager::Instance().GetMesh("Sphere"));
-		DrawBoundMesh();
+		(*i).Draw(*this);
 	}
 
-	gameWorld->ClearMapHitSpheres();
+	
 	updateScorebar = true;
 
 	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
@@ -684,7 +726,7 @@ void GameTechRenderer::RenderShadowMap() {
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	PresentMinimap();
+	//PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
