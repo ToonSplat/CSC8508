@@ -70,14 +70,14 @@ namespace NCL {
 
 			void DrawMap();
 
-			void DrawMainScene();
+			void DrawMainScene(int id = -1);
 
 			void RenderRectical();
-			void RenderWeapon();
+			void RenderWeapon(int id);
 
 			OGLShader*		defaultShader;
 
-			ToonGameWorld*	gameWorld = nullptr;			
+			ToonGameWorld*	gameWorld = nullptr;
 
 			void BuildObjectList();
 			void SortObjectList();
@@ -104,7 +104,6 @@ namespace NCL {
 			OGLShader*	scoreBarShader;
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
-			OGLShader*  textureUIShader;
 			OGLShader*  sceneShader;
 
 

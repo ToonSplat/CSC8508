@@ -23,6 +23,9 @@ namespace NCL {
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
 
+            float getFireRate() { return 1 / fireRate; }
+            float getShootTimer() { return shootTimer; }
+
             PaintBallClass MakeInstance();
 
         protected:

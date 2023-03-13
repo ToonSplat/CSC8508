@@ -7,12 +7,13 @@
 #include "TextureLoader.h"
 #include "ImpactPoint.h"
 #include "PaintableObject.h"
-#include "ToonUtils.h"
 #include <iostream>
 #include <algorithm>
 #include <reactphysics3d/reactphysics3d.h>
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
+#include "ToonGame.h"
+#include "ToonNetworkedGame.h"
 #include "Player.h"
 
 #include "../ThirdParty/imgui/imgui.h"
@@ -80,7 +81,6 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
 	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
-	textureUIShader = ToonAssetManager::Instance().GetShader("textureUI");
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
@@ -181,7 +181,7 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().EndRendering();
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
+void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
@@ -191,7 +191,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
 	RenderSkybox();
 	RenderScene();
 	RenderRectical();
-	RenderWeapon();
+	RenderWeapon(id);
 }
 
 void GameTechRenderer::RenderRectical()
@@ -218,19 +218,49 @@ void GameTechRenderer::RenderRectical()
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::RenderWeapon()
+void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
 {
+	if (gameWorld == nullptr || id == -1) return;
 	if (!gameWorld->HasGameStarted()) return;
+
+	ToonNetworkedGame* networkGame = dynamic_cast<ToonNetworkedGame*>(gameWorld->GetToonGame());
+	if (networkGame != nullptr && networkGame->IsServer())
+		return;
+
+	Vector3 iconPos = Vector3(0.8f, -0.8f, 0.0f);
+	Vector3 iconBackgroundScale = Vector3(0.3f, 0.1f, 1.0f);
+
+	Vector4 colorWhite = Debug::WHITE;
+	Vector4 backgroundColor = Debug::BLACK;
+	Vector4 teamColor = colorWhite;
+
+	float fillAmount = 1.0f;
+	if (gameWorld != nullptr)
+	{
+		Player* player = gameWorld->GetToonGame()->GetPlayerFromID(id);
+		if (player != nullptr)
+		{
+			teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
+			PaintBallClass playerWeapon = player->GetWeapon();
+			fillAmount = 1.0f - (playerWeapon.getShootTimer() / playerWeapon.getFireRate());
+		}
+	}
+
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
+	int applyFillAmountLoc = glGetUniformLocation(textureShader->GetProgramID(), "applyFillAmount");
+	int fillAmountLoc = glGetUniformLocation(textureShader->GetProgramID(), "fillAmount");
+	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+	
 	BindShader(textureShader);
 
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_weapon"), "diffuseTex", 0);
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(0.8f, -0.8f, 0.0f)) * Matrix4::Scale(Vector3(0.4f, 0.1f, 1.0f));
+	Matrix4 weaponBorderModelMatrix = Matrix4::Translation(iconPos) * Matrix4::Scale(iconBackgroundScale);
 
-	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
-
-	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&weaponBorderModelMatrix);
 	glUniform1i(discardWhiteLoc, 0);
+	glUniform1i(applyFillAmountLoc, 0);
+	glUniform4fv(colourLoc, 1, (float*)backgroundColor.array);
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glStencilFunc(GL_EQUAL, 2, ~0);
@@ -239,12 +269,25 @@ void NCL::CSC8503::GameTechRenderer::RenderWeapon()
 	glDisable(GL_DEPTH_TEST);
 	BindMesh(squareQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	
+	//Draw the foreground
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&weaponBorderModelMatrix);
+	glUniform1i(discardWhiteLoc, 0);
+	glUniform1i(applyFillAmountLoc, 1);
+	glUniform1f(fillAmountLoc, fillAmount);
+	glUniform4fv(colourLoc, 1, (float*)teamColor.array);
+
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_STENCIL_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	//Reset data to defaults
 	glUniform1i(discardWhiteLoc, 1);
+	glUniform1i(applyFillAmountLoc, 0);
+	glUniform1f(fillAmountLoc, 1.0f);
+	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 }
 
 void GameTechRenderer::RenderScene() {
@@ -334,8 +377,7 @@ void GameTechRenderer::RenderScene() {
 }
 
 void NCL::CSC8503::GameTechRenderer::Render2Player()
-{
-	
+{	
 	screenAspect = ((float)windowWidth / 2) / (float)windowHeight;
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
@@ -344,7 +386,7 @@ void NCL::CSC8503::GameTechRenderer::Render2Player()
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glViewport(0, 0, windowWidth / 2, windowHeight);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
-		DrawMainScene();
+		DrawMainScene(i + 1);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -352,17 +394,17 @@ void NCL::CSC8503::GameTechRenderer::Render2Player()
 void NCL::CSC8503::GameTechRenderer::Render3or4Player()
 {
 	screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
-	float width = windowWidth / 2;
-	float height = windowHeight / 2;
+	float width = (float)windowWidth / 2.0f;
+	float height = (float)windowHeight / 2.0f;
 
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
 		currentFBO = &quadFBO[i];
 		glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-		glViewport(0, 0, width, height);
+		glViewport(0, 0, (GLsizei)width, (GLsizei)height);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
-		DrawMainScene();
+		DrawMainScene(i + 1);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -376,7 +418,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	currentRenderCamera = gameWorld->GetMainCamera(1);
-	DrawMainScene();
+	DrawMainScene(1);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
 }

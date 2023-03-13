@@ -1,3 +1,4 @@
+#include "ToonGame.h"
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
 #include "Window.h"
@@ -70,6 +71,19 @@ void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 	}
 
 	Clear();
+}
+
+void NCL::CSC8503::ToonGameWorld::SetToonGame(ToonGame* _toonGame)
+{
+	game = _toonGame;
+}
+
+ToonGame* NCL::CSC8503::ToonGameWorld::GetToonGame()
+{
+	if (game != nullptr) 
+		return game;
+
+	return nullptr;
 }
 
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)

@@ -24,6 +24,8 @@ using namespace CSC8503;
 ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
 	world = new ToonGameWorld();
+	world->SetToonGame(this);
+
 	ToonDebugManager::Instance().SetGameWorld(world);
 
 	renderer->SetWorld(world);
@@ -104,9 +106,9 @@ void ToonGame::UpdateGame(float dt) {
 		if (player && winner == nullptr) {
 			UpdateCameras(dt, id);
 			InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id));
+			player->WeaponUpdate(dt, playerControls[id]);
 			if (offline) {
 				player->MovementUpdate(dt, playerControls[id]);
-				player->WeaponUpdate(dt, playerControls[id]);
 			}
 			else {
 				player->SetAiming(playerControls[id]->aiming);
@@ -138,6 +140,11 @@ PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 	m_ShouldQuitGame = true;
 	world->GameEnded();
 	return PushdownState::Pop;
+}
+
+Player* NCL::CSC8503::ToonGame::GetPlayerFromID(const int& id)
+{
+	return players[id];
 }
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
@@ -246,11 +253,11 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	Debug::Print(output, NCL::Maths::Vector2(50 - output.size(), 5.0f));
+	Debug::Print(output, NCL::Maths::Vector2(50.0f - output.size(), 5.0f));
 	if (winner != nullptr)
 	{
 		const std::string winnerText = "WINNER:" + winner->GetTeamName();
-		Debug::Print(winnerText, Vector2(50 - winnerText.size(), 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+		Debug::Print(winnerText, Vector2(50.0f - winnerText.size(), 15.0f), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 
 		for (auto& [id, player] : players)
 		{

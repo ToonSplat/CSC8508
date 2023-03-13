@@ -46,9 +46,9 @@ class ToonConfirmationScreen : public PushdownState
 		Button					m_CancelButton;
 		ConfirmationButtonsType m_CurrentSelectedButton;
 		bool					m_IsMousePointerVisible = true;
-		Vector2					m_WindowSize;
+		Maths::Vector2			m_WindowSize;
 		GameTechRenderer*		m_Renderer;
-		Vector2					m_MouseLastPosition = Vector2(0.0f, 0.0f);
+		Maths::Vector2			m_MouseLastPosition = Maths::Vector2(0.0f, 0.0f);
 		bool					m_ShowBackground	= true;
 
 	public:
@@ -58,7 +58,7 @@ class ToonConfirmationScreen : public PushdownState
 	public:
 		ToonConfirmationScreen();
 		ToonConfirmationScreen(Coordinates coordinates,
-							   Vector2 windowSize,
+							   Maths::Vector2 windowSize,
 							   GameTechRenderer* renderer,
 							   std::string text			= CONFIRMATION_TEXT,
 							   Vector4 textColour		= Debug::WHITE,
