@@ -38,6 +38,9 @@ public:
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
+	void CalcCrosshairSpread(float dt);
+	float GetCrosshairSpreadFactor() const { return spread; }
+
 	Team* GetTeam() const { return team; }
 	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
@@ -61,6 +64,9 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 
+	float spread = 1.0f;
+	float crosshairSpreadMin = 1.0f;
+	float crosshairSpreadMax = 2.0f;
 
 	PaintBallClass weapon;
 	AudioSystem* audiosystem;

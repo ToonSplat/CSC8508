@@ -17,6 +17,12 @@ namespace NCL {
 			Vector3 lightPosition;
 			float lightRadius;
 		};
+		struct CrosshairStruct
+		{
+			Vector3 pos;
+			float rot;
+			Vector3 scale;
+		};
 		struct ShaderLights {
 			LightStruct data[1];
 		};
@@ -72,7 +78,10 @@ namespace NCL {
 
 			void DrawMainScene(int id = -1);
 
-			void RenderRectical();
+			void RenderRectical(int id = -1);
+			CrosshairStruct crosshairs[4];
+			float crosshairSpreadFactor;
+
 			void RenderWeapon(int id);
 
 			OGLShader*		defaultShader;

@@ -35,6 +35,11 @@ PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* level
 		bullet[i] = nullptr;
 	}
 
+	shootSpread = 0.0f;
+	shootSpreadAdd = 1.0f;
+	shootSpreadMin = 0.0f;
+	shootSpreadMax = 1.0f;
+
 	trajectoryDetected = false;
 }
 
@@ -78,6 +83,9 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 		status = isReloading;
 	else
 		status = isIdle;
+
+	if (shootSpread > 0) shootSpread -= dt * 2.0f;
+	shootSpread = Clamp(shootSpread, shootSpreadMin, shootSpreadMax);
 
 	switch (status) 
 	{
@@ -177,6 +185,7 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 
 	shootTimer = 1.0f/fireRate;
 	ammoInUse--;
+	shootSpread += shootSpreadAdd;
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));

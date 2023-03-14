@@ -30,6 +30,28 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
 	ToonDebugManager::Instance().StartLoad();
 
+	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
+	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
+	crosshairs[2].pos = Vector3(-0.04f, 0.0f, 0.0f);		//Left
+	crosshairs[3].pos = Vector3(0.04f, 0.0f, 0.0f);			//Right
+
+	/*crosshairs[0].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[1].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[2].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[3].rot = Vector3(0.0f, 0.0f, 0.0f);*/
+
+	crosshairs[0].rot = 0.0f;
+	crosshairs[1].rot = 180.0f;
+	crosshairs[2].rot = 90.0f;
+	crosshairs[3].rot = -90.0f;
+
+	crosshairs[0].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[1].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[2].scale = Vector3(0.15f, 0.015f, 1.0f);
+	crosshairs[3].scale = Vector3(0.15f, 0.015f, 1.0f);
+
+	crosshairSpreadFactor = 1.0f;
+	
 	SetupLoadingScreen();
 
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
@@ -190,32 +212,65 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
-	RenderRectical();
+	RenderRectical(id);
 	RenderWeapon(id);
 }
 
-void GameTechRenderer::RenderRectical()
+void GameTechRenderer::RenderRectical(int id)
 {
 	if (!gameWorld->HasGameStarted()) return;
-	BindShader(textureShader);
 
-	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("crosshair"), "diffuseTex", 0);
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.05f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.1f, 0.07f, 1.0f));
+	ToonNetworkedGame* networkGame = dynamic_cast<ToonNetworkedGame*>(gameWorld->GetToonGame());
+	if (networkGame != nullptr && networkGame->IsServer())
+		return;
+
+	BindShader(textureShader);
+	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair"), "diffuseTex", 0);
 
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
+	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+
+	Vector4 colorWhite = Debug::WHITE;
+	Vector4 teamColor = colorWhite;
+	Player* player = gameWorld->GetToonGame()->GetPlayerFromID(id);
+	if (player != nullptr)
+	{
+		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
+		crosshairSpreadFactor = player->GetCrosshairSpreadFactor();
+	}
+
+	glUniform1i(discardWhiteLoc, 0);
+	glUniform4fv(colourLoc, 1, (float*)teamColor.array);
 
 	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
 	glStencilFunc(GL_EQUAL, 2, ~0);
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
+
+	Matrix4 minimapModelMatrix;
 	BindMesh(squareQuad);
+	for (int i = 0; i < 4; i++)
+	{
+		//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
+		minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale);
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair_circle"), "diffuseTex", 0);
+	minimapModelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.02f, 0.02f, 1.0f));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_STENCIL_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glUniform1i(discardWhiteLoc, 1);
+	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
@@ -235,15 +290,12 @@ void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
 	Vector4 teamColor = colorWhite;
 
 	float fillAmount = 1.0f;
-	if (gameWorld != nullptr)
+	Player* player = gameWorld->GetToonGame()->GetPlayerFromID(id);
+	if (player != nullptr)
 	{
-		Player* player = gameWorld->GetToonGame()->GetPlayerFromID(id);
-		if (player != nullptr)
-		{
-			teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
-			PaintBallClass playerWeapon = player->GetWeapon();
-			fillAmount = 1.0f - (playerWeapon.getShootTimer() / playerWeapon.getFireRate());
-		}
+		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
+		PaintBallClass playerWeapon = player->GetWeapon();
+		fillAmount = 1.0f - (playerWeapon.getShootTimer() / playerWeapon.getFireRate());
 	}
 
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
@@ -906,6 +958,23 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 		if (ImGui::DragFloat3("Follow Offset 2", (float*)&cFollowOffset2)) followCamera->followOffset2 = cFollowOffset2;
 		if (ImGui::DragFloat3("Target Offset", (float*)&cTargetOffset)) followCamera->SetTargetOffset(cTargetOffset);
 		if (ImGui::DragFloat3("Aim Offset", (float*)&cAimOffset)) followCamera->SetAimOffset(cAimOffset);
+	}
+	if (ImGui::CollapsingHeader("Crosshair"))
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			Vector3 crossPos = crosshairs[i].pos;
+			float crossRot = crosshairs[i].rot;
+			Vector3 crossScale = crosshairs[i].scale;
+			if (ImGui::DragFloat3(std::string("Crosshair Pos -" + std::to_string(i)).c_str(), (float*)&crossPos)) crosshairs[i].pos = crossPos;
+			if (ImGui::DragFloat(std::string("Crosshair Rot -" + std::to_string(i)).c_str(), (float*)&crossRot)) crosshairs[i].rot = crossRot;
+			if (ImGui::DragFloat3(std::string("Crosshair Scale -" + std::to_string(i)).c_str(), (float*)&crossScale)) crosshairs[i].scale = crossScale;
+
+			ImGui::Separator();
+		}
+
+		float crossSpread = crosshairSpreadFactor;
+		if (ImGui::DragFloat("Crosshair Spread", (float*)&crossSpread)) crosshairSpreadFactor = crossSpread;
 	}
 
 	ImGui::End();

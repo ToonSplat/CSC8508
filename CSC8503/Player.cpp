@@ -108,6 +108,8 @@ void Player::Update(float dt) {
 	isMoving = linVel.length() >= 0.5f;
 	linVel.normalize();
 
+	CalcCrosshairSpread(dt);
+
 	isGrounded = IsGrounded();
 	
 	if (!allowInput) return;
@@ -165,6 +167,13 @@ void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
 		controls->camera[1] = yaw;
 
 	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(yaw);
+}
+
+void Player::CalcCrosshairSpread(float dt)
+{
+	float currentSpread = isMoving ? crosshairSpreadMax : crosshairSpreadMin;
+	currentSpread += weapon.getShootSpread();
+	spread = Lerp(spread, currentSpread, dt * 5.0f);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

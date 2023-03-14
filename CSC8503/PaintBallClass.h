@@ -23,8 +23,9 @@ namespace NCL {
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
 
-            float getFireRate() { return 1 / fireRate; }
-            float getShootTimer() { return shootTimer; }
+            float getFireRate() const { return 1 / fireRate; }
+            float getShootTimer() const { return shootTimer; }
+            float getShootSpread() const { return shootSpread; }
 
             PaintBallClass MakeInstance();
 
@@ -40,6 +41,11 @@ namespace NCL {
             PaintBallProjectile* bullet[20];    //Trajectory
             int trajectoryPoints = 20;          //Trajectory
             Vector3 bulletVelocity;
+
+            float shootSpread;
+            float shootSpreadAdd;
+            float shootSpreadMin;
+            float shootSpreadMax;
 
             void Reload(float dt);
             void PickUpAmmo(int amt);
