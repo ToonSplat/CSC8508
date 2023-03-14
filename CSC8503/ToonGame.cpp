@@ -82,7 +82,12 @@ void ToonGame::StartGame() {
 			player->SetWeapon(baseWeapon);
 
 			if (localPlayerCount == 1)
+			{
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+				
+				PlayerNPC* playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
+				allPlayers.emplace(playerNPC);
+			}
 
 			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
 			world->SetMainCamera(i, followCamera);
@@ -259,7 +264,7 @@ void ToonGame::ShowUI(float time) {
 		const std::string winnerText = "WINNER:" + winner->GetTeamName();
 		Debug::Print(winnerText, Vector2(50.0f - winnerText.size(), 15.0f), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 
-		for (auto& [id, player] : players)
+		for (auto& player : allPlayers)
 		{
 			if (player->GetTeam() == winner) player->PlayVictory();
 			else player->PlayDefeat();

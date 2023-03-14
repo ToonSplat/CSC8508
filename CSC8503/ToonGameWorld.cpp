@@ -5,6 +5,7 @@
 #include "PaintableObject.h"
 #include "PaintBallProjectile.h"
 #include "Player.h"
+#include "PlayerNPC.h"
 #include "ToonEventListener.h"
 
 using namespace NCL;
@@ -65,7 +66,7 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
 	for (auto& i : gameObjects) {
-		if (dynamic_cast<Player*>(i))
+		if (dynamic_cast<Player*>(i) || dynamic_cast<PlayerNPC*>(i))
 			delete (Player*)i;
 		else delete i;
 	}

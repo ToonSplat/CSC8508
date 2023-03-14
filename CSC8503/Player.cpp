@@ -75,7 +75,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
-	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
+	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 
 
 	if (isMoving)
@@ -89,30 +89,13 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	
 }
 
-void Player::Update(float dt) {
-	
-	/*string pos = std::to_string(GetPosition().x);
-	pos += ", " + std::to_string(GetPosition().y);
-	pos += ", " + std::to_string(GetPosition().z);
-	
-	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
-
-	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
-	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
-	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
-	
-	ToonGameObjectAnim::Update(dt);
+void Player::UpdateAnimations()
+{
 	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 	linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
 	linVel.y = 0;
 	isMoving = linVel.length() >= 0.5f;
 	linVel.normalize();
-
-	CalcCrosshairSpread(dt);
-
-	isGrounded = IsGrounded();
-	
-	if (!allowInput) return;
 
 	if (isGrounded)
 	{
@@ -139,7 +122,6 @@ void Player::Update(float dt) {
 				else if (linVel.x < -0.5)
 					PlayAnim("Player_Run_Aim_L");
 				else {
-					std::cout << "How did we get here?\n";
 					PlayAnim("Player_Idle_Aim");
 				}
 			}
@@ -154,6 +136,28 @@ void Player::Update(float dt) {
 	}
 	else
 		PlayAnim("Player_Jump");
+}
+
+void Player::Update(float dt) {
+	
+	/*string pos = std::to_string(GetPosition().x);
+	pos += ", " + std::to_string(GetPosition().y);
+	pos += ", " + std::to_string(GetPosition().z);
+	
+	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
+
+	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
+	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
+	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
+	
+	ToonGameObjectAnim::Update(dt);
+
+	CalcCrosshairSpread(dt);
+
+	isGrounded = IsGrounded();
+	if (!allowInput) return;
+
+	UpdateAnimations();
 }
 
 void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
