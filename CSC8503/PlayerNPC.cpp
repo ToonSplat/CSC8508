@@ -30,6 +30,8 @@ void PlayerNPC::Update(float dt)
 
 	isAiming = true;
 	isGrounded = IsGrounded();
+
+	if (!allowInput) return;
 	if (isGrounded)
 	{
 		jumpTimerCurrent += dt;
@@ -43,10 +45,13 @@ void PlayerNPC::Update(float dt)
 	rotationTimerCurrent += dt;
 	if (rotationTimerCurrent >= rotationTimerMax)
 	{
-		Vector3 euler(0.0f, GetRandomRotation(), 0.0f);
+		rotationTimerCurrent = 0.0f;
+		targetAngle = GetRandomRotation();
 	}
+
+	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
+	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 	
-	if (!allowInput) return;
 	UpdateAnimations();
 }
 
@@ -54,7 +59,7 @@ float PlayerNPC::GetRandomRotation()
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(0, 360.0f);
+	std::uniform_int_distribution<> dis((float)0.0f, (float)360.0f);
 
-	return dis(gen);
+	return (float)dis(gen);
 }
