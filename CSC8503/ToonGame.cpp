@@ -23,6 +23,7 @@ using namespace CSC8503;
 
 ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
+	AudioSystem::GetAudioSystem()->ApplyIngame();
 	world = new ToonGameWorld();
 	ToonDebugManager::Instance().SetGameWorld(world);
 
