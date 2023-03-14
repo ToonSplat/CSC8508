@@ -107,7 +107,6 @@ void main(void)
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		float distancePercentage = distanceBetween / impactPoints[i].radius;
 		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}

@@ -135,31 +135,8 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
-
-	float percentageScale = 0.0f;
-	int winning = GetWinningTeam(percentageScale);
-	switch (winning) {
-	case 1:
-		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
-		break;
-	case 2:
-		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
-		break;
-	case 3:
-		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
-		break;
-	case 4:
-		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
-		break;
-	case 5:
-		shaderLight.data[0].lightColour = defaultColour;
-		break;
-	default:
-		break;
-	}
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
+	UpdateLightColour();
 	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
@@ -347,7 +324,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	currentRenderCamera = gameWorld->GetMainCamera(1);
 	DrawMainScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	DrawMinimap();
+	//DrawMinimap();
 }
 
 void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
@@ -633,7 +610,7 @@ void GameTechRenderer::RenderShadowMap() {
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	PresentMinimap();
+	//PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
@@ -918,6 +895,33 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 	ImGui::End();
 	ImGui::Render();
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void GameTechRenderer::UpdateLightColour() {
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
+	switch (winning) {
+	case 1:
+		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
+		break;
+	case 2:
+		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
+		break;
+	case 3:
+		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
+		break;
+	case 4:
+		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
+		break;
+	case 5:
+		shaderLight.data[0].lightColour = defaultColour;
+		break;
+	default:
+		break;
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void GameTechRenderer::BuildObjectList() {

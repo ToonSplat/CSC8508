@@ -117,6 +117,7 @@ namespace NCL {
 			int shadowSize;
 
 			ShaderLights shaderLight;
+			void UpdateLightColour();
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;

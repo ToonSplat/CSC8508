@@ -83,7 +83,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	{
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 					reactphysics3d::Vector3 dirOri = orientation;
 					dirOri.y = 0;
 					dirOri.normalize();
@@ -180,5 +180,5 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));
-	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 250.0f); // TODO: The force can maybe be applied better
+	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 400.0f); // TODO: The force can maybe be applied better
 }
