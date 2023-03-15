@@ -9,6 +9,31 @@ ToonDebugManager::ToonDebugManager() {
 	isCollisionDisplayToggled = false;
 }
 
+
+void ToonDebugManager::StartTimeCount(measuring m) {
+	switch (m) {
+	case load: loadStart = high_resolution_clock::now(); break;
+	case frame:	frameStart = high_resolution_clock::now(); break;
+	case audio: audioStart = high_resolution_clock::now(); break;
+	case networking: networkingStart = high_resolution_clock::now(); break;
+	case physics: physicsStart = high_resolution_clock::now(); break;
+	case animation: animationStart = high_resolution_clock::now(); break;
+	case rendering: renderingStart = high_resolution_clock::now(); break;
+	}
+}
+
+void ToonDebugManager::EndTimeCount(measuring m) {
+	switch (m) {
+	case load: loadTimeTaken = ConvertTimeTaken(loadStart, high_resolution_clock::now()); break;
+	case frame:	frameTimeTaken = ConvertTimeTaken(frameStart, high_resolution_clock::now()); break;
+	case audio: audioTimeTaken = ConvertTimeTaken(audioStart, high_resolution_clock::now()); break;
+	case networking: networkingTimeTaken = ConvertTimeTaken(networkingStart, high_resolution_clock::now()); break;
+	case physics: physicsTimeTaken = ConvertTimeTaken(physicsStart, high_resolution_clock::now()); break;
+	case animation: animationTimeTaken = ConvertTimeTaken(animationStart, high_resolution_clock::now()); break;
+	case rendering: graphicsTimeTaken = ConvertTimeTaken(frameStart, high_resolution_clock::now()); break;
+	}
+}
+
 void ToonDebugManager::StartLoad() {
 	loadStart = high_resolution_clock::now();
 }

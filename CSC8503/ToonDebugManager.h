@@ -29,6 +29,13 @@ namespace NCL
 				return *instance;
 			}
 
+			enum measuring{load, frame, audio, networking, physics, animation, rendering};
+
+			void StartTimeCount(measuring m);
+
+			void EndTimeCount(measuring m);
+
+
 			void Update();
 
 			void StartLoad();
