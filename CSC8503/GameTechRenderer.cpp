@@ -202,6 +202,7 @@ void GameTechRenderer::RenderRectical(int id)
 		return;
 
 	BindShader(textureShader);
+
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair"), "diffuseTex", 0);
 
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
@@ -214,7 +215,7 @@ void GameTechRenderer::RenderRectical(int id)
 	if (player != nullptr)
 	{
 		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
-		crosshairSpreadFactor = player->GetCrosshairSpreadFactor();
+		if(m_EnableDynamicCrosshair) crosshairSpreadFactor = player->GetCrosshairSpreadFactor();
 	}
 
 	glUniform1i(discardWhiteLoc, 0);

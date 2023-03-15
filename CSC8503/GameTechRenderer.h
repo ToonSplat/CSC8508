@@ -30,6 +30,8 @@ namespace NCL {
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
 		public:
+			bool m_EnableDynamicCrosshair = true;
+
 			GameTechRenderer();		
 			~GameTechRenderer();
 
