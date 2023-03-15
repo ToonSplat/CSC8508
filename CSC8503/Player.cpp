@@ -89,7 +89,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	
 }
 
-void Player::UpdateAnimations()
+void Player::UpdateMovementAnimations()
 {
 	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 	linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
@@ -157,7 +157,7 @@ void Player::Update(float dt) {
 	isGrounded = IsGrounded();
 	if (!allowInput) return;
 
-	UpdateAnimations();
+	UpdateMovementAnimations();
 }
 
 void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)

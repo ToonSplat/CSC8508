@@ -105,7 +105,7 @@ namespace NCL
 			void GameStarted()  { gameStarted = true;}
 			void GameEnded()	{ gameStarted = false;}
 
-			bool HasGameStarted() { return gameStarted; }
+			bool HasGameStarted() const { return gameStarted; }
 		protected:
 
 			ToonGame* game;

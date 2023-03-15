@@ -1,5 +1,8 @@
 #pragma once
 #include "Player.h"
+#include "State.h"
+#include "StateMachine.h"
+#include "StateTransition.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -14,10 +17,27 @@ public:
 
 protected:
 	float GetRandomRotation();
+	float GetRandomRotationTime();
 
 	float jumpTimerCurrent;
 	float jumpTimerMax;
 
-	float rotationTimerCurrent;
+	float rotationTimerMin;
 	float rotationTimerMax;
+	float rotationTimerCurrent;
+	float rotationTimerCurrentMax;
+
+	StateMachine* stateMachine;
+	State* stateIdle;
+	State* stateShooting;
+	State* stateGameEnded;
+
+	StateTransition* IdleToShooting;
+	StateTransition* ShootingToGameEnded;
+
+	StateTransitionFunction IdleToShootingFunc = [&](void)->bool { return gameWorld->HasGameStarted(); };
+	StateTransitionFunction ShootingToGameEndedFunc = [&](void)->bool { return !allowInput; };
+
+private:
+	float RandF(const float& min, const float& max);
 };

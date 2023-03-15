@@ -86,6 +86,7 @@ void ToonGame::StartGame() {
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 				
 				PlayerNPC* playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
+				playerNPC->SetWeapon(baseWeapon);
 				allPlayers.emplace(playerNPC);
 			}
 

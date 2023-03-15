@@ -25,7 +25,7 @@ public:
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
-	void UpdateAnimations();
+	void UpdateMovementAnimations();
 	virtual void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }

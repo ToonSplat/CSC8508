@@ -232,7 +232,7 @@ void GameTechRenderer::RenderRectical(int id)
 	for (int i = 0; i < 4; i++)
 	{
 		//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
-		minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale);
+		minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor * 0.75f) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale * 0.75f);
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 	}
