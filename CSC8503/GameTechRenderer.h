@@ -204,6 +204,8 @@ namespace NCL {
 
 			bool mapInitialised = false;
 			bool updateScorebar;
+
+			
 		};
 	}
 }

@@ -47,8 +47,16 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
                 // Make the HitSphere if local play or the server
-                if(gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
-                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                {
+                    std::map<int, Team*> teams = gameWorld->GetTeams();
+                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
+                    teamColourPicker = (teamColourPicker + 1) % 4;
+
+                
+                //levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                }
+                    
 
                 i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
                 AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
@@ -87,7 +95,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         
     }
     for (HitSphere* i : gameWorld->GetHitSpheres()) {
-        if (i->CheckDelete()) {
+        if (i->CheckDelete() && i->CheckDrawn()) {
             //delete the hitsphere
             gameWorld->RemoveHitSphere(i);
             gameWorld->RemoveGameObject(i, false);

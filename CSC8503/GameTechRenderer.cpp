@@ -591,44 +591,53 @@ void GameTechRenderer::UpdateMap() {
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
+	if (gameWorld->GetHitSpheres().size() > 0) {
+		updateScorebar = true;
+
+		currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
+		currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
+		currentAtomicReset = ((currentAtomicReset + 1) % 3);
+	}
+
 	OGLShader* shader = mapUpdateShader;
-	BindShader(shader);
+	BindShader(mapUpdateShader);
 
 	for (const auto& i : gameWorld->GetHitSpheres()) {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
-		glUniform1i(glGetUniformLocation(shader->GetProgramID(), "mapTex"), 0);
+		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 0);
 
-		int paintLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
+		int paintLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "objectColour");
 		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
 
-		int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
+		int atomicLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "currentAtomicTarget");
 		glUniform1i(atomicLocation, currentAtomicGPU);
 
-		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-		glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
+		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
+		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
+		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
+		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 		
-		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int projLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewMatrix");
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
-		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
 		float radius = i->GetRadius();
-		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		Matrix4 modelMatrix = Matrix4::Scale(Vector3(radius, radius, radius));
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		i->CheckDrawn();
+		MeshGeometry* sphereMesh = ToonAssetManager::Instance().GetMesh("sphere");
+		BindMesh(sphereMesh);
+		DrawBoundMesh();
 
 		(*i).Draw(*this);
 	}
 
 	
-	updateScorebar = true;
-
-	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
-	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
-	currentAtomicReset = ((currentAtomicReset + 1) % 3);
+	
 
 	glDisable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1252,7 +1261,7 @@ void GameTechRenderer::RetrieveAtomicValues(){
 	
 	CalculatePercentages(totalPixelCount, teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
 
-	ResetAtomicBuffer();
+	//ResetAtomicBuffer();
 }
 
 void GameTechRenderer::ResetAtomicBuffer(){
