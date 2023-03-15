@@ -110,7 +110,7 @@ class ToonGameSettings : public PushdownState
 		std::vector<SettingsDataStructure> m_SettingsData;
 		ToonFileHandling*				   m_SettingsFile		   = NULL;
 		ToonSettingsFileDataStructure	   m_SettingsDS;
-		const std::string&				   Settings_File_Name	   = NCL::Assets::DATADIR + "ToonSettings.txt";
+		const std::string&				   Settings_File_Name	   = NCL::Assets::GetDataDir() + "ToonSettings.txt";
 
 	public:
 		ToonGameSettings(GameTechRenderer* renderer, ToonGameWorld* world, Window* win);

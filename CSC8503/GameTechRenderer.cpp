@@ -741,12 +741,12 @@ void GameTechRenderer::RenderSkybox(bool enableTests) {
 void GameTechRenderer::LoadSkybox(string fileName) {
 	// TODO: Move the texture loading into TAM? Not sure if possible without major refactor
 	string filenames[6] = {
-		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::TEXTUREDIR + fileName,
-		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::TEXTUREDIR + fileName,
-		fileName.empty() ? "/Cubemap/skyrender0003.png"  : Assets::TEXTUREDIR + fileName,
-		fileName.empty() ? "/Cubemap/skyrender0006.png"  : Assets::TEXTUREDIR + fileName,
-		fileName.empty() ? "/Cubemap/skyrender0002.png"  : Assets::TEXTUREDIR + fileName,
-		fileName.empty() ? "/Cubemap/skyrender0005.png"  : Assets::TEXTUREDIR + fileName
+		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::GetTextureDir() + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::GetTextureDir() + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0003.png"  : Assets::GetTextureDir() + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0006.png"  : Assets::GetTextureDir() + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0002.png"  : Assets::GetTextureDir() + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0005.png"  : Assets::GetTextureDir() + fileName
 	};
 
 	int width[6] = { 0 };

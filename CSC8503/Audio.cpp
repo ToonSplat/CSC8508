@@ -14,7 +14,7 @@ Sound* Audio::AddSound(const char* filename)
     sf_count_t num_frames;
     ALsizei num_bytes;
     
-    std::string fullFilePath(NCL::Assets::SOUNDSDIR + filename);
+    std::string fullFilePath(NCL::Assets::GetSoundsDir() + filename);
     const char* filepath = fullFilePath.c_str();
     
     

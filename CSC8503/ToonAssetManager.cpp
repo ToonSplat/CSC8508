@@ -7,7 +7,7 @@ using namespace NCL;
 ToonAssetManager* ToonAssetManager::instance = NULL;
 
 ToonAssetManager::ToonAssetManager(void) {
-	file = std::ifstream(Assets::DATADIR + "ItemsToLoad.csv");
+	file = std::ifstream(Assets::GetDataDir() + "ItemsToLoad.csv");
 	if (!file.is_open()) {
 		std::cerr << "Failed to open the file\n";
 	}

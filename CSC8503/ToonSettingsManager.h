@@ -11,7 +11,7 @@ namespace NCL
 		{
 		public:
 			static void ApplySettings() {
-				std::ifstream file = std::ifstream(Assets::DATADIR + "ToonSettings.txt");
+				std::ifstream file = std::ifstream(Assets::GetDataDir() + "ToonSettings.txt");
 				if (!file.is_open()) {
 					std::cerr << "Failed to open the settings file\n";
 				}

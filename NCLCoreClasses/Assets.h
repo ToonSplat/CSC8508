@@ -10,14 +10,15 @@ https://research.ncl.ac.uk/game/
 #include <string>
 
 namespace NCL::Assets {
-	const std::string ASSETROOT(ASSETROOTLOCATION);
-	const std::string SHADERDIR(ASSETROOT + "Shaders/");
-	const std::string MESHDIR(ASSETROOT + "Meshes/");
-	const std::string TEXTUREDIR(ASSETROOT + "Textures/");
-	const std::string SOUNDSDIR(ASSETROOT + "Sounds/");
-	const std::string FONTSSDIR(ASSETROOT + "Fonts/");
-	const std::string DATADIR(ASSETROOT + "Data/");
-
+	extern void SetupAssetDirectory();
 	extern bool ReadTextFile(const std::string& filepath, std::string& result);
 	extern bool ReadBinaryFile(const std::string& filepath, char** into, size_t& size);
+
+	extern std::string GetAssetRoot();
+	extern std::string GetShaderDir();
+	extern std::string GetMeshDir();
+	extern std::string GetTextureDir();
+	extern std::string GetSoundsDir();
+	extern std::string GetFontsDir();
+	extern std::string GetDataDir();
 }

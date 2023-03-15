@@ -98,6 +98,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 
 int main()
 {
+	Assets::SetupAssetDirectory();
 	//Audio
 	NCL::CSC8503::AudioSystem::Initialise();
 

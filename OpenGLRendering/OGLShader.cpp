@@ -51,7 +51,7 @@ void OGLShader::ReloadShader() {
 	string fileContents = "";
 	for (int i = 0; i < (int)ShaderStages::MAXSIZE; ++i) {
 		if (!shaderFiles[i].empty()) {
-			if (Assets::ReadTextFile(Assets::SHADERDIR + shaderFiles[i], fileContents)) {
+			if (Assets::ReadTextFile(Assets::GetShaderDir() + shaderFiles[i], fileContents)) {
 				shaderIDs[i] = glCreateShader(shaderTypes[i]);
 
 				std::cout << "Reading " << ShaderNames[i] << " shader " << shaderFiles[i] << std::endl;
