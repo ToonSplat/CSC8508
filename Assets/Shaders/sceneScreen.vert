@@ -37,7 +37,7 @@ void main(void)
 
 	OUT.shadowProj 	=  shadowMatrix * vec4 ( position,1);
 	OUT.worldPos 	= ( modelMatrix * vec4 ( position ,1)). xyz ;
-	OUT.localPos =  modelMatrix * vec4(position, 1.0);
+	OUT.localPos	=  modelMatrix * vec4(position, 1.0);
 	OUT.normal 		= normalize ( normalMatrix * normalize ( normal ));
 	
 	vec2 texCoordInv = vec2(texCoord.x, 1.0f - texCoord.y);
