@@ -34,62 +34,6 @@ void ToonDebugManager::EndTimeCount(measuring m) {
 	}
 }
 
-void ToonDebugManager::StartLoad() {
-	loadStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndLoad() {
-	loadEnd = high_resolution_clock::now();
-	loadTimeTaken = ConvertTimeTaken(loadStart, loadEnd);
-}
-
-void ToonDebugManager::StartFrame() {
-	frameStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndFrame() {
-	frameEnd = high_resolution_clock::now();
-	frameTimeTaken = ConvertTimeTaken(frameStart, frameEnd);
-}
-
-void ToonDebugManager::StartAudio() {
-	audioStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndAudio() {
-	audioEnd = high_resolution_clock::now();
-	audioTimeTaken = ConvertTimeTaken(audioStart, audioEnd);
-}
-
-void ToonDebugManager::StartNetworking() {
-	networkingStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndNetworking() {
-	networkingEnd = high_resolution_clock::now();
-	networkingTimeTaken = ConvertTimeTaken(networkingStart, networkingEnd);
-}
-
-void ToonDebugManager::StartPhysics() {
-	physicsStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndPhysics() {
-	physicsEnd = high_resolution_clock::now();
-	physicsTimeTaken = ConvertTimeTaken(physicsStart, physicsEnd);
-}
-
-void ToonDebugManager::StartAnimation() {
-	animationStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndAnimation() {
-	animationEnd = high_resolution_clock::now();
-	animationTimeTaken = ConvertTimeTaken(animationStart, animationEnd);
-}
-
-void ToonDebugManager::StartRendering() {
-	renderingStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndRendering() {
-	renderingEnd = high_resolution_clock::now();
-	graphicsTimeTaken = ConvertTimeTaken(frameStart, renderingEnd);
-}
-
 void ToonDebugManager::Update() {
 	CalculateMemoryUsage();
 	CalculateMemoryUsageByProgram();

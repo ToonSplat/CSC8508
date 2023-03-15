@@ -25,9 +25,8 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
-{
-	ToonDebugManager::Instance().StartLoad();
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
+	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::load);
 
 	SetupLoadingScreen();
 
@@ -36,7 +35,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 
-	ToonDebugManager::Instance().EndLoad();
+	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::load);
 
 	SetupMain();
 }
@@ -133,7 +132,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 }
 
 void GameTechRenderer::RenderFrame() {
-	ToonDebugManager::Instance().StartRendering();
+	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::rendering);
 	if (!gameWorld) return; // Safety Check
 	
 	UpdateLightColour();
@@ -154,7 +153,7 @@ void GameTechRenderer::RenderFrame() {
 	PresentScene();
 
 	RenderImGUI();
-	ToonDebugManager::Instance().EndRendering();
+	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::rendering);
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(){

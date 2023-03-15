@@ -29,35 +29,12 @@ namespace NCL
 				return *instance;
 			}
 
+			void Update();
+
 			enum measuring{load, frame, audio, networking, physics, animation, rendering};
 
 			void StartTimeCount(measuring m);
-
 			void EndTimeCount(measuring m);
-
-
-			void Update();
-
-			void StartLoad();
-			void EndLoad();
-
-			void StartFrame();
-			void EndFrame();
-
-			void StartAudio();
-			void EndAudio();
-
-			void StartNetworking();
-			void EndNetworking();
-
-			void StartPhysics();
-			void EndPhysics();
-
-			void StartAnimation();
-			void EndAnimation();
-
-			void StartRendering();
-			void EndRendering();
 
 			double ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
 				std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
@@ -100,25 +77,13 @@ namespace NCL
 			SIZE_T physMemUsedByProgram;
 
 			high_resolution_clock::time_point loadStart;
-			high_resolution_clock::time_point loadEnd;
-
 			high_resolution_clock::time_point frameStart;
-			high_resolution_clock::time_point frameEnd;
-
 			high_resolution_clock::time_point audioStart;
-			high_resolution_clock::time_point audioEnd;
-
 			high_resolution_clock::time_point networkingStart;
-			high_resolution_clock::time_point networkingEnd;
-
 			high_resolution_clock::time_point physicsStart;
-			high_resolution_clock::time_point physicsEnd;
-
 			high_resolution_clock::time_point animationStart;
-			high_resolution_clock::time_point animationEnd;
-
 			high_resolution_clock::time_point renderingStart;
-			high_resolution_clock::time_point renderingEnd;
+
 
 			ToonGameWorld* world;
 
