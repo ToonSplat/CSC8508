@@ -1,8 +1,12 @@
 #pragma once
 #include "Player.h"
+
 #include "State.h"
 #include "StateMachine.h"
 #include "StateTransition.h"
+
+#include "NavPathGraphLevel.h"
+#include "NavPathFinder.h"
 
 using namespace NCL;
 using namespace CSC8503;
@@ -26,6 +30,8 @@ protected:
 	float rotationTimerMax;
 	float rotationTimerCurrent;
 	float rotationTimerCurrentMax;
+
+	NavPathGraphLevel* pathGraph;
 
 	StateMachine* stateMachine;
 	State* stateIdle;

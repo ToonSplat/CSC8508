@@ -140,11 +140,11 @@ void Player::UpdateMovementAnimations()
 
 void Player::Update(float dt) {
 	
-	/*string pos = std::to_string(GetPosition().x);
+	string pos = std::to_string(GetPosition().x);
 	pos += ", " + std::to_string(GetPosition().y);
 	pos += ", " + std::to_string(GetPosition().z);
 	
-	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
+	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
 
 	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
 	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);

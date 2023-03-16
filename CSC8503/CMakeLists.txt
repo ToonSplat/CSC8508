@@ -33,6 +33,7 @@ set(Header_Files
     "ToonSettingsManager.h"
     "NavPathNode.h"
     "NavPathFinder.h"
+    "NavPathGraphLevel.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -60,6 +61,7 @@ set(Source_Files
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
     "ToonSettingsManager.cpp"
+    "NavPathGraphLevel.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files

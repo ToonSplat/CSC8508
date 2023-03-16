@@ -1,7 +1,8 @@
 #include "PlayerNPC.h"
 #include <random>
 
-
+using namespace NCL;
+using namespace CSC8503;
 
 PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : Player(RP3D_World, gameWorld, team)
 {
@@ -14,6 +15,9 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	rotationTimerMax = 5.0f;
 	rotationTimerCurrent = 0.0f;
 	rotationTimerCurrentMax = GetRandomRotationTime();
+
+	pathGraph = new NavPathGraphLevel();
+	std::vector<Vector3> paths = NavPathFinder::FindPath(*pathGraph, pathGraph->GetNode(8)->position, pathGraph->GetNode(14)->position);
 
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
@@ -74,12 +78,24 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 PlayerNPC::~PlayerNPC()
 {
 	team->RemovePlayer();
+
+	delete stateIdle;
+	delete stateShooting;
+	delete stateGameEnded;
+
+	delete IdleToShooting;
+	delete ShootingToGameEnded;
+
+	delete stateMachine;
+
+	delete pathGraph;
 }
 
 void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);
+	pathGraph->DrawDebugPath();
 }
 
 float PlayerNPC::GetRandomRotation()

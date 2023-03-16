@@ -9,39 +9,55 @@ namespace NCL
 	{
 		class NavPathFinder
 		{
-			static std::vector<Vector3> FindPath(NavPathGraph& pathGraph, const Vector3& from, const Vector3& to)
+		public:
+			static std::vector<Vector3> FindPath(NavPathGraph& pathGraph, Vector3& from, Vector3& to)
 			{
-				std::queue<Vector3> q;
-				q.push(from);
+				NavPathNode* fromNode = pathGraph.GetNode(from);
+				NavPathNode* toNode = pathGraph.GetNode(to);
 
-				std::unordered_map<Vector3, Vector3> cameFrom;
-				cameFrom[from] = Vector3(-1.0f, -1.0f, -1.0f);
+				std::queue<NavPathNode*> q;
+				q.push(fromNode);
+
+				std::unordered_map<std::string, Vector3> cameFrom;
+				cameFrom[from.ToString()] = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
 
 				while (!q.empty())
 				{
-					Vector3 current = q.front();
+					NavPathNode* currentNode = q.front();
 					q.pop();
-					if (current == to)
+					if (currentNode == toNode)
 						break;
 
-					for (Vector3 next : pathGraph.nodes[current]->neighbours)
+					for (NavPathNode* nextNode : currentNode->neighbours)
 					{
-						if (cameFrom.find(next) == cameFrom.end())
+						if (cameFrom.find(nextNode->position.ToString()) == cameFrom.end())
 						{
-							q.push(next);
-							cameFrom[next] = current;
+							q.push(nextNode);
+							cameFrom[nextNode->position.ToString()] = currentNode->position;
 						}
 					}					
 				}
 
 				std::vector<Vector3> path;
-				Vector3 current = to;
-				while (current != Vector3(-1.0f, -1.0f, -1.0f))
+				NavPathNode* current = toNode;
+				Vector3 pos = current->position;
+				while (pos != Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX))
 				{
-					path.emplace_back(current);
+					path.emplace_back(current->position);
+					if (cameFrom.find(current->position.ToString()) != cameFrom.end())
+						pos = cameFrom[current->position.ToString()];
+					else
+						pos = Vector3(-FLT_MAX, -FLT_MAX, -FLT_MAX);
+				}
+
+				std::reverse(path.begin(), path.end());
+
+				/*while (current != nullptr)
+				{
+					path.emplace_back(current->position);
 					current = cameFrom[current];
 				}
-				std::reverse(path.begin(), path.end());
+				std::reverse(path.begin(), path.end());*/
 
 				return path;
 			}

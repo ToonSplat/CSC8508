@@ -12,27 +12,49 @@ namespace NCL
 		class NavPathNode
 		{
 		public:
-			NavPathNode(const Vector3& pos) : position(pos) {}
+			NavPathNode(const int& _id, const Vector3& pos) : id(_id), position(pos) {}
 
+			int id;
 			Vector3 position;
-			std::vector<Vector3> neighbours;
+			std::vector<NavPathNode*> neighbours;
 		};
 
 		class NavPathGraph
 		{
 		public:
-			std::unordered_map<Vector3, NavPathNode*> nodes;
+			std::unordered_map<int, NavPathNode*> nodes;
+			std::unordered_map<std::string, NavPathNode*> nodesCache;
+
+			NavPathNode* GetNode(const int& id)
+			{
+				return nodes[id];
+			}
+
+			NavPathNode* GetNode(const Vector3& pos)
+			{
+				return nodesCache[pos.ToString()];
+			}
 
 			void AddNode(const Vector3& pos)
 			{
-				NavPathNode* node = new NavPathNode(pos);
-				nodes[pos] = node;
+				static int idCounter = 0;
+
+				NavPathNode* node = new NavPathNode(idCounter++, pos);
+
+				nodes[idCounter - 1] = node;
+				nodesCache[pos.ToString()] = node;
 			}
 
-			void AddEdge(const Vector3& from, const Vector3& to)
+			void AddEdge(const int& fromID, const int& toID)
 			{
-				nodes[from]->neighbours.emplace_back(to);
-				nodes[to]->neighbours.emplace_back(from);
+				NavPathNode* fromNode = GetNode(fromID);
+				NavPathNode* toNode = GetNode(toID);
+
+				fromNode->neighbours.emplace_back(toNode);
+				toNode->neighbours.emplace_back(fromNode);
+
+				/*nodes[fromID]->neighbours.emplace_back(nodes[toID]);
+				nodes[toID]->neighbours.emplace_back(nodes[fromID]);*/
 			}
 		};
 	}
