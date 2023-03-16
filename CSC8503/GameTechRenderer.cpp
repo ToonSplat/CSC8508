@@ -824,15 +824,29 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 			ImGui::BeginTable("Memory Usage Table", 2);
 
 			ImGui::TableNextColumn();
+			ImGui::Text("Virtual Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+
+			ImGui::TableNextColumn();
+
 			ImGui::Text("Virtual Memory");
 			ImGui::TableNextColumn();
 			ImGui::Text(ToonDebugManager::Instance().GetVirtualMemoryUsage().c_str());
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Virtual Memory By Program");
+			ImGui::Text("Total Virtual Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalVirtualMemory().c_str());
+
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
 
 			ImGui::TableNextColumn();
 
@@ -842,9 +856,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Physcial Memory By Program");
+			ImGui::Text("Total Physcial Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalPhysicalMemory().c_str());
 
 			ImGui::EndTable();
 

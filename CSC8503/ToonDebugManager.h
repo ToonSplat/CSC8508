@@ -37,13 +37,16 @@ namespace NCL
 			void EndTimeCount(measuring m);
 
 			string ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end);
+			string ConvertMemoryUsage(auto a) {return std::to_string(a / byteToMb) + " MB"; }
 
 			const int byteToMb = 1048576;
 
-			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem / byteToMb) + "/" + std::to_string(totalVirtualMem / byteToMb) + "MB"; }
-			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram / byteToMb) + "MB"; }
-			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem / byteToMb) + "/" + std::to_string(totalPhysMem / byteToMb) + "MB"; }
-			string GetPhysicalUsagebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
+			string GetVirtualMemoryUsage() { return ConvertMemoryUsage(usedVirtualMem); }
+			string GetVirutalUsageByProgram() { return ConvertMemoryUsage(virtualMemUsedByProgram); }
+			string GetTotalVirtualMemory(){ return ConvertMemoryUsage(totalVirtualMem); }
+			string GetPhysicalMemoryUsage() { return ConvertMemoryUsage(usedPhysMem); }
+			string GetPhysicalUsagebyProgram() { return ConvertMemoryUsage(physMemUsedByProgram); }
+			string GetTotalPhysicalMemory() { return ConvertMemoryUsage(totalPhysMem); }
 
 			string GetTimeTaken(measuring m);
 
