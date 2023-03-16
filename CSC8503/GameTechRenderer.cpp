@@ -83,6 +83,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
+	animatedShader = ToonAssetManager::Instance().GetShader("animated");
 
 	shadowSize = 2048;
 	GenerateShadowFBO();
@@ -97,8 +98,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 
 	glClearColor(1, 1, 1, 1);
 
-	shaderLight = ShaderLights();
-	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f); //Vector3(-300.0f, 500.0f, -300.0f)
+	sceneLight = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f);
 
 	fullScreenQuad = new OGLMesh();
 	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
@@ -324,7 +324,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	currentRenderCamera = gameWorld->GetMainCamera(1);
 	DrawMainScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	//DrawMinimap();
+	DrawMinimap();
 }
 
 void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
@@ -610,7 +610,7 @@ void GameTechRenderer::RenderShadowMap() {
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	//PresentMinimap();
+	PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
@@ -902,25 +902,25 @@ void GameTechRenderer::UpdateLightColour() {
 	int winning = GetWinningTeam(percentageScale);
 	switch (winning) {
 	case 1:
-		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
+		sceneLight.lightColour = teamColours[0] * (1 - percentageScale);
 		break;
 	case 2:
-		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
+		sceneLight.lightColour = teamColours[1] * (1 - percentageScale);
 		break;
 	case 3:
-		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
+		sceneLight.lightColour = teamColours[2] * (1 - percentageScale);
 		break;
 	case 4:
-		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
+		sceneLight.lightColour = teamColours[3] * (1 - percentageScale);
 		break;
 	case 5:
-		shaderLight.data[0].lightColour = defaultColour;
+		sceneLight.lightColour = defaultColour;
 		break;
 	default:
 		break;
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -1500,13 +1500,16 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
 	glGenBuffers(1, &lightMatrix);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+	unsigned int animatedIndex = glGetUniformBlockIndex(animatedShader->GetProgramID(), "lights");
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
 	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightMatrix);
+	glUniformBlockBinding(animatedShader->GetProgramID(), animatedIndex, 2);
 }
 
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
