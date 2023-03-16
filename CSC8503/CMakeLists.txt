@@ -31,6 +31,8 @@ set(Header_Files
     "ToonGameObjectAnim.h"
     "ToonDebugManager.h"
     "ToonSettingsManager.h"
+    "NavPathNode.h"
+    "NavPathFinder.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
