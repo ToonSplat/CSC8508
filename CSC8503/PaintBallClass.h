@@ -6,7 +6,7 @@
 
 #include "ToonGameObject.h"
 
-#define MAX_BULLETS 50
+#define MAX_BULLETS 100
 
 namespace NCL {
     namespace CSC8503 {
@@ -66,7 +66,7 @@ namespace NCL {
 
             statusTypes status;
 
-            float m_ForceAppliedOnPaintBall = 250.0f;
+            float m_ForceAppliedOnPaintBall = 400.0f;
         };
     }
 }
