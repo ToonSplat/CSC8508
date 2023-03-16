@@ -114,12 +114,10 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 	reactphysics3d::Vector3 velocity = orientation * (m_ForceAppliedOnPaintBall * 0.1625f);
 	float flightDurartion = (2 * velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
 	float singlePointTime = 0.08f;//flightDurartion / trajectoryPoints;	//Hardcoding it so that singlePointTime don't become 0, due to flightDuration
-	float multiplier = 1;
 
-	multiplier = flightDurartion < 0.0f ? -1 : 1;
 	for (int i = 0; i < trajectoryPoints; i++)
 	{
-		float deltaTime = singlePointTime * i;// *multiplier;
+		float deltaTime = singlePointTime * i;
 		float x			= velocity.x * deltaTime;
 		float y			= velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
 		float z			= velocity.z * deltaTime;
