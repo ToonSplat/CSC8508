@@ -17,9 +17,6 @@ namespace NCL {
 			Vector3 lightPosition;
 			float lightRadius;
 		};
-		struct ShaderLights {
-			LightStruct data[1];
-		};
 		
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
@@ -104,7 +101,7 @@ namespace NCL {
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
-
+			OGLShader* animatedShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -116,7 +113,7 @@ namespace NCL {
 			Matrix4 shadowMatrix;
 			int shadowSize;
 
-			ShaderLights shaderLight;
+			LightStruct sceneLight;
 			void UpdateLightColour();
 
 			//Debug data storage things

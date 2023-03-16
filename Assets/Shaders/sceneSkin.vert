@@ -50,21 +50,21 @@ void main(void)
 	vec4 skelPos 	= vec4(0,0,0,0);
 	vec4 otherSkelPos 	= vec4(0,0,0,0);
 
-	//vec4 skelNormal = vec4(0,0,0,0);
+	vec4 skelNormal = vec4(0,0,0,0);
 	for(int i = 0; i < 4; ++i) {
 		int   jointIndex 	= jointIndices[i];
 		float jointWeight 	= jointWeights[i];
 
 		skelPos += joints[jointIndex] * localPos * jointWeight;
 
-		//skelNormal += joints[jointIndex] * localNormal * jointWeight;
+		skelNormal += joints[jointIndex] * localNormal * jointWeight;
 	}
 	//skelPos.xyz = position.xyz;
 
 	vec3 wNormal = normalize(normalMatrix * normalize(normal));
     vec3 wTangent = normalize(normalMatrix * normalize(tangent.xyz));
 
-    OUT.normal = wNormal;
+    OUT.normal = skelNormal.xyz;
     OUT.tangent = wTangent;
     OUT.binormal = cross(wTangent, wNormal) * tangent.w;
 
