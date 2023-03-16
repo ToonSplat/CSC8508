@@ -64,6 +64,8 @@ namespace NCL {
             };
 
             statusTypes status;
+
+            float m_ForceAppliedOnPaintBall = 250.0f;
         };
     }
 }

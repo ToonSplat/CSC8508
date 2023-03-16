@@ -147,7 +147,7 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 	dirOri.y = 0;
 	dirOri.normalize();
 	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
-	reactphysics3d::Vector3 velocity = (orientation * 60.0f);
+	reactphysics3d::Vector3 velocity = orientation * (m_ForceAppliedOnPaintBall * 0.1625f);
 	float flightDurartion = (2 * velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
 	float singlePointTime = flightDurartion / trajectoryPoints;
 
@@ -165,9 +165,6 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 			bullet[i/jump] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 			bullet[i/jump]->GetRigidbody()->setIsActive(false);
 			bullet[i/jump]->GetRigidbody()->enableGravity(true);
-			auto aasdj = bullet[i / jump]->GetRigidbody()->getMass();
-			auto askjdh = bullet[i / jump]->GetRigidbody()->getForce();
-			std::cout << "asd" << std::endl;
 		}
 		bullet[i / jump]->SetPosition(position.x + x, position.y + y, position.z + z);
 	}
@@ -220,5 +217,5 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));
-	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 400.0f); // TODO: The force can maybe be applied better
+	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * m_ForceAppliedOnPaintBall); // TODO: The force can maybe be applied better
 }
