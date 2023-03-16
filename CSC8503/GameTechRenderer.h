@@ -34,6 +34,8 @@ namespace NCL {
 			void SetShadowSize(int size) { shadowSize = size; }
 			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
+
+			void ResetAtomicBuffer();
 		protected:
 
 			void SetupLoadingScreen();
@@ -171,7 +173,7 @@ namespace NCL {
 
 			GLuint atomicsBuffer[3];
 			void GenerateAtomicBuffer();
-			void ResetAtomicBuffer();
+			
 			
 			GLuint teamPixelCount[ATOMIC_COUNT - 1];
 			GLuint totalPixelCount;

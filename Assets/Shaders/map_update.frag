@@ -25,6 +25,7 @@ in Vertex
 
 
 layout(location = 0) out vec4 gColour;
+layout(location = 1) out vec3 gScore;
 
 
 void main(void)
@@ -41,6 +42,10 @@ void main(void)
 	vec3 previousColour = texture(mapTex, IN.texCoord).rgb;
 	vec3 newColour = albedo;
 
+	int nextAtomic = ((currentAtomicTarget + 1) % 3);
+
+
+
 	switch (currentAtomicTarget){
 		case 0:
 			if 		(previousColour == team1Colour && atomicCounter(scoreCount1[1]) != 0) atomicCounterDecrement(scoreCount1[1]);
@@ -51,7 +56,7 @@ void main(void)
 			if 		(objectColour == team1Colour) atomicCounterIncrement(scoreCount1[1]);
 			else if (objectColour == team2Colour) atomicCounterIncrement(scoreCount1[2]);
 			else if (objectColour == team3Colour) atomicCounterIncrement(scoreCount1[3]);
-			else if (objectColour == team3Colour) atomicCounterIncrement(scoreCount1[4]);
+			else if (objectColour == team4Colour) atomicCounterIncrement(scoreCount1[4]);
 
 			break;
 		case 1:

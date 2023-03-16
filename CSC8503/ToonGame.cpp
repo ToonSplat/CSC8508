@@ -145,6 +145,7 @@ PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newSt
 	if (m_ShouldQuitGame)
 	{
 		world->MapNeedsChecking(true);
+		renderer->ResetAtomicBuffer();
 		ToonDebugManager::Instance().SetGameWorld(nullptr);
 		return PushdownResult::Pop;
 	}
@@ -224,6 +225,7 @@ void ToonGame::UpdateAnimations(float dt) {
 void ToonGame::UpdateTime(float dt) {
 	gameTime -= dt;
 	if (gameTime <= 0) {
+		renderer->ResetAtomicBuffer();
 		if (winner == nullptr && offline == true) {
 			winner = DetermineWinner(renderer->GetTeamScores());
 		}

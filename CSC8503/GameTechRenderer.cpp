@@ -499,7 +499,7 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
 
-	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
+	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
 	BindMesh(minimapStencilQuad);
@@ -594,9 +594,9 @@ void GameTechRenderer::UpdateMap() {
 	if (gameWorld->GetHitSpheres().size() > 0) {
 		updateScorebar = true;
 
-		currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
+		/*currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
 		currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
-		currentAtomicReset = ((currentAtomicReset + 1) % 3);
+		currentAtomicReset = ((currentAtomicReset + 1) % 3);*/
 	}
 
 	OGLShader* shader = mapUpdateShader;
@@ -633,7 +633,7 @@ void GameTechRenderer::UpdateMap() {
 		BindMesh(sphereMesh);
 		DrawBoundMesh();
 
-		(*i).Draw(*this);
+		//(*i).Draw(*this);
 	}
 
 	
@@ -735,7 +735,7 @@ void GameTechRenderer::RenderShadowMap() {
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	//PresentMinimap();
+	PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
@@ -1238,8 +1238,8 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
 	
-	currentAtomicCPU = 2;
-	currentAtomicReset = 1;
+	currentAtomicCPU = 0;
+	currentAtomicReset = 0;
 	currentAtomicGPU = 0;
 }
 	
@@ -1274,6 +1274,8 @@ void GameTechRenderer::ResetAtomicBuffer(){
 	}
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
 
+	updateScorebar = true;
+
 }
 
 int GameTechRenderer::GetWinningTeam(float& percentage) {
@@ -1297,7 +1299,13 @@ int GameTechRenderer::GetWinningTeam(float& percentage) {
 		}
 	}
 
-	percentage = 1.0f / (winningPercentage / secondPercentage);
+	if (winningPercentage <= secondPercentage) {
+		percentage = 0.0;
+	}
+	else {
+		percentage = 1.0f / (winningPercentage / secondPercentage);
+
+	}
 	return winningTeam;
 }
 
