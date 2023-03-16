@@ -24,6 +24,8 @@ namespace NCL {
             void SetTeam(Team* team) { this->team = team; };
 
             PaintBallClass MakeInstance();
+            void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
+            void UpdateTrajectory(float dt, PlayerControl* playerControls);
 
         protected:
             // Weapon Stats
@@ -43,7 +45,6 @@ namespace NCL {
 
             float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
-            void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
             void HideTrajectory();              //Trajectory
 
             Team* team;

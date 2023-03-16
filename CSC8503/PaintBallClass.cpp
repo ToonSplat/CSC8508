@@ -101,37 +101,77 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	}
 }
 
-//void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
-//{
-//	const float PAINTBALL_RADIUS = 0.25f;
-//	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
-//	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(gameWorld->GetMainCamera()->GetPitch() + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);;
-//	orientation.normalize();
-//	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 1, 0);
-//	//reactphysics3d::Vector3 forceVector = orientation * force;
-//	reactphysics3d::Vector3 velocity	= ToonUtils::ConvertToRP3DVector3(force);
-//	float flightDurartion				= (velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
-//	float singlePointTime				= flightDurartion / trajectoryPoints;
-//
-//	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
-//	for (int i = 0; i < trajectoryPoints; i++)
-//	{
-//		float deltaTime = singlePointTime * i;
-//		float x			= velocity.x * deltaTime;
-//		float y			= velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
-//		float z		    = velocity.z * deltaTime;
-//		position.x	   += x;
-//		position.y	   += y;
-//		position.z	   += z;
-//
-//		if (!bullet[i])
-//		{
-//			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
-//			bullet[i]->GetRigidbody()->setIsActive(false);
-//		}
-//		bullet[i]->SetPosition(position.x, position.y, position.z);
-//	}
-//}
+void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
+{
+	const float PAINTBALL_RADIUS = 0.25f;
+	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(gameWorld->GetMainCamera(1)->GetPitch() + 10) / 180.0f * std::acos(0.0)), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);;
+	orientation.normalize();
+	reactphysics3d::Vector3 position	= owningObject->GetRigidbody()->getTransform().getPosition() + orientation * 3 + reactphysics3d::Vector3(0, 3, 0);
+	reactphysics3d::Vector3 velocity	= orientation * 40.0f;
+	float flightDurartion				= (2*velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
+	float singlePointTime				= flightDurartion / trajectoryPoints;
+
+	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
+	for (int i = 0; i < trajectoryPoints; i++)
+	{
+		float deltaTime = singlePointTime * i;
+		float x			= velocity.x * deltaTime;
+		float y			= velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
+		float z		    = velocity.z * deltaTime;
+		position.x	   += x;
+		position.y	   += sqrt(y);
+		position.z	   += z;
+
+		if (!bullet[i])
+		{
+			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
+			bullet[i]->GetRigidbody()->setIsActive(false);
+			auto aasdj = bullet[i]->GetRigidbody()->getMass();
+			auto askjdh = bullet[i]->GetRigidbody()->getForce();
+			std::cout << "asd" << std::endl;
+		}
+		auto yAngle = acos(orientation.y);
+		auto angle = atan2(sqrt(orientation.x * orientation.x + orientation.z * orientation.z), orientation.y);
+		bullet[i]->SetPosition(position.x, position.y, position.z);
+	}
+}
+
+void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* playerControls)
+{
+	const float PAINTBALL_RADIUS		= 0.25f;
+	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
+	orientation.normalize();
+	reactphysics3d::Vector3 dirOri = orientation;
+	dirOri.y = 0;
+	dirOri.normalize();
+	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
+	reactphysics3d::Vector3 velocity = (orientation * 60.0f);
+	float flightDurartion = (2 * velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
+	float singlePointTime = flightDurartion / trajectoryPoints;
+
+	if (flightDurartion < 0.0f) { HideTrajectory(); return; }
+	int jump = 1;
+	for (int i = 0; i < jump * trajectoryPoints; i += jump)
+	{
+		float deltaTime = singlePointTime * i;
+		float x = velocity.x * deltaTime;
+		float y = velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
+		float z = velocity.z * deltaTime;
+
+		if (!bullet[i / jump])
+		{
+			bullet[i/jump] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
+			bullet[i/jump]->GetRigidbody()->setIsActive(false);
+			bullet[i/jump]->GetRigidbody()->enableGravity(true);
+			auto aasdj = bullet[i / jump]->GetRigidbody()->getMass();
+			auto askjdh = bullet[i / jump]->GetRigidbody()->getForce();
+			std::cout << "asd" << std::endl;
+		}
+		bullet[i / jump]->SetPosition(position.x + x, position.y + y, position.z + z);
+	}
+}
 
 void PaintBallClass::HideTrajectory()
 {

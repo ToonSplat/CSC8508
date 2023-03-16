@@ -70,6 +70,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 
 	if (isAiming) {
 		targetAngle = controls->camera[1];
+		weapon.UpdateTrajectory(dt, controls);//DrawTrajectory(NCL::Maths::Vector3());
 	}
 	else if (isMoving)
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
