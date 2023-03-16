@@ -36,10 +36,7 @@ namespace NCL
 			void StartTimeCount(measuring m);
 			void EndTimeCount(measuring m);
 
-			double ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
-				std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-				return (double)timeTaken.count();
-			}
+			string ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end);
 
 			const int byteToMb = 1048576;
 
@@ -47,13 +44,8 @@ namespace NCL
 			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram / byteToMb) + "MB"; }
 			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem / byteToMb) + "/" + std::to_string(totalPhysMem / byteToMb) + "MB"; }
 			string GetPhysicalUsagebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
-			string GetLoadTimeTaken() { return std::to_string(loadTimeTaken / 1000.0f) + " ms"; }
-			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken / 1000.0f) + " ms"; }
-			string GetAudioTimeTaken() { return std::to_string(audioTimeTaken / 1000.0f) + " ms"; }
-			string GetNetworkingTimeTaken() { return std::to_string(networkingTimeTaken / 1000.0f) + " ms"; }
-			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken / 1000.0f) + " ms"; }
-			string GetAnimationTimeTaken() { return std::to_string(animationTimeTaken / 1000.0f) + " ms"; }
-			string GetGraphicsTimeTaken() { return std::to_string(graphicsTimeTaken / 1000.0f) + " ms"; }
+
+			string GetTimeTaken(measuring m);
 
 			void ToggleCollisionDisplay();
 
@@ -84,16 +76,15 @@ namespace NCL
 			high_resolution_clock::time_point animationStart;
 			high_resolution_clock::time_point renderingStart;
 
-
 			ToonGameWorld* world;
 
-			double loadTimeTaken;
-			double frameTimeTaken;
-			double audioTimeTaken;
-			double networkingTimeTaken;
-			double physicsTimeTaken;
-			double animationTimeTaken;
-			double graphicsTimeTaken;
+			string loadTimeTaken;
+			string frameTimeTaken;
+			string audioTimeTaken;
+			string networkingTimeTaken;
+			string physicsTimeTaken;
+			string animationTimeTaken;
+			string graphicsTimeTaken;
 
 			bool isCollisionDisplayToggled;
 		};

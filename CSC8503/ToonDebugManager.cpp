@@ -9,6 +9,15 @@ ToonDebugManager::ToonDebugManager() {
 	isCollisionDisplayToggled = false;
 }
 
+void ToonDebugManager::Update() {
+	CalculateMemoryUsage();
+	CalculateMemoryUsageByProgram();
+	if (world) {
+		world->GetPhysicsWorld().setIsDebugRenderingEnabled(isCollisionDisplayToggled);
+		if (isCollisionDisplayToggled && world)
+			DisplayCollisionBoxes();
+	}
+}
 
 void ToonDebugManager::StartTimeCount(measuring m) {
 	switch (m) {
@@ -30,17 +39,19 @@ void ToonDebugManager::EndTimeCount(measuring m) {
 	case networking: networkingTimeTaken = ConvertTimeTaken(networkingStart, high_resolution_clock::now()); break;
 	case physics: physicsTimeTaken = ConvertTimeTaken(physicsStart, high_resolution_clock::now()); break;
 	case animation: animationTimeTaken = ConvertTimeTaken(animationStart, high_resolution_clock::now()); break;
-	case rendering: graphicsTimeTaken = ConvertTimeTaken(frameStart, high_resolution_clock::now()); break;
+	case rendering: graphicsTimeTaken = ConvertTimeTaken(renderingStart, high_resolution_clock::now()); break;
 	}
 }
 
-void ToonDebugManager::Update() {
-	CalculateMemoryUsage();
-	CalculateMemoryUsageByProgram();
-	if (world) {
-		world->GetPhysicsWorld().setIsDebugRenderingEnabled(isCollisionDisplayToggled);
-		if (isCollisionDisplayToggled && world)
-			DisplayCollisionBoxes();
+string ToonDebugManager::GetTimeTaken(measuring m) {
+	switch (m) {
+	case load: return loadTimeTaken; break;
+	case frame:	return frameTimeTaken; break;
+	case audio: return audioTimeTaken; break;
+	case networking: return networkingTimeTaken; break;
+	case physics: return physicsTimeTaken; break;
+	case animation: return animationTimeTaken; break;
+	case rendering: return graphicsTimeTaken; break;
 	}
 }
 
@@ -63,6 +74,12 @@ void ToonDebugManager::CalculateMemoryUsageByProgram() {
 	virtualMemUsedByProgram = pmc.PrivateUsage;
 
 	physMemUsedByProgram = pmc.WorkingSetSize;
+}
+
+string ToonDebugManager::ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
+	std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+	double temp = (double)timeTaken.count() / 1000.0f;
+	return std::to_string(temp) + " ms";
 }
 
 void ToonDebugManager::DisplayCollisionBoxes() {
@@ -95,3 +112,4 @@ void ToonDebugManager::DisplayCollisionBoxes() {
 void ToonDebugManager::ToggleCollisionDisplay() {
 	isCollisionDisplayToggled = !isCollisionDisplayToggled;
 }
+

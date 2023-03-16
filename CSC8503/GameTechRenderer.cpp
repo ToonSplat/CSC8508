@@ -153,7 +153,7 @@ void GameTechRenderer::RenderFrame() {
 	PresentScene();
 
 	RenderImGUI();
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::rendering);
+	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::rendering);
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
@@ -856,38 +856,38 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::Text("Load Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetLoadTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::load).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Frame Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::frame).c_str());
 			ImGui::TableNextColumn();
 
 
 			ImGui::Text("Audio Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::audio).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::networking).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Physics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::physics).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Animation Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAnimationTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::animation).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Graphics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetGraphicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::rendering).c_str());
 			ImGui::EndTable();
 		}
 	}
