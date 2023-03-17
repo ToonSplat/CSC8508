@@ -159,7 +159,7 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 	
-	UpdateLightColour();
+	//UpdateLightColour();
 	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:

@@ -9,7 +9,7 @@ namespace NCL
 		{
 		public:
 			NavPathGraphLevel();
-			void DrawDebugPath();
+			void DrawDebugPathGraph();
 		};
 	}
 }

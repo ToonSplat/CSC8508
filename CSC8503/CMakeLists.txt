@@ -61,6 +61,7 @@ set(Source_Files
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
     "ToonSettingsManager.cpp"
+    "NavPathFinder.cpp"
     "NavPathGraphLevel.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})

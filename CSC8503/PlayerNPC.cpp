@@ -1,4 +1,5 @@
 #include "PlayerNPC.h"
+#include "ToonGame.h"
 #include <random>
 
 using namespace NCL;
@@ -8,16 +9,19 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 {
 	allowInput = true;
 
+	jumpTimerMin = 2.0f;
+	jumpTimerMax = 7.0f;
 	jumpTimerCurrent = 0.0f;
-	jumpTimerMax = 6.0f;
+	jumpTimerCurrentMax = GetRandomJumpTime();
 
 	rotationTimerMin = 1.0f;
 	rotationTimerMax = 5.0f;
 	rotationTimerCurrent = 0.0f;
 	rotationTimerCurrentMax = GetRandomRotationTime();
 
+	nodeDistanceThreshold = 15.0f;
+
 	pathGraph = new NavPathGraphLevel();
-	std::vector<Vector3> paths = NavPathFinder::FindPath(*pathGraph, pathGraph->GetNode(8)->position, pathGraph->GetNode(14)->position);
 
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
@@ -43,6 +47,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 				if (jumpTimerCurrent >= jumpTimerMax)
 				{
 					jumpTimerCurrent = 0.0f;
+					jumpTimerMax = GetRandomJumpTime();
 					GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 				}
 			}
@@ -51,12 +56,33 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 			if (rotationTimerCurrent >= rotationTimerCurrentMax)
 			{
 				rotationTimerCurrent = 0.0f;
-				targetAngle = GetRandomRotation();
 				rotationTimerCurrentMax = GetRandomRotationTime();
+				targetAngle = GetRandomRotation();
 			}
 
 			reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 			SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
+
+			if (targetPlayerTemp)
+			{
+				GetPath(targetPlayerTemp->GetPosition(), GetPosition());
+				if (pathList.size() > 0)
+				{
+					for (int i = 1; i < pathList.size(); i++)
+						Debug::DrawLine(pathList[i - 1], pathList[i], Debug::YELLOW);
+
+					float nodeDistance = (pathList[currentNodeIndex] - GetPosition()).Length();
+					if (nodeDistance <= nodeDistanceThreshold)
+					{
+						currentNodeIndex = (currentNodeIndex + 1) % pathList.size();
+						if (currentNodeIndex >= (int)pathList.size())
+							return;
+					}
+
+					MoveTowards(pathList[currentNodeIndex], dt);
+					Debug::DrawBox(pathList[currentNodeIndex], Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
+				}
+			}
 
 			UpdateMovementAnimations();
 		});
@@ -73,6 +99,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine->AddState(stateGameEnded);
 	stateMachine->AddTransition(IdleToShooting);
 	stateMachine->AddTransition(ShootingToGameEnded);
+
+	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);
 }
 
 PlayerNPC::~PlayerNPC()
@@ -95,7 +123,16 @@ void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);
-	pathGraph->DrawDebugPath();
+	//pathGraph->DrawDebugPathGraph();
+
+	nearestNode = pathGraph->GetNearestNode(GetPosition());
+	if (nearestNode)
+		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);
+}
+
+inline float PlayerNPC::GetRandomJumpTime()
+{
+	return RandF(jumpTimerMin, jumpTimerMax);
 }
 
 float PlayerNPC::GetRandomRotation()
@@ -106,6 +143,21 @@ float PlayerNPC::GetRandomRotation()
 float PlayerNPC::GetRandomRotationTime()
 {
 	return RandF(rotationTimerMin, rotationTimerMax);
+}
+
+void PlayerNPC::GetPath(const Vector3& from, const Vector3& to)
+{
+	pathList.clear();
+	pathList = NavPathFinder::FindPath(*pathGraph, from, to);
+	currentNodeIndex = (pathList.size() > 0) ? 0 : -1;
+}
+
+void PlayerNPC::MoveTowards(const Vector3& targetPos, const float& dt)
+{
+	Vector3 dir = (targetPos - GetPosition()).Normalised();
+	dir.y = 0.0f;
+
+	rigidBody->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(dir) * moveSpeed * dt);
 }
 
 float PlayerNPC::RandF(const float& min, const float& max)

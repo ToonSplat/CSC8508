@@ -3,6 +3,7 @@
 #include "Vector3.h"
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 using namespace NCL::Maths;
 namespace NCL
@@ -23,6 +24,7 @@ namespace NCL
 		{
 		public:
 			std::unordered_map<int, NavPathNode*> nodes;
+			std::vector<NavPathNode*> allNodes;
 			std::unordered_map<std::string, NavPathNode*> nodesCache;
 
 			NavPathNode* GetNode(const int& id)
@@ -43,6 +45,7 @@ namespace NCL
 
 				nodes[idCounter - 1] = node;
 				nodesCache[pos.ToString()] = node;
+				allNodes.emplace_back(node);
 			}
 
 			void AddEdge(const int& fromID, const int& toID)
@@ -55,6 +58,19 @@ namespace NCL
 
 				/*nodes[fromID]->neighbours.emplace_back(nodes[toID]);
 				nodes[toID]->neighbours.emplace_back(nodes[fromID]);*/
+			}
+
+			NavPathNode* GetNearestNode(const Vector3& pos)
+			{
+				std::vector<NavPathNode*> allNodesTmp(allNodes.begin(), allNodes.end());
+				std::sort(allNodesTmp.begin(), allNodesTmp.end(), [&](NavPathNode* a, NavPathNode* b)->bool
+					{
+						float distA = (pos - a->position).LengthSquared();
+						float distB = (pos - b->position).LengthSquared();
+						return distA < distB;
+					});
+
+				return allNodesTmp[0];
 			}
 		};
 	}

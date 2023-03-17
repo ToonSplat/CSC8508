@@ -20,16 +20,26 @@ public:
 	virtual void Update(float dt) override;
 
 protected:
-	float GetRandomRotation();
-	float GetRandomRotationTime();
+	inline float GetRandomJumpTime();
 
-	float jumpTimerCurrent;
+	inline float GetRandomRotation();
+	inline float GetRandomRotationTime();
+
+	void GetPath(const Vector3& from, const Vector3& to);
+	void MoveTowards(const Vector3& targetPos, const float& dt);
+
+	float jumpTimerMin;
 	float jumpTimerMax;
+	float jumpTimerCurrent;
+	float jumpTimerCurrentMax;
 
 	float rotationTimerMin;
 	float rotationTimerMax;
 	float rotationTimerCurrent;
 	float rotationTimerCurrentMax;
+
+	float nodeDistanceThreshold;
+	int currentNodeIndex;
 
 	NavPathGraphLevel* pathGraph;
 
@@ -43,6 +53,11 @@ protected:
 
 	StateTransitionFunction IdleToShootingFunc = [&](void)->bool { return gameWorld->HasGameStarted(); };
 	StateTransitionFunction ShootingToGameEndedFunc = [&](void)->bool { return !allowInput; };
+
+	NavPathNode* nearestNode;
+	Player* targetPlayerTemp;
+
+	std::vector<Vector3> pathList;
 
 private:
 	float RandF(const float& min, const float& max);

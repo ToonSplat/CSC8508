@@ -56,7 +56,7 @@ NCL::CSC8503::NavPathGraphLevel::NavPathGraphLevel()
 	AddEdge(10, 6);
 }
 
-void NCL::CSC8503::NavPathGraphLevel::DrawDebugPath()
+void NCL::CSC8503::NavPathGraphLevel::DrawDebugPathGraph()
 {
 	for (auto& [id, node] : nodes)
 	{

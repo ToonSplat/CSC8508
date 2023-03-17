@@ -711,8 +711,9 @@ ToonScreen* NCL::CSC8503::ToonLevelManager::AddPropScreen(MeshGeometry* mesh, Ob
 
 Player* ToonLevelManager::AddPlayerToWorld(Team* team) 
 {
-	const float PLAYER_RADIUS = 2.0f;
-	const float PLAYER_HEIGHT = 0.38f;
+	const float PLAYER_RADIUS = 1.25f;
+	const float PLAYER_HEIGHT = 1.9f;
+	const float PLAYER_SCALE = 2.2f;
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
@@ -721,7 +722,7 @@ Player* ToonLevelManager::AddPlayerToWorld(Team* team)
 	player->SetPosition(spawnPoint.GetPosition());
 	player->SetOrientation(spawnPoint.GetRotation());
 
-	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
+	player->GetTransform().SetScale(Vector3(PLAYER_SCALE, PLAYER_SCALE, PLAYER_SCALE));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	player->GetRigidbody()->setLinearDamping(0.8f);
@@ -754,8 +755,9 @@ Player* ToonLevelManager::AddPlayerToWorld(Team* team)
 
 PlayerNPC* NCL::CSC8503::ToonLevelManager::AddPlayerNPCToWorld(Team* team)
 {
-	const float PLAYER_RADIUS = 2.0f;
-	const float PLAYER_HEIGHT = 0.38f;
+	const float PLAYER_RADIUS = 1.25f;
+	const float PLAYER_HEIGHT = 1.9f;
+	const float PLAYER_SCALE = 2.2f;
 	PlayerNPC* player_npc = new PlayerNPC(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player_npc->AddRigidbody();
 
@@ -764,7 +766,7 @@ PlayerNPC* NCL::CSC8503::ToonLevelManager::AddPlayerNPCToWorld(Team* team)
 	player_npc->SetPosition(spawnPoint.GetPosition());
 	player_npc->SetOrientation(spawnPoint.GetRotation());
 
-	player_npc->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
+	player_npc->GetTransform().SetScale(Vector3(PLAYER_SCALE, PLAYER_SCALE, PLAYER_SCALE));
 
 	player_npc->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	player_npc->GetRigidbody()->setLinearDamping(0.8f);
