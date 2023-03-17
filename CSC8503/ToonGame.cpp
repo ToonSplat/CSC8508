@@ -190,6 +190,7 @@ bool ToonGame::CheckDebugKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
 		gameTime = min(gameTime, 5.0f);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) renderer->ToggleDebug();
 	return false;
 }
 
