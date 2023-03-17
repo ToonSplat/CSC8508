@@ -67,6 +67,13 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteFramebuffers(4, quadFBO);
 
 	glDeleteBuffers(3, atomicsBuffer);
+	glDeleteBuffers(1, &lineVertVBO);
+	glDeleteBuffers(1, &textVertVBO);
+	glDeleteBuffers(1, &textColourVBO);
+	glDeleteBuffers(1, &textTexVBO);
+
+	glDeleteVertexArrays(1, &lineVAO);
+	glDeleteVertexArrays(1, &textVAO);
 
 	delete skyboxMesh;
 	delete fullScreenQuad;
