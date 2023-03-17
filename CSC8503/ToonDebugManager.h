@@ -13,8 +13,7 @@ namespace NCL
 	namespace CSC8503
 	{
 		using std::chrono::high_resolution_clock;
-		class ToonDebugManager
-		{
+		class ToonDebugManager{
 		public:
 			static void Create() {
 				if (instance == NULL)
@@ -31,15 +30,16 @@ namespace NCL
 
 			void Update();
 
-			enum measuring{load, frame, audio, networking, physics, animation, rendering};
+			enum measuring { load, frame, audio, networking, physics, animation, rendering};
 
 			void StartTimeCount(measuring m);
 			void EndTimeCount(measuring m);
 
 			string ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end);
-			string ConvertMemoryUsage(auto a) {return std::to_string(a / byteToMb) + " MB"; }
 
 			const int byteToMb = 1048576;
+			string ConvertMemoryUsage(auto a) {return std::to_string(a / byteToMb) + " MB"; }
+
 
 			string GetVirtualMemoryUsage() { return ConvertMemoryUsage(usedVirtualMem); }
 			string GetVirutalUsageByProgram() { return ConvertMemoryUsage(virtualMemUsedByProgram); }
