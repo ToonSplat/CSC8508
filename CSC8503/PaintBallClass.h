@@ -28,6 +28,7 @@ namespace NCL {
             PaintBallClass MakeInstance();
             void UpdateTrajectory(float dt, PlayerControl* playerControls);
             void HideTrajectory();              //Trajectory
+            std::string GetTeamName() { return team->GetTeamName(); }
 
         protected:
             // Weapon Stats

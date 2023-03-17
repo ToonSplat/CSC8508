@@ -124,7 +124,7 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 
 		if (!bullet[i])
 		{
-			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
+			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team, "NoShadow");
 			bullet[i]->GetRigidbody()->setIsActive(false);
 			bullet[i]->GetRigidbody()->enableGravity(true);
 		}

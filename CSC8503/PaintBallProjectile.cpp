@@ -4,9 +4,10 @@
 
 using namespace NCL::CSC8503;
 
-PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, const float& _impactSize, Team* _team) : 
+PaintBallProjectile::PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, const float& _impactSize, Team* _team, std::string objectName) :
 	ToonGameObject(RP3D_World, gameWorld), impactSize(_impactSize), team(_team) {
 	ConfigureSound();
+	name = objectName;
 }
 
 PaintBallProjectile::~PaintBallProjectile(){

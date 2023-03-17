@@ -67,7 +67,7 @@ namespace NCL {
 
 			void DrawMap();
 
-			void DrawMainScene();
+			void DrawMainScene(int index = 0);
 
 			void RenderRectical();
 
@@ -75,7 +75,7 @@ namespace NCL {
 
 			ToonGameWorld*	gameWorld = nullptr;			
 
-			void BuildObjectList();
+			void BuildObjectList(int index = 0);
 			void SortObjectList();
 			void RenderShadowMap();
 

@@ -753,8 +753,8 @@ Player* ToonLevelManager::AddPlayerToWorld(Team* team)
 }
 
 PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
-	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team) {
-	PaintBallProjectile* paintball = new PaintBallProjectile(gameWorld->GetPhysicsWorld(), gameWorld, _impactSize, team);
+	const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team, std::string objectName) {
+	PaintBallProjectile* paintball = new PaintBallProjectile(gameWorld->GetPhysicsWorld(), gameWorld, _impactSize, team, objectName);
 	paintball->AddRigidbody();
 	paintball->SetPosition(position);
 	paintball->SetOrientation(rotationEuler);
