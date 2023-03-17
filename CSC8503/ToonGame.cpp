@@ -225,12 +225,13 @@ void ToonGame::UpdateAnimations(float dt) {
 void ToonGame::UpdateTime(float dt) {
 	gameTime -= dt;
 	if (gameTime <= 0) {
-		renderer->ResetAtomicBuffer();
 		if (winner == nullptr && offline == true) {
 			winner = DetermineWinner(renderer->GetTeamScores());
 		}
-		if (gameTime <= -5.0f && offline == true)
+		if (gameTime <= -5.0f && offline == true) {
+			renderer->ResetAtomicBuffer();
 			StartGame();
+		}			
 	}
 }
 

@@ -26,7 +26,7 @@ in Vertex
 
 
 layout(location = 0) out vec4 gColour;
-layout(location = 1) out vec3 gPos;
+layout(location = 1) out vec4 gPosition;
 
 
 void main(void)
@@ -59,7 +59,7 @@ void main(void)
 	else if (objectColour == team4Colour) atomicCounterIncrement(scoreCount1[4]);
 	
 	// Output the current fragment's world position to the gPos output for use in the next pass
-	gPos = worldPos;
+	gPosition = vec4(IN.worldPos, 1.0);
 
 	
 }

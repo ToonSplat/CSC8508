@@ -26,10 +26,14 @@ void main(void)
 {
 	mat4 mvp 		  = (projMatrix * viewMatrix * modelMatrix);
 
-	OUT.worldPos 	= ( modelMatrix * vec4 ( position ,1)). xyz ;
 	OUT.localPos =  modelMatrix * vec4(position, 1.0);
 	OUT.texCoord	= texCoord;
 	OUT.colour		= objectColour;
 
 	gl_Position		= mvp * vec4(position, 1.0);
+
+	// OUT.worldPos = (mvp * vec4(position, 1.0)).xyz;
+
+	vec4 worldPos = (modelMatrix * vec4(position, 1));
+    OUT.worldPos = worldPos.xyz;
 }

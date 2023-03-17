@@ -153,7 +153,7 @@ void GameTechRenderer::RenderFrame() {
 		break;
 	}
 
-	if (!mapInitialised) DrawMap();
+	DrawMap();
 	UpdateMap();
 	PresentScene();
 
@@ -363,6 +363,7 @@ void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4
 		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int rotationLocation = glGetUniformLocation(shader->GetProgramID(), "rotationMatrix");
 		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
 		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
 		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
@@ -1526,7 +1527,7 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapPositionTexture, 0);
 
