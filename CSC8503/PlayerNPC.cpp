@@ -19,9 +19,16 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	rotationTimerCurrent = 0.0f;
 	rotationTimerCurrentMax = GetRandomRotationTime();
 
-	nodeDistanceThreshold = 15.0f;
+	roamTimerCurrent = 0.0f;
+	roamTimerMax = 5.0f;
+
+	stuckTimerCurrent = 0.0f;
+	stuckTimerMax = 3.0f;
+
+	nodeDistanceThreshold = 4.0f;
 
 	pathGraph = new NavPathGraphLevel();
+	GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
 
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
@@ -44,11 +51,11 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 			if (isGrounded)
 			{
 				jumpTimerCurrent += dt;
-				if (jumpTimerCurrent >= jumpTimerMax)
+				if (jumpTimerCurrent >= jumpTimerMax || IsStuck(dt))
 				{
 					jumpTimerCurrent = 0.0f;
 					jumpTimerMax = GetRandomJumpTime();
-					GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
+					rigidBody->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
 				}
 			}
 
@@ -63,7 +70,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 			reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
 			SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 
-			if (targetPlayerTemp)
+			//TESTING PURPOSE - FIND PATH TO PLAYER
+			/*if (targetPlayerTemp)
 			{
 				GetPath(targetPlayerTemp->GetPosition(), GetPosition());
 				if (pathList.size() > 0)
@@ -82,6 +90,31 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 					MoveTowards(pathList[currentNodeIndex], dt);
 					Debug::DrawBox(pathList[currentNodeIndex], Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
 				}
+			}*/
+
+			if (pathList.size() > 0)
+			{
+				for (int i = 1; i < pathList.size(); i++)
+					Debug::DrawLine(pathList[i - 1], pathList[i], Debug::YELLOW);
+
+				float nodeDistance = (pathList[currentNodeIndex] - GetPosition()).Length();
+				if (nodeDistance <= nodeDistanceThreshold)
+				{
+					currentNodeIndex++;
+					if (currentNodeIndex >= (int)pathList.size())
+						GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+				}
+
+				roamTimerCurrent += dt;
+				if (roamTimerCurrent >= roamTimerMax)
+				{
+					roamTimerCurrent = 0.0f;
+					GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+				}
+
+				MoveTowards(pathList[currentNodeIndex], dt);
+				Debug::DrawBox(pathList[currentNodeIndex], Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
+				Debug::DrawBox(pathList[pathList.size() - 1], Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
 			}
 
 			UpdateMovementAnimations();
@@ -100,7 +133,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine->AddTransition(IdleToShooting);
 	stateMachine->AddTransition(ShootingToGameEnded);
 
-	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);
+	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);	
 }
 
 PlayerNPC::~PlayerNPC()
@@ -125,9 +158,9 @@ void PlayerNPC::Update(float dt)
 	stateMachine->Update(dt);
 	//pathGraph->DrawDebugPathGraph();
 
-	nearestNode = pathGraph->GetNearestNode(GetPosition());
+	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)
-		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);
+		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);*/
 }
 
 inline float PlayerNPC::GetRandomJumpTime()
@@ -160,11 +193,27 @@ void PlayerNPC::MoveTowards(const Vector3& targetPos, const float& dt)
 	rigidBody->applyWorldForceAtCenterOfMass(ToonUtils::ConvertToRP3DVector3(dir) * moveSpeed * dt);
 }
 
+bool PlayerNPC::IsStuck(const float& dt)
+{
+	if (rigidBody->getLinearVelocity().length() <= 3.0f)
+	{
+		stuckTimerCurrent += dt;
+		if (stuckTimerCurrent >= stuckTimerMax)
+		{
+			jumpTimerCurrent = 0.0f;
+			stuckTimerCurrent = 0.0f;
+			return true;
+		}
+	}
+
+	return false;
+}
+
 float PlayerNPC::RandF(const float& min, const float& max)
 {
 	std::random_device rd;
 	std::mt19937 gen(rd());
-	std::uniform_int_distribution<> dis(min, max);
+	std::uniform_real_distribution<> dis(min, max);
 
 	return (float)dis(gen);
 }

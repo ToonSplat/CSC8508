@@ -28,6 +28,8 @@ protected:
 	void GetPath(const Vector3& from, const Vector3& to);
 	void MoveTowards(const Vector3& targetPos, const float& dt);
 
+	bool IsStuck(const float& dt);
+
 	float jumpTimerMin;
 	float jumpTimerMax;
 	float jumpTimerCurrent;
@@ -37,6 +39,12 @@ protected:
 	float rotationTimerMax;
 	float rotationTimerCurrent;
 	float rotationTimerCurrentMax;
+
+	float roamTimerCurrent;
+	float roamTimerMax;
+
+	float stuckTimerCurrent;
+	float stuckTimerMax;
 
 	float nodeDistanceThreshold;
 	int currentNodeIndex;

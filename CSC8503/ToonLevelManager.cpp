@@ -782,6 +782,7 @@ PlayerNPC* NCL::CSC8503::ToonLevelManager::AddPlayerNPCToWorld(Team* team)
 	player_npc->SetColliderLayer(ToonCollisionLayer::Character);
 
 	player_npc->GetCollider()->getMaterial().setBounciness(0.1f);
+	player_npc->GetCollider()->getMaterial().setFrictionCoefficient(0.0f);
 
 	player_npc->GetRigidbody()->setUserData(player_npc);
 

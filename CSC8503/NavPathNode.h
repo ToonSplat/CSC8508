@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <random>
 
 using namespace NCL::Maths;
 namespace NCL
@@ -23,9 +24,16 @@ namespace NCL
 		class NavPathGraph
 		{
 		public:
+			~NavPathGraph()
+			{
+				for (auto n : allNodes)
+					delete n;
+			}
+
 			std::unordered_map<int, NavPathNode*> nodes;
 			std::vector<NavPathNode*> allNodes;
 			std::unordered_map<std::string, NavPathNode*> nodesCache;
+
 
 			NavPathNode* GetNode(const int& id)
 			{
@@ -71,6 +79,15 @@ namespace NCL
 					});
 
 				return allNodesTmp[0];
+			}
+
+			NavPathNode* GetRandomNode()
+			{
+				std::random_device rd;
+				std::mt19937 gen(rd());
+				std::uniform_int_distribution<> dis(0, (int)allNodes.size() - 1);
+
+				return allNodes[dis(gen)];
 			}
 		};
 	}

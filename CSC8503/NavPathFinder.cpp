@@ -98,6 +98,8 @@ std::reverse(path.begin(), path.end());*/
 		path.emplace_back(pathGraph.nodes[pred[crawl]]->position);
 		crawl = pred[crawl];
 	}
+
+	std::reverse(path.begin(), path.end());
 	//auto stop = high_resolution_clock::now();
 	//auto duration = duration_cast<seconds>(stop - startTime);
 	//std::cout << "BFS Path Finding Duration: " << duration << std::endl;
