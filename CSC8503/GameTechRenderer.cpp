@@ -157,12 +157,12 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().EndRendering();
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMainScene(){
+void NCL::CSC8503::GameTechRenderer::DrawMainScene(int index){
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BuildObjectList();
+	BuildObjectList(index);
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
@@ -290,7 +290,7 @@ void NCL::CSC8503::GameTechRenderer::Render2Player()
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glViewport(0, 0, windowWidth / 2, windowHeight);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
-		DrawMainScene();
+		DrawMainScene(i+1);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -308,7 +308,7 @@ void NCL::CSC8503::GameTechRenderer::Render3or4Player()
 		glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 		glViewport(0, 0, width, height);
 		currentRenderCamera = gameWorld->GetMainCamera(i + 1);
-		DrawMainScene();
+		DrawMainScene(i+1);
 		glViewport(0, 0, windowWidth, windowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
@@ -583,6 +583,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto& i : activeObjects)
 	{
+		if (i->GetName() == "NoShadow") { continue; }
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -924,7 +925,7 @@ void GameTechRenderer::UpdateLightColour() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void GameTechRenderer::BuildObjectList() {
+void GameTechRenderer::BuildObjectList(int index) {
 	activeObjects.clear();
 
 	gameWorld->OperateOnContents(
@@ -932,6 +933,11 @@ void GameTechRenderer::BuildObjectList() {
 		{
 			if (o->IsActive()) 
 			{
+				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
+				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetTeams()[index] && gameWorld->GetTeams()[index]->GetTeamName() != obj->GetTeam()->GetTeamName())
+				{
+					return;
+				}
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}
