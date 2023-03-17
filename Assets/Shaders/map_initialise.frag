@@ -11,8 +11,10 @@ in Vertex
 } IN;
 
 layout(location = 0) out vec4 gColour;
+layout(location = 1) out vec3 gPos;
 
 void main(void)
 {
 	gColour = objectMinimapColour;
+	gPos = IN.worldPos;
 }

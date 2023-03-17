@@ -139,8 +139,6 @@ void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
 
-	
-
 	UpdateLighting();
 	
 	switch (gameWorld->GetMainCameraCount()) {
@@ -167,24 +165,11 @@ void NCL::CSC8503::GameTechRenderer::UpdateLighting()
 {
 	float percentageScale = 0.0f;
 	int winning = GetWinningTeam(percentageScale);
-	switch (winning) {
-	case 1:
-		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
-		break;
-	case 2:
-		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
-		break;
-	case 3:
-		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
-		break;
-	case 4:
-		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
-		break;
-	case 5:
+
+	shaderLight.data[0].lightColour = teamColours[winning - 1] * (1 - percentageScale);
+
+	if (percentageScale > 0.99) {
 		shaderLight.data[0].lightColour = defaultColour;
-		break;
-	default:
-		break;
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
@@ -253,6 +238,10 @@ void GameTechRenderer::RenderScene() {
 
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr) continue;
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<HitSphere*>(linkedObject))
+			return;
+
 		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
 		BindShader(shader);
 
@@ -305,7 +294,6 @@ void GameTechRenderer::RenderScene() {
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
 		if (dynamic_cast<PaintableObject*>(linkedObject) || dynamic_cast<Player*>(linkedObject)) {
 			PassImpactPointDetails(linkedObject, shader);
 		}
@@ -584,28 +572,29 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 void GameTechRenderer::UpdateMap() {
 	if (!gameWorld->GetMapCamera() || !mapInitialised) return;
 
-	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
-	glEnable(GL_CULL_FACE);
+	if (gameWorld->GetHitSpheres().size() > 0) {
+		updateScorebar = true;
+	}
 
+	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
+	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
-	if (gameWorld->GetHitSpheres().size() > 0) {
-		updateScorebar = true;
-
-		/*currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
-		currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
-		currentAtomicReset = ((currentAtomicReset + 1) % 3);*/
-	}
+	
 
 	OGLShader* shader = mapUpdateShader;
 	BindShader(mapUpdateShader);
 
 	for (const auto& i : gameWorld->GetHitSpheres()) {
-		glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE3);
 		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
-		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 0);
+		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 3);
+		
+		glActiveTexture(GL_TEXTURE4);
+		glBindTexture(GL_TEXTURE_2D, mapPositionTexture);
+		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "worldPosTex"), 4);
 
 		int paintLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "objectColour");
 		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
@@ -624,16 +613,15 @@ void GameTechRenderer::UpdateMap() {
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
 		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
-		float radius = i->GetRadius();
-		Matrix4 modelMatrix = Matrix4::Scale(Vector3(radius, radius, radius));
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
 		i->CheckDrawn();
-		MeshGeometry* sphereMesh = ToonAssetManager::Instance().GetMesh("sphere");
-		BindMesh(sphereMesh);
-		DrawBoundMesh();
+		//MeshGeometry* sphereMesh = ToonAssetManager::Instance().GetMesh("sphere");
+		//BindMesh(sphereMesh);
+		//DrawBoundMesh();
 
-		//(*i).Draw(*this);
+		(*i).Draw(*this);
 	}
 
 	
@@ -1294,17 +1282,13 @@ int GameTechRenderer::GetWinningTeam(float& percentage) {
 		else if (it->second > secondPercentage) {
 			secondPercentage = it->second;
 		}
-		else if (it->second == winningPercentage) {
-			winningTeam = 5;
-		}
+		
 	}
 
-	if (winningPercentage <= secondPercentage) {
-		percentage = 0.0;
-	}
-	else {
-		percentage = 1.0f / (winningPercentage / secondPercentage);
+	percentage = 1.0f / (winningPercentage / secondPercentage);
 
+	if (winningPercentage == 0) {
+		percentage = 1.0f;
 	}
 	return winningTeam;
 }
@@ -1535,8 +1519,8 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 
 	glObjectLabel(GL_TEXTURE, mapDepthTexture, -1, "Mainmap Depth Texture");
 
-	glGenTextures(1, &mapScoreTexture);
-	glBindTexture(GL_TEXTURE_2D, mapScoreTexture);
+	glGenTextures(1, &mapPositionTexture);
+	glBindTexture(GL_TEXTURE_2D, mapPositionTexture);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -1544,14 +1528,14 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapScoreTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapPositionTexture, 0);
 
-	glObjectLabel(GL_TEXTURE, mapScoreTexture, -1, "Mainmap Score Texture");
+	glObjectLabel(GL_TEXTURE, mapPositionTexture, -1, "Mainmap Position Texture");
 
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapScoreTexture) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapPositionTexture) {
 		return;
 	}
 

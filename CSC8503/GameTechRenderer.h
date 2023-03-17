@@ -155,7 +155,7 @@ namespace NCL {
 
 			GLuint mapFBO;
 			GLuint mapColourTexture;
-			GLuint mapScoreTexture;
+			GLuint mapPositionTexture;
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
@@ -190,7 +190,7 @@ namespace NCL {
 			float team3Percentage;
 			float team4Percentage;
 
-			Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+			Vector3 defaultColour = Vector3(1, 0, 0);
 
 			Vector3 teamColours[ATOMIC_COUNT - 1];
 
