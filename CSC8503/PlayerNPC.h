@@ -46,6 +46,8 @@ protected:
 	float stuckTimerCurrent;
 	float stuckTimerMax;
 
+	bool hasGotFirstPath;
+
 	float nodeDistanceThreshold;
 	int currentNodeIndex;
 

@@ -15,7 +15,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	jumpTimerCurrentMax = GetRandomJumpTime();
 
 	rotationTimerMin = 1.0f;
-	rotationTimerMax = 5.0f;
+	rotationTimerMax = 3.0f;
 	rotationTimerCurrent = 0.0f;
 	rotationTimerCurrentMax = GetRandomRotationTime();
 
@@ -27,8 +27,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 	nodeDistanceThreshold = 4.0f;
 
-	pathGraph = new NavPathGraphLevel();
-	GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+	pathGraph = new NavPathGraphLevel();	
 
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
@@ -37,6 +36,12 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 	stateShooting = new State([&](float dt)->void
 		{
+			if (!hasGotFirstPath)
+			{
+				GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+				hasGotFirstPath = true;
+			}
+
 			reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 			linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
 			isMoving = linVel.length() >= 0.5f;
@@ -47,17 +52,20 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 			isAiming = true;
 			isGrounded = IsGrounded();
 
+			rigidBody->setLinearDamping(isGrounded ? 5.0f : 0.8f);
+			moveSpeed = isGrounded ? 5000.0f : 1500.0f;
+
 			if (!allowInput) return;
-			if (isGrounded)
+			/*if (isGrounded)
 			{
 				jumpTimerCurrent += dt;
 				if (jumpTimerCurrent >= jumpTimerMax || IsStuck(dt))
 				{
 					jumpTimerCurrent = 0.0f;
 					jumpTimerMax = GetRandomJumpTime();
-					rigidBody->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
+					rigidBody->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1500.0f);
 				}
-			}
+			}*/
 
 			rotationTimerCurrent += dt;
 			if (rotationTimerCurrent >= rotationTimerCurrentMax)
@@ -98,18 +106,21 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 					Debug::DrawLine(pathList[i - 1], pathList[i], Debug::YELLOW);
 
 				float nodeDistance = (pathList[currentNodeIndex] - GetPosition()).Length();
-				if (nodeDistance <= nodeDistanceThreshold)
+				//std::cout << "Product: " << Vector3::Dot((pathList[currentNodeIndex] - GetPosition()), Vector3(0, 1, 0)) << std::endl;
+				if (nodeDistance <= nodeDistanceThreshold /*|| Vector3::Dot((pathList[currentNodeIndex] - GetPosition()).Normalised(), Vector3(0, 1, 0)) >= 0.75f*/)
 				{
 					currentNodeIndex++;
 					if (currentNodeIndex >= (int)pathList.size())
 						GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
 				}
 
-				roamTimerCurrent += dt;
-				if (roamTimerCurrent >= roamTimerMax)
-				{
-					roamTimerCurrent = 0.0f;
+				if (IsStuck(dt))
 					GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+
+				if (isGrounded)
+				{
+					if (pathList[currentNodeIndex].y > GetPosition().y + 50.0f)
+						rigidBody->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1500.0f);
 				}
 
 				MoveTowards(pathList[currentNodeIndex], dt);
@@ -140,15 +151,7 @@ PlayerNPC::~PlayerNPC()
 {
 	team->RemovePlayer();
 
-	delete stateIdle;
-	delete stateShooting;
-	delete stateGameEnded;
-
-	delete IdleToShooting;
-	delete ShootingToGameEnded;
-
 	delete stateMachine;
-
 	delete pathGraph;
 }
 
@@ -156,7 +159,7 @@ void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);
-	//pathGraph->DrawDebugPathGraph();
+	pathGraph->DrawDebugPathGraph();
 
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)
@@ -195,6 +198,8 @@ void PlayerNPC::MoveTowards(const Vector3& targetPos, const float& dt)
 
 bool PlayerNPC::IsStuck(const float& dt)
 {
+	if (!rigidBody) return false;
+
 	if (rigidBody->getLinearVelocity().length() <= 3.0f)
 	{
 		stuckTimerCurrent += dt;

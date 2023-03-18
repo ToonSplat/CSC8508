@@ -65,6 +65,9 @@ ToonGame::~ToonGame()
 void ToonGame::StartGame() {
 	gameTime = 90.0f;
 	winner = nullptr;
+
+	if (playerNPC) delete playerNPC;
+
 	allPlayers.clear();
 	world->MapNeedsChecking(true);
 	world->GameStarted();
@@ -85,7 +88,7 @@ void ToonGame::StartGame() {
 			{
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 				
-				PlayerNPC* playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
+				playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
 				playerNPC->SetWeapon(baseWeapon);
 				allPlayers.emplace(playerNPC);
 			}

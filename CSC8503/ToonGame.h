@@ -54,6 +54,8 @@ namespace NCL
 			std::unordered_map<int, Player*> players;
 			std::unordered_map<int, PlayerControl*> playerControls;
 
+			PlayerNPC* playerNPC;
+
 			GameTechRenderer* renderer;
 			ToonGameWorld* world;
 			ToonLevelManager* levelManager;

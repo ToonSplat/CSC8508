@@ -24,16 +24,15 @@ namespace NCL
 		class NavPathGraph
 		{
 		public:
-			~NavPathGraph()
+			/*~NavPathGraph()
 			{
 				for (auto n : allNodes)
 					delete n;
-			}
+			}*/
 
 			std::unordered_map<int, NavPathNode*> nodes;
 			std::vector<NavPathNode*> allNodes;
 			std::unordered_map<std::string, NavPathNode*> nodesCache;
-
 
 			NavPathNode* GetNode(const int& id)
 			{

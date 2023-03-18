@@ -65,6 +65,9 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);*/
 	}
 
+	rigidBody->setLinearDamping(isGrounded ? 5.0f : 0.8f);
+	moveSpeed = isGrounded ? 5000.0f : 1500.0f;
+
 	isMoving = linearMovement.length() >= 0.1f;
 	isAiming = controls->aiming;
 
@@ -81,7 +84,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 	if (controls->jumping && isGrounded) {
-		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
+		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1500.0f);
 		controls->jumping = false;
 	}
 
@@ -145,6 +148,7 @@ void Player::Update(float dt) {
 	pos += ", " + std::to_string(GetPosition().z);
 	
 	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
+	Debug::Print(std::to_string(rigidBody->getLinearVelocity().length()), NCL::Maths::Vector2(2, 60), Debug::WHITE);
 
 	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
 	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);

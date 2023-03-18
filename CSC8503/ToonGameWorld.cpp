@@ -65,10 +65,12 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
-	for (auto& i : gameObjects) {
+	for (auto& i : gameObjects) 
+	{
 		if (dynamic_cast<Player*>(i) || dynamic_cast<PlayerNPC*>(i))
 			delete (Player*)i;
-		else delete i;
+		else 
+			delete i;
 	}
 
 	Clear();
