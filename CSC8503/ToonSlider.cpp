@@ -27,6 +27,8 @@ void ToonSlider::DrawBar()
 
 void ToonSlider::DrawHead()
 {
+	Coordinates headCoord = GetHeadCoordinates(m_CurrentLevel);
+	m_HeadCoordinates	  = Coordinates(Vector2(headCoord.origin.x, headCoord.origin.y - (m_SliderHeadSize / 2)), Vector2(m_SliderHeadSize, m_SliderHeadSize));
 	Debug::DrawFilledQuad(m_HeadCoordinates.origin, m_HeadCoordinates.size, 100.0f / m_WindowSize.y, Debug::WHITE);
 }
 
@@ -37,18 +39,16 @@ void ToonSlider::AssignCoordinates(float textWidth, float sliderHeight, float sl
 	m_SliderBarCoordinates  = Coordinates(m_coordinates.origin, Vector2(m_coordinates.size.x - textWidth, sliderHeight));
 	//Head
 	PopulateSliderCoordinatesMap();
-	Coordinates headCoord	= GetHeadCoordinates(m_CurrentLevel);
-	m_HeadCoordinates = Coordinates(Vector2(headCoord.origin.x, headCoord.origin.y - (sliderHeadSize / 2)), Vector2(sliderHeadSize, sliderHeadSize));
 }
 
 void ToonSlider::PopulateSliderCoordinatesMap()
 {
-	float levelWidth = m_coordinates.size.x / m_SliderLevels;
+	float levelWidth = m_SliderBarCoordinates.size.x / m_SliderLevels;
 	m_SliderHeadSize = m_SliderHeadSize > levelWidth ? levelWidth : m_SliderHeadSize;
 	for (int i = 0; i < m_SliderLevels; i++)
 	{
 		float offset = levelWidth * i;
-		m_SliderLevelCoordinatesMap[i] = Coordinates(Vector2(m_coordinates.origin.x + offset, m_coordinates.origin.y), Vector2(levelWidth, m_coordinates.size.y));
+		m_SliderLevelCoordinatesMap[i] = Coordinates(Vector2(m_SliderBarCoordinates.origin.x + offset, m_SliderBarCoordinates.origin.y), Vector2(levelWidth, m_SliderBarCoordinates.size.y));
 	}
 }
 
@@ -72,4 +72,10 @@ int ToonSlider::GetHeadLevel(Coordinates headCoordinates)
 		index++;
 	}
 	return -1;
+}
+
+void ToonSlider::HandleKeyboardAndMouseEvents()
+{
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight()) { m_CurrentLevel = std::min(++m_CurrentLevel, m_SliderLevels - 1); }
+	else if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft()) { m_CurrentLevel = std::max(--m_CurrentLevel, 0); }
 }

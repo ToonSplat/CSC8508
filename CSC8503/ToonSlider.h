@@ -28,6 +28,7 @@ class ToonSlider
 		~ToonSlider();
 
 		void Update(float dt);
+		void HandleKeyboardAndMouseEvents();
 
 	private:
 		void DrawSlider();

@@ -30,12 +30,12 @@ class ToonGameSettings : public PushdownState
 
 	struct SettingsDataStructure
 	{
-		Coordinates		  coordinates;
-		std::string		  text;
-		bool			  hasToggle;
-		ToonToggleButton* toggleButton = NULL;
-		ToonSlider*		  volumeSlider = NULL;
-		Vector2			  windowSize;
+		Coordinates							   coordinates;
+		std::string							   text;
+		bool								   hasToggle;
+		ToonToggleButton*					   toggleButton = NULL;
+		ToonSlider*							   volumeSlider = NULL;
+		Vector2								   windowSize;
 		ToonGameSettings::SettingsScreenStates type;
 
 		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, ToonGameSettings::SettingsScreenStates buttonType, bool hasToggle = true, int toggleButtonID = -1, ToggleButtonStates toggleState = ToggleButtonStates::ToggleOff, std::vector<std::string>toggleValueText = { "OFF", "ON" }, Coordinates toggleCoord = Coordinates())

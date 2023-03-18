@@ -57,6 +57,8 @@ void ToonGameSettings::HandleKeyboardAndMouseEvents()
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown() || InputManager::GetInstance().GetInputs()[1]->IsPushingUp()) { UpdateMosePointerState(false); }
 
+	if (m_CurrentSelectedIndex == SettingsScreenStates::VolumeSlider) { m_SettingsData[ToonGameSettings::SettingsScreenStates::VolumeSlider].volumeSlider->HandleKeyboardAndMouseEvents(); }
+
 	if (!m_IsMousePointerVisible)
 	{
 		int increment = 0;
