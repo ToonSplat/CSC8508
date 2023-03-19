@@ -24,7 +24,7 @@ class ToonSlider
 		const Coordinates					 INVALID_COORDINATE		 = Coordinates(Vector2(-1.0f, -1.0f), Vector2(-1.0f, -1.0f));
 
 	public:
-		ToonSlider(Coordinates coordinates, int sliderLevels, Vector2 windowSize, float textWidth = 5.0f, float sliderHeight = 2.0f, float sliderHeadSize = 5.0f);	//Set text width to 0 if Slider text is not needed
+		ToonSlider(Coordinates coordinates, int sliderLevels, Vector2 windowSize, float textWidth = 5.0f, float sliderHeight = 1.0f, float sliderHeadSize = 5.0f);	//Set text width to 0 if Slider text is not needed
 		~ToonSlider();
 
 		void Update(float dt);

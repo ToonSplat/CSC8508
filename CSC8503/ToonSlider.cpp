@@ -2,6 +2,7 @@
 
 ToonSlider::ToonSlider(Coordinates coordinates, int sliderLevels, Vector2 windowSize, float textWidth, float sliderHeight, float sliderHeadSize) : m_coordinates(coordinates), m_SliderLevels(sliderLevels), m_WindowSize(windowSize), m_IsActive(false), m_SliderHeadSize(sliderHeadSize)
 {
+	sliderHeight = 100.0f / m_WindowSize.y;	//Updating height to 1 pixel. TODO: - Change Logic for sliderHeight(bar height)
 	AssignCoordinates(textWidth, sliderHeight, sliderHeadSize);
 }
 
@@ -23,7 +24,8 @@ void ToonSlider::DrawSlider()
 
 void ToonSlider::DrawBar()
 {
-	Debug::DrawFilledQuad(m_SliderBarCoordinates.origin, m_SliderBarCoordinates.size, m_SliderBarCoordinates.size.y, m_SliderUncoveredColour);
+	Debug::DrawFilledQuad(m_SliderBarCoordinates.origin, m_SliderBarCoordinates.size, /*m_SliderBarCoordinates.size.y*/100.0f / m_WindowSize.y, m_SliderUncoveredColour);
+	Debug::DrawFilledQuad(m_SliderBarCoordinates.origin, Vector2(m_SliderLevelCoordinatesMap[m_CurrentLevel].origin.x - m_SliderBarCoordinates.origin.x, m_SliderBarCoordinates.size.y), 100.0f / m_WindowSize.y, Debug::GREEN);
 }
 
 void ToonSlider::DrawHead()
@@ -64,7 +66,7 @@ int ToonSlider::GetHeadLevel(Vector2 headPosition)
 {
 	int index = 0;
 	if (headPosition.x < m_SliderLevelCoordinatesMap[0].origin.x) { return 0; }
-	else if (headPosition.x > m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x) { return m_SliderLevels - 1; }
+	else if (headPosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x) { return m_SliderLevels - 1; }
 	for (auto& sliderLevelData : m_SliderLevelCoordinatesMap)
 	{
 		float sliderLevelEndXCoord = sliderLevelData.second.origin.x + sliderLevelData.second.size.x;
