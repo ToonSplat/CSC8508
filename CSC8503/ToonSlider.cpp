@@ -79,6 +79,22 @@ int ToonSlider::GetHeadLevel(Vector2 headPosition)
 	return -1;
 }
 
+int ToonSlider::GetHeadLevelUsingMousePosition(Vector2 mousePosition)
+{
+	//Edge cases
+	if (mousePosition.x < m_SliderLevelCoordinatesMap[0].origin.x)
+	{
+		return 0; }
+	else if (mousePosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x)
+	{ 
+		return m_SliderLevels - 1; }
+
+	//Calculating for inner cases
+	float levelWidth			= m_SliderBarCoordinates.size.x / m_SliderLevels;
+	float positionWithoutOffset = mousePosition.x - m_SliderBarCoordinates.origin.x;
+	return (positionWithoutOffset / levelWidth);
+}
+
 void ToonSlider::HandleKeyboardAndMouseEvents()
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight()) { m_CurrentLevel = std::min(++m_CurrentLevel, m_SliderLevels - 1); }
@@ -90,6 +106,6 @@ void ToonSlider::HandleKeyboardAndMouseEvents()
 		float	y						  = ((mousePosition.y / m_WindowSize.y) * 100);
 		float	x						  = ((mousePosition.x / m_WindowSize.x) * 100);
 		Vector2 mousePositionWithinBounds = Vector2(x, y);
-		m_CurrentLevel					  = GetHeadLevel(mousePositionWithinBounds);
+		m_CurrentLevel					  = GetHeadLevelUsingMousePosition(mousePositionWithinBounds);//GetHeadLevel(mousePositionWithinBounds);
 	}
 }

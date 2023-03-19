@@ -49,7 +49,7 @@ class ToonGameSettings : public PushdownState
 			toggleButton = new ToonToggleButton(toggleCoordinates, windowSize, toggleButtonID, toggleState, true, toggleValueText);
 			if (type == ToonGameSettings::SettingsScreenStates::VolumeSlider)
 			{
-				volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 10, windowSize);
+				volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
 			}
 		}
 	};

@@ -38,4 +38,5 @@ class ToonSlider
 		void PopulateSliderCoordinatesMap();
 		Coordinates GetHeadCoordinates(int level);
 		int GetHeadLevel(Vector2 headPosition);
+		int GetHeadLevelUsingMousePosition(Vector2 mousePosition);	//Calculation taking constant computation
 };
