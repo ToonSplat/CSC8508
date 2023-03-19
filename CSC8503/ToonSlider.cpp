@@ -18,6 +18,7 @@ void ToonSlider::DrawSlider()
 {
 	DrawBar();
 	DrawHead();
+	Debug::Print(std::to_string(m_CurrentLevel), m_SliderTextCoordinates.origin, Debug::WHITE);
 }
 
 void ToonSlider::DrawBar()
@@ -35,7 +36,7 @@ void ToonSlider::DrawHead()
 void ToonSlider::AssignCoordinates(float textWidth, float sliderHeight, float sliderHeadSize)
 {
 	m_ShouldDisplayLevels	= textWidth > 0.0f;
-	m_SliderTextCoordinates = Coordinates(Vector2(m_coordinates.origin.x + m_coordinates.size.x - textWidth, m_coordinates.origin.y), Vector2(textWidth, m_coordinates.size.y));
+	m_SliderTextCoordinates = Coordinates(Vector2(m_coordinates.origin.x + m_coordinates.size.x - textWidth + 2.0f, m_coordinates.origin.y + 1.0f), Vector2(textWidth, m_coordinates.size.y));
 	m_SliderBarCoordinates  = Coordinates(m_coordinates.origin, Vector2(m_coordinates.size.x - textWidth, sliderHeight));
 	//Head
 	PopulateSliderCoordinatesMap();
@@ -59,13 +60,15 @@ Coordinates ToonSlider::GetHeadCoordinates(int level)
 }
 
 
-int ToonSlider::GetHeadLevel(Coordinates headCoordinates)
+int ToonSlider::GetHeadLevel(Vector2 headPosition)
 {
 	int index = 0;
+	if (headPosition.x < m_SliderLevelCoordinatesMap[0].origin.x) { return 0; }
+	else if (headPosition.x > m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x) { return m_SliderLevels - 1; }
 	for (auto& sliderLevelData : m_SliderLevelCoordinatesMap)
 	{
 		float sliderLevelEndXCoord = sliderLevelData.second.origin.x + sliderLevelData.second.size.x;
-		if (sliderLevelData.second.origin.x >= headCoordinates.origin.x && sliderLevelEndXCoord > headCoordinates.origin.x)
+		if (sliderLevelData.second.origin.x <= headPosition.x && sliderLevelEndXCoord > headPosition.x)
 		{
 			return  index;
 		}
@@ -78,4 +81,13 @@ void ToonSlider::HandleKeyboardAndMouseEvents()
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight()) { m_CurrentLevel = std::min(++m_CurrentLevel, m_SliderLevels - 1); }
 	else if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft()) { m_CurrentLevel = std::max(--m_CurrentLevel, 0); }
+	
+	if (InputManager::GetInstance().GetInputs()[1]->IsShooting())
+	{
+		Vector2 mousePosition			  = InputManager::GetInstance().GetInputs()[1]->GetMousePosition();
+		float	y						  = ((mousePosition.y / m_WindowSize.y) * 100);
+		float	x						  = ((mousePosition.x / m_WindowSize.x) * 100);
+		Vector2 mousePositionWithinBounds = Vector2(x, y);
+		m_CurrentLevel					  = GetHeadLevel(mousePositionWithinBounds);
+	}
 }
