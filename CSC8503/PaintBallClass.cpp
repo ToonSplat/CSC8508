@@ -13,7 +13,7 @@ using namespace CSC8503;
 
 PaintBallClass::PaintBallClass(){}
 
-PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, bool _ownerIsNPC) :
+PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist) :
 	gameWorld(gameWorld),
 	levelManager(levelManager),
 	ammoInUse(_maxAmmoInUse), 
@@ -22,8 +22,7 @@ PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* level
 	maxAmmoHeld(_maxAmmoHeld),
 	fireRate(_fireRate), 
 	reloadTime(_reloadTime), 
-	maxShootDistance(_maxShootDist),
-	ownerIsNPC(_ownerIsNPC)
+	maxShootDistance(_maxShootDist)
 {
 	owningObject = nullptr;
 	team = nullptr;
@@ -48,8 +47,8 @@ PaintBallClass::~PaintBallClass()
 {
 }
 
-PaintBallClass PaintBallClass::MakeInstance(bool ownerIsNPC) {
-	return PaintBallClass(gameWorld, levelManager, maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance, ownerIsNPC);
+PaintBallClass PaintBallClass::MakeInstance() {
+	return PaintBallClass(gameWorld, levelManager, maxAmmoInUse, maxAmmoHeld, fireRate, reloadTime, maxShootDistance);
 }
 
 //float PaintBallClass::GetYCoordinate(int x, int initialVelocity)
@@ -74,7 +73,7 @@ NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::M
 	result.y = Vy;
 
 	return result;
-;}
+}
 
 void NCL::CSC8503::PaintBallClass::CalculateBulletPositionOrientation(const short& pitch, NCL::Maths::Vector3& positionFinal, NCL::Maths::Vector3& orientationFinal)
 {
@@ -91,9 +90,6 @@ void NCL::CSC8503::PaintBallClass::CalculateBulletPositionOrientation(const shor
 
 bool PaintBallClass::Update(float dt, PlayerControl* playerControls) 
 {
-	if (ownerIsNPC)
-		return false;
-
 	if (shootTimer > 0) shootTimer -= dt;
 	if (playerControls->shooting && ammoInUse > 0 && shootTimer <= 0)
 		status = isFiring;
@@ -126,7 +122,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls)
 //Used by PlayerNPC
 void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
 {
-	if (gameWorld->GetNetworkStatus() != NetworkingStatus::Offline || !ownerIsNPC)
+	if (gameWorld->GetNetworkStatus() != NetworkingStatus::Offline)
 		return;
 
 	if (shootTimer > 0) 
@@ -144,7 +140,6 @@ void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
 		status = isReloading;
 		Reload(dt);
 	}
-
 }
 
 //void PaintBallClass::DrawTrajectory(NCL::Maths::Vector3 force)
@@ -207,7 +202,7 @@ void PaintBallClass::Reload(float dt)
 				ammoInUse += temp;
 				ammoHeld -= temp;
 			}
-			std::cout << "Ammo: " << ammoInUse << "/" << ammoHeld << std::endl;
+			//std::cout << "Ammo: " << ammoInUse << "/" << ammoHeld << std::endl;
 		}
 	}
 }
@@ -221,7 +216,7 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 	const float PAINTBALL_RADIUS = 0.25f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
 
-	shootTimer = 1.0f/fireRate;
+	shootTimer = 1.0f / fireRate;
 	ammoInUse--;
 	shootSpread += shootSpreadAdd;
 

@@ -192,8 +192,8 @@ void Player::CalcCrosshairSpread(float dt)
 	spread = Lerp(spread, currentSpread, dt * 5.0f);
 }
 
-void Player::SetWeapon(PaintBallClass* base, bool ownerIsNPC) {
-	weapon = base->MakeInstance(ownerIsNPC);
+void Player::SetWeapon(PaintBallClass* base) {
+	weapon = base->MakeInstance();
 	//std::cout << "WEAPON MADE" << std::endl;
 	weapon.SetOwner(this);
 	weapon.SetTeam(team);

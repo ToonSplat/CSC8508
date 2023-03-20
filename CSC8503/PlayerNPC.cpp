@@ -126,7 +126,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 				{
 					if ((pathNodesList[currentNodeIndex]->isJumpNode) && pathNodesList[currentNodeIndex]->position.y > GetPosition().y + 3.0f)
 					{
-						jumpTimerCurrent = jumpTimerCurrentMax * 0.5f;	//Reset it back so it doesn't jump immediately after landing
+						jumpTimerCurrent = jumpTimerCurrentMax * 0.5f;	//So it doesn't jump immediately after landing
 						rigidBody->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(CalcJumpForce()));
 					}
 				}
@@ -188,17 +188,17 @@ void PlayerNPC::Update(float dt)
 
 inline float PlayerNPC::GetRandomJumpTime()
 {
-	return RandF(jumpTimerMin, jumpTimerMax);
+	return ToonUtils::RandF(jumpTimerMin, jumpTimerMax);
 }
 
 float PlayerNPC::GetRandomRotation()
 {
-	return RandF(0, 360);
+	return ToonUtils::RandF(0.0f, 360.0f);
 }
 
 float PlayerNPC::GetRandomRotationTime()
 {
-	return RandF(rotationTimerMin, rotationTimerMax);
+	return ToonUtils::RandF(rotationTimerMin, rotationTimerMax);
 }
 
 void PlayerNPC::GetPath(const Vector3& from, const Vector3& to)
@@ -286,13 +286,4 @@ Vector3 PlayerNPC::CalcJumpForce()
 	Vector3 velocityXZ = displacementXZ / (sqrtf(-2.0f * jumpHeight / gravity) + sqrtf(2.0f * (displacementY - jumpHeight) / gravity));
 
 	return velocityXZ + velocityY;
-}
-
-float PlayerNPC::RandF(const float& min, const float& max)
-{
-	std::random_device rd;
-	std::mt19937 gen(rd());
-	std::uniform_real_distribution<> dis(min, max);
-
-	return (float)dis(gen);
 }

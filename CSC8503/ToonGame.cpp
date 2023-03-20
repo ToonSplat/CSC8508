@@ -32,7 +32,7 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
-	baseWeapon = new PaintBallClass(world, levelManager, 15, 1000, 4.0f, 1.0f, 5, false);
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 1000, 4.0f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 
 	// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
@@ -86,7 +86,7 @@ void ToonGame::StartGame() {
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 				
 				PlayerNPC* playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
-				playerNPC->SetWeapon(baseWeapon, true);
+				playerNPC->SetWeapon(baseWeapon);
 				allPlayers.emplace(playerNPC);
 			}
 

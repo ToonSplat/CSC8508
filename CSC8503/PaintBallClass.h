@@ -21,7 +21,7 @@ namespace NCL {
             };
 
             PaintBallClass();
-            PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, bool _ownerIsNPC);
+            PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             bool Update (float dt, PlayerControl* playerControls);
@@ -37,8 +37,7 @@ namespace NCL {
 
             void SetStatus(statusTypes newStatus) { status = newStatus; }
 
-            PaintBallClass MakeInstance(bool ownerIsNPC = false);
-            bool ownerIsNPC;
+            PaintBallClass MakeInstance();           
 
         protected:
             // Weapon Stats

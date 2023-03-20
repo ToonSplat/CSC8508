@@ -77,7 +77,4 @@ protected:
 	Player* targetPlayerTemp;
 
 	std::vector<NavPathNode*> pathNodesList;
-
-private:
-	float RandF(const float& min, const float& max);
 };
