@@ -16,8 +16,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	jumpTimerCurrentMax = GetRandomJumpTime();
 	jumpHeight = 25.0f;
 
-	rotationTimerMin = 1.0f;
-	rotationTimerMax = 3.0f;
+	rotationTimerMin = 0.5f;
+	rotationTimerMax = 2.0f;
 	rotationTimerCurrent = 0.0f;
 	rotationTimerCurrentMax = GetRandomRotationTime();
 
@@ -116,9 +116,6 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 						GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
 				}
 
-				if (IsStuck(dt))
-					GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
-
 				if (isGrounded)
 				{
 					if ((pathNodesList[currentNodeIndex]->isJumpNode) && pathNodesList[currentNodeIndex]->position.y > GetPosition().y + 3.0f)
@@ -128,6 +125,9 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 					}
 				}
 
+				if (IsStuck(dt))
+					GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
+
 				MoveTowards(pathNodesList[currentNodeIndex]->position, dt);
 
 				Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
@@ -135,7 +135,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);
 			}
 
-			UpdateMovementAnimations();
+			UpdateMovementAnimations();			
 		});
 
 	stateGameEnded = new State([&](float dt)->void
@@ -156,8 +156,6 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 PlayerNPC::~PlayerNPC()
 {
-	team->RemovePlayer();
-
 	delete stateMachine;
 	delete pathGraph;
 }
@@ -166,7 +164,7 @@ void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);
-	pathGraph->DrawDebugPathGraph();
+	//pathGraph->DrawDebugPathGraph();
 
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)

@@ -12,12 +12,20 @@ namespace NCL {
         class ToonGameWorld;
         class ToonLevelManager;
         class PaintBallClass {
+        
         public:
+            enum statusTypes {
+                isFiring,
+                isIdle,
+                isReloading
+            };
+
             PaintBallClass();
             PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             bool Update (float dt, PlayerControl* playerControls);
+            virtual void Update(float dt) {};
             void FireBullet(reactphysics3d::Vector3 position, reactphysics3d::Vector3 orientation);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
@@ -26,6 +34,8 @@ namespace NCL {
             float getFireRate() const { return 1 / fireRate; }
             float getShootTimer() const { return shootTimer; }
             float getShootSpread() const { return shootSpread; }
+
+            void SetStatus(statusTypes newStatus) { status = newStatus; }
 
             PaintBallClass MakeInstance();
 
@@ -63,13 +73,7 @@ namespace NCL {
             bool trajectoryDetected;
             float shootTimer;
             float reloadTimer;
-            ToonGameObject* owningObject;
-
-            enum statusTypes {
-                isFiring,
-                isIdle,
-                isReloading
-            };
+            ToonGameObject* owningObject;            
 
             statusTypes status;
         };

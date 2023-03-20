@@ -1,5 +1,4 @@
 #pragma once
-
 #include "Vector3.h"
 #include <vector>
 #include <unordered_map>
@@ -25,34 +24,26 @@ namespace NCL
 		class NavPathGraph
 		{
 		public:
-			/*~NavPathGraph()
+			~NavPathGraph()
 			{
-				for (auto n : allNodes)
+				for (auto& n : allNodes)
 					delete n;
-			}*/
+			}
 
+			int idCounter = 0;
 			std::unordered_map<int, NavPathNode*> nodes;
 			std::vector<NavPathNode*> allNodes;
-			std::unordered_map<std::string, NavPathNode*> nodesCache;
 
 			NavPathNode* GetNode(const int& id)
 			{
 				return nodes[id];
 			}
 
-			NavPathNode* GetNode(const Vector3& pos)
-			{
-				return nodesCache[pos.ToString()];
-			}
-
 			void AddNode(const Vector3& pos, const bool& isJumpNode = false)
 			{
-				static int idCounter = 0;
-
 				NavPathNode* node = new NavPathNode(idCounter++, pos, isJumpNode);
 
 				nodes[idCounter - 1] = node;
-				nodesCache[pos.ToString()] = node;
 				allNodes.emplace_back(node);
 			}
 

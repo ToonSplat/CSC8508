@@ -20,7 +20,7 @@ NCL::CSC8503::NavPathGraphLevel::NavPathGraphLevel()
 
 	AddNode(Vector3(25.5f, -4.0f, -24.0f));		//11
 	AddNode(Vector3(0.0f, -4.0f, -30.0f));		//12
-	AddNode(Vector3(-25.5f, -4.0f, -24.0f));	//13
+	AddNode(Vector3(-25.5f, -4.0f, -24.0f));		//13
 
 	AddNode(Vector3(25.5f, -4.0f, 24.0f));		//14
 	AddNode(Vector3(0.0f, -4.0f, 30.0f));		//15
@@ -89,20 +89,6 @@ NCL::CSC8503::NavPathGraphLevel::NavPathGraphLevel()
 	AddEdge(24, 25);
 	AddEdge(26, 25);
 	AddEdge(26, 16);
-}
-
-NCL::CSC8503::NavPathGraphLevel::~NavPathGraphLevel()
-{
-	/*for (auto& [id, node] : nodes)
-	{
-		for (auto& neighbour : node->neighbours)
-			if(neighbour)
-				delete neighbour;
-	}*/
-
-	for (auto& n : allNodes)
-		if (n)
-			delete n;
 }
 
 void NCL::CSC8503::NavPathGraphLevel::DrawDebugPathGraph()
