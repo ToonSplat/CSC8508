@@ -311,6 +311,10 @@ void GameTechRenderer::RenderScene() {
 			int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
 			glUniform1i(impactPointCountLocation, 0);
 		}
+		
+		int dynamicLocation = glGetUniformLocation(shader->GetProgramID(), "isDynamic");
+		bool isDynamic = ((*i).GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) ? true : false;
+		glUniform1i(dynamicLocation, isDynamic);
 
 		(*i).Draw(*this);
 	}

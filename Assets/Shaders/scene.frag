@@ -26,11 +26,14 @@ layout(binding = 5) uniform sampler2D 	mainTex;
 layout(binding = 6) uniform sampler2D	bumpTex;
 uniform sampler2DShadow shadowTex;
 
+uniform mat4 modelMatrix 	= mat4(1.0f);
+
 uniform vec3	cameraPos;
 
 uniform vec3 objectPosition;
 
 uniform bool hasTexture;
+uniform bool isDynamic;
 
 in Vertex
 {
@@ -105,8 +108,10 @@ void main(void)
 	}
 
 	for (int i = 0; i < impactPointCount; i++){
-		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
+		vec4 localImpactPos = modelMatrix * vec4(impactPoints[i].position, 1.0);
+		float distanceBetween = (isDynamic == true) ? distance(IN.localPos.xyz, localImpactPos.xyz) : distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
+		float splat = (isDynamic == true) ? SplatNoise((IN.localPos.xyz - localImpactPos.xyz)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));
+		if (distanceBetween <= impactPoints[i].radius - splat){
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
 	}
