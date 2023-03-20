@@ -43,7 +43,11 @@ protected:
 	float rotationTimerMin;
 	float rotationTimerMax;
 	float rotationTimerCurrent;
-	float rotationTimerCurrentMax;
+	float rotationTimerCurrentMax;	
+
+	float shootDelay;
+	float shootDelayMax;
+	bool canShoot;
 
 	float roamTimerCurrent;
 	float roamTimerMax;

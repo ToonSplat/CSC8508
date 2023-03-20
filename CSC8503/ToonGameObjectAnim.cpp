@@ -68,11 +68,11 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		int eyeRightIndex = mesh->GetIndexForJoint("mixamorig:RightEye");
 		Matrix4 eyeRightJoint = frameData[eyeRightIndex];
 
-		headJoint = headJoint * Matrix4::Rotation(std::sinf(Window::GetTimer()->GetTotalTimeSeconds()) * 30.0f, Vector3(0, 1, 0));
+		headJoint = headJoint * Matrix4::Rotation(std::sinf(Window::GetTimer()->GetTotalTimeSeconds()) * 30.0f, Vector3(0, 1, 0)) * Matrix4::Scale(Vector3(2.0f, 2.0f, 2.0f))*/;
 		//eyeLeftJoint.SetPositionVector(headJoint.GetPositionVector());
 		//eyeRightJoint.SetPositionVector(headJoint.GetPositionVector());
 
-		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+		/*for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
 		{
 			if(i == headIndex)
 				frameMatrices.emplace_back(headJoint * invBindPose[i]);

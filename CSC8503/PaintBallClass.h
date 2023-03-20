@@ -21,11 +21,11 @@ namespace NCL {
             };
 
             PaintBallClass();
-            PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
+            PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist, bool _ownerIsNPC);
             ~PaintBallClass();
 
             bool Update (float dt, PlayerControl* playerControls);
-            virtual void Update(float dt) {};
+            void NPCUpdate (float dt);
             void FireBullet(reactphysics3d::Vector3 position, reactphysics3d::Vector3 orientation);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
@@ -37,7 +37,8 @@ namespace NCL {
 
             void SetStatus(statusTypes newStatus) { status = newStatus; }
 
-            PaintBallClass MakeInstance();
+            PaintBallClass MakeInstance(bool ownerIsNPC = false);
+            bool ownerIsNPC;
 
         protected:
             // Weapon Stats
@@ -62,6 +63,7 @@ namespace NCL {
 
             float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
+            void CalculateBulletPositionOrientation(const short& pitch, Vector3& positionFinal, Vector3& orientationFinal);
             void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
             void HideTrajectory();              //Trajectory
 
@@ -73,6 +75,7 @@ namespace NCL {
             bool trajectoryDetected;
             float shootTimer;
             float reloadTimer;
+
             ToonGameObject* owningObject;            
 
             statusTypes status;

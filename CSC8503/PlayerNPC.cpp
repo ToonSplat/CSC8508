@@ -22,7 +22,13 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	rotationTimerCurrentMax = GetRandomRotationTime();
 
 	roamTimerCurrent = 0.0f;
-	roamTimerMax = 5.0f;
+	roamTimerMax = 5.0f;	
+
+	shootDelay = 0.0f;
+	shootDelayMax = 2.0f;
+	canShoot = false;
+
+	//weapon.ownerIsNPC = true;
 
 	stuckTimerCurrent = 0.0f;
 	stuckTimerMax = 3.0f;
@@ -120,7 +126,7 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 				{
 					if ((pathNodesList[currentNodeIndex]->isJumpNode) && pathNodesList[currentNodeIndex]->position.y > GetPosition().y + 3.0f)
 					{
-						jumpTimerCurrent = 0.0f;	//Reset it back so it doesn't jump immediately after landing
+						jumpTimerCurrent = jumpTimerCurrentMax * 0.5f;	//Reset it back so it doesn't jump immediately after landing
 						rigidBody->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(CalcJumpForce()));
 					}
 				}
@@ -164,6 +170,15 @@ void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);
+
+	if (!canShoot)
+	{
+		shootDelay += dt;
+		if (shootDelay >= shootDelayMax)
+			canShoot = true;
+	}
+
+	if (canShoot) weapon.NPCUpdate(dt);
 	//pathGraph->DrawDebugPathGraph();
 
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
@@ -235,12 +250,12 @@ bool PlayerNPC::CanJump()
 	{
 		if (nodeCurrent->isJumpNode || nodeNext->isJumpNode)
 		{
-			std::cout << "NO: Can't Jump because the current or next node requires JUMP Calculations!" << std::endl;
+			//std::cout << "NO: Can't Jump because the current or next node requires JUMP Calculations!" << std::endl;
 			return false;
 		}
 	}
 
-	std::cout << "YES: Can JUMP!" << std::endl;
+	//std::cout << "YES: Can JUMP!" << std::endl;
 	return true;
 }
 

@@ -167,8 +167,16 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 		}
 	}
 
-	for (auto& object : gameObjects)
+	//int index = 0;
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		gameObjects[i]->Update(dt);
+	}
+	/*for (auto& object : gameObjects)
+	{
 		object->Update(dt);
+		index++;
+	}*/
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)

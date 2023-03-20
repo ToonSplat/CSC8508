@@ -44,7 +44,7 @@ public:
 
 	Team* GetTeam() const { return team; }
 	PaintBallClass& GetWeapon() { return weapon; }
-	void SetWeapon(PaintBallClass* base);
+	void SetWeapon(PaintBallClass* base, bool ownerIsNPC = false);
 
 	void PlayVictory();
 	void PlayDefeat();
