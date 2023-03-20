@@ -2,6 +2,7 @@
 #include "OGLMesh.h"
 #include "OGLShader.h"
 #include "ToonAssetManager.h"
+#include "Debug.h"
 
 int index = 0;
 NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld)

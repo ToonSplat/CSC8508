@@ -10,7 +10,7 @@ namespace NCL
 		class NavPathFinder
 		{
 		public:
-			static std::vector<Vector3> FindPath(NavPathGraph& pathGraph, const Vector3& from, const Vector3& to);
+			static std::vector<NavPathNode*> FindPath(NavPathGraph& pathGraph, const Vector3& from, const Vector3& to);
 		};
 	}
 }

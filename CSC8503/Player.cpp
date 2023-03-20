@@ -65,6 +65,14 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);*/
 	}
 
+	/*NCL::Maths::Vector3 pos = NCL::Maths::Vector3(0.0f, -8.0f, 0.0f);
+	NCL::Maths::Vector3 pos2 = NCL::Maths::Vector3(0.0f, -5.0f, 0.0f);
+	NCL::Maths::Vector3 dir = (pos - pos2).Normalised();
+	Debug::DrawLine(pos, pos2, Debug::BLUE);
+
+	NCL::Maths::Vector3 dirTo = (pos - GetPosition()).Normalised();
+	std::cout << "Dot: " << NCL::Maths::Vector3::Dot(dirTo, dir) << std::endl;*/
+
 	rigidBody->setLinearDamping(isGrounded ? 5.0f : 0.8f);
 	moveSpeed = isGrounded ? 5000.0f : 1500.0f;
 
@@ -138,7 +146,7 @@ void Player::UpdateMovementAnimations()
 		}
 	}
 	else
-		PlayAnim("Player_Jump");
+		PlayAnim("Player_Jump");	
 }
 
 void Player::Update(float dt) {

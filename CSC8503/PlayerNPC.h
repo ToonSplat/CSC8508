@@ -29,11 +29,16 @@ protected:
 	void MoveTowards(const Vector3& targetPos, const float& dt);
 
 	bool IsStuck(const float& dt);
+	bool CanJump();
+	bool IsOverNode();
+
+	inline Vector3 CalcJumpForce();
 
 	float jumpTimerMin;
 	float jumpTimerMax;
 	float jumpTimerCurrent;
 	float jumpTimerCurrentMax;
+	float jumpHeight;
 
 	float rotationTimerMin;
 	float rotationTimerMax;
@@ -67,7 +72,7 @@ protected:
 	NavPathNode* nearestNode;
 	Player* targetPlayerTemp;
 
-	std::vector<Vector3> pathList;
+	std::vector<NavPathNode*> pathNodesList;
 
 private:
 	float RandF(const float& min, const float& max);

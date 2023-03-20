@@ -2,9 +2,10 @@
 //#include <chrono>
 
 using namespace NCL::Maths;
+using namespace NCL::CSC8503;
 //using namespace std::chrono;
 
-std::vector<Vector3> NCL::CSC8503::NavPathFinder::FindPath(NavPathGraph& pathGraph, const Vector3& from, const Vector3& to)
+std::vector<NavPathNode*> NCL::CSC8503::NavPathFinder::FindPath(NavPathGraph& pathGraph, const Vector3& from, const Vector3& to)
 {
 	/*NavPathNode* fromNode = pathGraph.GetNode(from);
 	NavPathNode* toNode = pathGraph.GetNode(to);*/
@@ -90,12 +91,12 @@ std::reverse(path.begin(), path.end());*/
 std::reverse(path.begin(), path.end());*/
 #pragma endregion
 
-	std::vector<Vector3> path;
+	std::vector<NavPathNode*> path;
 	int crawl = toNode->id;
-	path.emplace_back(pathGraph.nodes[crawl]->position);
+	path.emplace_back(pathGraph.nodes[crawl]);
 	while (pred[crawl] != -1)
 	{
-		path.emplace_back(pathGraph.nodes[pred[crawl]]->position);
+		path.emplace_back(pathGraph.nodes[pred[crawl]]);
 		crawl = pred[crawl];
 	}
 

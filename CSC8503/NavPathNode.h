@@ -14,10 +14,11 @@ namespace NCL
 		class NavPathNode
 		{
 		public:
-			NavPathNode(const int& _id, const Vector3& pos) : id(_id), position(pos) {}
+			NavPathNode(const int& _id, const Vector3& pos, const bool& jumpNode) : id(_id), position(pos), isJumpNode(jumpNode) {}
 
 			int id;
 			Vector3 position;
+			bool isJumpNode;
 			std::vector<NavPathNode*> neighbours;
 		};
 
@@ -44,11 +45,11 @@ namespace NCL
 				return nodesCache[pos.ToString()];
 			}
 
-			void AddNode(const Vector3& pos)
+			void AddNode(const Vector3& pos, const bool& isJumpNode = false)
 			{
 				static int idCounter = 0;
 
-				NavPathNode* node = new NavPathNode(idCounter++, pos);
+				NavPathNode* node = new NavPathNode(idCounter++, pos, isJumpNode);
 
 				nodes[idCounter - 1] = node;
 				nodesCache[pos.ToString()] = node;
