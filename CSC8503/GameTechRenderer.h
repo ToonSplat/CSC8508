@@ -36,6 +36,10 @@ namespace NCL {
 			std::map<int, float> GetTeamScores();
 
 			void ResetAtomicBuffer();
+
+			bool IsMapInitialised() { return mapInitialised; }
+
+			bool mapNeedsDrawing = false;
 		protected:
 
 			void SetupLoadingScreen();
@@ -206,6 +210,7 @@ namespace NCL {
 
 			bool mapInitialised = false;
 			bool updateScorebar;
+			
 
 			
 		};

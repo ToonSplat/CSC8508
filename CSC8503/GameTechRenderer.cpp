@@ -153,7 +153,7 @@ void GameTechRenderer::RenderFrame() {
 		break;
 	}
 
-	DrawMap();
+	if (mapNeedsDrawing) DrawMap();
 	UpdateMap();
 	PresentScene();
 
@@ -479,11 +479,11 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	if (!gameWorld->GetMinimapCamera()) return;
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	glEnable(GL_STENCIL_TEST);
+	//glEnable(GL_STENCIL_TEST);
 
-	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	glStencilFunc(GL_ALWAYS, 2, ~0);
-	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	//glStencilFunc(GL_ALWAYS, 2, ~0);
+	//glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
@@ -491,20 +491,20 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
 	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
 
-	BindMesh(minimapStencilQuad);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	//BindMesh(minimapStencilQuad);
+	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glStencilFunc(GL_EQUAL, 2, ~0);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	//glStencilFunc(GL_EQUAL, 2, ~0);
+	//glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	BindMesh(squareQuad);
+	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_STENCIL_TEST);
+	//glDisable(GL_STENCIL_TEST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
@@ -568,6 +568,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 
 	mapInitialised = true;
 	updateScorebar = true;
+	mapNeedsDrawing = false;
 }
 
 void GameTechRenderer::UpdateMap() {
@@ -583,10 +584,10 @@ void GameTechRenderer::UpdateMap() {
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
-	
-
 	OGLShader* shader = mapUpdateShader;
 	BindShader(mapUpdateShader);
+
+	
 
 	for (const auto& i : gameWorld->GetHitSpheres()) {
 		glActiveTexture(GL_TEXTURE3);
@@ -610,11 +611,17 @@ void GameTechRenderer::UpdateMap() {
 		
 		int projLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "projMatrix");
 		int viewLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewMatrix");
+
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
+		int viewProjLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewProj");
+		Matrix4 viewProjectionMatrix = viewMatrix * projMatrix;
+		glUniformMatrix4fv(viewProjLocation, 1, false, (float*)&viewProjectionMatrix);
+
 		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
-		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		Matrix4 modelMatrix = (*i).GetModelMatrixNoRotation();
+		std::cout << modelMatrix << std::endl;
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
 		i->CheckDrawn();

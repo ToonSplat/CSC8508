@@ -231,7 +231,10 @@ void ToonGame::UpdateTime(float dt) {
 		if (gameTime <= -5.0f && offline == true) {
 			renderer->ResetAtomicBuffer();
 			StartGame();
-		}			
+		}
+	}
+	else if (gameTime <= 89 && !renderer->IsMapInitialised()) {
+		renderer->mapNeedsDrawing = true;
 	}
 }
 
