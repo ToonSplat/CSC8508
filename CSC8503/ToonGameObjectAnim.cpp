@@ -59,6 +59,31 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
 		const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
 
+		/*int headIndex = mesh->GetIndexForJoint("mixamorig:Head");
+		Matrix4 headJoint = frameData[headIndex];
+
+		int eyeLeftIndex = mesh->GetIndexForJoint("mixamorig:LeftEye");
+		Matrix4 eyeLeftJoint = frameData[eyeLeftIndex];
+
+		int eyeRightIndex = mesh->GetIndexForJoint("mixamorig:RightEye");
+		Matrix4 eyeRightJoint = frameData[eyeRightIndex];
+
+		headJoint = headJoint * Matrix4::Rotation(std::sinf(Window::GetTimer()->GetTotalTimeSeconds()) * 30.0f, Vector3(0, 1, 0));
+		//eyeLeftJoint.SetPositionVector(headJoint.GetPositionVector());
+		//eyeRightJoint.SetPositionVector(headJoint.GetPositionVector());
+
+		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+		{
+			if(i == headIndex)
+				frameMatrices.emplace_back(headJoint * invBindPose[i]);
+			else if(i == eyeLeftIndex)
+				frameMatrices.emplace_back(headJoint * eyeLeftJoint * invBindPose[i]);
+			else if(i == eyeRightIndex)
+				frameMatrices.emplace_back(headJoint * eyeRightJoint * invBindPose[i]);
+			else
+				frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+		}*/
+
 		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
 			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 
