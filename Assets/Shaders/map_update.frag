@@ -4,10 +4,12 @@ layout (binding = 0, offset = 0) uniform atomic_uint scoreCount1[5];
 layout (binding = 1, offset = 0) uniform atomic_uint scoreCount2[5];
 layout (binding = 2, offset = 0) uniform atomic_uint scoreCount3[5];
 
-layout(binding = 3) uniform sampler2D 	mapTex;
-layout(binding = 4) uniform sampler2D worldPosTex;
+uniform sampler2D 	mapTex;
+
 
 uniform mat4 viewProj 	= mat4(1.0f);
+
+uniform vec2 screenSize;
 
 uniform vec3 team1Colour;
 uniform vec3 team2Colour;
@@ -32,17 +34,25 @@ out vec4 fragColor;
 
 void main(void)
 {
-	vec4 screenPos = viewProj * vec4(IN.worldPos, 1.0);
+	/*vec4 screenPos = viewProj * vec4(IN.worldPos, 1.0);
 	vec2 uv = screenPos.xy / screenPos.w;
-	uv = uv * 0.5 + 0.5;
+	
+	uv = normalize((uv.xy + 1.0));
+	uv = uv * 0.5 + 0.5;*/
+
+	vec2 uv = gl_FragCoord.xy / screenSize;
+
+
+	//uv.x = 1 - uv.x;
+	//uv.y = 1 - uv.y;	
 
 	// Sample the previous color from mapTex
-	vec3 previousColour = texture(mapTex, uv).rgb;
-	if (previousColour == vec3(1.0,1.0,1.0)) previousColour = vec3(1,0,0);
-	fragColor = vec4(previousColour,1);
-
+	vec3 previousColour = texture(mapTex, uv.xy).rgb;
+	//if (previousColour == vec3(1.0,1.0,1.0)) previousColour = vec3(1,0,0);
+	//fragColor = vec4(previousColour,1);
+	//fragColor = vec4(uv, 0,1);
+	//fragColor = vec4(previousColour, 1);
 	
-	return;
 
 	fragColor = vec4(objectColour, 1.0);
 

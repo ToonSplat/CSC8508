@@ -590,19 +590,19 @@ void GameTechRenderer::UpdateMap() {
 	
 
 	for (const auto& i : gameWorld->GetHitSpheres()) {
-		glActiveTexture(GL_TEXTURE3);
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
-		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 3);
-		
-		glActiveTexture(GL_TEXTURE4);
-		glBindTexture(GL_TEXTURE_2D, mapPositionTexture);
-		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "worldPosTex"), 4);
+		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 0);
 
 		int paintLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "objectColour");
 		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
 
 		int atomicLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "currentAtomicTarget");
 		glUniform1i(atomicLocation, currentAtomicGPU);
+		
+		int screenSizeLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "screenSize");
+		Vector2 screenSize(windowWidth, windowHeight);
+		glUniform2fv(screenSizeLocation, 1,  screenSize.array);
 
 		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
 		glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
@@ -621,13 +621,9 @@ void GameTechRenderer::UpdateMap() {
 
 		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
 		Matrix4 modelMatrix = (*i).GetModelMatrixNoRotation();
-		std::cout << modelMatrix << std::endl;
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
 
 		i->CheckDrawn();
-		//MeshGeometry* sphereMesh = ToonAssetManager::Instance().GetMesh("sphere");
-		//BindMesh(sphereMesh);
-		//DrawBoundMesh();
 
 		(*i).Draw(*this);
 	}
