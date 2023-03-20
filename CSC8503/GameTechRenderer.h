@@ -67,7 +67,7 @@ namespace NCL {
 
 			void DrawMap();
 
-			void DrawMainScene(int index = 0);
+			void DrawMainScene(int index = 1);
 
 			void RenderRectical();
 
