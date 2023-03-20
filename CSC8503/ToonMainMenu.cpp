@@ -133,8 +133,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 		*newState = m_ToonConfirmationScreen;
 		break;
 	case LAUNCH1PLAYER:
-		AudioSystem::GetAudioSystem()->ApplyIngame();
-
 		m_Game = new ToonGame(m_Renderer);
 		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
@@ -157,8 +155,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case BACKLOCAL:
 		return PushdownResult::Pop;
 	case LAUNCHASSERVER:
-		AudioSystem::GetAudioSystem()->ApplyIngame();
-
 		m_Game	  = new ToonNetworkedGame(m_Renderer);
 		m_Game->m_WindowSize = m_Window->GetScreenSize();
 		*newState = m_Game;
@@ -169,8 +165,6 @@ PushdownState::PushdownResult ToonMainMenu::NavigateToScreen(PushdownState** new
 	case BACKMULTI:
 		return PushdownResult::Pop;
 	case PLAYAFTERSERIPSET:
-		AudioSystem::GetAudioSystem()->ApplyIngame();
-
 		ipAddressVector = m_UserInputScreenObject->GetSeparatedIPAddressComponents();
 		if (ipAddressVector.size() != 4) { return PushdownResult::NoChange; }
 		m_Game							 = new ToonNetworkedGame(m_Renderer, ipAddressVector[0], ipAddressVector[1], ipAddressVector[2], ipAddressVector[3]);
