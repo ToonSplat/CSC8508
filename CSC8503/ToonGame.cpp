@@ -24,6 +24,8 @@ using namespace CSC8503;
 ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
 	world = new ToonGameWorld();
+	world->SetToonGame(this);
+
 	ToonDebugManager::Instance().SetGameWorld(world);
 
 	renderer->SetWorld(world);
@@ -141,6 +143,11 @@ PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 	m_ShouldQuitGame = true;
 	world->GameEnded();
 	return PushdownState::Pop;
+}
+
+Player* NCL::CSC8503::ToonGame::GetPlayerFromID(const int& id)
+{
+	return players[id];
 }
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)

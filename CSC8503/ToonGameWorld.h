@@ -35,6 +35,9 @@ namespace NCL
 			void Clear();
 			void ClearAndErase();
 
+			void SetToonGame(ToonGame* _toonGame);
+			ToonGame* GetToonGame();
+
 			void AddEventListener(ToonEventListener* eventListener) { this->eventListener = eventListener; }
 			ToonEventListener* GetEventListener() const { return eventListener; }
 
@@ -105,6 +108,7 @@ namespace NCL
 			bool HasGameStarted() { return gameStarted; }
 		protected:
 			std::unordered_map<int, Camera*> mainCameras;
+			ToonGame* game;
 			Camera* minimapCamera;
 			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;
