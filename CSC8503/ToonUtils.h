@@ -23,7 +23,7 @@ namespace ToonUtils
 	static reactphysics3d::Quaternion ConvertToRP3DQuaternion(const NCL::Maths::Quaternion& q)
 	{
 		return reactphysics3d::Quaternion(q.x, q.y, q.z, q.w);
-	}
+	}	
 
 	static float RandF(const float& min, const float& max)
 	{

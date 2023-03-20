@@ -34,6 +34,10 @@ protected:
 
 	inline Vector3 CalcJumpForce();
 
+	float idleTimerCurrent;
+	float idleTimerMax;
+	float idleTimeCooldown;
+
 	float jumpTimerMin;
 	float jumpTimerMax;
 	float jumpTimerCurrent;
@@ -68,9 +72,27 @@ protected:
 	State* stateGameEnded;
 
 	StateTransition* IdleToShooting;
+	StateTransition* ShootingToIdle;
 	StateTransition* ShootingToGameEnded;
 
-	StateTransitionFunction IdleToShootingFunc = [&](void)->bool { return gameWorld->HasGameStarted(); };
+	StateTransitionFunction IdleToShootingFunc = [&](void)->bool 
+	{ 
+		return gameWorld->HasGameStarted() && idleTimerCurrent >= idleTimerMax; 
+	};
+
+	StateTransitionFunction ShootingToIdleFunc = [&](void)->bool 
+	{
+		float chance = ToonUtils::RandF(0.0f, 1.0f);
+		if (chance <= 0.05f && idleTimerCurrent >= idleTimerMax && idleTimeCooldown <= 0.0f && (isGrounded))
+		{
+			idleTimerCurrent = 0.0f;
+			idleTimeCooldown = 10.0f;
+			return true;
+		}
+
+		return false;
+	};
+
 	StateTransitionFunction ShootingToGameEndedFunc = [&](void)->bool { return !allowInput; };
 
 	NavPathNode* nearestNode;

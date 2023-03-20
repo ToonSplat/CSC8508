@@ -10,6 +10,10 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 {
 	allowInput = true;
 
+	idleTimerCurrent = 0.0f;
+	idleTimerMax = ToonUtils::RandF(3.0f, 5.0f);
+	idleTimeCooldown = 10.0f;
+
 	jumpTimerMin = 2.0f;
 	jumpTimerMax = 7.0f;
 	jumpTimerCurrent = 0.0f;
@@ -28,8 +32,6 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	shootDelayMax = 2.0f;
 	canShoot = false;
 
-	//weapon.ownerIsNPC = true;
-
 	stuckTimerCurrent = 0.0f;
 	stuckTimerMax = 3.0f;
 
@@ -40,6 +42,25 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
 		{
+			idleTimerCurrent += dt;
+			if (idleTimerCurrent >= idleTimerMax)
+				idleTimerCurrent = idleTimerMax;
+
+			isAiming = false;
+			isGrounded = IsGrounded();
+
+			rotationTimerCurrent += dt;
+			if (rotationTimerCurrent >= rotationTimerCurrentMax)
+			{
+				rotationTimerCurrent = 0.0f;
+				rotationTimerCurrentMax = GetRandomRotationTime();
+				targetAngle = GetRandomRotation();
+			}
+
+			reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
+			SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
+
+			UpdateMovementAnimations();
 		});
 
 	stateShooting = new State([&](float dt)->void
@@ -49,6 +70,9 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 				GetPath(GetPosition(), pathGraph->GetRandomNode()->position);
 				hasGotFirstPath = true;
 			}
+
+			idleTimeCooldown -= dt;
+			if (idleTimeCooldown <= 0.0f) idleTimeCooldown = 0.0f;
 
 			reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 			linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
@@ -110,8 +134,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 			if (pathNodesList.size() > 0)
 			{
-				for (int i = 1; i < pathNodesList.size(); i++)
-					Debug::DrawLine(pathNodesList[i - 1]->position, pathNodesList[i]->position, Debug::YELLOW);
+				/*for (int i = 1; i < pathNodesList.size(); i++)
+					Debug::DrawLine(pathNodesList[i - 1]->position, pathNodesList[i]->position, Debug::YELLOW);*/
 
 				float nodeDistance = (pathNodesList[currentNodeIndex]->position - GetPosition()).Length();
 				//std::cout << "Product: " << Vector3::Dot((pathList[currentNodeIndex] - GetPosition()), Vector3(0, 1, 0)) << std::endl;
@@ -136,12 +160,12 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 				MoveTowards(pathNodesList[currentNodeIndex]->position, dt);
 
-				Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
+				/*Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
 				Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
-				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);
-			}
+				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);*/
+			}			
 
-			UpdateMovementAnimations();			
+			UpdateMovementAnimations();	
 		});
 
 	stateGameEnded = new State([&](float dt)->void
@@ -149,12 +173,14 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 		});
 
 	IdleToShooting = new StateTransition(stateIdle, stateShooting, IdleToShootingFunc);
+	ShootingToIdle = new StateTransition(stateShooting, stateIdle, ShootingToIdleFunc);
 	ShootingToGameEnded = new StateTransition(stateShooting, stateGameEnded, ShootingToGameEndedFunc);
 
 	stateMachine->AddState(stateIdle);
 	stateMachine->AddState(stateShooting);
 	stateMachine->AddState(stateGameEnded);
 	stateMachine->AddTransition(IdleToShooting);
+	stateMachine->AddTransition(ShootingToIdle);
 	stateMachine->AddTransition(ShootingToGameEnded);
 
 	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);	
@@ -179,8 +205,8 @@ void PlayerNPC::Update(float dt)
 	}
 
 	if (canShoot) weapon.NPCUpdate(dt);
+	
 	//pathGraph->DrawDebugPathGraph();
-
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)
 		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);*/
