@@ -131,7 +131,7 @@ void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
 	{
 		status = isFiring;
 		Vector3 position, orientation;
-		CalculateBulletPositionOrientation(ToonUtils::RandF(-20.0f, 5.0f), position, orientation);
+		CalculateBulletPositionOrientation(ToonUtils::RandF(-45.0f, 5.0f), position, orientation);
 		FireBullet(ToonUtils::ConvertToRP3DVector3(position), ToonUtils::ConvertToRP3DVector3(orientation));
 	}
 	else if (ammoInUse <= 0)
