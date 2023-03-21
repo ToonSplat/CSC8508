@@ -31,6 +31,7 @@ namespace NCL
 			PushdownState::PushdownResult DidSelectOkButton() override;
 
 			Player* GetPlayerFromID(const int& id);
+			const std::unordered_set<Player*> GetAllPlayers() { return allPlayers; }
 
 		protected:
 			virtual void StartGame();

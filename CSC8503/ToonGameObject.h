@@ -130,7 +130,7 @@ namespace NCL::CSC8503
 
 		ToonGameWorld* gameWorld;
 
-	private:
+	protected:
 		reactphysics3d::PhysicsWorld& physicsWorld;
 	};
 }

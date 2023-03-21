@@ -14,18 +14,32 @@ namespace NCL {
         class ToonGameWorld;
         class ToonLevelManager;
         class PaintBallClass {
+        
         public:
+            enum statusTypes {
+                isFiring,
+                isIdle,
+                isReloading
+            };
+
             PaintBallClass();
             PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* levelManager, int _maxAmmoInUse, int _maxAmmoHeld, float _fireRate, float _reloadTime, float _maxShootDist);
             ~PaintBallClass();
 
             bool Update (float dt, PlayerControl* playerControls);
+            void NPCUpdate (float dt);
             void FireBullet(reactphysics3d::Vector3 position, reactphysics3d::Vector3 orientation);
 
             void SetOwner(ToonGameObject* owner) { this->owningObject = owner; }
             void SetTeam(Team* team) { this->team = team; };
 
-            PaintBallClass MakeInstance();
+            float getFireRate() const { return 1 / fireRate; }
+            float getShootTimer() const { return shootTimer; }
+            float getShootSpread() const { return shootSpread; }
+
+            void SetStatus(statusTypes newStatus) { status = newStatus; }
+
+            PaintBallClass MakeInstance();           
             void UpdateTrajectory(float dt, PlayerControl* playerControls);
             void HideTrajectory();              //Trajectory
             std::string GetTeamName() { return team->GetTeamName(); }
@@ -43,11 +57,17 @@ namespace NCL {
             int trajectoryPoints = MAX_BULLETS;          //Trajectory
             Vector3 bulletVelocity;
 
+            float shootSpread;
+            float shootSpreadAdd;
+            float shootSpreadMin;
+            float shootSpreadMax;
+
             void Reload(float dt);
             void PickUpAmmo(int amt);
 
             float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
+            void CalculateBulletPositionOrientation(const short& pitch, Vector3& positionFinal, Vector3& orientationFinal);
 
             Team* team;
             ToonGameWorld* gameWorld;
@@ -57,13 +77,8 @@ namespace NCL {
             bool trajectoryDetected;
             float shootTimer;
             float reloadTimer;
-            ToonGameObject* owningObject;
 
-            enum statusTypes {
-                isFiring,
-                isIdle,
-                isReloading
-            };
+            ToonGameObject* owningObject;            
 
             statusTypes status;
 

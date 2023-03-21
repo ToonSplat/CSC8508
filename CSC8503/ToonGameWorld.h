@@ -105,10 +105,11 @@ namespace NCL
 			void GameStarted()  { gameStarted = true;}
 			void GameEnded()	{ gameStarted = false;}
 
-			bool HasGameStarted() { return gameStarted; }
+			bool HasGameStarted() const { return gameStarted; }
 		protected:
-			std::unordered_map<int, Camera*> mainCameras;
+
 			ToonGame* game;
+			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
 			Camera* mapCamera;
 			reactphysics3d::PhysicsCommon physicsCommon;

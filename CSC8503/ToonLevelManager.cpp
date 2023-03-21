@@ -711,8 +711,9 @@ ToonScreen* NCL::CSC8503::ToonLevelManager::AddPropScreen(MeshGeometry* mesh, Ob
 
 Player* ToonLevelManager::AddPlayerToWorld(Team* team) 
 {
-	const float PLAYER_RADIUS = 2.0f;
-	const float PLAYER_HEIGHT = 0.38f;
+	const float PLAYER_RADIUS = 1.25f;
+	const float PLAYER_HEIGHT = 1.9f;
+	const float PLAYER_SCALE = 2.2f;
 	player = new Player(gameWorld->GetPhysicsWorld(), gameWorld, team);
 	player->AddRigidbody();
 
@@ -721,7 +722,7 @@ Player* ToonLevelManager::AddPlayerToWorld(Team* team)
 	player->SetPosition(spawnPoint.GetPosition());
 	player->SetOrientation(spawnPoint.GetRotation());
 
-	player->GetTransform().SetScale(Vector3(PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f, PLAYER_RADIUS * 1.1f));
+	player->GetTransform().SetScale(Vector3(PLAYER_SCALE, PLAYER_SCALE, PLAYER_SCALE));
 
 	player->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	player->GetRigidbody()->setLinearDamping(0.8f);
@@ -750,6 +751,51 @@ Player* ToonLevelManager::AddPlayerToWorld(Team* team)
 	gameWorld->AddPaintableObject(player);
 
 	return player;
+}
+
+PlayerNPC* NCL::CSC8503::ToonLevelManager::AddPlayerNPCToWorld(Team* team)
+{
+	const float PLAYER_RADIUS = 1.25f;
+	const float PLAYER_HEIGHT = 1.9f;
+	const float PLAYER_SCALE = 2.2f;
+	PlayerNPC* player_npc = new PlayerNPC(gameWorld->GetPhysicsWorld(), gameWorld, team);
+	player_npc->AddRigidbody();
+
+	TeamSpawnPointData spawnPoint = player_npc->GetTeam()->GetRandomSpawnPoint();
+
+	player_npc->SetPosition(spawnPoint.GetPosition());
+	player_npc->SetOrientation(spawnPoint.GetRotation());
+
+	player_npc->GetTransform().SetScale(Vector3(PLAYER_SCALE, PLAYER_SCALE, PLAYER_SCALE));
+
+	player_npc->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
+	player_npc->GetRigidbody()->setLinearDamping(0.8f);
+	player_npc->GetRigidbody()->setAngularLockAxisFactor(reactphysics3d::Vector3(0, 0, 0));
+	player_npc->GetRigidbody()->setIsAllowedToSleep(true);
+
+	//reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(PLAYER_RADIUS * 0.85f);
+	reactphysics3d::CapsuleShape* capsuleShape = gameWorld->GetPhysicsCommon().createCapsuleShape(PLAYER_RADIUS, PLAYER_HEIGHT);
+
+	reactphysics3d::Transform capsuleTransform(ToonUtils::ConvertToRP3DVector3(Vector3(0, 2.2f, 0)), reactphysics3d::Quaternion::identity());
+	player_npc->SetCollisionShape(capsuleShape);
+	player_npc->SetCollider(capsuleShape, capsuleTransform);
+	player_npc->SetColliderLayer(ToonCollisionLayer::Character);
+
+	player_npc->GetCollider()->getMaterial().setBounciness(0.1f);
+	player_npc->GetCollider()->getMaterial().setFrictionCoefficient(0.0f);
+
+	player_npc->GetRigidbody()->setUserData(player_npc);
+
+	player_npc->SetRenderObject(new ToonRenderObject(&player_npc->GetTransform(), GetMesh("player"), GetMaterial("mat_player"), GetShader("animated"), GetMesh("arrow")));
+	player_npc->GetRenderObject()->SetMinimapColour(Vector4(team->GetTeamColour(), 1.0f));
+
+	MeshGeometry* teamPlayerMesh = GetMesh("player_mesh_" + std::to_string(team->GetTeamID()));
+	player_npc->GetRenderObject()->SetMesh(teamPlayerMesh);	//Eg: player_mesh_1, player_mesh_2, etc
+
+	gameWorld->AddGameObject(player_npc);
+	gameWorld->AddPaintableObject(player_npc);
+
+	return player_npc;
 }
 
 PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
