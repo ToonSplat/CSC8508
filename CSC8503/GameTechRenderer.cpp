@@ -9,6 +9,7 @@
 #include "PaintableObject.h"
 #include <iostream>
 #include <algorithm>
+#include <unordered_set>
 #include <reactphysics3d/reactphysics3d.h>
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
@@ -191,6 +192,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	RenderScene();
 	RenderRectical(id);
 	RenderWeapon(id);
+	RenderTeamBeacons(id);
 }
 
 void GameTechRenderer::RenderRectical(int id)
@@ -283,8 +285,8 @@ void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
 	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
 	
 	BindShader(textureShader);
-
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_weapon"), "diffuseTex", 0);
+
 	Matrix4 weaponBorderModelMatrix = Matrix4::Translation(iconPos) * Matrix4::Scale(iconBackgroundScale);
 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&weaponBorderModelMatrix);
@@ -317,6 +319,60 @@ void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
 	glUniform1i(discardWhiteLoc, 1);
 	glUniform1i(applyFillAmountLoc, 0);
 	glUniform1f(fillAmountLoc, 1.0f);
+	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderTeamBeacons(int id)
+{
+	if (gameWorld == nullptr || id == -1) return;
+	if (!gameWorld->HasGameStarted()) return;
+
+	Matrix4 modelMatrix = Matrix4();
+	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
+	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
+
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
+	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+
+	BindShader(textureShader);
+	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_beacon"), "diffuseTex", 0);
+
+	Vector4 colorWhite = Debug::WHITE;
+	Vector4 teamColor = colorWhite;
+
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 2, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+
+	glUniform1i(discardWhiteLoc, 0);
+	for (const auto& player : gameWorld->GetToonGame()->GetAllPlayers())
+	{
+		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
+		Vector4 clipPos = projMatrix * viewMatrix * Vector4(player->GetPosition() + Vector3(0.0f, 4.75f, 0.0f), 1.0f);
+		Vector3 ndcPos = clipPos / clipPos.w;
+		/*Vector2 screenPos = Vector2((ndcPos.x + 1.0f) / 2.0f * windowWidth, (1.0f - ndcPos.y) / 2.0f * windowHeight);
+
+		string pos = std::to_string(screenPos.x);
+		pos += ", " + std::to_string(screenPos.y);
+		Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
+
+		Matrix4 model = Matrix4::Translation(Vector3(ndcPos.x, ndcPos.y, 0.0f)) * Matrix4::Scale(Vector3(0.03f, 0.03f, 1.0f));
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&model);
+		glUniform4fv(colourLoc, 1, (float*)teamColor.array);
+
+		BindMesh(squareQuad);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+	}
+
+	glDisable(GL_BLEND);
+	glEnable(GL_DEPTH_TEST);
+	glDisable(GL_STENCIL_TEST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glUniform1i(discardWhiteLoc, 1);
 	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 }
 

@@ -61,6 +61,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 			SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 
 			UpdateMovementAnimations();
+
+			if (canShoot) weapon.NPCUpdate(dt);
 		});
 
 	stateShooting = new State([&](float dt)->void
@@ -160,6 +162,15 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 				MoveTowards(pathNodesList[currentNodeIndex]->position, dt);
 
+				if (!canShoot)
+				{
+					shootDelay += dt;
+					if (shootDelay >= shootDelayMax)
+						canShoot = true;
+				}
+
+				if (canShoot) weapon.NPCUpdate(dt);
+
 				/*Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
 				Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
 				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);*/
@@ -195,16 +206,7 @@ PlayerNPC::~PlayerNPC()
 void PlayerNPC::Update(float dt)
 {
 	ToonGameObjectAnim::Update(dt);
-	stateMachine->Update(dt);
-
-	if (!canShoot)
-	{
-		shootDelay += dt;
-		if (shootDelay >= shootDelayMax)
-			canShoot = true;
-	}
-
-	if (canShoot) weapon.NPCUpdate(dt);
+	stateMachine->Update(dt);	
 	
 	//pathGraph->DrawDebugPathGraph();
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());

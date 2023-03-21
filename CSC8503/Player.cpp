@@ -151,12 +151,12 @@ void Player::UpdateMovementAnimations()
 
 void Player::Update(float dt) {
 	
-	string pos = std::to_string(GetPosition().x);
+	/*string pos = std::to_string(GetPosition().x);
 	pos += ", " + std::to_string(GetPosition().y);
 	pos += ", " + std::to_string(GetPosition().z);
 	
 	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
-	Debug::Print(std::to_string(rigidBody->getLinearVelocity().length()), NCL::Maths::Vector2(2, 60), Debug::WHITE);
+	Debug::Print(std::to_string(rigidBody->getLinearVelocity().length()), NCL::Maths::Vector2(2, 60), Debug::WHITE);*/
 
 	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
 	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
@@ -189,7 +189,8 @@ void Player::CalcCrosshairSpread(float dt)
 {
 	float currentSpread = isMoving ? crosshairSpreadMax : crosshairSpreadMin;
 	currentSpread += weapon.getShootSpread();
-	spread = Lerp(spread, currentSpread, dt * 5.0f);
+	currentSpread += !isGrounded ? 1.0f : 0.0f;
+	spread = Lerp(spread, currentSpread, dt * 7.5f);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {

@@ -86,6 +86,8 @@ namespace NCL {
 
 			void RenderWeapon(int id);
 
+			void RenderTeamBeacons(int id = -1);
+
 			OGLShader*		defaultShader;
 
 			ToonGameWorld*	gameWorld = nullptr;
