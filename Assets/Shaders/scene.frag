@@ -17,6 +17,11 @@ layout (std140) uniform lights{
 	uniform Light sceneLights[SCENE_LIGHTS];
 };
 
+#define TEAM_COUNT 4
+layout (std140) uniform teamColours{
+	uniform vec3 teamColour[TEAM_COUNT];
+};
+
 #define MAX_IMPACT_POINTS 300
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 

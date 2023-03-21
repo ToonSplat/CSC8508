@@ -98,13 +98,13 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
     
         
     }
-    for (HitSphere* i : gameWorld->GetHitSpheres()) {
-        if ((i->CheckDelete() && i->CheckDrawn()) /*||*/ ) {
-            //delete the hitsphere
-            gameWorld->RemoveHitSphere(i);
-            gameWorld->RemoveGameObject(i, false);
-        }
-    }
+    //for (HitSphere* i : gameWorld->GetHitSpheres()) {
+    //    if ((i->CheckDelete() && i->CheckDrawn()) /*||*/ ) {
+    //        //delete the hitsphere
+    //        gameWorld->RemoveHitSphere(i);
+    //        gameWorld->RemoveGameObject(i, false);
+    //    }
+    //}
 }
 
 // Override the onTrigger() method

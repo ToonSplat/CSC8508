@@ -103,6 +103,8 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	shaderLight = ShaderLights();
 	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f); //Vector3(-300.0f, 500.0f, -300.0f)
 
+	//teamColours = TeamColourStruct();
+
 	fullScreenQuad = new OGLMesh();
 	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
 	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
@@ -128,6 +130,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	
 	LoadSkybox();
 	CreateLightUBO();
+	CreateTeamColourUBO();
 
 	team1Percentage = 0;
 	team2Percentage = 0;
@@ -172,7 +175,7 @@ void NCL::CSC8503::GameTechRenderer::UpdateLighting()
 		shaderLight.data[0].lightColour = defaultColour;
 	}
 
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -1213,7 +1216,7 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * TEAM_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
@@ -1221,16 +1224,16 @@ void GameTechRenderer::GenerateAtomicBuffer(){
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
-	GLuint pixelCount[ATOMIC_COUNT];
+	GLuint pixelCount[TEAM_COUNT];
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
-	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
+	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * TEAM_COUNT, pixelCount);
 
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	
 
-	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
+	for (GLuint i = 0; i < TEAM_COUNT; i++)
 	{
 		teamPixelCount[i] = pixelCount[i];
 	}
@@ -1243,12 +1246,12 @@ void GameTechRenderer::RetrieveAtomicValues(){
 void GameTechRenderer::ResetAtomicBuffer(){
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
-	GLuint a[ATOMIC_COUNT];
-	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
+	GLuint a[TEAM_COUNT];
+	for (GLuint i = 0; i < TEAM_COUNT; i++)
 	{
 		a[i] = 0;
 	}
-	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
+	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * TEAM_COUNT, a);
 
 	updateScorebar = true;
 	mapInitialised = false;
@@ -1299,8 +1302,13 @@ void GameTechRenderer::SetWorld(ToonGameWorld* world)
 	int i = 0;
 	for (auto& [ID, team] : teams) {
 		teamColours[i] = team->GetTeamColour();
+		teamColoursShader.teams[i] = team->GetTeamColour();
 		i++;
 	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColoursShader, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void GameTechRenderer::SetDebugStringBufferSizes(size_t newVertCount) {
@@ -1576,16 +1584,33 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 }
 
 void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
-	glGenBuffers(1, &lightMatrix);
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glGenBuffers(1, &lightUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightUBO);
 	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
 }
+
+void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
+	glGenBuffers(1, &teamUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColours, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");
+	unsigned int mapIndex =   glGetUniformBlockIndex(mapUpdateShader->GetProgramID(), "teamColours");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, teamUBO);
+
+	//glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 2);
+	glUniformBlockBinding(mapUpdateShader->GetProgramID(), mapIndex, 1);
+}
+
+
 
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {

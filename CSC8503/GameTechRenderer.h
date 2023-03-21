@@ -20,9 +20,14 @@ namespace NCL {
 		struct ShaderLights {
 			LightStruct data[1];
 		};
+
+		
 		
 		class GameTechRenderer : public OGLRenderer	{
-		#define ATOMIC_COUNT 4
+		#define TEAM_COUNT 4
+		struct TeamColourStruct {
+			Vector3 teams[TEAM_COUNT];
+		} teamColoursShader;
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -50,6 +55,9 @@ namespace NCL {
 
 			void RenderFrameLoading();
 			void CreateLightUBO();
+			void CreateTeamColourUBO();
+
+
 			void RenderFrame()	override;
 			void UpdateLighting();
 			void Render2Player();
@@ -179,7 +187,7 @@ namespace NCL {
 			void GenerateAtomicBuffer();
 			
 			
-			GLuint teamPixelCount[ATOMIC_COUNT];
+			GLuint teamPixelCount[TEAM_COUNT];
 			GLuint totalPixelCount;
 			GLuint maxPixelCount;
 
@@ -196,17 +204,14 @@ namespace NCL {
 
 			Vector3 defaultColour = Vector3(1, 0, 0);
 
-			Vector3 teamColours[ATOMIC_COUNT];
+			Vector3 teamColours[TEAM_COUNT];
 
-
-		/*	GLuint currentAtomicCPU;
-			GLuint currentAtomicGPU;
-			GLuint currentAtomicReset;*/
 
 			Camera* currentRenderCamera;
 			float screenAspect;
 
-			unsigned int lightMatrix;
+			unsigned int lightUBO;
+			unsigned int teamUBO;
 
 			bool mapInitialised = false;
 			bool updateScorebar;
