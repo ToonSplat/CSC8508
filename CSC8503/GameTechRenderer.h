@@ -22,7 +22,7 @@ namespace NCL {
 		};
 		
 		class GameTechRenderer : public OGLRenderer	{
-		#define ATOMIC_COUNT 5
+		#define ATOMIC_COUNT 4
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -72,7 +72,7 @@ namespace NCL {
 			void DrawMinimap();
 			void DrawScoreBar();
 
-			void CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
+			void CalculatePercentages(const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
 			int GetWinningTeam(float& percentage);
 
 			void DrawMap();
@@ -179,7 +179,7 @@ namespace NCL {
 			void GenerateAtomicBuffer();
 			
 			
-			GLuint teamPixelCount[ATOMIC_COUNT - 1];
+			GLuint teamPixelCount[ATOMIC_COUNT];
 			GLuint totalPixelCount;
 			GLuint maxPixelCount;
 
@@ -196,7 +196,7 @@ namespace NCL {
 
 			Vector3 defaultColour = Vector3(1, 0, 0);
 
-			Vector3 teamColours[ATOMIC_COUNT - 1];
+			Vector3 teamColours[ATOMIC_COUNT];
 
 
 		/*	GLuint currentAtomicCPU;

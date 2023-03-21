@@ -1026,7 +1026,7 @@ void GameTechRenderer::BuildObjectList() {
 	);
 }
 
-void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
+void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
 	float totalPaintedPixels = (float)team1Pixels + (float)team2Pixels + (float)team3Pixels + (float)team4Pixels;
 	if (totalPaintedPixels != 0) {
 		team1Percentage = (float)team1Pixels / totalPaintedPixels;
@@ -1228,14 +1228,14 @@ void GameTechRenderer::RetrieveAtomicValues(){
 	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
 
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-	totalPixelCount = pixelCount[0];
+	
 
-	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
+	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
 	{
-		teamPixelCount[i - 1] = pixelCount[i];
+		teamPixelCount[i] = pixelCount[i];
 	}
 	
-	CalculatePercentages(totalPixelCount, teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
+	CalculatePercentages(teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
 
 	//ResetAtomicBuffer();
 }
