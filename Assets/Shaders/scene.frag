@@ -12,9 +12,8 @@ struct Light{
 	float radius;
 };
 
-#define SCENE_LIGHTS 1
 layout (std140) uniform lights{
-	uniform Light sceneLights[SCENE_LIGHTS];
+	uniform Light sceneLight;
 };
 
 #define MAX_IMPACT_POINTS 300
@@ -90,13 +89,13 @@ void main(void)
 	else{
 		bumpNormal = IN.normal;
 	}
-	vec3  incident = normalize ( sceneLights[0].position - IN.worldPos ); 
+	vec3  incident = normalize ( sceneLight.position - IN.worldPos ); 
 	float lambert  = max (0.0 , dot ( incident , bumpNormal )) * 0.9; 
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
-	float rFactor = max (0.0 , dot ( halfDir , bumpNormal));
+	float rFactor = max (0.0 , dot ( halfDir , bumpNormal)); 
 	float sFactor = pow ( rFactor , 80.0 );
 
 	vec4 albedo = IN.colour;
@@ -116,9 +115,9 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light
+	fragColor.rgb += albedo.rgb * sceneLight.colour.rgb * lambert * shadow; //diffuse light 
 	
-	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow * 0.1; //specular // Change once bump-maps are introduced
+	fragColor.rgb += sceneLight.colour.rgb * sFactor * shadow * 0.2f; //specular // Change once bump-maps are introduced 
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	

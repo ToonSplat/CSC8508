@@ -23,6 +23,7 @@ using namespace CSC8503;
 
 ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : renderer(renderer), localPlayerCount(playerCount), offline(offline)
 {
+	AudioSystem::GetAudioSystem()->ApplyIngame();
 	world = new ToonGameWorld();
 	world->SetToonGame(this);
 
@@ -206,6 +207,7 @@ bool ToonGame::CheckDebugKeys() {
 	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::F9) && (offline || world->GetNetworkStatus() == NetworkingStatus::Server)) {
 		gameTime = min(gameTime, 5.0f);
 	}
+	if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::P)) renderer->ToggleDebug();
 	return false;
 }
 

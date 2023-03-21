@@ -42,6 +42,7 @@ namespace NCL {
 			void SetShadowSize(int size) { shadowSize = size; }
 			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
+			void ToggleDebug() { displayDebug = !displayDebug; }
 		protected:
 
 			void SetupLoadingScreen();
@@ -118,7 +119,7 @@ namespace NCL {
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
-
+			OGLShader* animatedShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -130,7 +131,7 @@ namespace NCL {
 			Matrix4 shadowMatrix;
 			int shadowSize;
 
-			ShaderLights shaderLight;
+			LightStruct sceneLight;
 			void UpdateLightColour();
 
 			//Debug data storage things
@@ -212,6 +213,7 @@ namespace NCL {
 			float screenAspect;
 
 			unsigned int lightMatrix;
+			bool displayDebug = false;
 		};
 	}
 }
