@@ -331,7 +331,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 		teamId = gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam()->GetTeamID();
 	}
 	 
-	DrawMainScene(teamId);//gameWorld->GetTeams()[1]->GetTeamID()*/);
+	DrawMainScene(teamId);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
 }
