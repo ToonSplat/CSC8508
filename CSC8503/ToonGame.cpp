@@ -150,7 +150,10 @@ PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 
 Player* NCL::CSC8503::ToonGame::GetPlayerFromID(const int& id)
 {
-	return players[id];
+	if(players.find(id) != players.end())
+		return players[id];
+
+	return NULL;
 }
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)

@@ -10,8 +10,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 {
 	allowInput = true;
 
-	idleTimerCurrent = 0.0f;
 	idleTimerMax = ToonUtils::RandF(3.0f, 5.0f);
+	idleTimerCurrent = idleTimerMax * 0.35f;
 	idleTimeCooldown = 10.0f;
 
 	jumpTimerMin = 2.0f;
@@ -42,6 +42,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine = new StateMachine();
 	stateIdle = new State([&](float dt)->void
 		{
+			if (!allowInput) return;
+
 			idleTimerCurrent += dt;
 			if (idleTimerCurrent >= idleTimerMax)
 				idleTimerCurrent = idleTimerMax;
