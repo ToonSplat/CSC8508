@@ -548,12 +548,6 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
 		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
 
-		//glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-		//glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-		//glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-		//glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
-		//
-
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
@@ -603,20 +597,11 @@ void GameTechRenderer::UpdateMap() {
 		Vector2 screenSize(windowWidth, windowHeight);
 		glUniform2fv(screenSizeLocation, 1,  screenSize.array);
 
-		//glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-		//glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-		//glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-		//glUniform3fv(glGetUniformLocation(mapUpdateShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
-		
 		int projLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "projMatrix");
 		int viewLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewMatrix");
 
 		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-		//int viewProjLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewProj");
-		//Matrix4 viewProjectionMatrix = viewMatrix * projMatrix;
-		//glUniformMatrix4fv(viewProjLocation, 1, false, (float*)&viewProjectionMatrix);
 
 		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
 		Matrix4 modelMatrix = (*i).GetModelMatrixNoRotation();
@@ -650,10 +635,6 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
 
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 
 		updateScorebar = false;
 	}
@@ -1603,11 +1584,13 @@ void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
 
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");
 	unsigned int mapIndex =   glGetUniformBlockIndex(mapUpdateShader->GetProgramID(), "teamColours");
+	unsigned int scorebarIndex =   glGetUniformBlockIndex(scoreBarShader->GetProgramID(), "teamColours");
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, teamUBO);
 
 	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
 	glUniformBlockBinding(mapUpdateShader->GetProgramID(), mapIndex, 1);
+	glUniformBlockBinding(scoreBarShader->GetProgramID(), scorebarIndex, 1);
 }
 
 
