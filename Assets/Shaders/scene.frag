@@ -12,11 +12,6 @@ struct Light{
 	float radius;
 };
 
-//#define SCENE_LIGHTS 1
-//layout (std140) uniform lights{
-	//uniform Light sceneLights[SCENE_LIGHTS];
-//};
-
 layout (std140) uniform lights{
 	uniform Light sceneLight;
 };

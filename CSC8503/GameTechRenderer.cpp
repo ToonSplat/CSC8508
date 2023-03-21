@@ -45,6 +45,42 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 GameTechRenderer::~GameTechRenderer()	{
 	glDeleteTextures(1, &shadowTex);
 	glDeleteFramebuffers(1, &shadowFBO);
+	
+	glDeleteTextures(1, &sceneColourTexture);
+	glDeleteTextures(1, &sceneDepthTexture);
+	glDeleteFramebuffers(1, &sceneFBO);
+	
+	glDeleteTextures(1, &minimapColourTexture);
+	glDeleteTextures(1, &minimapDepthTexture);
+	glDeleteFramebuffers(1, &minimapFBO);
+	
+	glDeleteTextures(1, &mapColourTexture);
+	glDeleteTextures(1, &mapDepthTexture);
+	glDeleteTextures(1, &mapScoreTexture);
+	glDeleteFramebuffers(1, &mapFBO);
+
+	glDeleteTextures(2, splitColourTexture);
+	glDeleteTextures(2, splitDepthTexture);
+	glDeleteFramebuffers(2, splitFBO);
+
+	glDeleteTextures(4, quadColourTexture);
+	glDeleteTextures(4, quadDepthTexture);
+	glDeleteFramebuffers(4, quadFBO);
+
+	glDeleteBuffers(3, atomicsBuffer);
+	glDeleteBuffers(1, &lineVertVBO);
+	glDeleteBuffers(1, &textVertVBO);
+	glDeleteBuffers(1, &textColourVBO);
+	glDeleteBuffers(1, &textTexVBO);
+
+	glDeleteVertexArrays(1, &lineVAO);
+	glDeleteVertexArrays(1, &textVAO);
+
+	delete skyboxMesh;
+	delete fullScreenQuad;
+	delete squareQuad;
+	delete minimapStencilQuad;
+	delete scoreQuad;
 }
 
 void GameTechRenderer::SetupLoadingScreen() {
@@ -154,7 +190,8 @@ void GameTechRenderer::RenderFrame() {
 	DrawMap();
 	PresentScene();
 
-	RenderImGUI();
+	if (displayDebug) RenderImGUI();
+
 	ToonDebugManager::Instance().EndRendering();
 }
 

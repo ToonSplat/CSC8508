@@ -31,6 +31,7 @@ namespace NCL {
 			void SetShadowSize(int size) { shadowSize = size; }
 			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
+			void ToggleDebug() { displayDebug = !displayDebug; }
 		protected:
 
 			void SetupLoadingScreen();
@@ -195,6 +196,7 @@ namespace NCL {
 			float screenAspect;
 
 			unsigned int lightMatrix;
+			bool displayDebug = false;
 		};
 	}
 }
