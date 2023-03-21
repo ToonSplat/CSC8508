@@ -44,7 +44,8 @@ in Vertex
 	vec3 tangent;
     vec3 binormal;
 	vec3 worldPos;
-	vec4 localPos;
+	vec4 worldPosition;
+	vec3 position;
 } IN;
 
 out vec4 fragColor;
@@ -109,10 +110,10 @@ void main(void)
 
 	for (int i = 0; i < impactPointCount; i++){
 		vec4 localImpactPos = modelMatrix * vec4(impactPoints[i].position, 1.0);
-		float distanceBetween = (isDynamic == true) ? distance(IN.localPos.xyz, localImpactPos.xyz) : distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		float splat = (isDynamic == true) ? SplatNoise((IN.localPos.xyz - localImpactPos.xyz)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));
+		float distanceBetween = (isDynamic == true) ? distance(IN.worldPosition.xyz, localImpactPos.xyz) : distance(IN.worldPosition.xyz, impactPoints[i].position + objectPosition);
+		float splat = (isDynamic == true) ? SplatNoise((IN.position)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.worldPosition.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));  
 		if (distanceBetween <= impactPoints[i].radius - splat){
-			albedo = vec4(impactPoints[i].colour, 1.0);
+			albedo = vec4(impactPoints[i].colour, 1.0); 
 		}
 	}
 	
