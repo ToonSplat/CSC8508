@@ -2,21 +2,16 @@
 
 #define TEAM_COUNT 4
 
-uniform atomic_uint scoreCount[TEAM_COUNT];
+layout (binding = 0, offset = 0) uniform atomic_uint scoreCount[TEAM_COUNT];
 
 
 layout (std140) uniform teamColours{
-	uniform vec3 teamColour[TEAM_COUNT];
+	vec4 teamColour[TEAM_COUNT];
 };
 
 uniform sampler2D 	mapTex;
 
 uniform vec2 screenSize;
-
-// uniform vec3 team1Colour;
-// uniform vec3 team2Colour;
-// uniform vec3 team3Colour;
-// uniform vec3 team4Colour;
 
 uniform vec3 objectColour;
 
@@ -34,18 +29,19 @@ void main(void)
 {
 	vec2 uv = gl_FragCoord.xy / screenSize;
 
-	vec3 previousColour = texture(mapTex, uv.xy).rgb;
+	vec4 previousColour = texture(mapTex, uv.xy);
 
 
-	if (previousColour == vec3(1.0,1.0,1.0)) discard;
+	if (previousColour == vec4(1.0,1.0,1.0, 1.0)) discard;
 	
-	fragColor = vec4(teamColour[3], 1.0);
-	return;
-
+	fragColor = vec4(objectColour, 1.0);
+	
+	//return;
 	for (int i = 0; i < TEAM_COUNT; i++){
+
 		if 	(previousColour == teamColour[i] && atomicCounter(scoreCount[i]) != 0) 
 			atomicCounterDecrement(scoreCount[i]);
-		if 	(objectColour == teamColour[i]) 
+		if 	(objectColour == teamColour[i].rgb) 
 			atomicCounterIncrement(scoreCount[i]);
 	}
 

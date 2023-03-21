@@ -1302,12 +1302,12 @@ void GameTechRenderer::SetWorld(ToonGameWorld* world)
 	int i = 0;
 	for (auto& [ID, team] : teams) {
 		teamColours[i] = team->GetTeamColour();
-		teamColoursShader.teams[i] = team->GetTeamColour();
+		teamColoursShader.teams[i] = Vector4(team->GetTeamColour(), 1);
 		i++;
 	}
 
 	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColoursShader, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColoursShader.teams, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -1591,14 +1591,14 @@ void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
 	
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightUBO);
-	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, lightUBO);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 0);
 }
 
 void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
 	glGenBuffers(1, &teamUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColours, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");

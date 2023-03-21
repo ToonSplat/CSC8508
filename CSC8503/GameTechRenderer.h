@@ -26,7 +26,7 @@ namespace NCL {
 		class GameTechRenderer : public OGLRenderer	{
 		#define TEAM_COUNT 4
 		struct TeamColourStruct {
-			Vector3 teams[TEAM_COUNT];
+			Vector4 teams[4];
 		} teamColoursShader;
 		public:
 			GameTechRenderer();		
