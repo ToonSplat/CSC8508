@@ -55,7 +55,7 @@ namespace NCL
 
 			void DeleteMarkedObjects();
 
-			void GetGameObjects(void) const;
+			std::vector<ToonGameObject*> GetGameObjects(void) const { return gameObjects; }
 
 			Camera* GetMainCamera(int player) { return mainCameras[player]; }
 			void SetMainCamera(int player, Camera* newCamera) {

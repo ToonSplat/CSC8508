@@ -118,11 +118,6 @@ void ToonGameWorld::RemovePaintableObject(ToonGameObject* paintableObject) {
 	objectsToDelete.insert(paintableObject);
 }
 
-void ToonGameWorld::GetGameObjects(void) const {
-	for (auto& object : gameObjects)
-		std::cout << object->GetRigidbody()->getUserData() << std::endl;
-}
-
 void ToonGameWorld::DeleteMarkedObjects() {
 	for (auto& object : objectsToDelete)
 		if (dynamic_cast<Player*>(object))

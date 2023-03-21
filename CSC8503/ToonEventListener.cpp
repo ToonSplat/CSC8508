@@ -46,20 +46,24 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                // Make the HitSphere if local play or the server
-                if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
-                {
-                    std::map<int, Team*> teams = gameWorld->GetTeams();
-                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
-                    teamColourPicker = (teamColourPicker + 1) % 4;
+                // Discard if hit the invisible wall
+                for(ToonGameObject* j : gameWorld->GetPaintableObjects())
+                    if (j == body1 || j == body2) {
+                        // Make the HitSphere if local play or the server
+                        if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                        {
+                            std::map<int, Team*> teams = gameWorld->GetTeams();
+                            levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
+                            teamColourPicker = (teamColourPicker + 1) % 4;
 
-                
-                //levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
-                }
-                    
 
-                i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
-                AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+                            //levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                        }
+
+
+                        i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
+                        AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+                    }
                 // Remove the Paintball
                 gameWorld->RemovePaintball(i);
                 gameWorld->RemoveGameObject(i, false);
