@@ -477,7 +477,7 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
-	if (!gameWorld->GetMinimapCamera()) return;
+	if (!gameWorld->GetMinimapCamera() || !mapInitialised) return;
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 	//glEnable(GL_STENCIL_TEST);
 
@@ -1267,7 +1267,7 @@ void GameTechRenderer::ResetAtomicBuffer(){
 	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
 
 	updateScorebar = true;
-
+	mapInitialised = false;
 }
 
 int GameTechRenderer::GetWinningTeam(float& percentage) {
