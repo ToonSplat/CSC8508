@@ -379,9 +379,6 @@ void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4
 			PassImpactPointDetails(paintedObject, shader);
 		}
 		if (shader == mapShader) {
-			// MAKE COLOUR WORK
-			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
-			glUniform1i(atomicLocation, currentAtomicGPU);
 
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
 			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
@@ -579,6 +576,8 @@ void GameTechRenderer::UpdateMap() {
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
 	
 	float screenAspect = (float)windowWidth / (float)windowHeight;
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
@@ -597,9 +596,6 @@ void GameTechRenderer::UpdateMap() {
 		int paintLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "objectColour");
 		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
 
-		int atomicLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "currentAtomicTarget");
-		glUniform1i(atomicLocation, currentAtomicGPU);
-		
 		int screenSizeLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "screenSize");
 		Vector2 screenSize(windowWidth, windowHeight);
 		glUniform2fv(screenSizeLocation, 1,  screenSize.array);
@@ -630,6 +626,7 @@ void GameTechRenderer::UpdateMap() {
 
 	
 	
+	glEnable(GL_DEPTH_TEST);
 
 	glDisable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -1212,34 +1209,21 @@ void GameTechRenderer::NewRenderText() {
 }
 
 void GameTechRenderer::GenerateAtomicBuffer(){
-	glGenBuffers(1, &atomicsBuffer[0]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
+	glGenBuffers(1, &atomicsBuffer);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
-	glGenBuffers(1, &atomicsBuffer[1]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
-	
-	glGenBuffers(1, &atomicsBuffer[2]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
 	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
-	
-	currentAtomicCPU = 0;
-	currentAtomicReset = 0;
-	currentAtomicGPU = 0;
 }
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
 	GLuint pixelCount[ATOMIC_COUNT];
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
 	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
 
@@ -1257,8 +1241,8 @@ void GameTechRenderer::RetrieveAtomicValues(){
 }
 
 void GameTechRenderer::ResetAtomicBuffer(){
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 	GLuint a[ATOMIC_COUNT];
 	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
 	{

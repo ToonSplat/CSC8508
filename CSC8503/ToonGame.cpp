@@ -233,7 +233,7 @@ void ToonGame::UpdateTime(float dt) {
 			StartGame();
 		}
 	}
-	else if (gameTime <= 89.5 && !renderer->IsMapInitialised()) {
+	else if (gameTime <= 89.7 && !renderer->IsMapInitialised()) {
 		renderer->mapNeedsDrawing = true;
 	}
 }

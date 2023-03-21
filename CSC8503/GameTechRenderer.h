@@ -175,7 +175,7 @@ namespace NCL {
 
 			GLuint* currentFBO;
 
-			GLuint atomicsBuffer[3];
+			GLuint atomicsBuffer;
 			void GenerateAtomicBuffer();
 			
 			
@@ -199,9 +199,9 @@ namespace NCL {
 			Vector3 teamColours[ATOMIC_COUNT - 1];
 
 
-			GLuint currentAtomicCPU;
+		/*	GLuint currentAtomicCPU;
 			GLuint currentAtomicGPU;
-			GLuint currentAtomicReset;
+			GLuint currentAtomicReset;*/
 
 			Camera* currentRenderCamera;
 			float screenAspect;
