@@ -25,13 +25,15 @@ ToonGame::ToonGame(GameTechRenderer* renderer, int playerCount, bool offline) : 
 {
 	AudioSystem::GetAudioSystem()->ApplyIngame();
 	world = new ToonGameWorld();
+	world->SetToonGame(this);
+
 	ToonDebugManager::Instance().SetGameWorld(world);
 
 	renderer->SetWorld(world);
 
 	levelManager = new ToonLevelManager(world);
 	world->AddEventListener(new ToonEventListener(&world->GetPhysicsWorld(), world, levelManager));
-	baseWeapon = new PaintBallClass(world, levelManager, 15, 5000, 4.0f, 1.0f, 5);
+	baseWeapon = new PaintBallClass(world, levelManager, 15, 1000, 4.0f, 1.0f, 5);
 	tieTeam = new Team("Draw", Vector3(1, 1, 1), 0);
 
 	// If there are number of controllers equal to player count, use them, otherwise make P1 use keyboard
@@ -81,7 +83,13 @@ void ToonGame::StartGame() {
 			player->SetWeapon(baseWeapon);
 
 			if (localPlayerCount == 1)
+			{
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+				
+				PlayerNPC* playerNPC = levelManager->AddPlayerNPCToWorld(world->GetTeamLeastPlayers());
+				playerNPC->SetWeapon(baseWeapon);
+				allPlayers.emplace(playerNPC);
+			}
 
 			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
 			world->SetMainCamera(i, followCamera);
@@ -105,9 +113,9 @@ void ToonGame::UpdateGame(float dt) {
 		if (player && winner == nullptr) {
 			UpdateCameras(dt, id);
 			InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id));
+			player->WeaponUpdate(dt, playerControls[id]);
 			if (offline) {
 				player->MovementUpdate(dt, playerControls[id]);
-				player->WeaponUpdate(dt, playerControls[id]);
 			}
 			else {
 				player->SetAiming(playerControls[id]->aiming);
@@ -139,6 +147,14 @@ PushdownState::PushdownResult ToonGame::DidSelectOkButton()
 	m_ShouldQuitGame = true;
 	world->GameEnded();
 	return PushdownState::Pop;
+}
+
+Player* NCL::CSC8503::ToonGame::GetPlayerFromID(const int& id)
+{
+	if(players.find(id) != players.end())
+		return players[id];
+
+	return NULL;
 }
 
 PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newState)
@@ -248,13 +264,13 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	Debug::Print(output, NCL::Maths::Vector2(50 - output.size(), 5.0f));
+	Debug::Print(output, NCL::Maths::Vector2(50.0f - output.size(), 5.0f));
 	if (winner != nullptr)
 	{
 		const std::string winnerText = "WINNER:" + winner->GetTeamName();
-		Debug::Print(winnerText, Vector2(50 - winnerText.size(), 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+		Debug::Print(winnerText, Vector2(50.0f - winnerText.size(), 15.0f), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 
-		for (auto& [id, player] : players)
+		for (auto& player : allPlayers)
 		{
 			if (player->GetTeam() == winner) player->PlayVictory();
 			else player->PlayDefeat();

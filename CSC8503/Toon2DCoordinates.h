@@ -2,8 +2,8 @@
 using namespace NCL::Maths;
 struct Coordinates
 {
-	Vector2 origin;
-	Vector2 size;
+	Maths::Vector2 origin;
+	Maths::Vector2 size;
 
 	Coordinates(const Coordinates& coord)
 	{
@@ -11,7 +11,7 @@ struct Coordinates
 		size   = coord.size;
 	}
 
-	Coordinates(Vector2 org, Vector2 siz)
+	Coordinates(Maths::Vector2 org, Maths::Vector2 siz)
 	{
 		origin = org;
 		size   = siz;
@@ -19,8 +19,8 @@ struct Coordinates
 
 	Coordinates()
 	{
-		origin = Vector2(0.0f, 0.0f);
-		size   = Vector2(0.0f, 0.0f);
+		origin = Maths::Vector2(0.0f, 0.0f);
+		size   = Maths::Vector2(0.0f, 0.0f);
 	}
 
 	void ScaleCoordinatesBy(float scale)

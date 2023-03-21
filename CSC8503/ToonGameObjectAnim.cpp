@@ -2,6 +2,7 @@
 #include "OGLMesh.h"
 #include "OGLShader.h"
 #include "ToonAssetManager.h"
+#include "Debug.h"
 
 int index = 0;
 NCL::CSC8503::ToonGameObjectAnim::ToonGameObjectAnim(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld) : ToonGameObject(RP3D_World, gameWorld)
@@ -58,6 +59,31 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		const Matrix4* invBindPose = mesh->GetInverseBindPose().data();
 		const Matrix4* frameData = currentAnim->GetJointData(currentFrame);
 
+		/*int headIndex = mesh->GetIndexForJoint("mixamorig:Head");
+		Matrix4 headJoint = frameData[headIndex];
+
+		int eyeLeftIndex = mesh->GetIndexForJoint("mixamorig:LeftEye");
+		Matrix4 eyeLeftJoint = frameData[eyeLeftIndex];
+
+		int eyeRightIndex = mesh->GetIndexForJoint("mixamorig:RightEye");
+		Matrix4 eyeRightJoint = frameData[eyeRightIndex];
+
+		headJoint = headJoint * Matrix4::Rotation(std::sinf(Window::GetTimer()->GetTotalTimeSeconds()) * 30.0f, Vector3(0, 1, 0)) * Matrix4::Scale(Vector3(2.0f, 2.0f, 2.0f))*/;
+		//eyeLeftJoint.SetPositionVector(headJoint.GetPositionVector());
+		//eyeRightJoint.SetPositionVector(headJoint.GetPositionVector());
+
+		/*for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
+		{
+			if(i == headIndex)
+				frameMatrices.emplace_back(headJoint * invBindPose[i]);
+			else if(i == eyeLeftIndex)
+				frameMatrices.emplace_back(headJoint * eyeLeftJoint * invBindPose[i]);
+			else if(i == eyeRightIndex)
+				frameMatrices.emplace_back(headJoint * eyeRightJoint * invBindPose[i]);
+			else
+				frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
+		}*/
+
 		for (unsigned int i = 0; i < mesh->GetJointCount(); i++)
 			frameMatrices.emplace_back(frameData[i] * invBindPose[i]);
 
@@ -73,10 +99,10 @@ void NCL::CSC8503::ToonGameObjectAnim::Draw(OGLRenderer& r, bool isMinimap)
 		if (renderObject->GetMaterial() != nullptr)
 		{
 			if ((int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
-				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 5);
 
-			/*if ((int)renderObject->GetMaterial()->GetBumpTextures().size() > 0)
-				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetBumpTextures()[i], "bumpTex", 1);*/
+			if ((int)renderObject->GetMaterial()->GetBumpTextures().size() > 0)
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetBumpTextures()[i], "bumpTex", 6);
 		}
 
 		r.DrawBoundMesh(i);

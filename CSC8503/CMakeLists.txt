@@ -10,6 +10,7 @@ set(Header_Files
     "PaintBallClass.h"
     "PaintBallProjectile.h"
     "Player.h"
+    "PlayerNPC.h"
     "ImpactPoint.h"
     "ToonLevelManager.h"
     "ToonGame.h"
@@ -30,6 +31,9 @@ set(Header_Files
     "ToonGameObjectAnim.h"
     "ToonDebugManager.h"
     "ToonSettingsManager.h"
+    "NavPathNode.h"
+    "NavPathFinder.h"
+    "NavPathGraphLevel.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -42,6 +46,7 @@ set(Source_Files
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"
+    "PlayerNPC.cpp"
     "ToonLevelManager.cpp"
     "ToonGame.cpp"
     "Audio.cpp"
@@ -56,6 +61,8 @@ set(Source_Files
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
     "ToonSettingsManager.cpp"
+    "NavPathFinder.cpp"
+    "NavPathGraphLevel.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files

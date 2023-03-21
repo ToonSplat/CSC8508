@@ -36,6 +36,9 @@ namespace NCL
 						renderer->SetShadowSize((result[1] == "1" ? 8092 : 2048));
 						renderer->GenerateShadowFBO();
 					}
+					else if (result[0] == CROSSHAIR_STRING) {
+						renderer->m_EnableDynamicCrosshair = result[1] == "1";
+					}
 				}
 			}
 			static void SetRenderer(GameTechRenderer* newRenderer) { renderer = newRenderer; }
