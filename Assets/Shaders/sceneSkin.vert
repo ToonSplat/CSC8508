@@ -27,7 +27,8 @@ out Vertex {
 	vec3 tangent;
     vec3 binormal;
 	vec3 worldPos;
-	vec4 localPos;
+	vec4 worldPosition;
+	vec3 position;
 } OUT;
 
 void main(void) 
@@ -37,7 +38,7 @@ void main(void)
 
 	OUT.shadowProj 	=  shadowMatrix * vec4(position, 1.0);
 	OUT.worldPos 	=  (modelMatrix * vec4(position, 1.0)).xyz;
-	OUT.localPos 	=  modelMatrix * vec4(position, 1.0);
+	OUT.worldPosition 	=  modelMatrix * vec4(position, 1.0);
 	OUT.normal 		= normalize(normalMatrix * normalize (normal));
 	OUT.texCoord 	= texCoord;
 	OUT.colour		= objectColour;
@@ -68,6 +69,7 @@ void main(void)
     OUT.normal = skelNormal.xyz;
     OUT.tangent = wTangent;
     OUT.binormal = cross(wTangent, wNormal) * tangent.w;
+	OUT.position = position;
 
 
 	//OUT.normal = mat3(modelMatrix) * normalize(skelNormal.xyz);	
