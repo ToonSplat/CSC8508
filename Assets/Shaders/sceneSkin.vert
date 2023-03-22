@@ -49,9 +49,10 @@ void main(void)
 	vec4 localNormal = vec4(normal, 1.0f);
 	vec4 localPos 	= vec4(position, 1.0f);
 	vec4 skelPos 	= vec4(0,0,0,0);
+	vec4 skelNormal = vec4(0,0,0,0);
 	vec4 otherSkelPos 	= vec4(0,0,0,0);
 
-	vec4 skelNormal = vec4(0,0,0,0);
+	//vec4 skelNormal = vec4(0,0,0,0);
 	for(int i = 0; i < 4; ++i) {
 		int   jointIndex 	= jointIndices[i];
 		float jointWeight 	= jointWeights[i];

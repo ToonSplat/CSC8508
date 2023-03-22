@@ -10,6 +10,7 @@ https://research.ncl.ac.uk/game/
 #include <cmath>
 #include <iostream>
 #include <algorithm>
+#include <string>
 
 namespace NCL::Maths {
 	class Vector2;
@@ -192,6 +193,11 @@ namespace NCL::Maths {
 			angle = acos(res);
 
 			return angle * 180.0f / 3.14f;
+		}
+
+		inline const std::string ToString() const
+		{
+			return std::string("v" + std::to_string(x) + std::to_string(y) + std::to_string(z));
 		}
 	};
 }

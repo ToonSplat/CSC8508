@@ -11,6 +11,7 @@
 #define INVERT_CAMERA_STRING "InvertCamera"
 #define SHADOW_STRING		 "Shadow"
 #define WINDOW_SIZE_STRING	 "WindowSize"
+#define CROSSHAIR_STRING	 "Dynamic CrossHair"
 
 using namespace NCL;
 //using namespace CSC8503;
@@ -22,6 +23,7 @@ class ToonGameSettings : public PushdownState
 		InvertCamera,
 		Shadow,
 		WindowSize,
+		Crosshair,
 		SettingsBack
 	};
 
@@ -48,6 +50,7 @@ class ToonGameSettings : public PushdownState
 	{
 		ToggleButtonStates invertCameraState = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates shadowState	     = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates crosshairState	 = ToggleButtonStates::ToggleOn;
 		std::string windowSize				 = "";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
@@ -85,6 +88,7 @@ class ToonGameSettings : public PushdownState
 			{
 				if		(it.first == INVERT_CAMERA_STRING) { invertCameraState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == SHADOW_STRING)		   { shadowState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == CROSSHAIR_STRING)	   { crosshairState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second; }
 			}
 		}
@@ -93,6 +97,7 @@ class ToonGameSettings : public PushdownState
 		{
 			std::string serializedString = INVERT_CAMERA_STRING + std::string(":") + std::string((invertCameraState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString		    += SHADOW_STRING + std::string(":") + std::string((shadowState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			serializedString			+= CROSSHAIR_STRING + std::string(":") + std::string((crosshairState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
 			return serializedString;
 		}

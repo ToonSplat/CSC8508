@@ -35,6 +35,11 @@ PaintBallClass::PaintBallClass(ToonGameWorld* gameWorld, ToonLevelManager* level
 		bullet[i] = nullptr;
 	}
 
+	shootSpread = 0.0f;
+	shootSpreadAdd = 1.0f;
+	shootSpreadMin = 0.0f;
+	shootSpreadMax = 1.0f;
+
 	trajectoryDetected = false;
 }
 
@@ -68,9 +73,23 @@ NCL::Maths::Vector3 NCL::CSC8503::PaintBallClass::CalculateBulletVelocity(NCL::M
 	result.y = Vy;
 
 	return result;
-;}
+}
 
-bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
+void NCL::CSC8503::PaintBallClass::CalculateBulletPositionOrientation(const short& pitch, NCL::Maths::Vector3& positionFinal, NCL::Maths::Vector3& orientationFinal)
+{
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(pitch + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+	reactphysics3d::Vector3 dirOri = orientation;
+	dirOri.y = 0;
+	dirOri.normalize();
+	orientation.normalize();
+	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
+
+	positionFinal = ToonUtils::ConvertToNCLVector3(position);
+	orientationFinal = ToonUtils::ConvertToNCLVector3(orientation);
+}
+
+bool PaintBallClass::Update(float dt, PlayerControl* playerControls) 
+{
 	if (shootTimer > 0) shootTimer -= dt;
 	if (playerControls->shooting && ammoInUse > 0 && shootTimer <= 0)
 		status = isFiring;
@@ -79,17 +98,16 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 	else
 		status = isIdle;
 
+	if (shootSpread > 0) shootSpread -= dt * 2.0f;
+	shootSpread = Clamp(shootSpread, shootSpreadMin, shootSpreadMax);
+
 	switch (status) 
 	{
 		case isFiring:
-				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {
-					reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
-					reactphysics3d::Vector3 dirOri = orientation;
-					dirOri.y = 0;
-					dirOri.normalize();
-					orientation.normalize();
-					reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
-					FireBullet(position, orientation);
+				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {					
+					Vector3 position, orientation;
+					CalculateBulletPositionOrientation(playerControls->camera[0], position, orientation);
+					FireBullet(ToonUtils::ConvertToRP3DVector3(position), ToonUtils::ConvertToRP3DVector3(orientation));
 				}
 				return true;
 		case isReloading:
@@ -98,6 +116,28 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls) {
 			__fallthrough;
 		default:
 			return false;
+	}
+}
+
+//Used by PlayerNPC
+void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
+{
+	if (gameWorld->GetNetworkStatus() != NetworkingStatus::Offline)
+		return;
+
+	if (shootTimer > 0) shootTimer -= dt;
+
+	if (ammoInUse > 0 && shootTimer <= 0)
+	{
+		status = isFiring;
+		Vector3 position, orientation;
+		CalculateBulletPositionOrientation(ToonUtils::RandF(-45.0f, 5.0f), position, orientation);
+		FireBullet(ToonUtils::ConvertToRP3DVector3(position), ToonUtils::ConvertToRP3DVector3(orientation));
+	}
+	else if (ammoInUse <= 0)
+	{
+		status = isReloading;
+		Reload(dt);
 	}
 }
 
@@ -161,7 +201,7 @@ void PaintBallClass::Reload(float dt)
 				ammoInUse += temp;
 				ammoHeld -= temp;
 			}
-			std::cout << "Ammo: " << ammoInUse << "/" << ammoHeld << std::endl;
+			//std::cout << "Ammo: " << ammoInUse << "/" << ammoHeld << std::endl;
 		}
 	}
 }
@@ -175,8 +215,9 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 	const float PAINTBALL_RADIUS = 0.25f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
 
-	shootTimer = 1.0f/fireRate;
+	shootTimer = 1.0f / fireRate;
 	ammoInUse--;
+	shootSpread += shootSpreadAdd;
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));

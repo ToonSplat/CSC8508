@@ -25,7 +25,7 @@ out Vertex
 	vec4 shadowProj;
 	vec3 normal;
 	vec3 tangent;
-    vec3 binormal;
+  vec3 binormal;
 	vec3 worldPos;
 	vec4 worldPosition;
 	vec3 position;

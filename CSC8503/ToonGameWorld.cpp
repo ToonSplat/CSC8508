@@ -1,9 +1,11 @@
+#include "ToonGame.h"
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
 #include "Window.h"
 #include "PaintableObject.h"
 #include "PaintBallProjectile.h"
 #include "Player.h"
+#include "PlayerNPC.h"
 #include "ToonEventListener.h"
 
 using namespace NCL;
@@ -63,13 +65,30 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
-	for (auto& i : gameObjects) {
-		if (dynamic_cast<Player*>(i))
+	for (auto& i : gameObjects) 
+	{
+		if (dynamic_cast<PlayerNPC*>(i))
+			delete (PlayerNPC*)i;
+		else if (dynamic_cast<Player*>(i))
 			delete (Player*)i;
-		else delete i;
+		else 
+			delete i;
 	}
 
 	Clear();
+}
+
+void NCL::CSC8503::ToonGameWorld::SetToonGame(ToonGame* _toonGame)
+{
+	game = _toonGame;
+}
+
+ToonGame* NCL::CSC8503::ToonGameWorld::GetToonGame()
+{
+	if (game != nullptr) 
+		return game;
+
+	return nullptr;
 }
 
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)
@@ -148,8 +167,16 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 		}
 	}
 
-	for (auto& object : gameObjects)
+	//int index = 0;
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		gameObjects[i]->Update(dt);
+	}
+	/*for (auto& object : gameObjects)
+	{
 		object->Update(dt);
+		index++;
+	}*/
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)
