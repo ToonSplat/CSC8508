@@ -39,6 +39,9 @@ namespace NCL
 					else if (result[0] == CROSSHAIR_STRING) {
 						renderer->m_EnableDynamicCrosshair = result[1] == "1";
 					}
+					else if (result[0] == WINDOW_SIZE_STRING) {
+						//Window::GetWindow()->SetFullScreen(result[1] == "1"); //TODO: This messes with GetMouseLocation
+					}
 				}
 			}
 			static void SetRenderer(GameTechRenderer* newRenderer) { renderer = newRenderer; }
