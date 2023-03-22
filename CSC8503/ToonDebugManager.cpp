@@ -7,6 +7,8 @@ ToonDebugManager* ToonDebugManager::instance = NULL;
 
 ToonDebugManager::ToonDebugManager() {
 	isCollisionDisplayToggled = false;
+	showAIPathGraph = false;
+	showAIPathDebug = false;
 }
 
 void ToonDebugManager::StartLoad() {

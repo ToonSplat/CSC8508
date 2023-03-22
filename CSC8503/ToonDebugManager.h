@@ -58,6 +58,7 @@ namespace NCL
 			}
 
 			const int byteToMb = 1048576;
+			bool isAIPresent;
 
 			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem / byteToMb) + "/" + std::to_string(totalVirtualMem / byteToMb) + "MB"; }
 			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram / byteToMb) + "MB"; }
@@ -72,6 +73,11 @@ namespace NCL
 			string GetGraphicsTimeTaken() { return std::to_string(graphicsTimeTaken / 1000.0f) + " ms"; }
 
 			void ToggleCollisionDisplay();
+			bool GetAIPathGraphStatus() const { return showAIPathGraph; }
+			bool GetAIPathDebugStatus() const { return showAIPathDebug; }
+
+			void SetAIPathGraphStatus(bool s) { showAIPathGraph = s; }
+			void SetAIPathDebugStatus(bool s) { showAIPathDebug = s; }
 
 			void SetGameWorld(ToonGameWorld* world) { this->world = world; }
 
@@ -124,6 +130,9 @@ namespace NCL
 			double graphicsTimeTaken;
 
 			bool isCollisionDisplayToggled;
+			
+			bool showAIPathGraph;
+			bool showAIPathDebug;
 		};
 	}
 }
