@@ -67,6 +67,10 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                         Vector3 localPosition;
                         localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
                             p->GetRigidbody()->getTransform().getPosition());
+                        if (p->GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) { 
+                            Quaternion rotation = ToonUtils::ConvertToNCLQuaternion(p->GetRigidbody()->getTransform().getOrientation());
+                            localPosition = rotation.Conjugate() * localPosition;
+                        }
                         if (dynamic_cast<PaintableObject*>(p)) {
                             PaintableObject* object = (PaintableObject*)p;
                             object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
@@ -81,10 +85,6 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                 }
             }
         }
-      
-            
-    
-        
     }
     for (HitSphere* i : gameWorld->GetHitSpheres()) {
         if (i->CheckDelete()) {
@@ -115,3 +115,4 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
         }
     }
 }
+
