@@ -1127,6 +1127,18 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 			ImGui::Text(ToonDebugManager::Instance().GetGraphicsTimeTaken().c_str());
 			ImGui::EndTable();
 		}
+
+		if (ToonDebugManager::Instance().isAIPresent)
+		{
+			if (ImGui::CollapsingHeader("AI"))
+			{
+				bool showGraph = ToonDebugManager::Instance().GetAIPathGraphStatus();
+				bool pathDebug = ToonDebugManager::Instance().GetAIPathDebugStatus();
+
+				if (ImGui::Checkbox("Show AI Path", (bool*)&pathDebug)) ToonDebugManager::Instance().SetAIPathDebugStatus(pathDebug);
+				if (ImGui::Checkbox("Show Path Graph", (bool*)&showGraph)) ToonDebugManager::Instance().SetAIPathGraphStatus(showGraph);
+			}
+		}
 	}
 	ImGui::End();
 	ImGui::Render();

@@ -1,6 +1,7 @@
 #include "PlayerNPC.h"
 #include "ToonGame.h"
 #include "ToonUtils.h"
+#include "ToonDebugManager.h"
 #include <random>
 
 using namespace NCL;
@@ -173,9 +174,15 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 				if (canShoot) weapon.NPCUpdate(dt);
 
-				/*Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
-				Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
-				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);*/
+				if (ToonDebugManager::Instance().GetAIPathDebugStatus())
+				{
+					Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
+					Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
+					Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);
+
+					for (int i = 1; i < pathNodesList.size(); i++)
+						Debug::DrawLine(pathNodesList[i - 1]->position, pathNodesList[i]->position, Debug::YELLOW);
+				}
 			}			
 
 			UpdateMovementAnimations();	
@@ -196,13 +203,16 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine->AddTransition(ShootingToIdle);
 	stateMachine->AddTransition(ShootingToGameEnded);
 
-	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);	
+	//targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);
+	ToonDebugManager::Instance().isAIPresent = true;
 }
 
 PlayerNPC::~PlayerNPC()
 {
 	delete stateMachine;
 	delete pathGraph;
+
+	ToonDebugManager::Instance().isAIPresent = false;
 }
 
 void PlayerNPC::Update(float dt)
@@ -210,7 +220,8 @@ void PlayerNPC::Update(float dt)
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);	
 	
-	//pathGraph->DrawDebugPathGraph();
+	if (ToonDebugManager::Instance().GetAIPathGraphStatus())
+		pathGraph->DrawDebugPathGraph();
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)
 		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);*/
