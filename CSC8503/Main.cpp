@@ -77,6 +77,10 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 			w->ShowConsole(false);
 		}
 
+		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::M)) {
+			w->SetFullScreen(!w->IsFullScreen());
+		}
+
 		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
 			w->SetWindowPosition(0, 0);
 		}

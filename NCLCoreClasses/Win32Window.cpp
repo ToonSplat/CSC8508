@@ -132,6 +132,7 @@ void	Win32Window::UpdateTitle()	{
 }
 
 void	Win32Window::SetFullScreen(bool fullScreen) {
+	this->fullScreen = fullScreen;
 	if (fullScreen) {
 		DEVMODE dmScreenSettings;								// Device Mode
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared

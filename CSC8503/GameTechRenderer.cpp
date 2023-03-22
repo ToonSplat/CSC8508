@@ -1345,8 +1345,7 @@ void GameTechRenderer::NewRenderText() {
 	SetDebugStringBufferSizes(frameVertCount);
 
 	for (const auto& s : strings) {
-		float size = 20.0f;
-		Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, size, debugTextPos, debugTextUVs, debugTextColours);
+		Debug::GetDebugFont()->BuildVerticesForString(s.data, s.position, s.colour, s.size, debugTextPos, debugTextUVs, debugTextColours);
 	}
 
 	glBindBuffer(GL_ARRAY_BUFFER, textVertVBO);
@@ -1807,4 +1806,37 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
 	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
 	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+}
+
+void GameTechRenderer::OnWindowResize(int w, int h) {
+	windowWidth = w;
+	windowHeight = h;
+	glViewport(0, 0, windowWidth, windowHeight);
+
+	glDeleteTextures(1, &sceneColourTexture);
+	glDeleteTextures(1, &sceneDepthTexture);
+	glDeleteFramebuffers(1, &sceneFBO);
+
+	glDeleteTextures(1, &minimapColourTexture);
+	glDeleteTextures(1, &minimapDepthTexture);
+	glDeleteFramebuffers(1, &minimapFBO);
+
+	glDeleteTextures(1, &mapColourTexture);
+	glDeleteTextures(1, &mapDepthTexture);
+	glDeleteTextures(1, &mapScoreTexture);
+	glDeleteFramebuffers(1, &mapFBO);
+
+	glDeleteTextures(2, splitColourTexture);
+	glDeleteTextures(2, splitDepthTexture);
+	glDeleteFramebuffers(2, splitFBO);
+
+	glDeleteTextures(4, quadColourTexture);
+	glDeleteTextures(4, quadDepthTexture);
+	glDeleteFramebuffers(4, quadFBO);
+
+	GenerateSceneFBO(windowWidth, windowHeight);
+	GenerateSplitFBO(windowWidth / 2, windowHeight);
+	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
+	GenerateMinimapFBO(windowWidth, windowHeight);
+	GenerateMapFBO(windowWidth, windowHeight);
 }
