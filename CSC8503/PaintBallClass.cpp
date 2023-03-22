@@ -174,7 +174,7 @@ void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
 //}
 void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* playerControls)
 {
-	const float PAINTBALL_RADIUS		= 0.25f;
+	const float PAINTBALL_RADIUS		= 0.1f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
 	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal(playerControls->camera[0] + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
 	orientation.normalize();
@@ -200,6 +200,9 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 			bullet[i]->GetRigidbody()->enableGravity(true);
 		}
 		bullet[i]->SetPosition(position.x + x, position.y + y, position.z + z);
+		Vector4 trajectoryBallColour = team->GetTeamColour();
+		trajectoryBallColour.w = 0.8;
+		bullet[i]->GetRenderObject()->SetColour(trajectoryBallColour);
 	}
 }
 
