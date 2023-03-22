@@ -459,9 +459,6 @@ void GameTechRenderer::RenderScene() {
 
 			cameraLocation = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
 
-			//Vector3 camPos = gameWorld->GetMainCamera()->GetPosition();
-			//glUniform3fv(cameraLocation, 1, camPos.array);
-
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
@@ -1154,7 +1151,7 @@ void GameTechRenderer::UpdateLightColour() {
 		sceneLight.lightColour = teamColours[3] * (1 - percentageScale);
 		break;
 	case 5:
-		sceneLight.lightColour = defaultColour;
+		sceneLight.lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
 		break;
 	default:
 		break;
