@@ -73,7 +73,7 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates shadowState	     = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates crosshairState	 = ToggleButtonStates::ToggleOn;
 		std::string		   windowSize		 = "";
-		std::string		   volume			 = "";
+		std::string		   volume			 = "10";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
 		{
