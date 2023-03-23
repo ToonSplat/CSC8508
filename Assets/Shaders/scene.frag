@@ -1,4 +1,4 @@
-#version 400 core
+#version 420 core
 #extension GL_ARB_bindless_texture : enable
 
 layout(bindless_sampler) uniform sampler2D bindless;
@@ -10,11 +10,24 @@ layout (std140) uniform materials{
 	vec4 key[100];
 } materialReferencer;
 
+
 struct ImpactPoint{
 	vec3 position;
 	vec3 colour;
 	float radius;
 };
+
+struct Light{
+	vec4 colour;
+	vec3 position;
+	float radius;
+};
+
+#define SCENE_LIGHTS 1
+layout (std140) uniform lights{
+	uniform Light sceneLights[SCENE_LIGHTS];
+};
+
 #define MAX_IMPACT_POINTS 300
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
@@ -22,12 +35,9 @@ uniform int impactPointCount;
 uniform int materialIndex = -1;
 
 uniform vec4 		objectColour;
-uniform sampler2D 	mainTex;
+layout(binding = 5) uniform sampler2D 	mainTex;
+layout(binding = 6) uniform sampler2D	bumpTex;
 uniform sampler2DShadow shadowTex;
-
-uniform vec3	lightPos;
-uniform float	lightRadius;
-uniform vec4	lightColour;
 
 uniform vec3	cameraPos;
 
@@ -41,6 +51,8 @@ in Vertex
 	vec2 texCoord;
 	vec4 shadowProj;
 	vec3 normal;
+	vec3 tangent;
+    vec3 binormal;
 	vec3 worldPos;
 	vec4 localPos;
 } IN;
@@ -77,18 +89,28 @@ void main(void)
 	float shadow = 1.0; // New !
 	
 	if(IN.shadowProj.w > 0.0) { // New !
-		shadow = textureProj(shadowTex , IN.shadowProj) * 0.7f;
+		shadow = textureProj(shadowTex , IN.shadowProj);
 	}
 
-	vec3  incident = normalize ( lightPos - IN.worldPos );
-	float lambert  = max (0.0 , dot ( incident , IN.normal )) * 0.9; 
+	mat3 TBN = mat3(normalize(IN.tangent), normalize(IN.binormal), normalize(IN.normal));
+	
+	vec3 bumpNormal;
+	if(hasTexture) {
+		bumpNormal = texture(bumpTex, IN.texCoord).rgb;
+		bumpNormal = normalize(TBN * normalize(bumpNormal * 2.0 - 1.0));
+	}
+	else{
+		bumpNormal = IN.normal;
+	}
+	vec3  incident = normalize ( sceneLights[0].position - IN.worldPos ); 
+	float lambert  = max (0.0 , dot ( incident , bumpNormal )) * 0.9; 
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
-	float rFactor = max (0.0 , dot ( halfDir , IN.normal ));
+	float rFactor = max (0.0 , dot ( halfDir , bumpNormal));
 	float sFactor = pow ( rFactor , 80.0 );
-	
+
 	vec4 albedo = IN.colour;
 	//if(hasTexture) {
 	// albedo *= texture(mainTex, IN.texCoord);
@@ -111,7 +133,6 @@ void main(void)
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		float distancePercentage = distanceBetween / impactPoints[i].radius;
 		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
 			albedo = vec4(impactPoints[i].colour, 1.0);
 		}
@@ -121,9 +142,9 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * lightColour.rgb * lambert * shadow; //diffuse light
+	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light
 	
-	fragColor.rgb += lightColour.rgb * sFactor * shadow; //specular light
+	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow * 0.1; //specular // Change once bump-maps are introduced
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	

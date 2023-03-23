@@ -49,6 +49,10 @@ namespace NCL {
 				return shader;
 			}
 
+			void SetShader(ShaderBase* newShader) {
+				shader = newShader;
+			}
+
 			void SetColour(const Vector4& c) {
 				colour = c;
 			}
@@ -66,7 +70,8 @@ namespace NCL {
 				return gameObject;
 			}
 
-			ToonMeshMaterial* GetMaterial() const { return material; }			
+			ToonMeshMaterial* GetMaterial() const { return material; }
+			void SetMeshMaterial(ToonMeshMaterial* newMat) { material = newMat; }
 
 		protected:
 			ToonGameObject* gameObject;

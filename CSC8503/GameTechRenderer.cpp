@@ -10,6 +10,7 @@
 #include "ToonUtils.h"
 #include <iostream>
 #include <algorithm>
+#include <reactphysics3d/reactphysics3d.h>
 #include "ToonAssetManager.h"
 #include "ToonDebugManager.h"
 #include "Player.h"
@@ -24,15 +25,21 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()){
-	ToonAssetManager::Instance().LoadAssets();
-	SetupStuffs();
-	textures.values;
-	materials.values;
-	team1Percentage = 0;
-	team2Percentage = 0;
-	team3Percentage = 0;
-	team4Percentage = 0;
+
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
+{
+	ToonDebugManager::Instance().StartLoad();
+
+	SetupLoadingScreen();
+
+	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
+		RenderFrameLoading();
+		ToonAssetManager::Instance().LoadNextAsset();
+	}
+
+	ToonDebugManager::Instance().EndLoad();
+
+	SetupMain();
 }
 
 GameTechRenderer::~GameTechRenderer()	{
@@ -40,9 +47,37 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteFramebuffers(1, &shadowFBO);
 }
 
-void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
-	glEnable(GL_DEPTH_TEST);
+void GameTechRenderer::SetupLoadingScreen() {
+	// Get the bare minimum assets needed for loadingscreen
+	ToonAssetManager::Instance().LoadLoadingScreenAssets();
+
+	// Text and Drawing
 	debugShader = ToonAssetManager::Instance().GetShader("debug");
+
+	glGenVertexArrays(1, &lineVAO);
+	glGenVertexArrays(1, &textVAO);
+
+	glGenBuffers(1, &lineVertVBO);
+	glGenBuffers(1, &textVertVBO);
+	glGenBuffers(1, &textColourVBO);
+	glGenBuffers(1, &textTexVBO);
+
+	SetDebugStringBufferSizes(10000);
+	SetDebugLineBufferSizes(1000);
+
+	// Background is done as a skybox
+	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
+
+	skyboxMesh = new OGLMesh();
+	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
+	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
+	skyboxMesh->UploadToGPU();
+	LoadSkybox("ToonSplat_Background.png");
+}
+
+void NCL::CSC8503::GameTechRenderer::SetupMain()
+{
+	glEnable(GL_DEPTH_TEST);
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
 	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
@@ -65,17 +100,8 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 
 	glClearColor(1, 1, 1, 1);
 
-	//Set up the light properties
-	lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
-	lightRadius = 10000.0f;
-	lightPosition = Vector3(-300.0f, 500.0f, -300.0f);
-
-	//Skybox!
-	skyboxShader = ToonAssetManager::Instance().GetShader("skybox");
-	skyboxMesh = new OGLMesh();
-	skyboxMesh->SetVertexPositions({ Vector3(-1, 1,-1), Vector3(-1,-1,-1) , Vector3(1,-1,-1) , Vector3(1,1,-1) });
-	skyboxMesh->SetVertexIndices({ 0,1,2,2,3,0 });
-	skyboxMesh->UploadToGPU();
+	shaderLight = ShaderLights();
+	shaderLight.data[0] = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f); //Vector3(-300.0f, 500.0f, -300.0f)
 
 	fullScreenQuad = new OGLMesh();
 	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
@@ -101,23 +127,20 @@ void NCL::CSC8503::GameTechRenderer::SetupStuffs(){
 	scoreQuad->UploadToGPU();
 	
 	LoadSkybox();
+	CreateLightUBO();
 
-	glGenVertexArrays(1, &lineVAO);
-	glGenVertexArrays(1, &textVAO);
-
-	glGenBuffers(1, &lineVertVBO);
-	glGenBuffers(1, &textVertVBO);
-	glGenBuffers(1, &textColourVBO);
-	glGenBuffers(1, &textTexVBO);
-
-	SetDebugStringBufferSizes(10000);
-	SetDebugLineBufferSizes(1000);
+	team1Percentage = 0;
+	team2Percentage = 0;
+	team3Percentage = 0;
+	team4Percentage = 0;
 }
 
 void GameTechRenderer::RenderFrame() {
 	ToonDebugManager::Instance().StartRendering();
 	if (!gameWorld) return; // Safety Check
-
+	
+	UpdateLightColour();
+	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
 		Render1Player();
@@ -225,10 +248,6 @@ void GameTechRenderer::RenderScene() {
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
-			glUniform3fv(lightPosLocation, 1, (float*)&lightPosition);
-			glUniform4fv(lightColourLocation, 1, (float*)&lightColour);
-			glUniform1f(lightRadiusLocation, lightRadius);
-
 			int shadowTexLocation = glGetUniformLocation(shader->GetProgramID(), "shadowTex");
 			glUniform1i(shadowTexLocation, 1);
 			activeShader = shader;
@@ -308,7 +327,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	currentRenderCamera = gameWorld->GetMainCamera(1);
 	DrawMainScene();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	DrawMinimap();
+	//DrawMinimap();
 }
 
 void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
@@ -546,6 +565,7 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 }
 
 void GameTechRenderer::RenderShadowMap() {
+	
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -557,16 +577,15 @@ void GameTechRenderer::RenderShadowMap() {
 	int mvpLocation = glGetUniformLocation(shadowShader->GetProgramID(), "mvpMatrix");
 	int hasSkinLocation = glGetUniformLocation(shadowShader->GetProgramID(), "hasSkin");
 
-	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(50, 100, 75), Vector3(15, 15, 0), Vector3(0, 1, 0));
-	Matrix4 shadowProjMatrix = Matrix4::Perspective(100.0f, 300.0f, 1, 60.0f);
+	Matrix4 shadowViewMatrix = Matrix4::BuildViewMatrix(Vector3(1, 55, 1), Vector3(0, 0, 0), Vector3(0, 1, 0)); // Vector3(50, 100, 75)
+	Matrix4 shadowProjMatrix = Matrix4::Perspective(20.0f, 75.0f, 1, 100.0f);
 
 	Matrix4 mvMatrix = shadowProjMatrix * shadowViewMatrix;
 
-	shadowMatrix = biasMatrix * mvMatrix; //we'll use this one later on
+	shadowMatrix = biasMatrix * mvMatrix;
 
 	for (const auto& i : activeObjects)
 	{
-
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -588,12 +607,13 @@ void GameTechRenderer::RenderShadowMap() {
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 
 	glCullFace(GL_BACK);
+	
 }
 
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	PresentMinimap();
+	//PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
@@ -667,14 +687,14 @@ void NCL::CSC8503::GameTechRenderer::Present4Player()
 	}
 }
 
-void GameTechRenderer::RenderSkybox() {
+void GameTechRenderer::RenderSkybox(bool enableTests) {
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
 
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
-	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? currentRenderCamera->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? currentRenderCamera->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	BindShader(skyboxShader);
 
@@ -691,20 +711,22 @@ void GameTechRenderer::RenderSkybox() {
 
 	BindMesh(skyboxMesh);
 	DrawBoundMesh();
-
-	glEnable(GL_CULL_FACE);
-	glEnable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
+	if (enableTests) {
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+	}
 }
 
-void GameTechRenderer::LoadSkybox() {
+void GameTechRenderer::LoadSkybox(string fileName) {
+	// TODO: Move the texture loading into TAM? Not sure if possible without major refactor
 	string filenames[6] = {
-		"/Cubemap/skyrender0004.png",
-		"/Cubemap/skyrender0001.png",
-		"/Cubemap/skyrender0003.png",
-		"/Cubemap/skyrender0006.png",
-		"/Cubemap/skyrender0002.png",
-		"/Cubemap/skyrender0005.png"
+		fileName.empty() ? "/Cubemap/skyrender0004.png" : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0001.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0003.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0006.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0002.png"  : Assets::TEXTUREDIR + fileName,
+		fileName.empty() ? "/Cubemap/skyrender0005.png"  : Assets::TEXTUREDIR + fileName
 	};
 
 	int width[6] = { 0 };
@@ -714,7 +736,17 @@ void GameTechRenderer::LoadSkybox() {
 
 	vector<char*> texData(6, nullptr);
 
-	for (int i = 0; i < 6; ++i) {
+	if (!fileName.empty()) {
+		TextureLoader::LoadTexture(filenames[0], texData[0], width[0], height[0], channels[0], flags[0]);
+		for (int i = 0; i < 6; i++) {
+			texData[i] = texData[0];
+			width[i] = width[0];
+			height[i] = height[0];
+			channels[i] = channels[0];
+			flags[i] = flags[0];
+		}
+	}
+	else for (int i = 0; i < 6; ++i) {
 		TextureLoader::LoadTexture(filenames[i], texData[i], width[i], height[i], channels[i], flags[i]);
 		if (i > 0 && (width[i] != width[0] || height[0] != height[0])) {
 			std::cout << __FUNCTION__ << " cubemap input textures don't match in size?\n";
@@ -736,7 +768,20 @@ void GameTechRenderer::LoadSkybox() {
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
+void GameTechRenderer::RenderFrameLoading() {
+	BeginFrame();
+	RenderSkybox(false);
+	DrawLoader();
+	NewRenderLines();
+	NewRenderLinesOnOrthographicView();
+	NewRenderText();
+	Debug::UpdateRenderables(0.1f);
+	EndFrame();
+	SwapBuffers();
+}
+
+void NCL::CSC8503::GameTechRenderer::RenderImGUI()
+{
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
@@ -855,6 +900,33 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI(){
 	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
+void GameTechRenderer::UpdateLightColour() {
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
+	switch (winning) {
+	case 1:
+		shaderLight.data[0].lightColour = teamColours[0] * (1 - percentageScale);
+		break;
+	case 2:
+		shaderLight.data[0].lightColour = teamColours[1] * (1 - percentageScale);
+		break;
+	case 3:
+		shaderLight.data[0].lightColour = teamColours[2] * (1 - percentageScale);
+		break;
+	case 4:
+		shaderLight.data[0].lightColour = teamColours[3] * (1 - percentageScale);
+		break;
+	case 5:
+		shaderLight.data[0].lightColour = defaultColour;
+		break;
+	default:
+		break;
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 void GameTechRenderer::BuildObjectList() {
 	activeObjects.clear();
 
@@ -937,51 +1009,14 @@ void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObje
 	}
 }
 
-//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader) {
-//	int i = 1;
-//}
-
-//void GameTechRenderer::PassImpactPointDetails(Player* const& paintedObject, OGLShader* shader)
-//{
-//	int impactPointsLocation = 0;
-//	int impactPointCountLocation = glGetUniformLocation(shader->GetProgramID(), "impactPointCount");
-//
-//	std::deque<ImpactPoint>* objImpactPoints = paintedObject->GetImpactPoints(); //change to reference at some point
-//
-//	glUniform1i(impactPointCountLocation, (GLint)objImpactPoints->size());
-//
-//	if (objImpactPoints->empty()) return;
-//
-//	GLuint i = 0;
-//	for (ImpactPoint& point : *objImpactPoints) {
-//		char buffer[64];
-//
-//		sprintf_s(buffer, "impactPoints[%i].position", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		Vector3 impactLocation = point.GetImpactLocation();
-//		glUniform3fv(impactPointsLocation, 1, (float*)&impactLocation);
-//
-//		sprintf_s(buffer, "impactPoints[%i].colour", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		Vector3 impactColour = point.GetImpactColour();
-//		glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
-//
-//		sprintf_s(buffer, "impactPoints[%i].radius", i);
-//		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-//		glUniform1f(impactPointsLocation, point.GetImpactRadius());
-//
-//		i++;
-//	}
-//}
-
 void GameTechRenderer::NewRenderLines() {
 	const std::vector<Debug::DebugLineEntry>& lines = Debug::GetDebugLines();
 	if (lines.empty()) {
 		return;
 	}
 	float screenAspect = (float)windowWidth / (float)windowHeight;
-	Matrix4 viewMatrix = gameWorld->GetMainCamera(1)->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect);
+	Matrix4 viewMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildViewMatrix() : Matrix4();
+	Matrix4 projMatrix = gameWorld ? gameWorld->GetMainCamera(1)->BuildProjectionMatrix(screenAspect) : Matrix4();
 
 	Matrix4 viewProj = projMatrix * viewMatrix;
 
@@ -1146,6 +1181,31 @@ void GameTechRenderer::ResetAtomicBuffer(){
 
 }
 
+int GameTechRenderer::GetWinningTeam(float& percentage) {
+	std::map<int, float> scores = GetTeamScores();
+	float winningPercentage = 0.0f;
+	float secondPercentage = 0.0f;
+	int winningTeam = 0;
+	
+	std::map<int, float>::iterator it;
+	for (it = scores.begin(); it != scores.end(); it++) {
+		if (it->second > winningPercentage) {
+			secondPercentage = winningPercentage;
+			winningPercentage = it->second;
+			winningTeam = it->first;
+		}
+		else if (it->second > secondPercentage) {
+			secondPercentage = it->second;
+		}
+		else if (it->second == winningPercentage) {
+			winningTeam = 5;
+		}
+	}
+
+	percentage = 1.0f / (winningPercentage / secondPercentage);
+	return winningTeam;
+}
+
 std::map<int, float> GameTechRenderer::GetTeamScores() {
 	std::map<int, float> scores;
 	scores.emplace(1, team1Percentage);
@@ -1241,23 +1301,27 @@ void NCL::CSC8503::GameTechRenderer::GenerateShadowFBO()
 		glDeleteTextures(1, &shadowTex);
 		glDeleteFramebuffers(1, &shadowFBO);
 	}
+	
 	glGenTextures(1, &shadowTex);
 	glBindTexture(GL_TEXTURE_2D, shadowTex);
+
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT,
 		shadowSize, shadowSize, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glGenFramebuffers(1, &shadowFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, shadowFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowTex, 0);
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !shadowTex) std::cout << "Error Creating Buffer" << std::endl;
+
 	glDrawBuffer(GL_NONE);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void GameTechRenderer::GenerateSceneFBO(int width, int height)
@@ -1436,6 +1500,18 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
+	glGenBuffers(1, &lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
+}
+
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {
 	for (int i = 0; i < 4; i++)
@@ -1480,6 +1556,17 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void NCL::CSC8503::GameTechRenderer::DrawLoader()
+{
+	Vector2		position = Vector2(10.0f, 80.0f);
+	const float width = 50.0f;
+	const float height = 5.0f;
+
+	NCL::ToonAssetManager::LoadingDataStructure loadingData = ToonAssetManager::Instance().loadingData;
+	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
+	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
+	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+}
 
 void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
@@ -1526,6 +1613,3 @@ void GameTechRenderer::CreateMaterialUBO() {
 
 	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
 }
-
-
-

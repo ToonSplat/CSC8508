@@ -3,11 +3,13 @@ MeshMat
 2
 12
 M_Boss
-1
+2
 Diffuse:/Boss_diffuse_Team.png
+Bump:/Boss_diffuse_N.png
 Weapon
-1
+2
 Diffuse:/Weapon.tga
+Bump:/Weapon_N.png
 0
 0
 0

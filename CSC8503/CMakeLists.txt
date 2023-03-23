@@ -21,6 +21,7 @@ set(Header_Files
     "ToonEventListener.h"
     "ToonTransform.h"
     "ToonGameWorld.h"
+    "ToonScreen.h"
     "ToonRaycastCallback.h"
     "ToonUtils.h"
     "PlayerControl.h"
@@ -34,9 +35,10 @@ source_group("Header Files" FILES ${Header_Files})
 
 set(Source_Files
     "ApplyPaint.cpp"
-    "Main.cpp"
-    "PaintableObject.cpp"
     "Team.cpp"
+    "Main.cpp"
+    "Team.cpp"
+    "PaintableObject.cpp"
     "PaintBallClass.cpp"
     "PaintBallProjectile.cpp"
     "Player.cpp"
@@ -50,6 +52,7 @@ set(Source_Files
     "ToonEventListener.cpp"
     "ToonTransform.cpp"
     "ToonGameWorld.cpp"
+    "ToonScreen.cpp"
     "ToonGameObjectAnim.cpp"
     "ToonDebugManager.cpp"
     "ToonSettingsManager.cpp"

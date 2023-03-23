@@ -12,6 +12,15 @@ namespace NCL {
 		class RenderObject;
 		class ToonRenderObject;
 		class ToonFollowCamera;
+		struct LightStruct {
+			Vector4 lightColour;
+			Vector3 lightPosition;
+			float lightRadius;
+		};
+		struct ShaderLights {
+			LightStruct data[1];
+		};
+		
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
 		
@@ -35,12 +44,14 @@ namespace NCL {
 			std::map<int, float> GetTeamScores();
 		protected:
 
-			void SetupStuffs();
+			void SetupLoadingScreen();
+			void SetupMain();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
 
-
+			void RenderFrameLoading();
+			void CreateLightUBO();
 			void RenderFrame()	override;
 			void Render2Player();
 			void Render1Player();
@@ -63,6 +74,7 @@ namespace NCL {
 			void DrawScoreBar();
 
 			void CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
+			int GetWinningTeam(float& percentage);
 
 			void DrawMap();
 
@@ -82,12 +94,14 @@ namespace NCL {
 			void RenderScene();
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
-			void RenderSkybox();
+			void RenderSkybox(bool enableTests = true);
 
-			void LoadSkybox();
+			void LoadSkybox(string fileName = "");
 
 			void SetDebugStringBufferSizes(size_t newVertCount);
 			void SetDebugLineBufferSizes(size_t newVertCount);
+
+			void DrawLoader();
 
 			vector<ToonGameObject*> activeObjects;
 
@@ -105,14 +119,13 @@ namespace NCL {
 
 			//shadow mapping things
 			OGLShader*	shadowShader;
-			GLuint		shadowTex;
-			GLuint		shadowFBO;
+			GLuint shadowFBO;
+			GLuint shadowTex;
+			Matrix4 shadowMatrix;
 			int shadowSize;
-			Matrix4     shadowMatrix;
 
-			Vector4		lightColour;
-			float		lightRadius;
-			Vector3		lightPosition;
+			ShaderLights shaderLight;
+			void UpdateLightColour();
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;
@@ -198,6 +211,7 @@ namespace NCL {
 			unsigned int materialUBO;
 			void CreateMaterialUBO();
 
+			unsigned int lightMatrix;
 		};
 	}
 }

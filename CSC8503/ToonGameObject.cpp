@@ -13,6 +13,9 @@ NCL::CSC8503::ToonGameObject::ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_
 	renderObject = nullptr;
 	collisionShapeBox = nullptr;
 	collisionShapeSphere = nullptr;
+	collisionShapeCapsule = nullptr;
+	collisionShapeConvex = nullptr;
+	collisionShapeConcave = nullptr;
 	collider = nullptr;
 }
 
@@ -30,6 +33,10 @@ NCL::CSC8503::ToonGameObject::~ToonGameObject()
 		gameWorld->GetPhysicsCommon().destroyBoxShape(collisionShapeBox);
 	if(collisionShapeCapsule)
 		gameWorld->GetPhysicsCommon().destroyCapsuleShape(collisionShapeCapsule);
+	if (collisionShapeConcave)
+		gameWorld->GetPhysicsCommon().destroyConcaveMeshShape(collisionShapeConcave);
+	if(collisionShapeConvex)
+		gameWorld->GetPhysicsCommon().destroyConvexMeshShape(collisionShapeConvex);
 	
 	delete renderObject;
 	delete networkObject;
@@ -55,12 +62,19 @@ void NCL::CSC8503::ToonGameObject::Draw(OGLRenderer& r, bool isMinimap)
 	r.BindMesh(boundMesh);
 	for (int i = 0; i < (int)boundMesh->GetSubMeshCount(); ++i)
 	{
-	/*	if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
-			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);*/
-		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetSubMaterials().size() > 0) {
-			int materialIndexLocations = glGetUniformLocation(r.GetBoundShader()->GetProgramID(), "materialIndex");
-			int index = renderObject->GetMaterial()->GetMaterialIndex()[i];
-			glUniform1i(materialIndexLocations, index);
+		if (renderObject->GetMaterial() != nullptr)
+		{
+			if ((int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 5);
+
+			if ((int)renderObject->GetMaterial()->GetBumpTextures().size() > 0)
+				r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetBumpTextures()[i], "bumpTex", 6);
+        
+      if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetSubMaterials().size() > 0) {
+			  int materialIndexLocations = glGetUniformLocation(r.GetBoundShader()->GetProgramID(), "materialIndex");
+			  int index = renderObject->GetMaterial()->GetMaterialIndex()[i];
+			  glUniform1i(materialIndexLocations, index);
+      }
 		}
 
 		r.DrawBoundMesh(i);
@@ -78,6 +92,8 @@ void NCL::CSC8503::ToonGameObject::SetCollider(reactphysics3d::CollisionShape* R
 		return;
 
 	collider = rigidBody->addCollider(RP3D_CollisionShape, collisionTransform);
+	rigidBody->updateLocalCenterOfMassFromColliders();
+
 	SetColliderLayer(ToonCollisionLayer::Default);
 
 	int everythingMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character | ToonCollisionLayer::Paintball | ToonCollisionLayer::Hitsphere;

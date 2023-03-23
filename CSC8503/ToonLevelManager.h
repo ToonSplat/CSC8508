@@ -2,6 +2,7 @@
 #include "ToonAssetManager.h"
 #include "PaintableObject.h"
 #include "ToonGameWorld.h"
+#include "ToonScreen.h"
 #include "Player.h"
 #include "PaintBallProjectile.h"
 #include "HitSphere.h"
@@ -19,13 +20,56 @@ namespace NCL
 			Z = 4
 		};
 
+		enum BasicCollisionShapeType
+		{
+			Shape_Box,
+			Shape_Sphere,
+			Shape_Capsule
+		};
+
+		struct ObjectCollisionShapeData
+		{
+			BasicCollisionShapeType shapeType;
+			reactphysics3d::Transform collisionTransform;
+		};
+
+		struct BoxCollisionShapeData : ObjectCollisionShapeData
+		{
+			Vector3 boxHalfSize;			
+			BoxCollisionShapeData(const Vector3& bHSize, reactphysics3d::Transform colTransform = reactphysics3d::Transform::identity()) : boxHalfSize(bHSize)
+			{ 
+				shapeType = BasicCollisionShapeType::Shape_Box; 
+				collisionTransform = colTransform;
+			}
+		};
+
+		struct SphereCollisionShapeData : ObjectCollisionShapeData
+		{
+			float radius;
+			SphereCollisionShapeData(const float& r, reactphysics3d::Transform colTransform = reactphysics3d::Transform::identity()) : radius(r)
+			{ 
+				shapeType = BasicCollisionShapeType::Shape_Sphere; 
+				collisionTransform = colTransform;
+			}
+		};
+
+		struct CapsuleCollisionShapeData : ObjectCollisionShapeData
+		{
+			float radius, height;
+			CapsuleCollisionShapeData(const float& r, const float& h, reactphysics3d::Transform colTransform = reactphysics3d::Transform::identity()) : radius(r), height(h)
+			{ 
+				shapeType = BasicCollisionShapeType::Shape_Capsule; 
+				collisionTransform = colTransform;
+			}
+		};
+
 		class ToonLevelManager
 		{
 		public:
 			ToonLevelManager(ToonGameWorld* gameWorld);
 			~ToonLevelManager();
 
-			Player* AddPlayerToWorld(const Vector3& position, Team* team);
+			Player* AddPlayerToWorld(Team* team);
 			PaintBallProjectile* AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
 				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team);
 			HitSphere* AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team);
@@ -78,7 +122,8 @@ namespace NCL
 			bool LoadPrototypeLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 			bool LoadArenaLevel(std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
 
-			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);			
+			reactphysics3d::ConcaveMeshShape* CreateConcaveMeshShape(MeshGeometry* mesh, const Vector3& scaling);
+			reactphysics3d::ConvexMeshShape* CreateConvexMeshShape(MeshGeometry* mesh, const Vector3& scaling);
 
 			Axes selectedAxes = Axes::None;
 
@@ -99,13 +144,21 @@ namespace NCL
 			}
 
 			PaintableObject* AddCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, bool isFloor = false);
+			PaintableObject* AddTSCubeToWorld(const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, bool isFloor = false);
 			PaintableObject* AddSphereToWorld(const Vector3& position, const Vector3& rotationEuler, const float& radius, TextureBase* sphereTex, Vector4 minimapColour, float mass = 1.0f);
 			void AddGridWorld(Axes axes, const Vector3& gridSize, const float& gridSpacing, const Vector3& gridPosition,
 							const Vector3& cubeScale, const float& cubeMass, TextureBase* cubeTex, 
 							Vector4 minimapColour = Vector4(0,0,0,1), bool isFloor = false);
 			
-			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true);
-			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, TextureBase* cubeTex, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+			PaintableObject* AddConcaveObjectToWorld(MeshGeometry* mesh, MeshGeometry* collisionHullMesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+			
+			PaintableObject* AddConvexObjectToWorld(MeshGeometry* mesh, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
+
+			PaintableObject* AddPropObject(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true, std::vector<ToonNetworkObject*>* networkObjectList = nullptr);
+
+			ToonScreen* AddPropScreen(MeshGeometry* mesh, ObjectCollisionShapeData* collisionData, reactphysics3d::BodyType rigidbodyType, const Vector3& position, const Vector3& rotationEuler, const Vector3& scale, ToonMeshMaterial* mat, Vector4 minimapColour, float mass = 1.0f, float addAsPaintable = true, float addAsFloor = true);
 
 		private:
 			std::map<std::string, MeshGeometry*> meshMap;

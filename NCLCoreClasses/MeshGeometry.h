@@ -89,6 +89,8 @@ namespace NCL {
 			return (unsigned int)indices.size();
 		}
 
+		int FindVertexIndex(const std::vector<Vector3>& vertices, const Vector3& vertex);
+
 		unsigned int GetJointCount() const {
 			return (unsigned int)jointNames.size();
 		}

@@ -24,7 +24,7 @@ namespace NCL::CSC8503
 		ToonGameObject(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld);
 		~ToonGameObject();
 
-		virtual void Update(float dt) { std::cout << "Base class update\n"; };
+		virtual void Update(float dt) { /*std::cout << "Base class update\n";*/ };
 		virtual void Draw(OGLRenderer& r, bool isMinimap = false);
 
 		const std::string& GetName() const { return name; }
@@ -60,6 +60,9 @@ namespace NCL::CSC8503
 		reactphysics3d::ConcaveMeshShape* GetCollisionShapeConcave() const { return collisionShapeConcave; };
 		void SetCollisionShape(reactphysics3d::ConcaveMeshShape* RP3D_CollisionShape) { collisionShapeConcave = RP3D_CollisionShape; }
 
+		reactphysics3d::ConvexMeshShape* GetCollisionShapeConvex() const { return collisionShapeConvex; };
+		void SetCollisionShape(reactphysics3d::ConvexMeshShape* RP3D_CollisionShape) { collisionShapeConvex = RP3D_CollisionShape; }
+
 		Vector3 GetPosition() const;
 		Quaternion GetOrientation() const;
 		Vector3 GetScale() const { return ToonUtils::ConvertToNCLVector3(transform.GetScale()); };
@@ -82,6 +85,10 @@ namespace NCL::CSC8503
 		void CalculateModelMatrix();
 		Matrix4 GetModelMatrix() const { return modelMatrix; }
 		Matrix4 GetModelMatrixNoRotation() const;
+
+		Vector3 Up() { return Vector3(modelMatrix.GetColumn(1)); }
+		Vector3 Right() {return Vector3(modelMatrix.GetColumn(0)); }
+		Vector3 Forward() { return -Vector3(modelMatrix.GetColumn(2)); }
 
 		int GetColliderLayer() const 
 		{ 
@@ -117,6 +124,7 @@ namespace NCL::CSC8503
 		reactphysics3d::SphereShape* collisionShapeSphere;
 		reactphysics3d::CapsuleShape* collisionShapeCapsule;
 		reactphysics3d::ConcaveMeshShape* collisionShapeConcave;
+		reactphysics3d::ConvexMeshShape* collisionShapeConvex;
 		reactphysics3d::Collider* collider;
 		Matrix4 modelMatrix;
 

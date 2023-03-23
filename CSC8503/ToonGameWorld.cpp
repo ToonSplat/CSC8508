@@ -13,10 +13,28 @@ NCL::CSC8503::ToonGameWorld::ToonGameWorld()
 {
 	physicsWorld = physicsCommon.createPhysicsWorld();
 	physicsWorld->setGravity(reactphysics3d::Vector3(0.0f, -9.81f, 0.0f));
+
 	teams.emplace(1, new Team("The Green Goblins", Team::T_GREEN_GOBLINS, 1));
 	teams.emplace(2, new Team("The Purple Prawns", Team::T_PURPLE_PRAWNS, 2));
 	teams.emplace(3, new Team("The Blue Bulldogs", Team::T_BLUE_BULLDOGS, 3));
 	teams.emplace(4, new Team("The Orange Otters", Team::T_ORANGE_OTTERS, 4));
+
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(45.0f, 12.0f, 0.0f), Vector3(0.0f, 1.57f, 0.0f)));
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(42.0f, 4.0f, 14.0f), Vector3(0.0f, 1.57f, 0.0f)));
+	teams[1]->AddSpawnPoint(TeamSpawnPointData(Vector3(42.0f, 4.0f, -14.0f), Vector3(0.0f, 1.57f, 0.0f)));
+
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-45.0f, 12.0f, 0.0f), Vector3(0.0f, -1.57f, 0.0f)));
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-42.0f, 4.0f, 14.0f), Vector3(0.0f, -1.57f, 0.0f)));
+	teams[2]->AddSpawnPoint(TeamSpawnPointData(Vector3(-42.0f, 4.0f, -14.0f), Vector3(0.0f, -1.57f, 0.0f)));
+
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f)));
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(0.0f, 9.5f, -45.0f), Vector3(0.0f, 3.14f, 0.0f)));
+	teams[3]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, -42.0f), Vector3(0.0f, 3.14f, 0.0f)));
+
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f)));
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(0.0f, 9.5f, 45.0f), Vector3(0.0f, 0.0f, 0.0f)));
+	teams[4]->AddSpawnPoint(TeamSpawnPointData(Vector3(15.0f, 4.0f, 42.0f), Vector3(0.0f, 0.0f, 0.0f)));
+
 	mainCameras[1] = new Camera();
 }
 
@@ -57,7 +75,8 @@ void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)
 {
 	gameObjects.emplace_back(o);
-	o->SetWorldID(worldIDCounter++);
+	if (!dynamic_cast<Player*>(o))
+		o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
 }
 
@@ -128,6 +147,9 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 			Window::GetWindow()->LockMouseToWindow(true);
 		}
 	}
+
+	for (auto& object : gameObjects)
+		object->Update(dt);
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)

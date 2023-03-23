@@ -25,12 +25,14 @@ public:
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
-	void AnimationUpdate(float dt);
+	virtual void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
 	float GetMoveSpeed() const { return moveSpeed; }
 	void SetSprintMultiplier(float newMultiplier) { sprintMulitplier = newMultiplier; }
 	float GetSprintMultiplier() const { return sprintMulitplier; }
+
+	void SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls);
 
 	bool IsAiming() const { return isAiming; }
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
@@ -40,8 +42,12 @@ public:
 	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
 
+	void PlayVictory();
+	void PlayDefeat();
+
 protected:
 	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
+	bool IsGrounded();
 
 protected:
 	Team* team;
@@ -57,10 +63,13 @@ protected:
 
 
 	PaintBallClass weapon;
-	bool isAiming, isMoving;
-
 	AudioSystem* audiosystem;
 
+	bool isAiming, isMoving, isGrounded;
+	bool allowInput;
+
+	NCL::Maths::Vector3 groundDir;
+	NCL::Maths::Vector3 groundNormal;
 	/*
 	* Future Implementations:
 	*

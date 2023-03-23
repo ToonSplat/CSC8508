@@ -73,14 +73,18 @@ void ToonGame::StartGame() {
 		levelManager->ResetLevel();
 		world->SetNetworkStatus(NetworkingStatus::Offline);
 		for (int i = 1; i <= localPlayerCount; i++) {
-			Player* player = levelManager->AddPlayerToWorld(Vector3(20, 5, 0), world->GetTeamLeastPlayers());
+			Player* player = levelManager->AddPlayerToWorld(world->GetTeamLeastPlayers() /*world->GetTeams()[4]*/);
 			players[i] = player;
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
 			player->SetWeapon(baseWeapon);
-			world->SetMainCamera(i, new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f)));
+
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
+
+			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
+			world->SetMainCamera(i, followCamera);
+			player->SyncCamerasToSpawn(followCamera, playerControls[i]);
 		}
 	}
 	else {
@@ -97,7 +101,7 @@ void ToonGame::UpdateGame(float dt) {
 	world->UpdateWorld(dt);
 
 	for (auto& [id, player] : players) {
-		if (player) {
+		if (player && winner == nullptr) {
 			UpdateCameras(dt, id);
 			InputManager::GetInstance().GetInputs()[id]->UpdateGameControls(playerControls[id], world->GetMainCamera(id));
 			if (offline) {
@@ -113,7 +117,7 @@ void ToonGame::UpdateGame(float dt) {
 	if (NetworkingStatus::Server)
 		UpdateCameras(dt, 1);
 
-	UpdateAnimations(dt);
+	//UpdateAnimations(dt);
 
 	UpdatePhysics(dt);
 
@@ -206,14 +210,14 @@ void ToonGame::UpdatePhysics(float dt) {
 		world->DeleteMarkedObjects();
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
-	ToonDebugManager::Instance().EndPhysics();
+	ToonDebugManager::Instance().EndPhysics();	
 }
 
 void ToonGame::UpdateAnimations(float dt) {
 	ToonDebugManager::Instance().StartAnimation();
-	for (auto& player : allPlayers) {
+	/*for (auto& player : allPlayers) {
 		player->AnimationUpdate(dt);
-	}
+	}*/
 	ToonDebugManager::Instance().EndAnimation();
 }
 
@@ -242,10 +246,18 @@ void ToonGame::ShowUI(float time) {
 		output += "0";
 	output += to_string(seconds);
 
-	Debug::Print(output, NCL::Maths::Vector2(47.5f, 5.0f));
+	Debug::Print(output, NCL::Maths::Vector2(50 - output.size(), 5.0f));
 	if (winner != nullptr)
-		Debug::Print("WINNER:" + winner->GetTeamName(), Vector2(29.5f, 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
+	{
+		const std::string winnerText = "WINNER:" + winner->GetTeamName();
+		Debug::Print(winnerText, Vector2(50 - winnerText.size(), 15), winner->GetTeamColour()); //TODO: Hardcoded for now. To be changed later.
 
+		for (auto& [id, player] : players)
+		{
+			if (player->GetTeam() == winner) player->PlayVictory();
+			else player->PlayDefeat();
+		}
+	}
 }
 
 Team* ToonGame::DetermineWinner(std::map<int, float> teamScores) {
