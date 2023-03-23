@@ -95,6 +95,7 @@ ToonGame* NCL::CSC8503::ToonGameWorld::GetToonGame()
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)
 {
 	gameObjects.emplace_back(o);
+	o->CalculateModelMatrix();
 	if (!dynamic_cast<Player*>(o))
 		o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
