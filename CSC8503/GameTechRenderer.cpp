@@ -1205,11 +1205,8 @@ void GameTechRenderer::BuildObjectList(int index) {
 			{
 				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
 				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetToonGame()->GetPlayerFromID(index) && gameWorld->GetToonGame()->GetPlayerFromID(index)->GetTeam() != obj->GetTeam())
-				{
-					auto test1 = obj->GetName();
-					auto test = gameWorld;
 					return;
-				}
+				
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}
