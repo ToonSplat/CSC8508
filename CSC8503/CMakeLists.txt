@@ -35,6 +35,7 @@ set(Header_Files
     "NavPathFinder.h"
     "NavPathGraphLevel.h"
     "ToonSlider.h"
+    "FreeTypeFont.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -64,6 +65,7 @@ set(Source_Files
     "ToonSettingsManager.cpp"
     "NavPathFinder.cpp"
     "NavPathGraphLevel.cpp"
+    "FreeTypeFont.cpp"
 )
 source_group("Source Files" FILES ${Source_Files})
 set(Networking_Files
@@ -309,13 +311,16 @@ endif()
 
 if(WIN32) 
     list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../ReactPhysics3D") 
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../freetype") 
 endif() 
 
 #Import the ReactPhysics3D library 
 find_package(ReactPhysics3D REQUIRED)
+find_package(Freetype REQUIRED)
 
 set(ADDITIONAL_LIBRARY_DEPENDENCIES
     "ReactPhysics3D::ReactPhysics3D"
+    "freetype"
 )
 
 # find_library(XINPUT_LIBRARY NAMES XInput)
