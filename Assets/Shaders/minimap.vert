@@ -14,7 +14,11 @@ uniform vec4 		objectColour = vec4(1,1,1,1);
 
 uniform bool hasVertexColours = false;
 
+uniform vec3 playerPosition2;
 
+uniform vec2 screenSize2;
+
+uniform float zoomLevel = 0.5f;
 
 out Vertex
 {
@@ -34,8 +38,23 @@ void main(void)
 	OUT.texCoord	= texCoord;
 	OUT.colour		= objectColour;
 
+	vec4 playerPos = mvp * vec4(playerPosition2, 1.0);
+    vec2 playerScreenPos = vec2(0.5, 0.5) * (playerPos.xy + vec2(1.0, 1.0));
+
+	vec4 clipSpace = mvp * vec4(playerPosition2, 1.0);
+	vec3 ndcSpace = clipSpace.xyz / clipSpace.w;
+	vec2 screenSpacePos = normalize((ndcSpace.xz + 1.0) / 2.0);
+
+	vec2 texCoordOffset = texCoord - screenSpacePos;
+    vec2 texCoordScale = vec2(zoomLevel);
+    vec2 finalTexCoord = texCoordOffset * texCoordScale +screenSpacePos;
+
+	OUT.texCoord = finalTexCoord;
+
 	if(hasVertexColours) {
 		OUT.colour		= objectColour * colour;
 	}
-	gl_Position		= mvp * vec4(position, 1.0);
+	//	gl_Position		= vec4(position.xz * screenSize2 + playerPosition2.xz, 0.0, 1.0);
+
+	gl_Position		=mvp * vec4(position, 1.0);
 }

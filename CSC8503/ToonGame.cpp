@@ -78,7 +78,6 @@ void ToonGame::StartGame() {
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
 			player->SetWeapon(baseWeapon);
-
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 

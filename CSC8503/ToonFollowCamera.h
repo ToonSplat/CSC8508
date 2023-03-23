@@ -36,6 +36,8 @@ namespace NCL
 			float GetSmoothness() const { return smoothness; }
 			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
 
+			Vector3 GetPlayerPosition() const { return player->GetPosition(); }
+
 			Vector3 followOffset2;
 
 		protected:

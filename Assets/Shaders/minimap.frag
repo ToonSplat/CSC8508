@@ -1,22 +1,10 @@
 #version 400 core
 
-struct ImpactPoint{
-	vec3 position;
-	vec3 colour;
-	float radius;
-};
-#define MAX_IMPACT_POINTS 300
-uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
-uniform int impactPointCount;
+uniform sampler2D 	mapTex;
+uniform vec3 playerPosition;
 
-uniform vec4 		objectColour;
-uniform vec4 		objectMinimapColour;
-uniform sampler2D 	mainTex;
-
-uniform bool hasTexture;
-
-uniform vec3 objectPosition;
+uniform vec2 screenSize;
 
 in Vertex
 {
@@ -28,42 +16,19 @@ in Vertex
 
 out vec4 fragColor;
 
-vec4 modulus(vec4 x){return x - floor(x * (1.0/289.0)) * 289.0;}
-vec4 permutate(vec4 x){return modulus(((x * 34.0) + 1.0) * x);}
-
-float SplatNoise(vec3 inWorldPos){
-	vec3 floorP = floor(inWorldPos);
-	vec3 dist = inWorldPos - floorP;
-	dist = dist * dist * (3.0 - 2.0 * dist);
-
-	vec4 b = floorP.xxyy + vec4(0.0, 1.0, 0.0, 1.0);
-	vec4 permB = permutate(b.xyxy);
-	vec4 permB2 = permutate(permB.xyxy + b.zzww);
-
-	vec4 c = permB2 + floorP.zzzz;
-	vec4 permC = permutate(c);
-	vec4 permC2 = permutate(c + 1.0);
-
-	vec4 fractalC = fract(permC * (1.0/41.0));
-	vec4 fractalC2 = fract(permC2 * (1.0/41.0));
-
-	vec4 shapePass = fractalC2 * dist.z + fractalC * (1.0 - dist.z);
-	vec2 shapePass2 = shapePass.yw * dist.x + shapePass.xz * (1.0 - dist.x);
-
-	return shapePass2.y * dist.y + shapePass2.x * (1.0 - dist.y);
-}
 
 void main(void)
 {
-	vec4 albedo = objectMinimapColour;
 
-	for (int i = 0; i < impactPointCount; i++){
-		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
-			albedo = vec4(impactPoints[i].colour, 1.0);
-		}
-	}
+	 //vec2 mapOffset = playerPosition.xz / screenSize; // Calculate the offset based on player position and scale
 
-	fragColor = albedo;
+	vec2 mapPos = playerPosition.xz / screenSize;
+	vec2 mapOffset = vec2(0.2);
+    vec4 texColor = texture(mapTex, IN.texCoord); // Sample the texture using the offset
+
+	if (texColor.rgb == vec3(1.0,1.0,1.0)) texColor.a = 0.0f;
+
+    fragColor = texColor; // Output the color
+
 
 }

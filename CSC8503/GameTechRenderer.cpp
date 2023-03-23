@@ -478,7 +478,13 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	if (!gameWorld->GetMinimapCamera() || !mapInitialised) return;
-	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+
+	BindShader(minimapShader);
+
+
+	int modelLocation = glGetUniformLocation(minimapShader->GetProgramID(), "modelMatrix");
+
+	
 	//glEnable(GL_STENCIL_TEST);
 
 	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -487,9 +493,35 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
+	Matrix4 identityMatrix = Matrix4();
 
+	int projLocation = glGetUniformLocation(minimapShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(minimapShader->GetProgramID(), "viewMatrix");
+
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
+
+
+	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
-	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+	glUniform1i(glGetUniformLocation(minimapShader->GetProgramID(), "mapTex"), 0);
+
+	int screenSizeLocation = glGetUniformLocation(minimapShader->GetProgramID(), "screenSize");
+	Vector2 screenSize(windowWidth, windowHeight);
+	glUniform2fv(screenSizeLocation, 1, screenSize.array);
+
+	int playerLocation = glGetUniformLocation(minimapShader->GetProgramID(), "playerPosition");
+	ToonFollowCamera* followCam = (ToonFollowCamera*)gameWorld->GetMainCamera(1);
+	Vector3 playerPos = followCam->GetPlayerPosition();
+	glUniform3fv(playerLocation, 1, playerPos.array);
+
+
+	screenSizeLocation = glGetUniformLocation(minimapShader->GetProgramID(), "screenSize2");
+	glUniform2fv(screenSizeLocation, 1, screenSize.array);
+
+	playerLocation = glGetUniformLocation(minimapShader->GetProgramID(), "playerPosition2");
+	glUniform3fv(playerLocation, 1, playerPos.array);
+
 
 	//BindMesh(minimapStencilQuad);
 	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
