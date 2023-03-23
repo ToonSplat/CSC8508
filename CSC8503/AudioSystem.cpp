@@ -10,7 +10,7 @@ AudioEmitter* AudioSystem::gameMusic = nullptr;
 AudioEmitter* AudioSystem::menuSelect = nullptr;
 
 AudioSystem::AudioSystem(unsigned int channels) {
-	masterVolume = 1.0f;
+	masterVolume = 0.7f;
 
 	std::cout << " Creating SoundSystem !" << std::endl;
 

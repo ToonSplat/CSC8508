@@ -1,8 +1,9 @@
 #include "ToonSlider.h"
 
-ToonSlider::ToonSlider(Coordinates coordinates, int sliderLevels, Vector2 windowSize, float textWidth, float sliderHeight, float sliderHeadSize) : m_coordinates(coordinates), m_SliderLevels(sliderLevels), m_WindowSize(windowSize), m_IsActive(false), m_SliderHeadSize(sliderHeadSize)
+ToonSlider::ToonSlider(Coordinates coordinates, int sliderLevelMin, int sliderLevelMax, Vector2 windowSize, float textWidth, float sliderHeight, float sliderHeadSize) : m_coordinates(coordinates), m_SliderLevelMin(sliderLevelMin), m_SliderLevelMax(sliderLevelMax), m_WindowSize(windowSize), m_IsActive(false), m_SliderHeadSize(sliderHeadSize)
 {
 	sliderHeight = 100.0f / m_WindowSize.y;	//Updating height to 1 pixel. TODO: - Change Logic for sliderHeight(bar height)
+	m_SliderLevels = m_SliderLevelMax - m_SliderLevelMin;
 	AssignCoordinates(textWidth, sliderHeight, sliderHeadSize);
 }
 
@@ -46,27 +47,27 @@ void ToonSlider::AssignCoordinates(float textWidth, float sliderHeight, float sl
 
 void ToonSlider::PopulateSliderCoordinatesMap()
 {
-	float levelWidth = m_SliderBarCoordinates.size.x / m_SliderLevels;
+	float levelWidth = m_SliderBarCoordinates.size.x / (m_SliderLevels + 1);
 	m_SliderHeadSize = m_SliderHeadSize > levelWidth ? levelWidth : m_SliderHeadSize;
-	for (int i = 0; i < m_SliderLevels; i++)
+	for (int i = m_SliderLevelMin; i <= m_SliderLevelMax; i++)
 	{
-		float offset = levelWidth * i;
+		float offset = levelWidth * (i - m_SliderLevelMin);
 		m_SliderLevelCoordinatesMap[i] = Coordinates(Vector2(m_SliderBarCoordinates.origin.x + offset, m_SliderBarCoordinates.origin.y), Vector2(levelWidth, m_SliderBarCoordinates.size.y));
 	}
 }
 
 Coordinates ToonSlider::GetHeadCoordinates(int level)
 {
-	if (level < 0 && level >= m_SliderLevels) { return INVALID_COORDINATE; }
+	if (level < m_SliderLevelMin && level > m_SliderLevelMax) { return INVALID_COORDINATE; }
 	return m_SliderLevelCoordinatesMap[level];
 }
 
 
 int ToonSlider::GetHeadLevel(Vector2 headPosition)
 {
-	int index = 0;
-	if (headPosition.x < m_SliderLevelCoordinatesMap[0].origin.x) { return 0; }
-	else if (headPosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x) { return m_SliderLevels - 1; }
+	int index = m_SliderLevelMin;
+	if (headPosition.x < m_SliderLevelCoordinatesMap[m_SliderLevelMin].origin.x) { return m_SliderLevelMin; }
+	else if (headPosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevelMax].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevelMax].size.x) { return m_SliderLevelMax; }
 	for (auto& sliderLevelData : m_SliderLevelCoordinatesMap)
 	{
 		float sliderLevelEndXCoord = sliderLevelData.second.origin.x + sliderLevelData.second.size.x;
@@ -82,25 +83,25 @@ int ToonSlider::GetHeadLevel(Vector2 headPosition)
 int ToonSlider::GetHeadLevelUsingMousePosition(Vector2 mousePosition)
 {
 	//Edge cases
-	if (mousePosition.x < m_SliderLevelCoordinatesMap[0].origin.x)
+	if (mousePosition.x < m_SliderLevelCoordinatesMap[m_SliderLevelMin].origin.x)
 	{
-		return 0;
+		return m_SliderLevelMin;
 	}
-	else if (mousePosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevels - 1].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevels - 1].size.x)
+	else if (mousePosition.x >= m_SliderLevelCoordinatesMap[m_SliderLevelMax].origin.x + m_SliderLevelCoordinatesMap[m_SliderLevelMax].size.x)
 	{
-		return m_SliderLevels - 1;
+		return m_SliderLevelMax;
 	}
 
 	//Calculating for inner cases
 	float levelWidth = m_SliderBarCoordinates.size.x / m_SliderLevels;
 	float positionWithoutOffset = mousePosition.x - m_SliderBarCoordinates.origin.x;
-	return (positionWithoutOffset / levelWidth);
+	return (positionWithoutOffset / levelWidth) + m_SliderLevelMin;
 }
 
 void ToonSlider::HandleKeyboardAndMouseEvents()
 {
-	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight()) { m_CurrentLevel = std::min(++m_CurrentLevel, m_SliderLevels - 1); }
-	else if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft()) { m_CurrentLevel = std::max(--m_CurrentLevel, 0); }
+	if (InputManager::GetInstance().GetInputs()[1]->IsPushingRight()) { m_CurrentLevel = std::min(++m_CurrentLevel, m_SliderLevelMax); }
+	else if (InputManager::GetInstance().GetInputs()[1]->IsPushingLeft()) { m_CurrentLevel = std::max(--m_CurrentLevel, m_SliderLevelMin); }
 
 	if (InputManager::GetInstance().GetInputs()[1]->IsShooting())
 	{
@@ -112,12 +113,13 @@ void ToonSlider::HandleKeyboardAndMouseEvents()
 	}
 }
 
-int ToonSlider::GetCurrentVolumeLevel()
+int ToonSlider::GetCurrentLevel()
 {
 	return m_CurrentLevel;
 }
 
-void ToonSlider::SetCurrentVolumeLevel(int volumeLevel)
+void ToonSlider::SetCurrentLevel(int level)
 {
-	m_CurrentLevel = (volumeLevel >= 0 && volumeLevel < m_SliderLevels) ? volumeLevel : 0;
+	m_CurrentLevel = std::max(m_SliderLevelMin, level);
+	m_CurrentLevel = std::min(m_SliderLevelMax, m_CurrentLevel);
 }

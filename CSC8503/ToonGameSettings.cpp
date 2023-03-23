@@ -44,7 +44,10 @@ void ToonGameSettings::DrawScreen()
 			data.toggleButton->UpdateButtonDraw(); 
 			data.toggleButton->m_IsActive = m_CurrentSelectedIndex == index;
 		}
-		else if (data.type == ToonGameSettings::SettingsScreenStates::VolumeSlider) { data.volumeSlider->Update(0.1f); }
+		else if(data.slider)
+		{
+			data.slider->Update(0.1f);
+		}
 		index++;
 	}
 }
@@ -60,7 +63,9 @@ void ToonGameSettings::HandleKeyboardAndMouseEvents()
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown() || InputManager::GetInstance().GetInputs()[1]->IsPushingUp()) { UpdateMosePointerState(false); }
 
-	if (m_CurrentSelectedIndex == SettingsScreenStates::VolumeSlider) { m_SettingsData[ToonGameSettings::SettingsScreenStates::VolumeSlider].volumeSlider->HandleKeyboardAndMouseEvents(); }
+	if(m_SettingsData[m_CurrentSelectedIndex].slider){
+		m_SettingsData[m_CurrentSelectedIndex].slider->HandleKeyboardAndMouseEvents();
+	}
 
 	if (!m_IsMousePointerVisible)
 	{
@@ -150,8 +155,9 @@ void ToonGameSettings::PopulateSettingsData()
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", ToonGameSettings::SettingsScreenStates::Shadow, true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window", ToonGameSettings::SettingsScreenStates::WindowSize,  false),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Dynamic Crosshair", ToonGameSettings::SettingsScreenStates::Crosshair, true, Crosshair, m_SettingsDS.crosshairState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 60.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 70.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 60.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider, 0, 10, m_SettingsDS.volume),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 70.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "FOV", ToonGameSettings::SettingsScreenStates::FieldOfViewSlider, 40, 80, m_SettingsDS.fov),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 80.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
 					 };
 }
 
@@ -174,9 +180,12 @@ void ToonGameSettings::UpdateSettingsFile()
 					break;
 			}
 		}
-		if (data.volumeSlider)
+		else if (data.slider)
 		{
-			m_SettingsDS.volume = GetStringFromInt(data.volumeSlider->GetCurrentVolumeLevel());
+			if(data.type == VolumeSlider)
+				m_SettingsDS.volume = GetStringFromInt(data.slider->GetCurrentLevel());
+			else if(data.type == FieldOfViewSlider)
+				m_SettingsDS.fov = GetStringFromInt(data.slider->GetCurrentLevel());
 		}
 	}
 	m_SettingsFile->WriteData((char*)m_SettingsDS.SerializeStructure().c_str(), std::ios_base::trunc);

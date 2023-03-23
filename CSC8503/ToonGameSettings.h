@@ -14,6 +14,7 @@
 #define WINDOW_SIZE_STRING	 "WindowSize"
 #define CROSSHAIR_STRING	 "Dynamic CrossHair"
 #define VOLUME_SLIDER_STRING "Volume"
+#define FOV_SLIDER_STRING	 "FOV"
 
 using namespace NCL;
 //using namespace CSC8503;
@@ -27,6 +28,7 @@ class ToonGameSettings : public PushdownState
 		WindowSize,
 		Crosshair,
 		VolumeSlider,
+		FieldOfViewSlider,
 		SettingsBack
 	};
 
@@ -36,7 +38,7 @@ class ToonGameSettings : public PushdownState
 		std::string							   text;
 		bool								   hasToggle;
 		ToonToggleButton*					   toggleButton = NULL;
-		ToonSlider*							   volumeSlider = NULL;
+		ToonSlider*							   slider = NULL;
 		Vector2								   windowSize;
 		ToonGameSettings::SettingsScreenStates type;
 
@@ -49,21 +51,17 @@ class ToonGameSettings : public PushdownState
 			this->windowSize			  = windowSize;
 			Coordinates toggleCoordinates = toggleCoord == Coordinates() ? Coordinates(Vector2(coordinates.origin.x + coordinates.size.x - 20.0f, coordinates.origin.y - 3.0f), Vector2(8.0f, coordinates.size.y)) : toggleCoord;
 			toggleButton				  = new ToonToggleButton(toggleCoordinates, windowSize, toggleButtonID, toggleState, true, toggleValueText);
-			if (type == ToonGameSettings::SettingsScreenStates::VolumeSlider)
-			{
-				volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
-			}
 		}
 
-		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, ToonGameSettings::SettingsScreenStates buttonType, std::string sliderLevel)
+		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, ToonGameSettings::SettingsScreenStates buttonType, int minVal, int maxVal, std::string sliderLevel)
 		{
 			coordinates		 = coord;
 			text			 = txt;
 			type			 = buttonType;
 			this->hasToggle  = false;
 			this->windowSize = windowSize;
-			volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
-			volumeSlider->SetCurrentVolumeLevel(atoi(sliderLevel.c_str()));
+			slider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), minVal, maxVal, windowSize);
+			slider->SetCurrentLevel(atoi(sliderLevel.c_str()));
 		}
 	};
 
@@ -73,7 +71,8 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates shadowState	     = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates crosshairState	 = ToggleButtonStates::ToggleOn;
 		std::string		   windowSize		 = "";
-		std::string		   volume			 = "10";
+		std::string		   volume			 = "7";
+		std::string		   fov				 = "50";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
 		{
@@ -113,6 +112,7 @@ class ToonGameSettings : public PushdownState
 				else if (it.first == CROSSHAIR_STRING)	   { crosshairState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second; }
 				else if (it.first == VOLUME_SLIDER_STRING) { volume			   = it.second; }
+				else if (it.first == FOV_SLIDER_STRING)	   { fov			   = it.second; }
 			}
 		}
 
@@ -123,6 +123,7 @@ class ToonGameSettings : public PushdownState
 			serializedString			+= CROSSHAIR_STRING + std::string(":") + std::string((crosshairState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
 			serializedString			+= VOLUME_SLIDER_STRING + std::string(":") + volume + std::string("\n");
+			serializedString			+= FOV_SLIDER_STRING + std::string(":") + fov + std::string("\n");
 			return serializedString;
 		}
 	};

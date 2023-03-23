@@ -38,5 +38,8 @@ void ToonSettingsManager::ApplySettings() {
 		else if (result[0] == VOLUME_SLIDER_STRING) {
 			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(result[1]) / 10.0f);
 		}
+		else if (result[0] == FOV_SLIDER_STRING) {
+			InputManager::GetInstance().SetFOV(stoi(result[1]));
+		}
 	}
 }
