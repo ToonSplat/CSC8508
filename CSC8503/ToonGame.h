@@ -41,7 +41,6 @@ namespace NCL
 
 			void UpdateCameras(float dt, int localPlayer);
 			void UpdatePhysics(float dt);
-			void UpdateAnimations(float dt);
 			void UpdateTime(float dt);
 
 			void ShowUI(float time);
