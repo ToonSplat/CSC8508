@@ -52,15 +52,8 @@ namespace NCL {
 			}
 			return allTextures;
 		}
-		std::vector<const Rendering::TextureBase*> GetBindlessTextures() const {
-			std::vector<const Rendering::TextureBase*> allTextures;
-			for (auto& [first, second] : bindlessTextures) {
-			/*	if (first == "mesh") {
-					continue;
-				}*/
-				allTextures.push_back(second);
-			}
-			return allTextures;
+		std::vector<Rendering::TextureBase*>* GetBindlessTextures() {
+			return &bindlessTextures;
 		}
 
 		std::vector<Vector4>* GetGPUMaterials() {
@@ -85,7 +78,9 @@ namespace NCL {
 		MeshGeometry* CreateCharacterTeamMesh(const std::string& fileName, const Vector4& teamColor);
 
 		map<string, Rendering::TextureBase*> textures;
-		map<string, Rendering::TextureBase*> bindlessTextures;
+		//map<string, Rendering::TextureBase*> bindlessTextures;
+
+		vector<Rendering::TextureBase*> bindlessTextures;
 
 		map<string, MeshGeometry*> meshes;
 		map<string, Rendering::OGLShader*> shaders;

@@ -1484,8 +1484,8 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
 	int index = 0;
-	std::vector<const Rendering::TextureBase*> texBase = ToonAssetManager::Instance().GetBindlessTextures();
-	for (auto const& tex : texBase)
+	std::vector<Rendering::TextureBase*>* texBase = ToonAssetManager::Instance().GetBindlessTextures();
+	for (auto const& tex : *texBase)
 	{
 		
 		NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;

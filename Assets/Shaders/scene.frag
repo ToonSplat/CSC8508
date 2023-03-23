@@ -19,7 +19,7 @@ struct ImpactPoint{
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
-uniform int materialIndex;
+uniform int materialIndex = -1;
 
 uniform vec4 		objectColour;
 uniform sampler2D 	mainTex;
@@ -93,10 +93,21 @@ void main(void)
 	//if(hasTexture) {
 	// albedo *= texture(mainTex, IN.texCoord);
 	//}
-	vec4 linkedMaterial = materialReferencer.key[materialIndex];
-	//fragColor = vec4(linkedMaterial, 0, 1.0);
-	//return;
-	albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);
+
+	if (hasTexture){
+
+		if (materialIndex != -1){
+				vec4 linkedMaterial = materialReferencer.key[materialIndex];
+			//fragColor = vec4(linkedMaterial, 0, 1.0);
+			//return;
+				albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);
+		}
+		else{
+			albedo *= texture(mainTex, IN.texCoord);
+		}
+		
+	}
+	
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);

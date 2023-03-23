@@ -157,7 +157,7 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 	Rendering::TextureBase* texture = GetTexture(name);
 
 	if (texture != nullptr) {
-		textureIndex = distance(textures.begin(), textures.find(name));
+		textureIndex = std::distance(bindlessTextures.begin(), std::find(bindlessTextures.begin(), bindlessTextures.end(), texture));
 		return texture;
 	}
 
@@ -170,8 +170,11 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 		texture = TextureLoader::LoadAPITexture(name);
 
 	textures.emplace(name, texture);
-	bindlessTextures.emplace(name, texture);
-	textureIndex = distance(bindlessTextures.begin(), bindlessTextures.find(name));
+	bindlessTextures.push_back(texture);
+
+	
+	textureIndex = std::distance(bindlessTextures.begin(), std::find(bindlessTextures.begin(), bindlessTextures.end(), texture));
+
 	return texture;
 }
 
@@ -274,8 +277,9 @@ ToonMeshMaterial* ToonAssetManager::AddMaterial(const string& name, const string
 	int index = gpuMaterials.size();
 	for (auto& material : mat->GetSubMaterials()) {
 		gpuMaterials.push_back(material);
-		index++;
+		
 		mat->AddMaterialIndex(index);
+		index++;
 	}
 
 	return mat;
