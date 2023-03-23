@@ -91,7 +91,7 @@ void ToonGame::StartGame() {
 				allPlayers.emplace(playerNPC);
 			}
 
-			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
+			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? InputManager::GetInstance().GetFOV() + 10.0f : InputManager::GetInstance().GetFOV()));
 			world->SetMainCamera(i, followCamera);
 			player->SyncCamerasToSpawn(followCamera, playerControls[i]);
 		}

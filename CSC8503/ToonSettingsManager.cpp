@@ -42,5 +42,8 @@ void ToonSettingsManager::ApplySettings() {
 		else if (result[0] == VSYNC_STRING) {
 			renderer->SetVerticalSync(result[1] == "0" ? VerticalSyncState::VSync_OFF : VerticalSyncState::VSync_ON);
 		}
+		else if (result[0] == FOV_SLIDER_STRING) {
+			InputManager::GetInstance().SetFOV(stoi(result[1]));
+		}
 	}
 }

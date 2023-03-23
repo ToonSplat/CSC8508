@@ -9,12 +9,14 @@
 #include <unordered_map>
 
 
+
 #define INVERT_CAMERA_STRING  "InvertCamera"
 #define SHADOW_STRING		  "Shadow"
 #define WINDOW_SIZE_STRING	  "WindowSize"
 #define CROSSHAIR_STRING	  "Dynamic CrossHair"
 #define VOLUME_SLIDER_STRING  "Volume"
 #define VSYNC_STRING		  "Vsync"
+#define FOV_SLIDER_STRING	 "FOV"
 //#define AIM_TRAJECTORY_STRING "Aim Trajectory"
 
 using namespace NCL;
@@ -31,6 +33,7 @@ class ToonGameSettings : public PushdownState
 		Vsync,
 		//AimTrajectory,
 		VolumeSlider,
+		FieldOfViewSlider,
 		SettingsBack
 	};
 
@@ -40,7 +43,7 @@ class ToonGameSettings : public PushdownState
 		std::string							   text;
 		bool								   hasToggle;
 		ToonToggleButton*					   toggleButton = NULL;
-		ToonSlider*							   volumeSlider = NULL;
+		ToonSlider*							   slider = NULL;
 		Vector2								   windowSize;
 		ToonGameSettings::SettingsScreenStates type;
 		std::string							   secondaryText;
@@ -58,22 +61,17 @@ class ToonGameSettings : public PushdownState
 			toggleButton				  = new ToonToggleButton(toggleCoordinates, windowSize, toggleButtonID, toggleState, true, toggleValueText);
 			secondaryTextCoordinates		   = toggleCoordinates;
 			secondaryTextCoordinates.origin.x += secondaryTextCoordinates.size.x + 8.0f;
-			if (type == ToonGameSettings::SettingsScreenStates::VolumeSlider)
-			{
-				volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
-			}
 		}
 
-		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, ToonGameSettings::SettingsScreenStates buttonType, std::string sliderLevel)
+		SettingsDataStructure(Coordinates coord, Vector2 windowSize, std::string txt, ToonGameSettings::SettingsScreenStates buttonType, int minVal, int maxVal, std::string sliderLevel)
 		{
 			coordinates		 = coord;
 			text			 = txt;
 			type			 = buttonType;
 			this->hasToggle  = false;
 			this->windowSize = windowSize;
-			volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
-			std::string sliderLevelString = sliderLevel.empty() ? "0" : sliderLevel;
-			volumeSlider->SetCurrentVolumeLevel(atoi(sliderLevelString.c_str()));
+			slider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), minVal, maxVal, windowSize);
+			slider->SetCurrentLevel(atoi(sliderLevel.c_str()));
 		}
 	};
 
@@ -82,10 +80,11 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates invertCameraState  = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates shadowState	      = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates crosshairState	  = ToggleButtonStates::ToggleOn;
-		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOn;
 		ToggleButtonStates aimTrajectoryState = ToggleButtonStates::ToggleOff;
 		std::string		   windowSize		  = "";
-		std::string		   volume			  = "10";
+		std::string		   volume			 = "7";
+		std::string		   fov				 = "50";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
 		{
@@ -127,6 +126,7 @@ class ToonGameSettings : public PushdownState
 				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				//else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
+        else if (it.first == FOV_SLIDER_STRING)	   { fov			   = it.second; }
 			}
 		}
 
@@ -139,6 +139,7 @@ class ToonGameSettings : public PushdownState
 			serializedString			+= VSYNC_STRING + std::string(":") + std::string((vSyncState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			//serializedString			+= AIM_TRAJECTORY_STRING + std::string(":") + std::string((aimTrajectoryState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= VOLUME_SLIDER_STRING + std::string(":") + volume + std::string("\n");
+			serializedString			+= FOV_SLIDER_STRING + std::string(":") + fov + std::string("\n");
 			return serializedString;
 		}
 	};
