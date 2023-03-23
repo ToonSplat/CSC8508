@@ -126,7 +126,7 @@ class ToonGameSettings : public PushdownState
 				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				//else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
-        else if (it.first == FOV_SLIDER_STRING)	   { fov			   = it.second; }
+				else if (it.first == FOV_SLIDER_STRING)		{ fov			   = it.second; }
 			}
 		}
 
