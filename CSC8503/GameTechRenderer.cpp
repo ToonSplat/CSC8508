@@ -255,39 +255,43 @@ void GameTechRenderer::RenderRectical(int id)
 	{
 		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
 		if(m_EnableDynamicCrosshair) crosshairSpreadFactor = player->GetCrosshairSpreadFactor();
+		player->m_ShowTrajectory = !m_EnableDynamicCrosshair;
 	}
 
-	glUniform1i(discardWhiteLoc, 0);
-	glUniform4fv(colourLoc, 1, (float*)teamColor.array);
-
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glStencilFunc(GL_EQUAL, 2, ~0);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	glEnable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-
-	Matrix4 minimapModelMatrix;
-	BindMesh(squareQuad);
-	for (int i = 0; i < 4; i++)
+	if (m_EnableDynamicCrosshair)
 	{
-		//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
-		minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor * 0.75f) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale * 0.75f);
+		glUniform1i(discardWhiteLoc, 0);
+		glUniform4fv(colourLoc, 1, (float*)teamColor.array);
+
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glStencilFunc(GL_EQUAL, 2, ~0);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+
+		Matrix4 minimapModelMatrix;
+		BindMesh(squareQuad);
+		for (int i = 0; i < 4; i++)
+		{
+			//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
+			minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor * 0.75f) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale * 0.75f);
+			glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+
+		BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair_circle"), "diffuseTex", 0);
+		minimapModelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.02f, 0.02f, 1.0f));
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_STENCIL_TEST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glUniform1i(discardWhiteLoc, 1);
+		glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 	}
-
-	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair_circle"), "diffuseTex", 0);
-	minimapModelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.02f, 0.02f, 1.0f));
-	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_STENCIL_TEST);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glUniform1i(discardWhiteLoc, 1);
-	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
@@ -553,7 +557,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 		teamId = gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam()->GetTeamID();
 	}
 	 
-	DrawMainScene(teamId);
+	DrawMainScene(1);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
 }
@@ -1208,12 +1212,9 @@ void GameTechRenderer::BuildObjectList(int index) {
 			if (o->IsActive()) 
 			{
 				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
-				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetTeams()[index] && gameWorld->GetTeams()[index]->GetTeamName() != obj->GetTeam()->GetTeamName())
-				{
-					auto test1 = obj->GetName();
-					auto test = gameWorld;
+				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetToonGame()->GetPlayerFromID(index) && gameWorld->GetToonGame()->GetPlayerFromID(index)->GetTeam() != obj->GetTeam())
 					return;
-				}
+				
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}

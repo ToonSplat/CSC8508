@@ -81,7 +81,8 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	weapon.HideTrajectory();
 	if (isAiming) {
 		targetAngle = controls->camera[1] / 72.0f;
-		weapon.UpdateTrajectory(dt, controls);
+		if(m_ShowTrajectory)
+			weapon.UpdateTrajectory(dt, controls);
 	}
 	else if (isMoving)
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
