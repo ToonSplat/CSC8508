@@ -20,6 +20,7 @@ using namespace CSC8503;
 
 class Player : public ToonGameObjectAnim, public ApplyPaint {
 public:
+	bool m_ShowTrajectory = false;
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 

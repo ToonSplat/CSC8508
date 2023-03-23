@@ -39,5 +39,8 @@ void ToonSettingsManager::ApplySettings() {
 			std::string volumeString = result[1].empty() ? "10" : result[1];
 			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(volumeString) / 10.0f);
 		}
+		else if (result[0] == VSYNC_STRING) {
+			renderer->SetVerticalSync(result[1] == "0" ? VerticalSyncState::VSync_OFF : VerticalSyncState::VSync_ON);
+		}
 	}
 }
