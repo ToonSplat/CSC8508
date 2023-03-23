@@ -184,6 +184,7 @@ void ToonGameSettings::UpdateSettingsFile()
 
 std::string ToonGameSettings::GetStringFromInt(int number)
 {
+	if (!number) { return "0"; }
 	std::string numberString = "";
 	int endIndex				 = -1;
 	while (number)

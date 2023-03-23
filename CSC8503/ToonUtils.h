@@ -1,6 +1,6 @@
 #pragma once
 #include <reactphysics3d/reactphysics3d.h>
-#include <Vector3.h>
+#include <Maths.h>
 #include <random>
 
 namespace ToonUtils
@@ -32,5 +32,20 @@ namespace ToonUtils
 		std::uniform_real_distribution<> dis(min, max);
 
 		return (float)dis(gen);
+	}
+
+	static Matrix4 LerpMat(const Matrix4& a, const Matrix4& b, float t)
+	{
+		Matrix4 res;
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				res.array[i][j] = Lerp(a.array[i][j], b.array[i][j], t);
+			}
+		}
+
+		return res;
 	}
 }
