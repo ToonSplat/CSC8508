@@ -145,7 +145,7 @@ void AudioSystem::SelectMenuOption() {
 }
 
 void AudioSystem::Update(float msec) {
-    ToonDebugManager::Instance().StartAudio();
+    ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::audio);
     UpdateListener();
 
     for (int i = 0; i < emitters.size(); i++) {
@@ -176,7 +176,7 @@ void AudioSystem::Update(float msec) {
         AttachSources(frameEmitters.begin(), frameEmitters.end());
     }
     frameEmitters.clear();
-    ToonDebugManager::Instance().EndAudio();
+    ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::audio);
 }
 
 void AudioSystem::CullNodes() {

@@ -28,9 +28,8 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
-{
-	ToonDebugManager::Instance().StartLoad();
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
+	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::load);
 
 	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
 	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
@@ -61,7 +60,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 
-	ToonDebugManager::Instance().EndLoad();
+	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::load);
 
 	SetupMain();
 }
@@ -194,7 +193,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 }
 
 void GameTechRenderer::RenderFrame() {
-	ToonDebugManager::Instance().StartRendering();
+	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::rendering);
 	if (!gameWorld) return; // Safety Check
 	
 	UpdateLightColour();
@@ -213,10 +212,10 @@ void GameTechRenderer::RenderFrame() {
 
 	DrawMap();
 	PresentScene();
-
+  
 	if (displayDebug) RenderImGUI();
 
-	ToonDebugManager::Instance().EndRendering();
+	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::rendering);
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
@@ -1075,15 +1074,29 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 			ImGui::BeginTable("Memory Usage Table", 2);
 
 			ImGui::TableNextColumn();
+			ImGui::Text("Virtual Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+
+			ImGui::TableNextColumn();
+
 			ImGui::Text("Virtual Memory");
 			ImGui::TableNextColumn();
 			ImGui::Text(ToonDebugManager::Instance().GetVirtualMemoryUsage().c_str());
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Virtual Memory By Program");
+			ImGui::Text("Total Virtual Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalVirtualMemory().c_str());
+
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
 
 			ImGui::TableNextColumn();
 
@@ -1093,9 +1106,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Physcial Memory By Program");
+			ImGui::Text("Total Physcial Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalPhysicalMemory().c_str());
 
 			ImGui::EndTable();
 
@@ -1107,38 +1120,38 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::Text("Load Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetLoadTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::load).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Frame Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::frame).c_str());
 			ImGui::TableNextColumn();
 
 
 			ImGui::Text("Audio Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::audio).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::networking).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Physics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::physics).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Animation Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAnimationTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::animation).c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Graphics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetGraphicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::rendering).c_str());
 			ImGui::EndTable();
 		}
 
