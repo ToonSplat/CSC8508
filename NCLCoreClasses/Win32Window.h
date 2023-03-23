@@ -64,7 +64,6 @@ namespace NCL::Win32Code {
 		bool			forceQuit;
 
 		bool			active;
-		bool			fullScreen;
 		bool			lockMouse;
 		bool			showMouse;
 		bool			mouseLeftWindow;

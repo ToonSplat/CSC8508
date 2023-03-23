@@ -43,6 +43,7 @@ namespace NCL {
 			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
 			void ToggleDebug() { displayDebug = !displayDebug; }
+			void OnWindowResize(int w, int h)	override;
 		protected:
 
 			void SetupLoadingScreen();

@@ -85,6 +85,7 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOn;
 		ToggleButtonStates aimTrajectoryState = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates aiDiffuclty		  = ToggleButtonStates::ToggleOff;
+    ToggleButtonStates windowSize = ToggleButtonStates::ToggleOff;
 		std::string		   windowSize		  = "";
 		std::string		   volume			  = "7";
 		std::string		   fov				  = "50";
@@ -128,6 +129,7 @@ class ToonGameSettings : public PushdownState
 				else if (it.first == WINDOW_SIZE_STRING)    { windowSize		 = it.second; }
 				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == DIFFICULTY_STRING)		{ aiDiffuclty		 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+        else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff;
 				//else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
 				else if (it.first == FOV_SLIDER_STRING)		{ fov			     = it.second; }
@@ -139,6 +141,7 @@ class ToonGameSettings : public PushdownState
 			std::string serializedString = INVERT_CAMERA_STRING + std::string(":") + std::string((invertCameraState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString		    += SHADOW_STRING + std::string(":") + std::string((shadowState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= CROSSHAIR_STRING + std::string(":") + std::string((crosshairState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			//serializedString			+= WINDOW_SIZE_STRING + std::string(":") + std::string((windowSize == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			//serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
 			serializedString			+= VSYNC_STRING + std::string(":") + std::string((vSyncState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= DIFFICULTY_STRING + std::string(":") + std::string((aiDiffuclty == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");

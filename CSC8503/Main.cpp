@@ -76,16 +76,6 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 			w->ShowConsole(false);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
-			w->SetWindowPosition(0, 0);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::X)) {
-			AudioSystem::GetAudioSystem()->SetMasterVolume(0.0f);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Z)) {
-			AudioSystem::GetAudioSystem()->SetMasterVolume(1.0f);
-		}
-
 
 		w->SetTitle("ToonSplat frame time:" + std::to_string(1000.0f * dt));
 		InputManager::GetInstance().Update();
