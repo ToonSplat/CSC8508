@@ -553,7 +553,7 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 		teamId = gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam()->GetTeamID();
 	}
 	 
-	DrawMainScene(teamId);
+	DrawMainScene(1);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
 }
@@ -1208,12 +1208,9 @@ void GameTechRenderer::BuildObjectList(int index) {
 			if (o->IsActive()) 
 			{
 				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
-				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetTeams()[index] && gameWorld->GetTeams()[index]->GetTeamName() != obj->GetTeam()->GetTeamName())
-				{
-					auto test1 = obj->GetName();
-					auto test = gameWorld;
+				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetToonGame()->GetPlayerFromID(index) && gameWorld->GetToonGame()->GetPlayerFromID(index)->GetTeam() != obj->GetTeam())
 					return;
-				}
+				
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}
