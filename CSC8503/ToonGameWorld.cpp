@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "PlayerNPC.h"
 #include "ToonEventListener.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -167,16 +168,12 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 		}
 	}
 
-	//int index = 0;
+	ToonDebugManager::Instance().StartTimeCount("Animation");
 	for (int i = 0; i < gameObjects.size(); i++)
 	{
 		gameObjects[i]->Update(dt);
 	}
-	/*for (auto& object : gameObjects)
-	{
-		object->Update(dt);
-		index++;
-	}*/
+	ToonDebugManager::Instance().EndTimeCount("Animation");
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)

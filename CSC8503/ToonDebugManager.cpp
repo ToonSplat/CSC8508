@@ -9,6 +9,13 @@ ToonDebugManager::ToonDebugManager() {
 	isCollisionDisplayToggled = false;
 	showAIPathGraph = false;
 	showAIPathDebug = false;
+	sectionStats.emplace("Loading", CodeSectionStats());
+	sectionStats.emplace("Audio", CodeSectionStats());
+	sectionStats.emplace("Animation", CodeSectionStats());
+	sectionStats.emplace("Networking", CodeSectionStats());
+	sectionStats.emplace("Physics", CodeSectionStats());
+	sectionStats.emplace("Rendering", CodeSectionStats());
+	sectionStats.emplace("Frame", CodeSectionStats());
 }
 
 void ToonDebugManager::Update() {
@@ -21,40 +28,23 @@ void ToonDebugManager::Update() {
 	}
 }
 
-void ToonDebugManager::StartTimeCount(measuring m) {
-	switch (m) {
-	case load: loadStart = high_resolution_clock::now(); break;
-	case frame:	frameStart = high_resolution_clock::now(); break;
-	case audio: audioStart = high_resolution_clock::now(); break;
-	case networking: networkingStart = high_resolution_clock::now(); break;
-	case physics: physicsStart = high_resolution_clock::now(); break;
-	case animation: animationStart = high_resolution_clock::now(); break;
-	case rendering: renderingStart = high_resolution_clock::now(); break;
-	}
+void ToonDebugManager::StartTimeCount(string section) {
+	sectionStats[section].start = high_resolution_clock::now();
 }
 
-void ToonDebugManager::EndTimeCount(measuring m) {
-	switch (m) {
-	case load: loadTimeTaken = ConvertTimeTaken(loadStart, high_resolution_clock::now()); break;
-	case frame:	frameTimeTaken = ConvertTimeTaken(frameStart, high_resolution_clock::now()); break;
-	case audio: audioTimeTaken = ConvertTimeTaken(audioStart, high_resolution_clock::now()); break;
-	case networking: networkingTimeTaken = ConvertTimeTaken(networkingStart, high_resolution_clock::now()); break;
-	case physics: physicsTimeTaken = ConvertTimeTaken(physicsStart, high_resolution_clock::now()); break;
-	case animation: animationTimeTaken = ConvertTimeTaken(animationStart, high_resolution_clock::now()); break;
-	case rendering: graphicsTimeTaken = ConvertTimeTaken(renderingStart, high_resolution_clock::now()); break;
-	}
+void ToonDebugManager::EndTimeCount(string section) {
+	sectionStats[section].end = high_resolution_clock::now();
+	ConvertTimeTaken(sectionStats[section]);
 }
 
-string ToonDebugManager::GetTimeTaken(measuring m) {
-	switch (m) {
-	case load: return loadTimeTaken; break;
-	case frame:	return frameTimeTaken; break;
-	case audio: return audioTimeTaken; break;
-	case networking: return networkingTimeTaken; break;
-	case physics: return physicsTimeTaken; break;
-	case animation: return animationTimeTaken; break;
-	case rendering: return graphicsTimeTaken; break;
-	}
+void ToonDebugManager::ConvertTimeTaken(CodeSectionStats& section) {
+	std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(section.end - section.start);
+	double temp = (double)timeTaken.count() / 1000.0f;
+	section.timeTaken = std::to_string(temp) + " ms";
+}
+
+string ToonDebugManager::GetTimeTaken(string section) {
+	return sectionStats[section].timeTaken;
 }
 
 void ToonDebugManager::CalculateMemoryUsage() {
@@ -76,12 +66,6 @@ void ToonDebugManager::CalculateMemoryUsageByProgram() {
 	virtualMemUsedByProgram = pmc.PrivateUsage;
 
 	physMemUsedByProgram = pmc.WorkingSetSize;
-}
-
-string ToonDebugManager::ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
-	std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-	double temp = (double)timeTaken.count() / 1000.0f;
-	return std::to_string(temp) + " ms";
 }
 
 void ToonDebugManager::DisplayCollisionBoxes() {

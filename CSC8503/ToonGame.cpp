@@ -129,8 +129,6 @@ void ToonGame::UpdateGame(float dt) {
 	if (NetworkingStatus::Server)
 		UpdateCameras(dt, 1);
 
-	//UpdateAnimations(dt);
-
 	UpdatePhysics(dt);
 
 	UpdateTime(dt);
@@ -222,7 +220,7 @@ void ToonGame::UpdateCameras(float dt, int localPlayer) {
 }
 
 void ToonGame::UpdatePhysics(float dt) {
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::physics);
+	ToonDebugManager::Instance().StartTimeCount("Physics");
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
@@ -231,15 +229,7 @@ void ToonGame::UpdatePhysics(float dt) {
 		world->DeleteMarkedObjects();
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
-	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::physics);
-}
-
-void ToonGame::UpdateAnimations(float dt) {
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::animation);
-	/*for (auto& player : allPlayers) {
-		player->AnimationUpdate(dt);
-	}*/
-	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::animation);
+	ToonDebugManager::Instance().EndTimeCount("Physics");
 }
 
 void ToonGame::UpdateTime(float dt) {
