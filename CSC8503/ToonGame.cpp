@@ -119,6 +119,9 @@ void ToonGame::UpdateGame(float dt) {
 			}
 			else {
 				player->SetAiming(playerControls[id]->aiming);
+				if(playerControls[id]->aiming) { player->GetWeapon().UpdateTrajectory(dt, playerControls[id]); }
+				else if (!playerControls[id]->aiming) { player->GetWeapon().HideTrajectory(); }
+				
 			}
 		}
 	}

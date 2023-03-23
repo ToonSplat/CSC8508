@@ -73,7 +73,7 @@ namespace NCL
 			Player* AddPlayerToWorld(Team* team);
 			PlayerNPC* AddPlayerNPCToWorld(Team* team);
 			PaintBallProjectile* AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
-				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team);
+				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team, std::string objectName = "");
 			HitSphere* AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team);
 
 			Player* GetPlayer() { return player; }

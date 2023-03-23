@@ -16,6 +16,7 @@
 #include "ToonGame.h"
 #include "ToonNetworkedGame.h"
 #include "Player.h"
+#include "ToonGame.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -223,7 +224,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BuildObjectList();
+	BuildObjectList(id);
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
@@ -542,7 +543,14 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	currentRenderCamera = gameWorld->GetMainCamera(1);
-	DrawMainScene(1);
+	
+	int teamId = 1;
+	if (gameWorld->GetToonGame() && gameWorld->GetToonGame()->GetPlayerFromID(1) && gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam())
+	{
+		teamId = gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam()->GetTeamID();
+	}
+	 
+	DrawMainScene(teamId);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
 }
@@ -803,6 +811,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto& i : activeObjects)
 	{
+		if (i->GetName() == "NoShadow") { continue; }
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -1173,7 +1182,7 @@ void GameTechRenderer::UpdateLightColour() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void GameTechRenderer::BuildObjectList() {
+void GameTechRenderer::BuildObjectList(int index) {
 	activeObjects.clear();
 
 	gameWorld->OperateOnContents(
@@ -1181,6 +1190,13 @@ void GameTechRenderer::BuildObjectList() {
 		{
 			if (o->IsActive()) 
 			{
+				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
+				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetTeams()[index] && gameWorld->GetTeams()[index]->GetTeamName() != obj->GetTeam()->GetTeamName())
+				{
+					auto test1 = obj->GetName();
+					auto test = gameWorld;
+					return;
+				}
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}

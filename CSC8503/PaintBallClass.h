@@ -6,6 +6,8 @@
 
 #include "ToonGameObject.h"
 
+#define MAX_BULLETS 100
+
 namespace NCL {
     namespace CSC8503 {
         class Team;
@@ -38,6 +40,9 @@ namespace NCL {
             void SetStatus(statusTypes newStatus) { status = newStatus; }
 
             PaintBallClass MakeInstance();           
+            void UpdateTrajectory(float dt, PlayerControl* playerControls);
+            void HideTrajectory();              //Trajectory
+            std::string GetTeamName() { return team->GetTeamName(); }
 
         protected:
             // Weapon Stats
@@ -48,8 +53,8 @@ namespace NCL {
             float fireRate; // time between shot
             float reloadTime; // time between reloads
             float maxShootDistance; // max dist can be shot
-            PaintBallProjectile* bullet[20];    //Trajectory
-            int trajectoryPoints = 20;          //Trajectory
+            PaintBallProjectile* bullet[MAX_BULLETS];    //Trajectory
+            int trajectoryPoints = MAX_BULLETS;          //Trajectory
             Vector3 bulletVelocity;
 
             float shootSpread;
@@ -63,8 +68,6 @@ namespace NCL {
             float GetYCoordinate(int x, int initialVelocity);
             Vector3 CalculateBulletVelocity(Vector3 target, Vector3 origin, float t);
             void CalculateBulletPositionOrientation(const short& pitch, Vector3& positionFinal, Vector3& orientationFinal);
-            void DrawTrajectory(NCL::Maths::Vector3 force);   //Trajectory
-            void HideTrajectory();              //Trajectory
 
             Team* team;
             ToonGameWorld* gameWorld;
@@ -78,6 +81,8 @@ namespace NCL {
             ToonGameObject* owningObject;            
 
             statusTypes status;
+
+            float m_ForceAppliedOnPaintBall = 400.0f;
         };
     }
 }
