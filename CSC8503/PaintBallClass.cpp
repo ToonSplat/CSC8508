@@ -106,7 +106,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls)
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {					
 					Vector3 position, orientation;
-					CalculateBulletPositionOrientation(playerControls->camera[0] / 100.0f, position, orientation);
+					CalculateBulletPositionOrientation(playerControls->camera[0] / 72.0f, position, orientation);
 					FireBullet(ToonUtils::ConvertToRP3DVector3(position), ToonUtils::ConvertToRP3DVector3(orientation));
 				}
 				return true;
@@ -176,7 +176,7 @@ void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* pla
 {
 	const float PAINTBALL_RADIUS		= 0.1f;
 	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
-	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal((playerControls->camera[0] / 100.0f) + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal((playerControls->camera[0] / 72.0f) + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
 	orientation.normalize();
 	reactphysics3d::Vector3 dirOri = orientation;
 	dirOri.y = 0;
