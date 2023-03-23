@@ -9,11 +9,13 @@
 #include <unordered_map>
 
 
-#define INVERT_CAMERA_STRING "InvertCamera"
-#define SHADOW_STRING		 "Shadow"
-#define WINDOW_SIZE_STRING	 "WindowSize"
-#define CROSSHAIR_STRING	 "Dynamic CrossHair"
-#define VOLUME_SLIDER_STRING "Volume"
+#define INVERT_CAMERA_STRING  "InvertCamera"
+#define SHADOW_STRING		  "Shadow"
+#define WINDOW_SIZE_STRING	  "WindowSize"
+#define CROSSHAIR_STRING	  "Dynamic CrossHair"
+#define VOLUME_SLIDER_STRING  "Volume"
+#define VSYNC_STRING		  "Vsync"
+#define AIM_TRAJECTORY_STRING "Aim Trajectory"
 
 using namespace NCL;
 //using namespace CSC8503;
@@ -27,6 +29,8 @@ class ToonGameSettings : public PushdownState
 		WindowSize,
 		Crosshair,
 		VolumeSlider,
+		Vsync,
+		AimTrajectory,
 		SettingsBack
 	};
 
@@ -63,17 +67,20 @@ class ToonGameSettings : public PushdownState
 			this->hasToggle  = false;
 			this->windowSize = windowSize;
 			volumeSlider = new ToonSlider(Coordinates(Vector2(40.0f, coordinates.origin.y), Vector2(40.0f, coordinates.size.y)), 11, windowSize);
-			volumeSlider->SetCurrentVolumeLevel(atoi(sliderLevel.c_str()));
+			std::string sliderLevelString = sliderLevel.empty() ? "0" : sliderLevel;
+			volumeSlider->SetCurrentVolumeLevel(atoi(sliderLevelString.c_str()));
 		}
 	};
 
 	struct ToonSettingsFileDataStructure
 	{
-		ToggleButtonStates invertCameraState = ToggleButtonStates::ToggleOff;
-		ToggleButtonStates shadowState	     = ToggleButtonStates::ToggleOff;
-		ToggleButtonStates crosshairState	 = ToggleButtonStates::ToggleOn;
-		std::string		   windowSize		 = "";
-		std::string		   volume			 = "10";
+		ToggleButtonStates invertCameraState  = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates shadowState	      = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates crosshairState	  = ToggleButtonStates::ToggleOn;
+		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates aimTrajectoryState = ToggleButtonStates::ToggleOff;
+		std::string		   windowSize		  = "";
+		std::string		   volume			  = "10";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
 		{
@@ -108,11 +115,13 @@ class ToonGameSettings : public PushdownState
 			std::unordered_map<std::string, std::string> parsedMap = SeperateComponents(dataString);
 			for (std::pair<std::string, std::string> it : parsedMap)
 			{
-				if		(it.first == INVERT_CAMERA_STRING) { invertCameraState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
-				else if (it.first == SHADOW_STRING)		   { shadowState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
-				else if (it.first == CROSSHAIR_STRING)	   { crosshairState	   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
-				else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second; }
-				else if (it.first == VOLUME_SLIDER_STRING) { volume			   = it.second; }
+				if		(it.first == INVERT_CAMERA_STRING)  { invertCameraState  = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == SHADOW_STRING)		    { shadowState	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == CROSSHAIR_STRING)	    { crosshairState	 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == WINDOW_SIZE_STRING)    { windowSize		 = it.second; }
+				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
+				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 			}
 		}
 
@@ -123,6 +132,8 @@ class ToonGameSettings : public PushdownState
 			serializedString			+= CROSSHAIR_STRING + std::string(":") + std::string((crosshairState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
 			serializedString			+= VOLUME_SLIDER_STRING + std::string(":") + volume + std::string("\n");
+			serializedString			+= VSYNC_STRING + std::string(":") + std::string((vSyncState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			serializedString			+= AIM_TRAJECTORY_STRING + std::string(":") + std::string((aimTrajectoryState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			return serializedString;
 		}
 	};

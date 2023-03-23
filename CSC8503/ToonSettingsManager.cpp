@@ -36,7 +36,8 @@ void ToonSettingsManager::ApplySettings() {
 			renderer->m_EnableDynamicCrosshair = result[1] == "1";
 		}
 		else if (result[0] == VOLUME_SLIDER_STRING) {
-			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(result[1]) / 10.0f);
+			std::string volumeString = result[1].empty() ? "10" : result[1];
+			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(volumeString) / 10.0f);
 		}
 	}
 }

@@ -44,7 +44,10 @@ void ToonGameSettings::DrawScreen()
 			data.toggleButton->UpdateButtonDraw(); 
 			data.toggleButton->m_IsActive = m_CurrentSelectedIndex == index;
 		}
-		else if (data.type == ToonGameSettings::SettingsScreenStates::VolumeSlider) { data.volumeSlider->Update(0.1f); }
+		else if (data.type == ToonGameSettings::SettingsScreenStates::VolumeSlider)
+		{
+			data.volumeSlider->Update(0.1f);
+		}
 		index++;
 	}
 }
@@ -146,12 +149,14 @@ void ToonGameSettings::PopulateSettingsData()
 	m_SettingsDS.ParseData(fileContent);
 
 	m_SettingsData = {
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Invert Camera", ToonGameSettings::SettingsScreenStates::InvertCamera, true, InvertCamera, m_SettingsDS.invertCameraState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", ToonGameSettings::SettingsScreenStates::Shadow, true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window", ToonGameSettings::SettingsScreenStates::WindowSize,  false),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Dynamic Crosshair", ToonGameSettings::SettingsScreenStates::Crosshair, true, Crosshair, m_SettingsDS.crosshairState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 60.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 70.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 15.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Invert Camera", ToonGameSettings::SettingsScreenStates::InvertCamera, true, InvertCamera, m_SettingsDS.invertCameraState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 25.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", ToonGameSettings::SettingsScreenStates::Shadow, true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 35.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window", ToonGameSettings::SettingsScreenStates::WindowSize,  false),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 45.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Dynamic Crosshair", ToonGameSettings::SettingsScreenStates::Crosshair, true, Crosshair, m_SettingsDS.crosshairState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 55.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 65.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Vsync", ToonGameSettings::SettingsScreenStates::Vsync, true, Vsync, m_SettingsDS.vSyncState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 75.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Aim Trajectory", ToonGameSettings::SettingsScreenStates::AimTrajectory, true, AimTrajectory, m_SettingsDS.aimTrajectoryState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 85.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
 					 };
 }
 
@@ -172,6 +177,12 @@ void ToonGameSettings::UpdateSettingsFile()
 				case Crosshair:
 					m_SettingsDS.crosshairState = data.toggleButton->GetButtonState();
 					break;
+				case Vsync:
+					m_SettingsDS.vSyncState = data.toggleButton->GetButtonState();
+					break;
+				case AimTrajectory:
+					m_SettingsDS.aimTrajectoryState = data.toggleButton->GetButtonState();
+					break;
 			}
 		}
 		if (data.volumeSlider)
@@ -184,6 +195,7 @@ void ToonGameSettings::UpdateSettingsFile()
 
 std::string ToonGameSettings::GetStringFromInt(int number)
 {
+	if (!number) { return "0"; }
 	std::string numberString = "";
 	int endIndex				 = -1;
 	while (number)
