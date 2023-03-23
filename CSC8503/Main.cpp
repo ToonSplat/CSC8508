@@ -61,8 +61,7 @@ hide or show the
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
-		ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::frame);
-		ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::frame);
+		ToonDebugManager::Instance().StartTimeCount("Frame");
 		ToonDebugManager::Instance().Update();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		AudioSystem::GetAudioSystem()->Update(dt);
@@ -93,6 +92,7 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 		if (!machine.Update(dt)) {
 			return;
 		}
+		ToonDebugManager::Instance().EndTimeCount("Frame");
 	}
 }
 

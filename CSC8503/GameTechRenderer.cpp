@@ -29,30 +29,8 @@ using namespace CSC8503;
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::load);
 
-	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
-	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
-	crosshairs[2].pos = Vector3(-0.04f, 0.0f, 0.0f);		//Left
-	crosshairs[3].pos = Vector3(0.04f, 0.0f, 0.0f);			//Right
-
-	/*crosshairs[0].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[1].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[2].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[3].rot = Vector3(0.0f, 0.0f, 0.0f);*/
-
-	crosshairs[0].rot = 0.0f;
-	crosshairs[1].rot = 180.0f;
-	crosshairs[2].rot = 90.0f;
-	crosshairs[3].rot = -90.0f;
-
-	crosshairs[0].scale = Vector3(0.08f, 0.025f, 1.0f);
-	crosshairs[1].scale = Vector3(0.08f, 0.025f, 1.0f);
-	crosshairs[2].scale = Vector3(0.15f, 0.015f, 1.0f);
-	crosshairs[3].scale = Vector3(0.15f, 0.015f, 1.0f);
-
-	crosshairSpreadFactor = 1.0f;
-	
+	ToonDebugManager::Instance().StartTimeCount("Loading");
 	SetupLoadingScreen();
 
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
@@ -60,7 +38,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 
-	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::load);
+	ToonDebugManager::Instance().EndTimeCount("Loading");
 
 	SetupMain();
 }
@@ -190,10 +168,32 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	team2Percentage = 0;
 	team3Percentage = 0;
 	team4Percentage = 0;
+
+	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
+	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
+	crosshairs[2].pos = Vector3(-0.04f, 0.0f, 0.0f);		//Left
+	crosshairs[3].pos = Vector3(0.04f, 0.0f, 0.0f);			//Right
+
+	/*crosshairs[0].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[1].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[2].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[3].rot = Vector3(0.0f, 0.0f, 0.0f);*/
+
+	crosshairs[0].rot = 0.0f;
+	crosshairs[1].rot = 180.0f;
+	crosshairs[2].rot = 90.0f;
+	crosshairs[3].rot = -90.0f;
+
+	crosshairs[0].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[1].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[2].scale = Vector3(0.15f, 0.015f, 1.0f);
+	crosshairs[3].scale = Vector3(0.15f, 0.015f, 1.0f);
+
+	crosshairSpreadFactor = 1.0f;
 }
 
 void GameTechRenderer::RenderFrame() {
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::rendering);
+	ToonDebugManager::Instance().StartTimeCount("Rendering");
 	if (!gameWorld) return; // Safety Check
 	
 	UpdateLightColour();
@@ -215,7 +215,7 @@ void GameTechRenderer::RenderFrame() {
   
 	if (displayDebug) RenderImGUI();
 
-	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::rendering);
+	ToonDebugManager::Instance().EndTimeCount("Rendering");
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
@@ -1120,38 +1120,38 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::Text("Load Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::load).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Loading").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Frame Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::frame).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Frame").c_str());
 			ImGui::TableNextColumn();
 
 
 			ImGui::Text("Audio Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::audio).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Audio").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::networking).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Networking").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Physics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::physics).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Physics").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Animation Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::animation).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Animation").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Graphics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken(ToonDebugManager::measuring::rendering).c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Rendering").c_str());
 			ImGui::EndTable();
 		}
 

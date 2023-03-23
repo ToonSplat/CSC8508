@@ -13,6 +13,12 @@ namespace NCL
 	namespace CSC8503
 	{
 		using std::chrono::high_resolution_clock;
+		struct CodeSectionStats {
+			high_resolution_clock::time_point start;
+			high_resolution_clock::time_point end;
+			string timeTaken;
+		};
+
 		class ToonDebugManager{
 		public:
 			static void Create() {
@@ -30,28 +36,22 @@ namespace NCL
 
 			void Update();
 
-			enum measuring { load, frame, audio, networking, physics, animation, rendering};
-
-			void StartTimeCount(measuring m);
-			void EndTimeCount(measuring m);
-
-			string ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end);
+			void StartTimeCount(string section);
+			void EndTimeCount(string section);
 
 			const int byteToMb = 1048576;
 			string ConvertMemoryUsage(auto a) {return std::to_string(a / byteToMb) + " MB"; }
 
-
-
-      string GetVirtualMemoryUsage() { return ConvertMemoryUsage(usedVirtualMem); }
+			string GetVirtualMemoryUsage() { return ConvertMemoryUsage(usedVirtualMem); }
 			string GetVirutalUsageByProgram() { return ConvertMemoryUsage(virtualMemUsedByProgram); }
 			string GetTotalVirtualMemory(){ return ConvertMemoryUsage(totalVirtualMem); }
 			string GetPhysicalMemoryUsage() { return ConvertMemoryUsage(usedPhysMem); }
 			string GetPhysicalUsagebyProgram() { return ConvertMemoryUsage(physMemUsedByProgram); }
 			string GetTotalPhysicalMemory() { return ConvertMemoryUsage(totalPhysMem); }
 
-      bool isAIPresent;
+			bool isAIPresent;
 
-			string GetTimeTaken(measuring m);
+			string GetTimeTaken(string section);
 
 			void ToggleCollisionDisplay();
 			bool GetAIPathGraphStatus() const { return showAIPathGraph; }
@@ -67,6 +67,8 @@ namespace NCL
 			~ToonDebugManager() {}
 			static ToonDebugManager* instance;
 
+			void ConvertTimeTaken(CodeSectionStats& section);
+
 			void DisplayCollisionBoxes();
 			void CalculateMemoryUsage();
 			void CalculateMemoryUsageByProgram();
@@ -79,23 +81,9 @@ namespace NCL
 			DWORDLONG usedPhysMem;
 			SIZE_T physMemUsedByProgram;
 
-			high_resolution_clock::time_point loadStart;
-			high_resolution_clock::time_point frameStart;
-			high_resolution_clock::time_point audioStart;
-			high_resolution_clock::time_point networkingStart;
-			high_resolution_clock::time_point physicsStart;
-			high_resolution_clock::time_point animationStart;
-			high_resolution_clock::time_point renderingStart;
+			std::map<string, CodeSectionStats> sectionStats;
 
 			ToonGameWorld* world;
-
-			string loadTimeTaken;
-			string frameTimeTaken;
-			string audioTimeTaken;
-			string networkingTimeTaken;
-			string physicsTimeTaken;
-			string animationTimeTaken;
-			string graphicsTimeTaken;
 
 			bool isCollisionDisplayToggled;
 			

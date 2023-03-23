@@ -135,7 +135,7 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 
 void ToonNetworkedGame::UpdateGame(float dt) {
 	;
-	ToonDebugManager::Instance().StartTimeCount(ToonDebugManager::measuring::networking);
+	ToonDebugManager::Instance().StartTimeCount("Networking");
 	if (thisServer)
 		Debug::Print("Server", Vector2(0, 5));
 	else
@@ -199,7 +199,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		ServerStartGame();
 		return;
 	}
-	ToonDebugManager::Instance().EndTimeCount(ToonDebugManager::measuring::networking);
+	ToonDebugManager::Instance().EndTimeCount("Networking");
 	if (!closeGame)
 		ToonGame::UpdateGame(dt);
 }
