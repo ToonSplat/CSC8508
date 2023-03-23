@@ -80,7 +80,7 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	isAiming = controls->aiming;
 	weapon.HideTrajectory();
 	if (isAiming) {
-		targetAngle = controls->camera[1];
+		targetAngle = controls->camera[1] / 100.0f;
 		weapon.UpdateTrajectory(dt, controls);
 	}
 	else if (isMoving)
@@ -181,7 +181,7 @@ void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
 		followCamera->SetYaw(yaw);
 	targetAngle = yaw;
 	if(controls)
-		controls->camera[1] = yaw;
+		controls->camera[1] = yaw * 100.0f;
 
 	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(yaw);
 }
