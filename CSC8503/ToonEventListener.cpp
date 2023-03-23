@@ -53,11 +53,16 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                         if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
                         {
                             std::map<int, Team*> teams = gameWorld->GetTeams();
-                            levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
-                            teamColourPicker = (teamColourPicker + 1) % 4;
+                            HitSphere* hitSphere = levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
 
 
                             //levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+
+                            // If the server also add to list
+                            if (gameWorld->GetNetworkStatus() == NetworkingStatus::Server)
+                                server->AddHitsphereImpact(hitSphere, i->GetImpactSize(), teamColourPicker + 1);
+
+                            teamColourPicker = (teamColourPicker + 1) % 4;
                         }
 
 
@@ -71,32 +76,30 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             }
         }
 
-        // Check if collision involves HitSpheres 
-        for (HitSphere* i : gameWorld->GetHitSpheres()) {
-            if (i == body1 || i == body2) {
-                for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
-                    if (p == body1 || p == body2) {
-                        Vector3 localPosition;
-                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
-                            p->GetRigidbody()->getTransform().getPosition());
-                        if (dynamic_cast<PaintableObject*>(p)) {
-                            PaintableObject* object = (PaintableObject*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+        // Client hitspheres are for the map only!
+        if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+            // Check if collision involves HitSpheres 
+            for (HitSphere* i : gameWorld->GetHitSpheres()) {
+                if (i == body1 || i == body2) {
+                    for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
+                        if (p == body1 || p == body2) {
+                            Vector3 localPosition;
+                            localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
+                                p->GetRigidbody()->getTransform().getPosition());
+                            if (dynamic_cast<PaintableObject*>(p)) {
+                                PaintableObject* object = (PaintableObject*)p;
+                                object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                            }
+                            else {
+                                Player* object = (Player*)p;
+                                object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                            }
+                            if (server)
+                                server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                         }
-                        else {
-                            Player* object = (Player*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
-                        }
-                        if (server)
-                            server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }
                 }
             }
-        }
-      
-            
-    
-        
     }
     for (HitSphere* i : gameWorld->GetHitSpheres()) {
         if ((i->CheckDelete() && i->CheckDrawn()) /*||*/ ) {

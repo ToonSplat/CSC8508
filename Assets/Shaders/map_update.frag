@@ -31,8 +31,6 @@ void main(void)
 
 	vec4 previousColour = texture(mapTex, uv.xy);
 
-
-	if (previousColour == vec4(1.0,1.0,1.0, 1.0)) discard;
 	
 	fragColor = vec4(objectColour, 1.0);
 

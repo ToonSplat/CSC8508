@@ -91,6 +91,7 @@ void ToonGame::StartGame() {
 		world->SetMainCamera(1, new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
+	renderer->ResetAtomicBuffer();
 	accumulator = 0.0f;
 }
 
@@ -144,7 +145,6 @@ PushdownState::PushdownResult ToonGame::OnUpdate(float dt, PushdownState** newSt
 	if (m_ShouldQuitGame)
 	{
 		world->MapNeedsChecking(true);
-		renderer->ResetAtomicBuffer();
 		ToonDebugManager::Instance().SetGameWorld(nullptr);
 		return PushdownResult::Pop;
 	}
@@ -228,7 +228,6 @@ void ToonGame::UpdateTime(float dt) {
 			winner = DetermineWinner(renderer->GetTeamScores());
 		}
 		if (gameTime <= -5.0f && offline == true) {
-			renderer->ResetAtomicBuffer();
 			StartGame();
 		}
 	}
