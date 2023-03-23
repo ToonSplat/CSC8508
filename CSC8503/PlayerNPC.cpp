@@ -7,6 +7,8 @@
 using namespace NCL;
 using namespace CSC8503;
 
+float PlayerNPC::AI_SHOOT_SPEED = 0.33f;
+
 PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : Player(RP3D_World, gameWorld, team)
 {
 	allowInput = true;
@@ -65,7 +67,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 			UpdateMovementAnimations();
 
-			if (canShoot) weapon.NPCUpdate(dt);
+			if (canShoot) 
+				weapon.NPCUpdate(dt * AI_SHOOT_SPEED);
 		});
 
 	stateShooting = new State([&](float dt)->void
@@ -172,7 +175,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 						canShoot = true;
 				}
 
-				if (canShoot) weapon.NPCUpdate(dt);
+				if (canShoot) 
+					weapon.NPCUpdate(dt * AI_SHOOT_SPEED);
 
 				if (ToonDebugManager::Instance().GetAIPathDebugStatus())
 				{

@@ -19,20 +19,24 @@ public:
 
 	virtual void Update(float dt) override;
 
+	static void SetAIShootSpeed(float shootMult) { 
+		AI_SHOOT_SPEED = shootMult; 
+	}
+
 protected:
 	inline float GetRandomJumpTime();
 
 	inline float GetRandomRotation();
 	inline float GetRandomRotationTime();
 
-	void GetPath(const Vector3& from, const Vector3& to);
-	void MoveTowards(const Vector3& targetPos, const float& dt);
+	void GetPath(const Maths::Vector3& from, const Maths::Vector3& to);
+	void MoveTowards(const Maths::Vector3& targetPos, const float& dt);
 
 	bool IsStuck(const float& dt);
 	bool CanJump();
 	bool IsOverNode();
 
-	inline Vector3 CalcJumpForce();
+	inline Maths::Vector3 CalcJumpForce();
 
 	float idleTimerCurrent;
 	float idleTimerMax;
@@ -99,4 +103,6 @@ protected:
 	Player* targetPlayerTemp;
 
 	std::vector<NavPathNode*> pathNodesList;
+
+	static float AI_SHOOT_SPEED;
 };

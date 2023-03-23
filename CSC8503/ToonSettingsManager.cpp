@@ -3,6 +3,7 @@
 #include "BaseInput.h"
 #include "ToonGameSettings.h"
 #include "GameTechRenderer.h"
+#include "PlayerNPC.h"
 
 GameTechRenderer* NCL::CSC8503::ToonSettingsManager::renderer = nullptr;
 
@@ -35,12 +36,15 @@ void ToonSettingsManager::ApplySettings() {
 		else if (result[0] == CROSSHAIR_STRING) {
 			renderer->m_EnableDynamicCrosshair = result[1] == "1";
 		}
+		else if (result[0] == VSYNC_STRING) {
+			renderer->SetVerticalSync(result[1] == "0" ? VerticalSyncState::VSync_OFF : VerticalSyncState::VSync_ON);
+		}
+		else if (result[0] == DIFFICULTY_STRING) {
+			PlayerNPC::SetAIShootSpeed(result[1] == "0" ? 0.33f : 1.0f);
+		}
 		else if (result[0] == VOLUME_SLIDER_STRING) {
 			std::string volumeString = result[1].empty() ? "10" : result[1];
 			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(volumeString) / 10.0f);
-		}
-		else if (result[0] == VSYNC_STRING) {
-			renderer->SetVerticalSync(result[1] == "0" ? VerticalSyncState::VSync_OFF : VerticalSyncState::VSync_ON);
 		}
 		else if (result[0] == FOV_SLIDER_STRING) {
 			InputManager::GetInstance().SetFOV(stoi(result[1]));

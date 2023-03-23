@@ -14,9 +14,10 @@
 #define SHADOW_STRING		  "Shadow"
 #define WINDOW_SIZE_STRING	  "WindowSize"
 #define CROSSHAIR_STRING	  "Dynamic CrossHair"
-#define VOLUME_SLIDER_STRING  "Volume"
 #define VSYNC_STRING		  "Vsync"
-#define FOV_SLIDER_STRING	 "FOV"
+#define DIFFICULTY_STRING	  "Difficulty"
+#define VOLUME_SLIDER_STRING  "Volume"
+#define FOV_SLIDER_STRING	  "FOV"
 //#define AIM_TRAJECTORY_STRING "Aim Trajectory"
 
 using namespace NCL;
@@ -31,6 +32,7 @@ class ToonGameSettings : public PushdownState
 		//WindowSize,
 		Crosshair,
 		Vsync,
+		Difficulty,
 		//AimTrajectory,
 		VolumeSlider,
 		FieldOfViewSlider,
@@ -82,9 +84,10 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates crosshairState	  = ToggleButtonStates::ToggleOn;
 		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOn;
 		ToggleButtonStates aimTrajectoryState = ToggleButtonStates::ToggleOff;
+		ToggleButtonStates aiDiffuclty		  = ToggleButtonStates::ToggleOff;
 		std::string		   windowSize		  = "";
-		std::string		   volume			 = "7";
-		std::string		   fov				 = "50";
+		std::string		   volume			  = "7";
+		std::string		   fov				  = "50";
 
 		std::unordered_map<std::string, std::string> SeperateComponents(const std::string& dataString, char delimiter = ':')
 		{
@@ -124,9 +127,10 @@ class ToonGameSettings : public PushdownState
 				else if (it.first == CROSSHAIR_STRING)	    { crosshairState	 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == WINDOW_SIZE_STRING)    { windowSize		 = it.second; }
 				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
+				else if (it.first == DIFFICULTY_STRING)		{ aiDiffuclty		 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				//else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
-				else if (it.first == FOV_SLIDER_STRING)		{ fov			   = it.second; }
+				else if (it.first == FOV_SLIDER_STRING)		{ fov			     = it.second; }
 			}
 		}
 
@@ -137,6 +141,7 @@ class ToonGameSettings : public PushdownState
 			serializedString			+= CROSSHAIR_STRING + std::string(":") + std::string((crosshairState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			//serializedString			+= WINDOW_SIZE_STRING + std::string(":") + windowSize + std::string("\n");
 			serializedString			+= VSYNC_STRING + std::string(":") + std::string((vSyncState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
+			serializedString			+= DIFFICULTY_STRING + std::string(":") + std::string((aiDiffuclty == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			//serializedString			+= AIM_TRAJECTORY_STRING + std::string(":") + std::string((aimTrajectoryState == ToggleButtonStates::ToggleOff ? "0" : "1")) + std::string("\n");
 			serializedString			+= VOLUME_SLIDER_STRING + std::string(":") + volume + std::string("\n");
 			serializedString			+= FOV_SLIDER_STRING + std::string(":") + fov + std::string("\n");
