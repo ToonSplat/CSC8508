@@ -100,7 +100,9 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 
 	Rendering::TextureBase* texture = GetTexture(name);
 
-	if (texture != nullptr) return texture;
+	if (texture != nullptr)
+		return texture;
+	
 
 	if (invert) {
 		stbi_set_flip_vertically_on_load(true);
@@ -114,6 +116,33 @@ Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const s
 
 	return texture;
 }
+Rendering::TextureBase* ToonAssetManager::AddTexture(const string& name, const string& fileName, int& textureIndex, const bool& invert) {
+
+	Rendering::TextureBase* texture = GetTexture(name);
+
+	if (texture != nullptr) {
+		textureIndex = std::distance(bindlessTextures.begin(), std::find(bindlessTextures.begin(), bindlessTextures.end(), texture));
+		return texture;
+	}
+
+	if (invert) {
+		stbi_set_flip_vertically_on_load(true);
+		texture = TextureLoader::LoadAPITexture(fileName);
+		stbi_set_flip_vertically_on_load(false);
+	}
+	else
+		texture = TextureLoader::LoadAPITexture(name);
+
+	textures.emplace(name, texture);
+	bindlessTextures.push_back(texture);
+
+	
+	textureIndex = std::distance(bindlessTextures.begin(), std::find(bindlessTextures.begin(), bindlessTextures.end(), texture));
+
+	return texture;
+}
+
+
 
 MeshGeometry* ToonAssetManager::GetMesh(const string& name) {
 
@@ -267,6 +296,14 @@ ToonMeshMaterial* NCL::ToonAssetManager::AddMaterial(const string& name, const s
 
 	mat = new ToonMeshMaterial(fileName, subMeshCount);
 	materials.emplace(name, mat);
+
+	int index = gpuMaterials.size();
+	for (auto& material : mat->GetSubMaterials()) {
+		gpuMaterials.push_back(material);
+		
+		mat->AddMaterialIndex(index);
+		index++;
+	}
 
 	return mat;
 }

@@ -11,9 +11,11 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 		for (unsigned int i = 0; i < subMeshCount; i++)
 		{
 			const MeshMaterialEntry* matEntry = material->GetMaterialForLayer(i);
-			LoadTextures("Diffuse", matEntry, texturesDiffuse);
-			LoadTextures("Bump", matEntry, texturesBump);
-			
+			int diffuseIndex = -1;
+			int bumpIndex = -1;
+			LoadTextures("Diffuse", matEntry, texturesDiffuse, diffuseIndex);
+			LoadTextures("Bump", matEntry, texturesBump, bumpIndex);
+			subMeshMaterials.push_back(Vector4(diffuseIndex, bumpIndex, -1, -1));
 #pragma region MOVED TO LoadTextures()
 			/*const std::string* diffuseFileName = nullptr;
 			matEntry->GetEntry("Diffuse", &diffuseFileName);
@@ -55,6 +57,25 @@ void NCL::ToonMeshMaterial::LoadTextures(const std::string& entryName, const Mes
 	{
 		std::string filePath = Assets::TEXTUREDIR + *textureFileName;
 		Rendering::TextureBase* tex = ToonAssetManager::Instance().AddTexture(*textureFileName, filePath, true);
+
+		if (tex != nullptr)
+		{
+			std::cout << "Loaded " << entryName << " texture at path : " << filePath << ", with ID : " << dynamic_cast<Rendering::OGLTexture*>(tex)->GetObjectID() << std::endl;
+			texturesContainer.emplace_back(tex);
+		}
+	}
+}
+
+void NCL::ToonMeshMaterial::LoadTextures(const std::string& entryName, const MeshMaterialEntry* materialEntry, std::vector<Rendering::TextureBase*>& texturesContainer, int& textureIndex)
+{
+	const std::string* textureFileName = nullptr;
+	materialEntry->GetEntry(entryName, &textureFileName);
+	if (textureFileName != nullptr)
+	{
+		std::string filePath = Assets::TEXTUREDIR + *textureFileName;
+		Rendering::TextureBase* tex = ToonAssetManager::Instance().AddTexture(*textureFileName, filePath, textureIndex, true);
+
+		//NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
 
 		if (tex != nullptr)
 		{

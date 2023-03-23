@@ -25,6 +25,7 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
+
 GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 {
 	ToonDebugManager::Instance().StartLoad();
@@ -91,6 +92,8 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
 	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
+	CreateTextureUBO();
+	CreateMaterialUBO();
 	GenerateAtomicBuffer();
 
 	screenAspect = (float)windowWidth / (float)windowHeight;
@@ -1560,8 +1563,53 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	const float height = 5.0f;
 
 	NCL::ToonAssetManager::LoadingDataStructure loadingData = ToonAssetManager::Instance().loadingData;
-
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
 	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
 	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+}
+
+void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
+{
+	int index = 0;
+	std::vector<Rendering::TextureBase*>* texBase = ToonAssetManager::Instance().GetBindlessTextures();
+	for (auto const& tex : *texBase)
+	{
+		
+		NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
+		GLuint64 handler = glGetTextureHandleARB(texture->GetObjectID());
+		glMakeTextureHandleResidentARB(handler);
+		textures.values[index] = handler;
+		index++;
+	}
+
+	glGenBuffers(1, &textureUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, textureUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(textureStruct), textures.values, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "textures");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, textureUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 0);
+}
+
+void GameTechRenderer::CreateMaterialUBO() {
+	int index = 0;
+	for (auto const& mat : *ToonAssetManager::Instance().GetGPUMaterials())
+	{
+		materials.values[index] = mat;
+		index++;
+	}
+
+	glGenBuffers(1, &materialUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, materialUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(materialStruct), &materials, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "materials");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
 }

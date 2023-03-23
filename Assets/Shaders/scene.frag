@@ -1,4 +1,15 @@
 #version 420 core
+#extension GL_ARB_bindless_texture : enable
+
+layout(bindless_sampler) uniform sampler2D bindless;
+uniform textures{
+    sampler2D arr[30];
+} bindless_textures;
+
+layout (std140) uniform materials{
+	vec4 key[100];
+} materialReferencer;
+
 
 struct ImpactPoint{
 	vec3 position;
@@ -21,6 +32,7 @@ layout (std140) uniform lights{
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
+uniform int materialIndex = -1;
 
 uniform vec4 		objectColour;
 layout(binding = 5) uniform sampler2D 	mainTex;
@@ -100,10 +112,24 @@ void main(void)
 	float sFactor = pow ( rFactor , 80.0 );
 
 	vec4 albedo = IN.colour;
-	
-	if(hasTexture) {
-	 albedo *= texture(mainTex, IN.texCoord);
+	//if(hasTexture) {
+	// albedo *= texture(mainTex, IN.texCoord);
+	//}
+
+	if (hasTexture){
+
+		if (materialIndex != -1){
+				vec4 linkedMaterial = materialReferencer.key[materialIndex];
+			//fragColor = vec4(linkedMaterial, 0, 1.0);
+			//return;
+				albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);
+		}
+		else{
+			albedo *= texture(mainTex, IN.texCoord);
+		}
+		
 	}
+	
 
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);

@@ -23,6 +23,14 @@ namespace NCL {
 		
 		class GameTechRenderer : public OGLRenderer	{
 		#define ATOMIC_COUNT 5
+		
+		struct textureStruct {
+			GLuint64 values[30];
+		}textures;
+
+		struct materialStruct {
+			Vector4 values[100];
+		} materials;
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -196,6 +204,12 @@ namespace NCL {
 
 			Camera* currentRenderCamera;
 			float screenAspect;
+
+			unsigned int textureUBO;
+			void CreateTextureUBO();
+
+			unsigned int materialUBO;
+			void CreateMaterialUBO();
 
 			unsigned int lightMatrix;
 		};
