@@ -153,9 +153,9 @@ void ToonGameSettings::PopulateSettingsData()
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 25.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", ToonGameSettings::SettingsScreenStates::Shadow, true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 35.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window", ToonGameSettings::SettingsScreenStates::WindowSize,  false),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 45.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Dynamic Crosshair", ToonGameSettings::SettingsScreenStates::Crosshair, true, Crosshair, m_SettingsDS.crosshairState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 55.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 65.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Vsync", ToonGameSettings::SettingsScreenStates::Vsync, true, Vsync, m_SettingsDS.vSyncState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 75.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Aim Trajectory", ToonGameSettings::SettingsScreenStates::AimTrajectory, true, AimTrajectory, m_SettingsDS.aimTrajectoryState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 55.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Vsync", ToonGameSettings::SettingsScreenStates::Vsync, true, Vsync, m_SettingsDS.vSyncState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 65.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Aim Trajectory", ToonGameSettings::SettingsScreenStates::AimTrajectory, true, AimTrajectory, m_SettingsDS.aimTrajectoryState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 75.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
 						SettingsDataStructure(Coordinates(Vector2(5.0f, 85.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
 					 };
 }
