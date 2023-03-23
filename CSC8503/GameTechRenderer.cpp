@@ -84,6 +84,8 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
 	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
+	sceneScreenShader = ToonAssetManager::Instance().GetShader("sceneScreen");
+	playerShader = ToonAssetManager::Instance().GetShader("animated");
 
 	shadowSize = 2048;
 	GenerateShadowFBO();
@@ -1500,17 +1502,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
-	glGenBuffers(1, &lightMatrix);
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	
-	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
-	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
-}
 
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {
@@ -1588,10 +1580,14 @@ void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "textures");
+	unsigned int uniformBlockIndexSceneScreen = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "textures");
+	unsigned int uniformBlockIndexPlayer = glGetUniformBlockIndex(playerShader->GetProgramID(), "textures");
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 0, textureUBO);
 
 	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 0);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), uniformBlockIndexSceneScreen, 0);
+	glUniformBlockBinding(playerShader->GetProgramID(), uniformBlockIndexPlayer, 0);
 }
 
 void GameTechRenderer::CreateMaterialUBO() {
@@ -1608,8 +1604,28 @@ void GameTechRenderer::CreateMaterialUBO() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "materials");
+	unsigned int uniformBlockIndexSceneScreen = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "materials");
+	unsigned int uniformBlockIndexPlayer = glGetUniformBlockIndex(playerShader->GetProgramID(), "materials");
 
 	glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUBO);
 
 	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), uniformBlockIndexSceneScreen, 1);
+	glUniformBlockBinding(playerShader->GetProgramID(), uniformBlockIndexPlayer, 1);
+}
+
+void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
+	glGenBuffers(1, &lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+	unsigned int sceneScreenIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "lights");
+	unsigned int playerIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "lights");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightMatrix);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 2);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), sceneScreenIndex, 2);
+	glUniformBlockBinding(playerShader->GetProgramID(), playerIndex, 2);
 }
