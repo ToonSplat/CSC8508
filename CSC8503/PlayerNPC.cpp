@@ -1,10 +1,13 @@
 #include "PlayerNPC.h"
 #include "ToonGame.h"
 #include "ToonUtils.h"
+#include "ToonDebugManager.h"
 #include <random>
 
 using namespace NCL;
 using namespace CSC8503;
+
+float PlayerNPC::AI_SHOOT_SPEED = 0.33f;
 
 PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team) : Player(RP3D_World, gameWorld, team)
 {
@@ -64,7 +67,8 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 
 			UpdateMovementAnimations();
 
-			if (canShoot) weapon.NPCUpdate(dt);
+			if (canShoot) 
+				weapon.NPCUpdate(dt * AI_SHOOT_SPEED);
 		});
 
 	stateShooting = new State([&](float dt)->void
@@ -171,11 +175,18 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 						canShoot = true;
 				}
 
-				if (canShoot) weapon.NPCUpdate(dt);
+				if (canShoot) 
+					weapon.NPCUpdate(dt * AI_SHOOT_SPEED);
 
-				/*Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
-				Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
-				Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);*/
+				if (ToonDebugManager::Instance().GetAIPathDebugStatus())
+				{
+					Debug::DrawBox(GetPosition() + Vector3(0, 3.0f, 0), Vector3(0.4f, 0.4f, 0.4f), Debug::CYAN);
+					Debug::DrawBox(pathNodesList[currentNodeIndex]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::GREEN);
+					Debug::DrawBox(pathNodesList[pathNodesList.size() - 1]->position, Vector3(0.4f, 0.4f, 0.4f), Debug::RED);
+
+					for (int i = 1; i < pathNodesList.size(); i++)
+						Debug::DrawLine(pathNodesList[i - 1]->position, pathNodesList[i]->position, Debug::YELLOW);
+				}
 			}			
 
 			UpdateMovementAnimations();	
@@ -196,13 +207,16 @@ PlayerNPC::PlayerNPC(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* ga
 	stateMachine->AddTransition(ShootingToIdle);
 	stateMachine->AddTransition(ShootingToGameEnded);
 
-	targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);	
+	//targetPlayerTemp = gameWorld->GetToonGame()->GetPlayerFromID(1);
+	ToonDebugManager::Instance().isAIPresent = true;
 }
 
 PlayerNPC::~PlayerNPC()
 {
 	delete stateMachine;
 	delete pathGraph;
+
+	ToonDebugManager::Instance().isAIPresent = false;
 }
 
 void PlayerNPC::Update(float dt)
@@ -210,7 +224,8 @@ void PlayerNPC::Update(float dt)
 	ToonGameObjectAnim::Update(dt);
 	stateMachine->Update(dt);	
 	
-	//pathGraph->DrawDebugPathGraph();
+	if (ToonDebugManager::Instance().GetAIPathGraphStatus())
+		pathGraph->DrawDebugPathGraph();
 	/*nearestNode = pathGraph->GetNearestNode(GetPosition());
 	if (nearestNode)
 		Debug::DrawBox(nearestNode->position, Vector3(0.4f, 0.4f, 0.4f), Debug::YELLOW);*/

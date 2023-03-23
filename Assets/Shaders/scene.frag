@@ -34,6 +34,7 @@ uniform vec3 objectPosition;
 
 uniform bool hasTexture;
 uniform bool isDynamic;
+uniform bool isPlayer;
 
 in Vertex
 {
@@ -110,8 +111,8 @@ void main(void)
 
 	for (int i = 0; i < impactPointCount; i++){
 		vec4 localImpactPos = modelMatrix * vec4(impactPoints[i].position, 1.0);
-		float distanceBetween = (isDynamic == true) ? distance(IN.worldPosition.xyz, localImpactPos.xyz) : distance(IN.worldPosition.xyz, impactPoints[i].position + objectPosition);
-		float splat = (isDynamic == true) ? SplatNoise((IN.position)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.worldPosition.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));  
+		float distanceBetween = (isDynamic == true && isPlayer == false) ? distance(IN.worldPosition.xyz, localImpactPos.xyz) : distance(IN.worldPosition.xyz, impactPoints[i].position + objectPosition);
+		float splat = (isDynamic == true && isPlayer == false) ? SplatNoise((IN.position)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.worldPosition.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));  
 		if (distanceBetween <= impactPoints[i].radius - splat){
 			albedo = vec4(impactPoints[i].colour, 1.0); 
 		}

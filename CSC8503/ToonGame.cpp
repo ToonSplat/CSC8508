@@ -91,7 +91,7 @@ void ToonGame::StartGame() {
 				allPlayers.emplace(playerNPC);
 			}
 
-			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? 60.0f : 45.0f));
+			ToonFollowCamera* followCamera = new ToonFollowCamera(world, player, (localPlayerCount > 1 ? InputManager::GetInstance().GetFOV() + 10.0f : InputManager::GetInstance().GetFOV()));
 			world->SetMainCamera(i, followCamera);
 			player->SyncCamerasToSpawn(followCamera, playerControls[i]);
 		}
@@ -119,14 +119,15 @@ void ToonGame::UpdateGame(float dt) {
 			}
 			else {
 				player->SetAiming(playerControls[id]->aiming);
+				if(playerControls[id]->aiming) { player->GetWeapon().UpdateTrajectory(dt, playerControls[id]); }
+				else if (!playerControls[id]->aiming) { player->GetWeapon().HideTrajectory(); }
+				
 			}
 		}
 	}
 
 	if (NetworkingStatus::Server)
 		UpdateCameras(dt, 1);
-
-	//UpdateAnimations(dt);
 
 	UpdatePhysics(dt);
 
@@ -219,7 +220,7 @@ void ToonGame::UpdateCameras(float dt, int localPlayer) {
 }
 
 void ToonGame::UpdatePhysics(float dt) {
-	ToonDebugManager::Instance().StartPhysics();
+	ToonDebugManager::Instance().StartTimeCount("Physics");
 	accumulator += dt;
 	while (accumulator >= timeStep)
 	{
@@ -228,15 +229,7 @@ void ToonGame::UpdatePhysics(float dt) {
 		world->DeleteMarkedObjects();
 	}
 	world->interpolationFactor = float(accumulator / timeStep);
-	ToonDebugManager::Instance().EndPhysics();	
-}
-
-void ToonGame::UpdateAnimations(float dt) {
-	ToonDebugManager::Instance().StartAnimation();
-	/*for (auto& player : allPlayers) {
-		player->AnimationUpdate(dt);
-	}*/
-	ToonDebugManager::Instance().EndAnimation();
+	ToonDebugManager::Instance().EndTimeCount("Physics");
 }
 
 void ToonGame::UpdateTime(float dt) {

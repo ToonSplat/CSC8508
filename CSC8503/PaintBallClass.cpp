@@ -106,7 +106,7 @@ bool PaintBallClass::Update(float dt, PlayerControl* playerControls)
 		case isFiring:
 				if (gameWorld->GetNetworkStatus() == NetworkingStatus::Offline) {					
 					Vector3 position, orientation;
-					CalculateBulletPositionOrientation(playerControls->camera[0], position, orientation);
+					CalculateBulletPositionOrientation(playerControls->camera[0] / 72.0f, position, orientation);
 					FireBullet(ToonUtils::ConvertToRP3DVector3(position), ToonUtils::ConvertToRP3DVector3(orientation));
 				}
 				return true;
@@ -172,6 +172,39 @@ void NCL::CSC8503::PaintBallClass::NPCUpdate(float dt)
 //		bullet[i]->SetPosition(position.x, position.y, position.z);
 //	}
 //}
+void NCL::CSC8503::PaintBallClass::UpdateTrajectory(float dt, PlayerControl* playerControls)
+{
+	const float PAINTBALL_RADIUS		= 0.1f;
+	const float PAINTBALL_IMPACT_RADIUS = 2.5f;
+	reactphysics3d::Vector3 orientation = owningObject->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3((reactphysics3d::decimal((playerControls->camera[0] / 72.0f) + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f);
+	orientation.normalize();
+	reactphysics3d::Vector3 dirOri = orientation;
+	dirOri.y = 0;
+	dirOri.normalize();
+	reactphysics3d::Vector3 position = owningObject->GetRigidbody()->getTransform().getPosition() + dirOri * reactphysics3d::decimal(3) + reactphysics3d::Vector3(0, reactphysics3d::decimal(owningObject->GetScale().y * 1.5), 0);
+	reactphysics3d::Vector3 velocity = orientation * (m_ForceAppliedOnPaintBall * 0.1625f);
+	float flightDurartion = (2 * velocity.y) / -gameWorld->GetPhysicsWorld().getGravity().y;
+	float singlePointTime = 0.08f;//flightDurartion / trajectoryPoints;	//Hardcoding it so that singlePointTime don't become 0, due to flightDuration
+
+	for (int i = 0; i < trajectoryPoints; i++)
+	{
+		float deltaTime = singlePointTime * i;
+		float x			= velocity.x * deltaTime;
+		float y			= velocity.y * deltaTime - (0.5f * -gameWorld->GetPhysicsWorld().getGravity().y * deltaTime * deltaTime);
+		float z			= velocity.z * deltaTime;
+
+		if (!bullet[i])
+		{
+			bullet[i] = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team, "NoShadow");
+			bullet[i]->GetRigidbody()->setIsActive(false);
+			bullet[i]->GetRigidbody()->enableGravity(true);
+		}
+		bullet[i]->SetPosition(position.x + x, position.y + y, position.z + z);
+		Vector4 trajectoryBallColour = team->GetTeamColour();
+		trajectoryBallColour.w = 0.8;
+		bullet[i]->GetRenderObject()->SetColour(trajectoryBallColour);
+	}
+}
 
 void PaintBallClass::HideTrajectory()
 {
@@ -221,5 +254,5 @@ void PaintBallClass::FireBullet(reactphysics3d::Vector3 position, reactphysics3d
 
 	PaintBallProjectile* bullet = levelManager->AddPaintBallProjectileToWorld(position, orientation, PAINTBALL_RADIUS, PAINTBALL_IMPACT_RADIUS, team);
 	//bullet->GetRigidbody()->setLinearVelocity(ToonUtils::ConvertToRP3DVector3(bulletVelocity));
-	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * 400.0f); // TODO: The force can maybe be applied better
+	bullet->GetRigidbody()->applyWorldForceAtCenterOfMass(orientation * m_ForceAppliedOnPaintBall); // TODO: The force can maybe be applied better
 }

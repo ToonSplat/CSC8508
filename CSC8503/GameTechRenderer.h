@@ -80,7 +80,7 @@ namespace NCL {
 
 			void DrawMap();
 
-			void DrawMainScene(int id = -1);
+			void DrawMainScene(int id = 1);
 
 			void RenderRectical(int id = -1);
 			CrosshairStruct crosshairs[4];
@@ -94,7 +94,7 @@ namespace NCL {
 
 			ToonGameWorld*	gameWorld = nullptr;
 
-			void BuildObjectList();
+			void BuildObjectList(int index = 0);
 			void SortObjectList();
 			void RenderShadowMap();
 

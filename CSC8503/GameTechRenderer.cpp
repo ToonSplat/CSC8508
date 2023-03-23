@@ -16,6 +16,7 @@
 #include "ToonGame.h"
 #include "ToonNetworkedGame.h"
 #include "Player.h"
+#include "ToonGame.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
@@ -27,32 +28,9 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
-{
-	ToonDebugManager::Instance().StartLoad();
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
 
-	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
-	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
-	crosshairs[2].pos = Vector3(-0.04f, 0.0f, 0.0f);		//Left
-	crosshairs[3].pos = Vector3(0.04f, 0.0f, 0.0f);			//Right
-
-	/*crosshairs[0].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[1].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[2].rot = Vector3(0.0f, 0.0f, 0.0f);
-	crosshairs[3].rot = Vector3(0.0f, 0.0f, 0.0f);*/
-
-	crosshairs[0].rot = 0.0f;
-	crosshairs[1].rot = 180.0f;
-	crosshairs[2].rot = 90.0f;
-	crosshairs[3].rot = -90.0f;
-
-	crosshairs[0].scale = Vector3(0.08f, 0.025f, 1.0f);
-	crosshairs[1].scale = Vector3(0.08f, 0.025f, 1.0f);
-	crosshairs[2].scale = Vector3(0.15f, 0.015f, 1.0f);
-	crosshairs[3].scale = Vector3(0.15f, 0.015f, 1.0f);
-
-	crosshairSpreadFactor = 1.0f;
-	
+	ToonDebugManager::Instance().StartTimeCount("Loading");
 	SetupLoadingScreen();
 
 	while (ToonAssetManager::Instance().AreAssetsRemaining()) {
@@ -60,7 +38,7 @@ GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
 		ToonAssetManager::Instance().LoadNextAsset();
 	}
 
-	ToonDebugManager::Instance().EndLoad();
+	ToonDebugManager::Instance().EndTimeCount("Loading");
 
 	SetupMain();
 }
@@ -190,10 +168,32 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	team2Percentage = 0;
 	team3Percentage = 0;
 	team4Percentage = 0;
+
+	crosshairs[0].pos = Vector3(0.0f, 0.075f, 0.0f);		//Top
+	crosshairs[1].pos = Vector3(0.0f, -0.075f, 0.0f);		//Bottom
+	crosshairs[2].pos = Vector3(-0.04f, 0.0f, 0.0f);		//Left
+	crosshairs[3].pos = Vector3(0.04f, 0.0f, 0.0f);			//Right
+
+	/*crosshairs[0].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[1].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[2].rot = Vector3(0.0f, 0.0f, 0.0f);
+	crosshairs[3].rot = Vector3(0.0f, 0.0f, 0.0f);*/
+
+	crosshairs[0].rot = 0.0f;
+	crosshairs[1].rot = 180.0f;
+	crosshairs[2].rot = 90.0f;
+	crosshairs[3].rot = -90.0f;
+
+	crosshairs[0].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[1].scale = Vector3(0.08f, 0.025f, 1.0f);
+	crosshairs[2].scale = Vector3(0.15f, 0.015f, 1.0f);
+	crosshairs[3].scale = Vector3(0.15f, 0.015f, 1.0f);
+
+	crosshairSpreadFactor = 1.0f;
 }
 
 void GameTechRenderer::RenderFrame() {
-	ToonDebugManager::Instance().StartRendering();
+	ToonDebugManager::Instance().StartTimeCount("Rendering");
 	if (!gameWorld) return; // Safety Check
 	
 	UpdateLightColour();
@@ -212,10 +212,10 @@ void GameTechRenderer::RenderFrame() {
 
 	DrawMap();
 	PresentScene();
-
+  
 	if (displayDebug) RenderImGUI();
 
-	ToonDebugManager::Instance().EndRendering();
+	ToonDebugManager::Instance().EndTimeCount("Rendering");
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
@@ -223,7 +223,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	glEnable(GL_CULL_FACE);
 	glClearColor(1, 1, 1, 1);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	BuildObjectList();
+	BuildObjectList(id);
 	RenderShadowMap();
 	RenderSkybox();
 	RenderScene();
@@ -255,39 +255,43 @@ void GameTechRenderer::RenderRectical(int id)
 	{
 		teamColor = Vector4(player->GetTeam()->GetTeamColour(), 1.0f);
 		if(m_EnableDynamicCrosshair) crosshairSpreadFactor = player->GetCrosshairSpreadFactor();
+		player->m_ShowTrajectory = !m_EnableDynamicCrosshair;
 	}
 
-	glUniform1i(discardWhiteLoc, 0);
-	glUniform4fv(colourLoc, 1, (float*)teamColor.array);
-
-	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	glStencilFunc(GL_EQUAL, 2, ~0);
-	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-	glEnable(GL_BLEND);
-	glDisable(GL_DEPTH_TEST);
-
-	Matrix4 minimapModelMatrix;
-	BindMesh(squareQuad);
-	for (int i = 0; i < 4; i++)
+	if (m_EnableDynamicCrosshair)
 	{
-		//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
-		minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor * 0.75f) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale * 0.75f);
+		glUniform1i(discardWhiteLoc, 0);
+		glUniform4fv(colourLoc, 1, (float*)teamColor.array);
+
+		glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+		glStencilFunc(GL_EQUAL, 2, ~0);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+		glEnable(GL_BLEND);
+		glDisable(GL_DEPTH_TEST);
+
+		Matrix4 minimapModelMatrix;
+		BindMesh(squareQuad);
+		for (int i = 0; i < 4; i++)
+		{
+			//Matrix4 rot = Matrix4::Rotation(crosshairRot[i].x, Vector3(1, 0, 0)) * Matrix4::Rotation(crosshairRot[i].y, Vector3(0, 1, 0)) * Matrix4::Rotation(crosshairRot[i].z, Vector3(0, 0, 1));
+			minimapModelMatrix = Matrix4::Translation(crosshairs[i].pos * crosshairSpreadFactor * 0.75f) * Matrix4::Rotation(crosshairs[i].rot, Vector3(0, 0, 1)) * Matrix4::Scale(crosshairs[i].scale * 0.75f);
+			glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+
+		BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair_circle"), "diffuseTex", 0);
+		minimapModelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.02f, 0.02f, 1.0f));
 		glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+		glDisable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+		glDisable(GL_STENCIL_TEST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		glUniform1i(discardWhiteLoc, 1);
+		glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 	}
-
-	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair_circle"), "diffuseTex", 0);
-	minimapModelMatrix = Matrix4::Translation(Vector3(0.0f, 0.0f, 0.0f)) * Matrix4::Scale(Vector3(0.02f, 0.02f, 1.0f));
-	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glDisable(GL_STENCIL_TEST);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glUniform1i(discardWhiteLoc, 1);
-	glUniform4fv(colourLoc, 1, (float*)colorWhite.array);
 }
 
 void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
@@ -459,9 +463,6 @@ void GameTechRenderer::RenderScene() {
 
 			cameraLocation = glGetUniformLocation(shader->GetProgramID(), "cameraPos");
 
-			//Vector3 camPos = gameWorld->GetMainCamera()->GetPosition();
-			//glUniform3fv(cameraLocation, 1, camPos.array);
-
 			glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
 			glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
 
@@ -498,6 +499,10 @@ void GameTechRenderer::RenderScene() {
 		int dynamicLocation = glGetUniformLocation(shader->GetProgramID(), "isDynamic");
 		bool isDynamic = ((*i).GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) ? true : false;
 		glUniform1i(dynamicLocation, isDynamic);
+
+		int playerLocation = glGetUniformLocation(shader->GetProgramID(), "isPlayer");
+		bool isPlayer = dynamic_cast<Player*>(i);
+		glUniform1i(playerLocation, isPlayer);
 
 		(*i).Draw(*this);
 	}
@@ -545,6 +550,13 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	glBindFramebuffer(GL_FRAMEBUFFER, *currentFBO);
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 	currentRenderCamera = gameWorld->GetMainCamera(1);
+	
+	int teamId = 1;
+	if (gameWorld->GetToonGame() && gameWorld->GetToonGame()->GetPlayerFromID(1) && gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam())
+	{
+		teamId = gameWorld->GetToonGame()->GetPlayerFromID(1)->GetTeam()->GetTeamID();
+	}
+	 
 	DrawMainScene(1);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	DrawMinimap();
@@ -806,6 +818,7 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto& i : activeObjects)
 	{
+		if (i->GetName() == "NoShadow") { continue; }
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;
 		glUniformMatrix4fv(mvpLocation, 1, false, (float*)&mvpMatrix);
@@ -1065,15 +1078,29 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 			ImGui::BeginTable("Memory Usage Table", 2);
 
 			ImGui::TableNextColumn();
+			ImGui::Text("Virtual Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+
+			ImGui::TableNextColumn();
+
 			ImGui::Text("Virtual Memory");
 			ImGui::TableNextColumn();
 			ImGui::Text(ToonDebugManager::Instance().GetVirtualMemoryUsage().c_str());
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Virtual Memory By Program");
+			ImGui::Text("Total Virtual Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetVirutalUsageByProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalVirtualMemory().c_str());
+
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+			ImGui::TableNextColumn();
+
+			ImGui::Text("Physcial Memory By Program");
+			ImGui::TableNextColumn();
+			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
 
 			ImGui::TableNextColumn();
 
@@ -1083,9 +1110,9 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::TableNextColumn();
 
-			ImGui::Text("Physcial Memory By Program");
+			ImGui::Text("Total Physcial Memory");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicalUsagebyProgram().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTotalPhysicalMemory().c_str());
 
 			ImGui::EndTable();
 
@@ -1097,39 +1124,51 @@ void NCL::CSC8503::GameTechRenderer::RenderImGUI()
 
 			ImGui::Text("Load Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetLoadTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Loading").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Frame Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetFrameTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Frame").c_str());
 			ImGui::TableNextColumn();
 
 
 			ImGui::Text("Audio Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAudioTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Audio").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Networking Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetNetworkingTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Networking").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Physics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetPhysicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Physics").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Animation Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetAnimationTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Animation").c_str());
 			ImGui::TableNextColumn();
 
 			ImGui::Text("Graphics Time");
 			ImGui::TableNextColumn();
-			ImGui::Text(ToonDebugManager::Instance().GetGraphicsTimeTaken().c_str());
+			ImGui::Text(ToonDebugManager::Instance().GetTimeTaken("Rendering").c_str());
 			ImGui::EndTable();
+		}
+
+		if (ToonDebugManager::Instance().isAIPresent)
+		{
+			if (ImGui::CollapsingHeader("AI"))
+			{
+				bool showGraph = ToonDebugManager::Instance().GetAIPathGraphStatus();
+				bool pathDebug = ToonDebugManager::Instance().GetAIPathDebugStatus();
+
+				if (ImGui::Checkbox("Show AI Path", (bool*)&pathDebug)) ToonDebugManager::Instance().SetAIPathDebugStatus(pathDebug);
+				if (ImGui::Checkbox("Show Path Graph", (bool*)&showGraph)) ToonDebugManager::Instance().SetAIPathGraphStatus(showGraph);
+			}
 		}
 	}
 	ImGui::End();
@@ -1154,7 +1193,7 @@ void GameTechRenderer::UpdateLightColour() {
 		sceneLight.lightColour = teamColours[3] * (1 - percentageScale);
 		break;
 	case 5:
-		sceneLight.lightColour = defaultColour;
+		sceneLight.lightColour = Vector4(0.8f, 0.8f, 0.5f, 1.0f);
 		break;
 	default:
 		break;
@@ -1164,7 +1203,7 @@ void GameTechRenderer::UpdateLightColour() {
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void GameTechRenderer::BuildObjectList() {
+void GameTechRenderer::BuildObjectList(int index) {
 	activeObjects.clear();
 
 	gameWorld->OperateOnContents(
@@ -1172,6 +1211,10 @@ void GameTechRenderer::BuildObjectList() {
 		{
 			if (o->IsActive()) 
 			{
+				PaintBallProjectile* obj = dynamic_cast<PaintBallProjectile*>(o);
+				if (obj && gameWorld && obj->GetName() == "NoShadow" && gameWorld->GetToonGame()->GetPlayerFromID(index) && gameWorld->GetToonGame()->GetPlayerFromID(index)->GetTeam() != obj->GetTeam())
+					return;
+				
 				o->CalculateModelMatrix();
 				activeObjects.emplace_back(o);
 			}

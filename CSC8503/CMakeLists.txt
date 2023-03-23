@@ -34,6 +34,7 @@ set(Header_Files
     "NavPathNode.h"
     "NavPathFinder.h"
     "NavPathGraphLevel.h"
+    "ToonSlider.h"
 )
 source_group("Header Files" FILES ${Header_Files})
 
@@ -131,6 +132,7 @@ set(Menu_Files
     "ToonToggleButton.cpp"
     "ToonFileHandling.cpp"
     "ToonCredits.cpp"
+    "ToonSlider.cpp"
 )
 source_group("Menu Files" FILES ${Menu_Files})
 
