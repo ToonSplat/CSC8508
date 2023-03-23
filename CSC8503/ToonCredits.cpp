@@ -58,7 +58,7 @@ void ToonCredits::ParseData()
 
 void ToonCredits::DisplayText()
 {
-	const float TEXT_SIZE = 18.0f;
+	const float TEXT_SIZE = 16.0f;
 	float initialVerticalPosition = 10.0f;
 	for (std::string str : m_DisplayTextVector)
 	{

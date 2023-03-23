@@ -85,8 +85,7 @@ class ToonGameSettings : public PushdownState
 		ToggleButtonStates vSyncState		  = ToggleButtonStates::ToggleOn;
 		ToggleButtonStates aimTrajectoryState = ToggleButtonStates::ToggleOff;
 		ToggleButtonStates aiDiffuclty		  = ToggleButtonStates::ToggleOff;
-    ToggleButtonStates windowSize = ToggleButtonStates::ToggleOff;
-		std::string		   windowSize		  = "";
+		ToggleButtonStates windowSize = ToggleButtonStates::ToggleOff;
 		std::string		   volume			  = "7";
 		std::string		   fov				  = "50";
 
@@ -126,10 +125,10 @@ class ToonGameSettings : public PushdownState
 				if		(it.first == INVERT_CAMERA_STRING)  { invertCameraState  = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == SHADOW_STRING)		    { shadowState	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == CROSSHAIR_STRING)	    { crosshairState	 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
-				else if (it.first == WINDOW_SIZE_STRING)    { windowSize		 = it.second; }
+				else if (it.first == WINDOW_SIZE_STRING)    { windowSize		 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VSYNC_STRING)		    { vSyncState  	     = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == DIFFICULTY_STRING)		{ aiDiffuclty		 = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
-        else if (it.first == WINDOW_SIZE_STRING)   { windowSize		   = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff;
+				else if (it.first == WINDOW_SIZE_STRING)	{ windowSize = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				//else if (it.first == AIM_TRAJECTORY_STRING) { aimTrajectoryState = it.second == "1" ? ToggleButtonStates::ToggleOn : ToggleButtonStates::ToggleOff; }
 				else if (it.first == VOLUME_SLIDER_STRING)  { volume			 = it.second; }
 				else if (it.first == FOV_SLIDER_STRING)		{ fov			     = it.second; }

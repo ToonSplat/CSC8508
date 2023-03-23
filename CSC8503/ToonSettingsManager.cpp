@@ -42,6 +42,9 @@ void ToonSettingsManager::ApplySettings() {
 		else if (result[0] == DIFFICULTY_STRING) {
 			PlayerNPC::SetAIShootSpeed(result[1] == "0" ? 0.33f : 1.0f);
 		}
+		else if (result[0] == WINDOW_SIZE_STRING) {
+			//Window::GetWindow()->SetFullScreen(result[1] == "1"); //TODO: This messes with GetMouseLocation
+		}
 		else if (result[0] == VOLUME_SLIDER_STRING) {
 			std::string volumeString = result[1].empty() ? "10" : result[1];
 			AudioSystem::GetAudioSystem()->SetMasterVolume(stoi(volumeString) / 10.0f);
