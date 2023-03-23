@@ -7,7 +7,7 @@ uniform textures{
 } bindless_textures;
 
 layout (std140) uniform materials{
-	vec2 key[100];
+	vec4 key[100];
 } materialReferencer;
 
 struct ImpactPoint{
@@ -93,7 +93,7 @@ void main(void)
 	//if(hasTexture) {
 	// albedo *= texture(mainTex, IN.texCoord);
 	//}
-	vec2 linkedMaterial = materialReferencer.key[materialIndex];
+	vec4 linkedMaterial = materialReferencer.key[materialIndex];
 	//fragColor = vec4(linkedMaterial, 0, 1.0);
 	//return;
 	albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);

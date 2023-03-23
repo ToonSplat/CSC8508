@@ -1484,7 +1484,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
 {
 	int index = 0;
-	std::vector<const Rendering::TextureBase*> texBase = ToonAssetManager::Instance().GetTextures();
+	std::vector<const Rendering::TextureBase*> texBase = ToonAssetManager::Instance().GetBindlessTextures();
 	for (auto const& tex : texBase)
 	{
 		
@@ -1517,7 +1517,7 @@ void GameTechRenderer::CreateMaterialUBO() {
 
 	glGenBuffers(1, &materialUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, materialUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(materialStruct), materials.values, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(materialStruct), &materials, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "materials");

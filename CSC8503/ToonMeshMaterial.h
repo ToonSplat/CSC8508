@@ -13,7 +13,7 @@ namespace NCL
 		std::vector<const Rendering::TextureBase*> GetDiffuseTextures() const { return std::vector<const Rendering::TextureBase*>(texturesDiffuse.begin(), texturesDiffuse.end()); }
 		std::vector<const Rendering::TextureBase*> GetBumpTextures() const { return std::vector<const Rendering::TextureBase*>(texturesBump.begin(), texturesBump.end()); }
 
-		std::vector<Vector2> GetSubMaterials() const { return std::vector<Vector2>(subMeshMaterials.begin(), subMeshMaterials.end()); }
+		std::vector<Vector4> GetSubMaterials() const { return std::vector<Vector4>(subMeshMaterials.begin(), subMeshMaterials.end()); }
 		std::vector<int> GetMaterialIndex() const { return std::vector<int>(materialIndexes.begin(), materialIndexes.end()); }
 
 		void AddMaterialIndex(int index) { materialIndexes.push_back(index); }
@@ -25,7 +25,7 @@ namespace NCL
 		std::vector<Rendering::TextureBase*> texturesDiffuse;
 		std::vector<Rendering::TextureBase*> texturesBump;
 
-		std::vector<Vector2> subMeshMaterials;
+		std::vector<Vector4> subMeshMaterials;
 		std::vector<int> materialIndexes;
 
 		int materialIndex;

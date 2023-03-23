@@ -15,7 +15,7 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 			int bumpIndex = -1;
 			LoadTextures("Diffuse", matEntry, texturesDiffuse, diffuseIndex);
 			LoadTextures("Bump", matEntry, texturesBump, bumpIndex);
-			subMeshMaterials.push_back(Vector2(diffuseIndex, bumpIndex));
+			subMeshMaterials.push_back(Vector4(diffuseIndex, bumpIndex, -1, -1));
 #pragma region MOVED TO LoadTextures()
 			/*const std::string* diffuseFileName = nullptr;
 			matEntry->GetEntry("Diffuse", &diffuseFileName);

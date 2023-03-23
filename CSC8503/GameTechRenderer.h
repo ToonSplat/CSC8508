@@ -20,7 +20,7 @@ namespace NCL {
 		}textures;
 
 		struct materialStruct {
-			Vector2 values[100];
+			Vector4 values[100];
 		} materials;
 		public:
 			GameTechRenderer();		
