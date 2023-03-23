@@ -12,9 +12,8 @@ struct Light{
 	float radius;
 };
 
-#define SCENE_LIGHTS 1
 layout (std140) uniform lights{
-	uniform Light sceneLights[SCENE_LIGHTS];
+	uniform Light sceneLight;
 };
 
 #define MAX_IMPACT_POINTS 300
@@ -27,11 +26,14 @@ layout(binding = 5) uniform sampler2D 	mainTex;
 layout(binding = 6) uniform sampler2D	bumpTex;
 uniform sampler2DShadow shadowTex;
 
+uniform mat4 modelMatrix 	= mat4(1.0f);
+
 uniform vec3	cameraPos;
 
 uniform vec3 objectPosition;
 
 uniform bool hasTexture;
+uniform bool isDynamic;
 
 in Vertex
 {
@@ -42,7 +44,8 @@ in Vertex
 	vec3 tangent;
     vec3 binormal;
 	vec3 worldPos;
-	vec4 localPos;
+	vec4 worldPosition;
+	vec3 position;
 } IN;
 
 out vec4 fragColor;
@@ -90,13 +93,13 @@ void main(void)
 	else{
 		bumpNormal = IN.normal;
 	}
-	vec3  incident = normalize ( sceneLights[0].position - IN.worldPos ); 
+	vec3  incident = normalize ( sceneLight.position - IN.worldPos ); 
 	float lambert  = max (0.0 , dot ( incident , bumpNormal )) * 0.9; 
 	
 	vec3 viewDir = normalize ( cameraPos - IN.worldPos );
 	vec3 halfDir = normalize ( incident + viewDir );
 
-	float rFactor = max (0.0 , dot ( halfDir , bumpNormal));
+	float rFactor = max (0.0 , dot ( halfDir , bumpNormal)); 
 	float sFactor = pow ( rFactor , 80.0 );
 
 	vec4 albedo = IN.colour;
@@ -106,9 +109,11 @@ void main(void)
 	}
 
 	for (int i = 0; i < impactPointCount; i++){
-		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
-			albedo = vec4(impactPoints[i].colour, 1.0);
+		vec4 localImpactPos = modelMatrix * vec4(impactPoints[i].position, 1.0);
+		float distanceBetween = (isDynamic == true) ? distance(IN.worldPosition.xyz, localImpactPos.xyz) : distance(IN.worldPosition.xyz, impactPoints[i].position + objectPosition);
+		float splat = (isDynamic == true) ? SplatNoise((IN.position)*(5+(0.1*(mod(i, 10))))) : SplatNoise((IN.worldPosition.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))));  
+		if (distanceBetween <= impactPoints[i].radius - splat){
+			albedo = vec4(impactPoints[i].colour, 1.0); 
 		}
 	}
 	
@@ -116,9 +121,9 @@ void main(void)
 	
 	fragColor.rgb = albedo.rgb * 0.05f; //ambient
 	
-	fragColor.rgb += albedo.rgb * sceneLights[0].colour.rgb * lambert * shadow; //diffuse light
+	fragColor.rgb += albedo.rgb * sceneLight.colour.rgb * lambert * shadow; //diffuse light 
 	
-	fragColor.rgb += sceneLights[0].colour.rgb * sFactor * shadow * 0.1; //specular // Change once bump-maps are introduced
+	fragColor.rgb += sceneLight.colour.rgb * sFactor * shadow * 0.2f; //specular // Change once bump-maps are introduced 
 	
 	fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / 2.2f));
 	

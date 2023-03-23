@@ -39,8 +39,12 @@ void ToonGameSettings::DrawScreen()
 	for (SettingsDataStructure data : m_SettingsData)
 	{
 		Debug::Print(data.text, data.coordinates.origin, index == m_CurrentSelectedIndex ? m_SelectedColour : m_NonSelectedColour);
-		if (data.hasToggle) { data.toggleButton->UpdateButtonDraw(); }
-		data.toggleButton->m_IsActive = m_CurrentSelectedIndex == index;
+		if (data.hasToggle)
+		{
+			data.toggleButton->UpdateButtonDraw(); 
+			data.toggleButton->m_IsActive = m_CurrentSelectedIndex == index;
+		}
+		else if (data.type == ToonGameSettings::SettingsScreenStates::VolumeSlider) { data.volumeSlider->Update(0.1f); }
 		index++;
 	}
 }
@@ -55,6 +59,8 @@ void ToonGameSettings::UpdateCurrentSelectedIndex(int incrementBy)
 void ToonGameSettings::HandleKeyboardAndMouseEvents()
 {
 	if (InputManager::GetInstance().GetInputs()[1]->IsPushingDown() || InputManager::GetInstance().GetInputs()[1]->IsPushingUp()) { UpdateMosePointerState(false); }
+
+	if (m_CurrentSelectedIndex == SettingsScreenStates::VolumeSlider) { m_SettingsData[ToonGameSettings::SettingsScreenStates::VolumeSlider].volumeSlider->HandleKeyboardAndMouseEvents(); }
 
 	if (!m_IsMousePointerVisible)
 	{
@@ -140,10 +146,12 @@ void ToonGameSettings::PopulateSettingsData()
 	m_SettingsDS.ParseData(fileContent);
 
 	m_SettingsData = {
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Invert Camera",  true, InvertCamera, m_SettingsDS.invertCameraState),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window",  false),
-						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back",		      false)
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 20.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Invert Camera", ToonGameSettings::SettingsScreenStates::InvertCamera, true, InvertCamera, m_SettingsDS.invertCameraState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 30.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Shadow Quality", ToonGameSettings::SettingsScreenStates::Shadow, true, Shadow, m_SettingsDS.shadowState, {"LOW", "HIGH"}),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 40.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Resize Window", ToonGameSettings::SettingsScreenStates::WindowSize,  false),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 50.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Dynamic Crosshair", ToonGameSettings::SettingsScreenStates::Crosshair, true, Crosshair, m_SettingsDS.crosshairState),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 60.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Volume", ToonGameSettings::SettingsScreenStates::VolumeSlider,  m_SettingsDS.volume),
+						SettingsDataStructure(Coordinates(Vector2(5.0f, 70.0f), Vector2(80.0f, 10.0f)), m_Window->GetWindow()->GetScreenSize(), "Back", ToonGameSettings::SettingsScreenStates::SettingsBack, false)
 					 };
 }
 
@@ -161,9 +169,38 @@ void ToonGameSettings::UpdateSettingsFile()
 				case Shadow:
 					m_SettingsDS.shadowState = data.toggleButton->GetButtonState();
 					break;
+				case Crosshair:
+					m_SettingsDS.crosshairState = data.toggleButton->GetButtonState();
+					break;
 			}
 		}
+		if (data.volumeSlider)
+		{
+			m_SettingsDS.volume = GetStringFromInt(data.volumeSlider->GetCurrentVolumeLevel());
+		}
 	}
-	//m_SettingsFile->WriteData(m_SettingsDS.SerializeStructure(), std::ios_base::trunc);
 	m_SettingsFile->WriteData((char*)m_SettingsDS.SerializeStructure().c_str(), std::ios_base::trunc);
+}
+
+std::string ToonGameSettings::GetStringFromInt(int number)
+{
+	std::string numberString = "";
+	int endIndex				 = -1;
+	while (number)
+	{
+		int currDigit  = number % 10;
+		numberString  += ('0' + currDigit);
+		number		  /= 10;
+		endIndex++;
+	}
+	int startIndex = 0;
+	while (startIndex < endIndex)
+	{
+		char digit				 = numberString[startIndex];
+		numberString[startIndex] = numberString[endIndex];
+		numberString[endIndex]	 = digit;
+		startIndex++;
+		endIndex--;
+	}
+	return numberString;
 }

@@ -30,6 +30,9 @@ namespace NCL
 			PushdownState::PushdownResult DidSelectCancelButton() override;
 			PushdownState::PushdownResult DidSelectOkButton() override;
 
+			Player* GetPlayerFromID(const int& id);
+			const std::unordered_set<Player*> GetAllPlayers() { return allPlayers; }
+
 		protected:
 			virtual void StartGame();
 			PushdownResult OnUpdate(float dt, PushdownState** newState) override;

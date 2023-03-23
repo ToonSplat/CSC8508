@@ -40,7 +40,7 @@ Player::Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorl
 
 Player::~Player()
 {
-	team->RemovePlayer();
+	team->RemovePlayer();	
 }
 
 bool Player::WeaponUpdate(float dt, PlayerControl* controls)
@@ -65,23 +65,35 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 		Debug::DrawLine(GetPosition(), GetPosition() + groundDir, Debug::BLUE);*/
 	}
 
+	/*NCL::Maths::Vector3 pos = NCL::Maths::Vector3(0.0f, -8.0f, 0.0f);
+	NCL::Maths::Vector3 pos2 = NCL::Maths::Vector3(0.0f, -5.0f, 0.0f);
+	NCL::Maths::Vector3 dir = (pos - pos2).Normalised();
+	Debug::DrawLine(pos, pos2, Debug::BLUE);
+
+	NCL::Maths::Vector3 dirTo = (pos - GetPosition()).Normalised();
+	std::cout << "Dot: " << NCL::Maths::Vector3::Dot(dirTo, dir) << std::endl;*/
+
+	rigidBody->setLinearDamping(isGrounded ? 5.0f : 0.8f);
+	moveSpeed = isGrounded ? 5000.0f : 1500.0f;
+
 	isMoving = linearMovement.length() >= 0.1f;
 	isAiming = controls->aiming;
-
+	weapon.HideTrajectory();
 	if (isAiming) {
 		targetAngle = controls->camera[1];
+		weapon.UpdateTrajectory(dt, controls);
 	}
 	else if (isMoving)
 		targetAngle = RadiansToDegrees(atan2(-linearMovement.x, -linearMovement.z));
 
 	reactphysics3d::Quaternion newRot = ToonUtils::ConvertToRP3DQuaternion(NCL::Maths::Quaternion::EulerAnglesToQuaternion(0, targetAngle, 0));
-	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (controls->aiming ? aimingSpeed : rotationSpeed) * dt));
+	SetOrientation(reactphysics3d::Quaternion::slerp(ToonUtils::ConvertToRP3DQuaternion(GetOrientation()), newRot, (isAiming ? aimingSpeed : rotationSpeed) * dt));
 
 
 	if (isMoving)
 		rigidBody->applyWorldForceAtCenterOfMass(linearMovement * moveSpeed * dt);
 	if (controls->jumping && isGrounded) {
-		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1000.0f);
+		GetRigidbody()->applyWorldForceAtCenterOfMass(reactphysics3d::Vector3(0, 1, 0) * 1500.0f);
 		controls->jumping = false;
 	}
 
@@ -89,28 +101,13 @@ void Player::MovementUpdate(float dt, PlayerControl* controls) {
 	
 }
 
-void Player::Update(float dt) {
-	
-	/*string pos = std::to_string(GetPosition().x);
-	pos += ", " + std::to_string(GetPosition().y);
-	pos += ", " + std::to_string(GetPosition().z);
-	
-	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);*/
-
-	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
-	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
-	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
-	
-	ToonGameObjectAnim::Update(dt);
+void Player::UpdateMovementAnimations()
+{
 	reactphysics3d::Vector3 linVel = GetRigidbody()->getLinearVelocity();
 	linVel = GetRigidbody()->getTransform().getInverse().getOrientation() * linVel;
 	linVel.y = 0;
 	isMoving = linVel.length() >= 0.5f;
 	linVel.normalize();
-
-	isGrounded = IsGrounded();
-	
-	if (!allowInput) return;
 
 	if (isGrounded)
 	{
@@ -137,7 +134,6 @@ void Player::Update(float dt) {
 				else if (linVel.x < -0.5)
 					PlayAnim("Player_Run_Aim_L");
 				else {
-					std::cout << "How did we get here?\n";
 					PlayAnim("Player_Idle_Aim");
 				}
 			}
@@ -151,7 +147,30 @@ void Player::Update(float dt) {
 		}
 	}
 	else
-		PlayAnim("Player_Jump");
+		PlayAnim("Player_Jump");	
+}
+
+void Player::Update(float dt) {
+	
+	/*string pos = std::to_string(GetPosition().x);
+	pos += ", " + std::to_string(GetPosition().y);
+	pos += ", " + std::to_string(GetPosition().z);
+	
+	Debug::Print(pos, NCL::Maths::Vector2(2, 70), Debug::WHITE);
+	Debug::Print(std::to_string(rigidBody->getLinearVelocity().length()), NCL::Maths::Vector2(2, 60), Debug::WHITE);*/
+
+	/*Debug::DrawLine(GetPosition(), GetPosition() + Up(), Debug::GREEN);
+	Debug::DrawLine(GetPosition(), GetPosition() + Right(), Debug::RED);
+	Debug::DrawLine(GetPosition(), GetPosition() + Forward(), Debug::BLUE);*/
+	
+	ToonGameObjectAnim::Update(dt);
+
+	CalcCrosshairSpread(dt);
+
+	isGrounded = IsGrounded();
+	if (!allowInput) return;
+
+	UpdateMovementAnimations();
 }
 
 void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
@@ -165,6 +184,14 @@ void Player::SyncCamerasToSpawn(Camera* followCamera, PlayerControl* controls)
 		controls->camera[1] = yaw;
 
 	if(gameWorld->GetMinimapCamera() != nullptr) gameWorld->GetMinimapCamera()->SetYaw(yaw);
+}
+
+void Player::CalcCrosshairSpread(float dt)
+{
+	float currentSpread = isMoving ? crosshairSpreadMax : crosshairSpreadMin;
+	currentSpread += weapon.getShootSpread();
+	currentSpread += !isGrounded ? 1.0f : 0.0f;
+	spread = Lerp(spread, currentSpread, dt * 7.5f);
 }
 
 void Player::SetWeapon(PaintBallClass* base) {
