@@ -497,6 +497,10 @@ void GameTechRenderer::RenderScene() {
 		bool isDynamic = ((*i).GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) ? true : false;
 		glUniform1i(dynamicLocation, isDynamic);
 
+		int playerLocation = glGetUniformLocation(shader->GetProgramID(), "isPlayer");
+		bool isPlayer = dynamic_cast<Player*>(i);
+		glUniform1i(playerLocation, isPlayer);
+
 		(*i).Draw(*this);
 	}
 }
