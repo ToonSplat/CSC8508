@@ -92,7 +92,6 @@ namespace NCL {
 
 			void DrawPlayerIcon();
 
-			void DrawMinimap();
 			void DrawScoreBar();
 
 			void CalculatePercentages(const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
@@ -129,9 +128,7 @@ namespace NCL {
 
 			OGLShader*  debugShader;
 			OGLShader*  skyboxShader;
-			OGLShader*	minimapShader;
 			OGLShader*	scoreBarShader;
-			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
 			OGLShader*  mapInitShader;

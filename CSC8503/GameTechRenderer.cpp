@@ -81,11 +81,9 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 {
 	glEnable(GL_DEPTH_TEST);
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
-	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
-	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
 	mapInitShader = ToonAssetManager::Instance().GetShader("map_initial");
 	mapUpdateShader = ToonAssetManager::Instance().GetShader("map_update");
 	sceneScreenShader = ToonAssetManager::Instance().GetShader("sceneScreen");
@@ -555,6 +553,10 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr ) continue;
 
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<Player*>(linkedObject))
+			continue;
+
 		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
 		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
 		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
@@ -568,7 +570,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 
 		glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
 
-		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
+		(*i).Draw(*this, (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
 	}
 
 
