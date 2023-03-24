@@ -49,6 +49,7 @@ namespace NCL {
 
 			void SetupLoadingScreen();
 			void SetupMain();
+			void GenerateQuads();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
@@ -77,6 +78,8 @@ namespace NCL {
 
 			void PresentMinimap();
 
+			void DrawPlayerIcon();
+
 			void DrawMinimap();
 			void DrawScoreBar();
 
@@ -98,7 +101,6 @@ namespace NCL {
 			void SortObjectList();
 			void RenderShadowMap();
 
-			void RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void RenderScene();
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
@@ -160,11 +162,6 @@ namespace NCL {
 			GLuint sceneDepthTexture;
 			void GenerateSceneFBO(int width, int height);
 
-			GLuint minimapFBO;
-			GLuint minimapColourTexture;
-			GLuint minimapDepthTexture;
-			void GenerateMinimapFBO(int width, int height);
-
 			GLuint mapFBO;
 			GLuint mapColourTexture;
 			GLuint mapPositionTexture;
@@ -188,7 +185,6 @@ namespace NCL {
 			
 			
 			GLuint teamPixelCount[TEAM_COUNT];
-			GLuint totalPixelCount;
 			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
@@ -204,7 +200,7 @@ namespace NCL {
 			float team3Percentage;
 			float team4Percentage;
 
-			Vector3 defaultColour = Vector3(1, 0, 0);
+			Vector3 defaultColour = Vector3(0.5, 0.5,0.5);
 
 			Vector3 teamColours[TEAM_COUNT];
 
