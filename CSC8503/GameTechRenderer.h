@@ -20,8 +20,16 @@ namespace NCL {
 		struct ShaderLights {
 			LightStruct data[1];
 		};
+
+		
 		
 		class GameTechRenderer : public OGLRenderer	{
+
+		#define TEAM_COUNT 4
+		struct TeamColourStruct {
+			Vector4 teams[4];
+		} teamColoursShader;
+
 		#define ATOMIC_COUNT 5
 		
 		struct textureStruct {
@@ -31,6 +39,7 @@ namespace NCL {
 		struct materialStruct {
 			Vector4 values[100];
 		} materials;
+
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -42,17 +51,28 @@ namespace NCL {
 			void SetShadowSize(int size) { shadowSize = size; }
 			void GenerateShadowFBO();
 			std::map<int, float> GetTeamScores();
+
+			void ResetAtomicBuffer();
+
+			bool IsMapInitialised() { return mapInitialised; }
+
+			bool mapNeedsDrawing = false;
 		protected:
 
 			void SetupLoadingScreen();
 			void SetupMain();
+			void GenerateQuads();
 			void NewRenderLines();
 			void NewRenderText();
 			void NewRenderLinesOnOrthographicView();
 
 			void RenderFrameLoading();
 			void CreateLightUBO();
+			void CreateTeamColourUBO();
+
+
 			void RenderFrame()	override;
+			void UpdateLighting();
 			void Render2Player();
 			void Render1Player();
 			void Render3or4Player();
@@ -70,13 +90,16 @@ namespace NCL {
 
 			void PresentMinimap();
 
+			void DrawPlayerIcon();
+
 			void DrawMinimap();
 			void DrawScoreBar();
 
-			void CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
+			void CalculatePercentages(const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels);
 			int GetWinningTeam(float& percentage);
 
 			void DrawMap();
+			void UpdateMap();
 
 			void DrawMainScene();
 
@@ -90,7 +113,6 @@ namespace NCL {
 			void SortObjectList();
 			void RenderShadowMap();
 
-			void RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix);
 			void RenderScene();
 			void PassImpactPointDetails(ToonGameObject* const& paintedObject, OGLShader* shader);
 
@@ -112,6 +134,8 @@ namespace NCL {
 			OGLShader*  mapShader;
 			OGLShader*  textureShader;
 			OGLShader*  sceneShader;
+			OGLShader*  mapInitShader;
+			OGLShader* mapUpdateShader;
 			OGLShader*	sceneScreenShader;
 			OGLShader* playerShader;
 
@@ -152,14 +176,9 @@ namespace NCL {
 			GLuint sceneDepthTexture;
 			void GenerateSceneFBO(int width, int height);
 
-			GLuint minimapFBO;
-			GLuint minimapColourTexture;
-			GLuint minimapDepthTexture;
-			void GenerateMinimapFBO(int width, int height);
-
 			GLuint mapFBO;
 			GLuint mapColourTexture;
-			GLuint mapScoreTexture;
+			GLuint mapPositionTexture;
 			GLuint mapDepthTexture;
 			void GenerateMapFBO(int width, int height);
 
@@ -175,12 +194,11 @@ namespace NCL {
 
 			GLuint* currentFBO;
 
-			GLuint atomicsBuffer[3];
+			GLuint atomicsBuffer;
 			void GenerateAtomicBuffer();
-			void ResetAtomicBuffer();
 			
-			GLuint teamPixelCount[ATOMIC_COUNT - 1];
-			GLuint totalPixelCount;
+			
+			GLuint teamPixelCount[TEAM_COUNT];
 			GLuint maxPixelCount;
 
 			OGLMesh* fullScreenQuad;
@@ -189,22 +207,27 @@ namespace NCL {
 
 			OGLMesh* scoreQuad;
 
+			OGLMesh* arrowMesh;
+
 			float team1Percentage;
 			float team2Percentage;
 			float team3Percentage;
 			float team4Percentage;
 
-			Vector3 defaultColour = Vector3(0.5, 0.5, 0.5);
+			Vector3 defaultColour = Vector3(0.5, 0.5,0.5);
 
-			Vector3 teamColours[ATOMIC_COUNT - 1];
+			Vector3 teamColours[TEAM_COUNT];
 
-
-			GLuint currentAtomicCPU;
-			GLuint currentAtomicGPU;
-			GLuint curretAtomicReset;
 
 			Camera* currentRenderCamera;
 			float screenAspect;
+
+			unsigned int lightUBO;
+			unsigned int teamUBO;
+
+			bool mapInitialised = false;
+			bool updateScorebar;
+			
 
 			unsigned int textureUBO;
 			void CreateTextureUBO();
@@ -212,7 +235,6 @@ namespace NCL {
 			unsigned int materialUBO;
 			void CreateMaterialUBO();
 
-			unsigned int lightMatrix;
 		};
 	}
 }

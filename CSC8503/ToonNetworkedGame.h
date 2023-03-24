@@ -24,6 +24,19 @@ namespace NCL {
 			}
 		};
 
+		struct ImpactLocation {
+			int location[3];
+			char radius;
+			char team;
+			ImpactLocation(Vector3 location, float radius, int team) {
+				this->location[0] = (int)(location.x * 100);
+				this->location[1] = (int)(location.y * 100);
+				this->location[2] = (int)(location.z * 100);
+				this->radius = (char)(radius * 10);
+				this->team = team;
+			}
+		};
+
 		class ToonNetworkedGame : public ToonGame, public PacketReceiver {
 		public:
 			ToonNetworkedGame(GameTechRenderer* renderer);
@@ -47,7 +60,9 @@ namespace NCL {
 
 			void ReceivePacket(int type, GamePacket* payload, int source) override;
 
+			void AddHitsphereImpact(ToonGameObject* o, float radius, int teamID);
 			void SendImpactPoint(ImpactPoint point, ToonGameObject* object, int playerID = -1);
+			void SendHitsphereImpact(ImpactLocation location, int playerID = -1);
 
 			void UpdateCall(float dt) override;
 			PushdownState::PushdownResult DidSelectCancelButton() override;
@@ -69,6 +84,7 @@ namespace NCL {
 			int myID;
 			int myState;
 
+			std::vector<ImpactLocation> impactLocations;
 			std::vector<ToonNetworkObject*> networkObjects;
 
 			std::map<int, PlayerDetails> serverPlayers;

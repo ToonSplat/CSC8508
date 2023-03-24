@@ -78,7 +78,6 @@ void ToonGame::StartGame() {
 			allPlayers.emplace(player);
 			playerControls[i] = new PlayerControl();
 			player->SetWeapon(baseWeapon);
-
 			if (localPlayerCount == 1)
 				world->SetMinimapCamera(new ToonMinimapCamera(*player));
 
@@ -92,6 +91,7 @@ void ToonGame::StartGame() {
 		world->SetMainCamera(1, new ToonObserverCamera());
 	}
 	world->SetMapCamera(new ToonMapCamera());
+	renderer->ResetAtomicBuffer();
 	accumulator = 0.0f;
 }
 
@@ -227,8 +227,12 @@ void ToonGame::UpdateTime(float dt) {
 		if (winner == nullptr && offline == true) {
 			winner = DetermineWinner(renderer->GetTeamScores());
 		}
-		if (gameTime <= -5.0f && offline == true)
+		if (gameTime <= -5.0f && offline == true) {
 			StartGame();
+		}
+	}
+	else if (gameTime <= 89.7 && !renderer->IsMapInitialised()) {
+		renderer->mapNeedsDrawing = true;
 	}
 }
 

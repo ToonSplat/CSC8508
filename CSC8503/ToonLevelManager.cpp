@@ -786,6 +786,9 @@ HitSphere* ToonLevelManager::AddHitSphereToWorld(const reactphysics3d::Vector3& 
 	hitSphere->SetPosition(position);
 	hitSphere->GetTransform().SetScale(Vector3(radius, radius, radius));
 
+	hitSphere->SetRenderObject(new ToonRenderObject(&hitSphere->GetTransform(), GetMesh("sphere"), GetTexture("basic"), GetShader("scene")));
+	hitSphere->GetRenderObject()->SetColour(Vector4(team->GetTeamColour(), 1.0f));
+
 	hitSphere->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 
 	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius);

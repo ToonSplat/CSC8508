@@ -13,7 +13,7 @@ layout (std140) uniform materials{
 
 struct ImpactPoint{
 	vec3 position;
-	vec3 colour;
+	int colour;
 	float radius;
 };
 
@@ -28,6 +28,11 @@ layout (std140) uniform lights{
 	uniform Light sceneLights[SCENE_LIGHTS];
 };
 
+#define TEAM_COUNT 4
+layout (std140) uniform teamColours{
+	vec4 teamColour[TEAM_COUNT];
+};
+
 #define MAX_IMPACT_POINTS 300
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
@@ -35,6 +40,8 @@ uniform int impactPointCount;
 uniform int materialIndex = -1;
 
 uniform vec4 		objectColour;
+
+layout(binding = 7) uniform sampler2D 	mapTex;
 
 uniform sampler2DShadow shadowTex;
 
@@ -121,7 +128,7 @@ void main(void)
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
 		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
-			albedo = vec4(impactPoints[i].colour, 1.0);
+			albedo = teamColour[impactPoints[i].colour];
 		}
 	}
 	

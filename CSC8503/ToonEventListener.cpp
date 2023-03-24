@@ -46,12 +46,29 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                // Make the HitSphere if local play or the server
-                if(gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
-                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                // Discard if hit the invisible wall
+                for(ToonGameObject* j : gameWorld->GetPaintableObjects())
+                    if (j == body1 || j == body2) {
+                        // Make the HitSphere if local play or the server
+                        if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                        {
+                            std::map<int, Team*> teams = gameWorld->GetTeams();
+                            HitSphere* hitSphere = levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), teams[teamColourPicker + 1]);
 
-                i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
-                AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+
+                            //levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+
+                            // If the server also add to list
+                            if (gameWorld->GetNetworkStatus() == NetworkingStatus::Server)
+                                server->AddHitsphereImpact(hitSphere, i->GetImpactSize(), teamColourPicker + 1);
+
+                            teamColourPicker = (teamColourPicker + 1) % 4;
+                        }
+
+
+                        i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
+                        AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+                    }
                 // Remove the Paintball
                 gameWorld->RemovePaintball(i);
                 gameWorld->RemoveGameObject(i, false);
@@ -59,35 +76,33 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             }
         }
 
-        // Check if collision involves HitSpheres 
-        for (HitSphere* i : gameWorld->GetHitSpheres()) {
-            if (i == body1 || i == body2) {
-                for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
-                    if (p == body1 || p == body2) {
-                        Vector3 localPosition;
-                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
-                            p->GetRigidbody()->getTransform().getPosition());
-                        if (dynamic_cast<PaintableObject*>(p)) {
-                            PaintableObject* object = (PaintableObject*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+        // Client hitspheres are for the map only!
+        if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+            // Check if collision involves HitSpheres 
+            for (HitSphere* i : gameWorld->GetHitSpheres()) {
+                if (i == body1 || i == body2) {
+                    for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
+                        if (p == body1 || p == body2) {
+                            Vector3 localPosition;
+                            localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
+                                p->GetRigidbody()->getTransform().getPosition());
+                            if (dynamic_cast<PaintableObject*>(p)) {
+                                PaintableObject* object = (PaintableObject*)p;
+                                object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                            }
+                            else {
+                                Player* object = (Player*)p;
+                                object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                            }
+                            if (server)
+                                server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                         }
-                        else {
-                            Player* object = (Player*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
-                        }
-                        if (server)
-                            server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }
                 }
             }
-        }
-      
-            
-    
-        
     }
     for (HitSphere* i : gameWorld->GetHitSpheres()) {
-        if (i->CheckDelete()) {
+        if ((i->CheckDelete() && i->CheckDrawn()) /*||*/ ) {
             //delete the hitsphere
             gameWorld->RemoveHitSphere(i);
             gameWorld->RemoveGameObject(i, false);

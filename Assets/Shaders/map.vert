@@ -14,6 +14,7 @@ uniform vec4 		objectColour = vec4(1,1,1,1);
 
 uniform bool hasVertexColours = false;
 
+
 out Vertex
 {
 	vec4 colour;
@@ -25,15 +26,14 @@ out Vertex
 void main(void)
 {
 	mat4 mvp 		  = (projMatrix * viewMatrix * modelMatrix);
-	mat3 normalMatrix = transpose ( inverse ( mat3 ( modelMatrix )));
 
-	OUT.worldPos 	= ( modelMatrix * vec4 ( position ,1)). xyz ;
 	OUT.localPos =  modelMatrix * vec4(position, 1.0);
 	OUT.texCoord	= texCoord;
 	OUT.colour		= objectColour;
 
-	if(hasVertexColours) {
-		OUT.colour		= objectColour * colour;
-	}
-	gl_Position		= mvp * vec4(position, 1.0);
+	vec4 worldPos = (modelMatrix * vec4(position, 1));
+    //OUT.worldPos = worldPos.xyz;
+
+	OUT.worldPos 	= ( modelMatrix * vec4 (position ,1)).xyz ;
+	gl_Position = mvp * vec4(position, 1.0);
 }
