@@ -42,6 +42,6 @@ void NCL::CSC8503::ToonObserverCamera::UpdateCamera(float dt, BaseInput* inputs)
 	camRight = rotation * Vector3(1, 0, 0);
 	camUp = rotation * Vector3(0, 1, 0);
 
-	position += camForward * inputs->GetMovement().y;
-	position += camRight * inputs->GetMovement().x;
+	position += camForward * inputs->GetMovement().y * frameSpeed;
+	position += camRight * inputs->GetMovement().x * frameSpeed;
 }
