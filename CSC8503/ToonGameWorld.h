@@ -58,7 +58,7 @@ namespace NCL
 
 			void DeleteMarkedObjects();
 
-			void GetGameObjects(void) const;
+			std::vector<ToonGameObject*> GetGameObjects(void) const { return gameObjects; }
 
 			Camera* GetMainCamera(int player) { return mainCameras[player]; }
 			void SetMainCamera(int player, Camera* newCamera) {
@@ -106,6 +106,7 @@ namespace NCL
 			void GameEnded()	{ gameStarted = false;}
 
 			bool HasGameStarted() const { return gameStarted; }
+
 		protected:
 
 			ToonGame* game;
@@ -121,6 +122,8 @@ namespace NCL
 			std::unordered_set<HitSphere*> activeHitSpheres;
 			std::unordered_set<ToonGameObject*> paintableObjects;
 			std::unordered_set<ToonGameObject*> objectsToDelete;
+
+			//vector<HitSphere> mapHitSpheres;
 
 			std::map<int, Team*> teams;
 

@@ -1,8 +1,8 @@
 #version 330 core
 
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projMatrix;
+uniform mat4 modelMatrix = mat4(1.0f);
+uniform mat4 viewMatrix = mat4(1.0f);
+uniform mat4 projMatrix = mat4(1.0f);
 
 in  vec3 position;
 layout(location=2) in vec2 texCoord;

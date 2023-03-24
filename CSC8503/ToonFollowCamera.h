@@ -36,6 +36,12 @@ namespace NCL
 			float GetSmoothness() const { return smoothness; }
 			void SetSmoothness(const float& newSmoothness) { smoothness = newSmoothness; }
 
+			Vector3 GetPlayerPosition() const { return player->GetPosition(); }
+
+			Vector4 GetPlayerTeamColour() const { return player->GetTeam()->GetTeamColour();}
+
+			Quaternion GetPlayerRotation() const { return player->GetOrientation(); }
+
 			Vector3 followOffset2;
 
 		protected:

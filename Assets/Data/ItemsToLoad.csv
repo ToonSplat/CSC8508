@@ -41,13 +41,14 @@ Mesh,Character,player_mesh_2,Character_Boss.msh,1,0,1
 Mesh,Character,player_mesh_3,Character_Boss.msh,0,0,1
 Mesh,Character,player_mesh_4,Character_Boss.msh,1,0.25,0
 Shader,shadow,shadowSkin.vert,shadow.frag,,,
-Shader,minimap,minimap.vert,minimap.frag,,,
 Shader,texture,Texture.vert,Texture.frag,,,
 Shader,scene,scene.vert,scene.frag,,,
 Shader,sceneScreen,sceneScreen.vert,scene.frag,,,
 Shader,scoreBar,ScoreBar.vert,ScoreBar.frag,,,
-Shader,fullMap,map.vert,map.frag,,,
 Shader,animated,sceneSkin.vert,scene.frag,,,
+Shader,map_initial,map.vert,map_initialise.frag,,,
+Shader,map_update,map.vert,map_update.frag,,,
+Shader,UI,Texture.vert,UI.frag,,,
 Animation,Player_Idle,Boss_Gun_Idle2.anm,,,,
 Animation,Player_Idle_Aim,Boss_Gun_Idle_Aim.anm,,,,
 Animation,Player_Run,Boss_Gun_Run.anm,,,,

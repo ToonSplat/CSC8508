@@ -62,4 +62,15 @@ namespace NCL::CSC8503 {
 			size = sizeof(ImpactPacket) - sizeof(GamePacket);
 		}
 	};
+
+	struct HitSpherePacket : public GamePacket {
+		int		location[3];
+		char	radius;
+		char	team;
+
+		HitSpherePacket() {
+			type = HitSphereImpact;
+			size = sizeof(HitSpherePacket) - sizeof(GamePacket);
+		}
+	};
 }

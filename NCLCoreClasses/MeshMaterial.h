@@ -41,6 +41,7 @@ namespace NCL {
 
 	protected:
 		std::map<string, std::pair<string, Rendering::TextureBase*>> entries;
+		// maybe add vec4 material thingy here??
 	};
 
 	class MeshMaterial	{

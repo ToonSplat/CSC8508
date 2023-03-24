@@ -29,7 +29,7 @@ NCL::CSC8503::ToonMapCamera::ToonMapCamera()
 
 	camType = CameraType::Orthographic;
 
-	position = Vector3(17.0f, distanceFromFocus, -20.0f);
+	position = Vector3(17.0f, distanceFromFocus, 15.0f);
 
 }
 

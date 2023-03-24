@@ -123,7 +123,7 @@ void ToonGameWorld::RemovePaintball(PaintBallProjectile* paintball) {
 
 void ToonGameWorld::AddHitSphere(HitSphere* hitSphere) {
 	AddGameObject(hitSphere);
-	activeHitSpheres.emplace(hitSphere);
+	activeHitSpheres.emplace(hitSphere);	
 }
 void ToonGameWorld::RemoveHitSphere(HitSphere* hitSphere) {
 	activeHitSpheres.erase(hitSphere);
@@ -137,11 +137,6 @@ void ToonGameWorld::AddPaintableObject(ToonGameObject* paintableObject) {
 void ToonGameWorld::RemovePaintableObject(ToonGameObject* paintableObject) {
 	paintableObjects.erase(paintableObject);
 	objectsToDelete.insert(paintableObject);
-}
-
-void ToonGameWorld::GetGameObjects(void) const {
-	for (auto& object : gameObjects)
-		std::cout << object->GetRigidbody()->getUserData() << std::endl;
 }
 
 void ToonGameWorld::DeleteMarkedObjects() {

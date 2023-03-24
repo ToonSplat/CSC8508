@@ -11,6 +11,7 @@ public:
 	~HitSphere();
 
 	bool CheckDelete();
+	bool CheckDrawn();
 
 	Team* GetTeam() const { return team; }
 	Maths::Vector3 GetTeamColour() const { return team->GetTeamColour(); }
@@ -21,4 +22,5 @@ protected:
 	Team* team;
 
 	bool toDelete;
+	bool drawn; 
 };

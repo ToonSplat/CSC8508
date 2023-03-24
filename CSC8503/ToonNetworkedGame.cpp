@@ -68,6 +68,7 @@ void ToonNetworkedGame::StartAsClient(char a, char b, char c, char d) {
 	thisClient->RegisterPacketHandler(Player_Disconnected, this);
 	thisClient->RegisterPacketHandler(Shoot, this);
 	thisClient->RegisterPacketHandler(Impact, this);
+	thisClient->RegisterPacketHandler(HitSphereImpact, this);
 	thisClient->RegisterPacketHandler(Message, this);
 
 	StartGame();
@@ -301,8 +302,10 @@ void ToonNetworkedGame::ServerStartGame() {
 
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
+	impactLocations.clear();
 	allPlayers.clear();
 	world->MapNeedsChecking(true);
+	renderer->ResetAtomicBuffer();
 	world->GameStarted();
 	winner = nullptr;
 	gameTime = 90.0f;
@@ -345,6 +348,10 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 					for (ImpactPoint& i : *object->GetImpactPoints())
 						SendImpactPoint(i, object, receivedID);
 				}
+			}
+
+			for (ImpactLocation& location : impactLocations) {
+				SendHitsphereImpact(location, receivedID);
 			}
 
 
@@ -476,6 +483,13 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 			}
 		}
 	}
+	else if (type == HitSphereImpact) {
+		HitSpherePacket* realPacket = (HitSpherePacket*)payload;
+		std::cout << "Recieved HitSpherePacket for team " << realPacket->team << std::endl;
+		Team* team = world->GetTeams()[(int)realPacket->team];
+		levelManager->AddHitSphereToWorld(reactphysics3d::Vector3(realPacket->location[0] / 100.0f, realPacket->location[1] / 100.0f, realPacket->location[2] / 100.0f),
+			realPacket->radius / 10.0f, team);
+	}
 	else if (type == Message) {
 		MessagePacket* realPacket = (MessagePacket*)payload;
 		switch (realPacket->messageID) {
@@ -531,6 +545,26 @@ void ToonNetworkedGame::SendImpactPoint(ImpactPoint point, ToonGameObject* objec
 	else {
 		thisServer->SendPacketToClient(newPacket, playerID, true);
 	}
+}
+
+void ToonNetworkedGame::SendHitsphereImpact(ImpactLocation location, int playerID) {
+	HitSpherePacket newPacket;
+	newPacket.location[0] = location.location[0];
+	newPacket.location[1] = location.location[1];
+	newPacket.location[2] = location.location[2];
+	newPacket.radius = location.radius;
+	newPacket.team = location.team;
+	if (playerID == -1)
+		thisServer->SendGlobalPacket(newPacket, true);
+	else {
+		thisServer->SendPacketToClient(newPacket, playerID, true);
+	}
+}
+
+void ToonNetworkedGame::AddHitsphereImpact(ToonGameObject* o, float radius, int teamID) {
+	ImpactLocation newImpact = ImpactLocation(o->GetPosition(), radius, teamID);
+	impactLocations.push_back(newImpact);
+	SendHitsphereImpact(newImpact);
 }
 
 void NCL::CSC8503::ToonNetworkedGame::UpdateCall(float dt)
