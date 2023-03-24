@@ -19,6 +19,7 @@
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
 #include "../ThirdParty/imgui/imgui_impl_win32.h"
+#include <corecrt_math_defines.h>
 
 using namespace NCL;
 using namespace Rendering;
@@ -502,7 +503,6 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 
 
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-
 	
 	glEnable(GL_STENCIL_TEST);
 
@@ -541,12 +541,6 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&stencilModelMatrix);
 
-	
-	
-	
-
-	
-	
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_STENCIL_TEST);
@@ -559,14 +553,24 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 
 	Vector4 black(0, 0, 0, 1);
 	
+	Quaternion playerOrientation = followCam->GetPlayerRotation();
+	Vector3 rotation = playerOrientation.ToEuler();
 
-	Matrix4 playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.705f, 1.0)) * Matrix4::Scale(Vector3(0.06f, 0.12f, 1.0f));
+	float yRot = rotation.y;
+	Matrix4 rotMatrix = playerOrientation;
+
+	Vector3 zAxis = rotMatrix.GetColumn(2);
+
+	float arrowZRotation = atan2(rotMatrix.array[1][0], rotMatrix.array[0][0]) * (180.0f / M_PI);
+
+	float arrowRotation = atan2(zAxis.y, zAxis.x);
+	Matrix4 playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 1.0)) * Matrix4::Scale(Vector3(0.06f, 0.12f, 1.0f)) * Matrix4::Rotation(yRot, Vector3(0, 0, 1));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
 	glUniform4fv(colourLocation, 1, black.array);
 	BindMesh(arrowMesh);
 	glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
 
-	playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.5f)) * Matrix4::Scale(Vector3(0.05f, 0.1f, 1.0f));
+	playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.5f)) * Matrix4::Scale(Vector3(0.05f, 0.1f, 1.0f)) * Matrix4::Rotation(yRot, Vector3(0, 0, 1)) * Matrix4::Translation(Vector3(0, -0.03, 0));
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
 	glUniform4fv(colourLocation, 1, followCam->GetPlayerTeamColour().array);
 	BindMesh(arrowMesh);

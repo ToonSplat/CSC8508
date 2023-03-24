@@ -38,7 +38,9 @@ namespace NCL
 
 			Vector3 GetPlayerPosition() const { return player->GetPosition(); }
 
-			Vector4 GetPlayerTeamColour() const { return player->GetTeam()->GetTeamColour(); }
+			Vector4 GetPlayerTeamColour() const { return player->GetTeam()->GetTeamColour();}
+
+			Quaternion GetPlayerRotation() const { return player->GetOrientation(); }
 
 			Vector3 followOffset2;
 
