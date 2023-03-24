@@ -350,5 +350,5 @@ MigrationBackup/
 .ionide/
 /Build/*
 !ReactPhysics3D/lib/*
-
+!NewToonSplatInstaller/**
 ToonSettings.txt

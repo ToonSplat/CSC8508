@@ -91,7 +91,6 @@ int main()
 	Assets::SetupAssetDirectory();
 	//Audio
 	NCL::CSC8503::AudioSystem::Initialise();
-
 #ifdef _DEBUG
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
 #else

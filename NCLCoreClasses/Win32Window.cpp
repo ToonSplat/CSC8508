@@ -15,6 +15,9 @@ using namespace Win32Code;
 #define WINDOWCLASS "WindowClass"
 
 Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fullScreen, int offsetX, int offsetY)	{
+#ifdef _DEBUG
+	ShowConsole(true);
+#endif
 	forceQuit		= false;
 	init			= false;
 	mouseLeftWindow	= false;
