@@ -9,6 +9,7 @@ layout(location = 0) in vec3 position;
 layout(location = 1) in vec4 colour;
 layout(location = 2) in vec2 texCoord;
 layout(location = 3) in vec3 normal;
+layout(location = 4) in vec4 tangent;
 
 uniform vec4 		objectColour = vec4(1,1,1,1);
 
@@ -23,8 +24,11 @@ out Vertex
 	vec2 texCoord;
 	vec4 shadowProj;
 	vec3 normal;
+	vec3 tangent;
+  vec3 binormal;
 	vec3 worldPos;
-	vec4 localPos;
+	vec4 worldPosition;
+	vec3 position;
 } OUT;
 
 void main(void)
@@ -34,7 +38,7 @@ void main(void)
 
 	OUT.shadowProj 	=  shadowMatrix * vec4 ( position,1);
 	OUT.worldPos 	= ( modelMatrix * vec4 ( position ,1)). xyz ;
-	OUT.localPos =  modelMatrix * vec4(position, 1.0);
+	OUT.worldPosition =  modelMatrix * vec4(position, 1.0);
 	OUT.normal 		= normalize ( normalMatrix * normalize ( normal ));
 	
 	vec2 texCoordInv = vec2(texCoord.x, 1.0f - texCoord.y);
@@ -44,5 +48,14 @@ void main(void)
 	if(hasVertexColours) {
 		OUT.colour		= objectColour * colour;
 	}
+
+	vec3 wNormal = normalize(normalMatrix * normalize(normal));
+    vec3 wTangent = normalize(normalMatrix * normalize(tangent.xyz));
+
+    OUT.normal = wNormal;
+    OUT.tangent = wTangent;
+    OUT.binormal = cross(wTangent, wNormal) * tangent.w;
+	OUT.position = position;
+
 	gl_Position		= mvp * vec4(position, 1.0);
 }

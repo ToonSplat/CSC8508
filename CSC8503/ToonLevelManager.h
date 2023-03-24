@@ -4,6 +4,7 @@
 #include "ToonGameWorld.h"
 #include "ToonScreen.h"
 #include "Player.h"
+#include "PlayerNPC.h"
 #include "PaintBallProjectile.h"
 #include "HitSphere.h"
 #include <reactphysics3d/reactphysics3d.h>
@@ -70,8 +71,9 @@ namespace NCL
 			~ToonLevelManager();
 
 			Player* AddPlayerToWorld(Team* team);
+			PlayerNPC* AddPlayerNPCToWorld(Team* team);
 			PaintBallProjectile* AddPaintBallProjectileToWorld(const reactphysics3d::Vector3& position,
-				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team);
+				const reactphysics3d::Vector3& rotationEuler, const float& radius, const float& _impactSize, Team* team, std::string objectName = "");
 			HitSphere* AddHitSphereToWorld(const reactphysics3d::Vector3& position, const float radius, Team* team);
 
 			Player* GetPlayer() { return player; }

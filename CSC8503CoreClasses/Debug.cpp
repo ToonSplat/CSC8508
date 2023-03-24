@@ -18,12 +18,13 @@ const Vector4 Debug::YELLOW		= Vector4(1, 1, 0, 1);
 const Vector4 Debug::MAGENTA	= Vector4(1, 0, 1, 1);
 const Vector4 Debug::CYAN		= Vector4(0, 1, 1, 1);
 
-void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour) {
+void Debug::Print(const std::string& text, const Vector2& pos, const Vector4& colour, const float& size) {
 	DebugStringEntry newEntry;
 
 	newEntry.data = text;
 	newEntry.position = pos;
 	newEntry.colour = colour;
+	newEntry.size = size;
 
 	stringEntries.emplace_back(newEntry);
 }

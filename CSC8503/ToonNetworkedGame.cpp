@@ -46,7 +46,7 @@ ToonNetworkedGame::~ToonNetworkedGame() {
 }
 
 void ToonNetworkedGame::StartAsServer() {
-	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
+	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 12);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
@@ -135,7 +135,7 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 
 void ToonNetworkedGame::UpdateGame(float dt) {
 	;
-	ToonDebugManager::Instance().StartNetworking();
+	ToonDebugManager::Instance().StartTimeCount("Networking");
 	if (thisServer)
 		Debug::Print("Server", Vector2(0, 5));
 	else
@@ -146,6 +146,12 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			MessagePacket endGame(3);
 			endGame.messageValue = winner->GetTeamID();
 			thisServer->SendGlobalPacket(endGame, true);
+
+			for (auto& player : serverPlayers)
+			{
+				if (player.second.player->GetTeam() == winner) player.second.player->PlayVictory();
+				else player.second.player->PlayDefeat();
+			}
 		}
 		if (gameTime <= -5.0f) {
 			ServerStartGame();
@@ -168,7 +174,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			PlayerControl* playersControl = player.second.controls;
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
-				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal(((player.second.controls->camera[0] / 72.0f) + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
 				dirOri.normalize();
@@ -193,7 +199,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		ServerStartGame();
 		return;
 	}
-	ToonDebugManager::Instance().EndNetworking();
+	ToonDebugManager::Instance().EndTimeCount("Networking");
 	if (!closeGame)
 		ToonGame::UpdateGame(dt);
 }
@@ -296,6 +302,8 @@ void ToonNetworkedGame::ServerStartGame() {
 void ToonNetworkedGame::StartGame() {
 	networkObjects.clear();
 	allPlayers.clear();
+	world->MapNeedsChecking(true);
+	world->GameStarted();
 	winner = nullptr;
 	gameTime = 90.0f;
 	levelManager->ResetLevel(&networkObjects);
@@ -487,7 +495,18 @@ void ToonNetworkedGame::ReceivePacket(int type, GamePacket* payload, int source)
 		case(3):
 			if (realPacket->messageValue == 0)
 				winner = tieTeam;
-			else winner = world->GetTeams().find(realPacket->messageValue)->second;
+			else {
+				winner = world->GetTeams().find(realPacket->messageValue)->second;
+				world->OperateOnContents([&](ToonGameObject* g) {
+					if (dynamic_cast<Player*>(g)) {
+						Player* player = (Player*)g;
+						if (player->GetTeam() == winner)
+							player->PlayVictory();
+						else 
+							player->PlayDefeat();
+					}
+					});
+			}
 			break;
 		case(4):
 			gameTime = realPacket->messageValue / 10.0f;

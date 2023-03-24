@@ -1,8 +1,10 @@
-1) M. Aleskevicius (190344272)
-2) G. Bell (190155667)
-3) R.D. Brown (190357892)
-4) M. Elliott (180272185)
-5) R. Holt (220553472)
-6) S. Makkar (220608299)
-7) J.P. Pathak (220639466)
-8) B. Summers (190320162)
+Made by NCL Game Lab 2022/2023 Team 5
+
+Ryan Holt (220553472) - Lead, Networking, Gameplay
+Jainesh Pathak (220639466) - Physics, Art, AI, Animations
+Sumit Makkar (220608299) - Menu, Gameplay
+George Bell (190155667) - Graphics
+Ben Summers (190320162) - Graphics
+Mantas Aleskevicius (190344272) - Audio
+Max Elliot (180272185) - PS4 Rendering
+Richard Brown (190357892)

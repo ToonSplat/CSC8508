@@ -61,8 +61,7 @@ hide or show the
 void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 	PushdownMachine machine(mainMenu);
 	while (w->UpdateWindow()) {
-		ToonDebugManager::Instance().EndFrame();
-		ToonDebugManager::Instance().StartFrame();
+		ToonDebugManager::Instance().StartTimeCount("Frame");
 		ToonDebugManager::Instance().Update();
 		float dt = w->GetTimer()->GetTimeDeltaSeconds();
 		AudioSystem::GetAudioSystem()->Update(dt);
@@ -77,22 +76,13 @@ void StartPushdownAutomata(Window* w, ToonMainMenu* mainMenu) {
 			w->ShowConsole(false);
 		}
 
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::T)) {
-			w->SetWindowPosition(0, 0);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::X)) {
-			AudioSystem::GetAudioSystem()->SetMasterVolume(0.0f);
-		}
-		if (Window::GetKeyboard()->KeyPressed(KeyboardKeys::Z)) {
-			AudioSystem::GetAudioSystem()->SetMasterVolume(1.0f);
-		}
-
 
 		w->SetTitle("ToonSplat frame time:" + std::to_string(1000.0f * dt));
 		InputManager::GetInstance().Update();
 		if (!machine.Update(dt)) {
 			return;
 		}
+		ToonDebugManager::Instance().EndTimeCount("Frame");
 	}
 }
 

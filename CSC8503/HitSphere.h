@@ -13,7 +13,7 @@ public:
 	bool CheckDelete();
 
 	Team* GetTeam() const { return team; }
-	Vector3 GetTeamColour() const { return team->GetTeamColour(); }
+	Maths::Vector3 GetTeamColour() const { return team->GetTeamColour(); }
 	float GetRadius() const { return radius; }
 
 protected:

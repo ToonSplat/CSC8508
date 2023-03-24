@@ -132,6 +132,7 @@ void	Win32Window::UpdateTitle()	{
 }
 
 void	Win32Window::SetFullScreen(bool fullScreen) {
+	this->fullScreen = fullScreen;
 	if (fullScreen) {
 		DEVMODE dmScreenSettings;								// Device Mode
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
@@ -142,9 +143,9 @@ void	Win32Window::SetFullScreen(bool fullScreen) {
 		size.x = (float)settings.dmPelsWidth;
 		size.y = (float)settings.dmPelsHeight;
 
-		dmScreenSettings.dmSize				= sizeof(dmScreenSettings);			// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth		= (DWORD)size.x;		// Selected Screen Width
-		dmScreenSettings.dmPelsHeight		= (DWORD)size.y;		// Selected Screen Height
+		dmScreenSettings.dmSize				= sizeof(dmScreenSettings);			// Size Of The Devmode Structure=
+		dmScreenSettings.dmPelsWidth		= (DWORD)settings.dmPelsWidth;		// Selected Screen Width
+		dmScreenSettings.dmPelsHeight		= (DWORD)settings.dmPelsHeight;		// Selected Screen Height
 		dmScreenSettings.dmBitsPerPel		= 32;								// Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = (DWORD)settings.dmDisplayFrequency;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
@@ -153,6 +154,9 @@ void	Win32Window::SetFullScreen(bool fullScreen) {
 			std::cout << __FUNCTION__ << " Failed to switch to fullscreen!\n";
 		}
 		else {
+			DWORD dwStyle = GetWindowLong(windowHandle, GWL_STYLE);
+			//SetWindowLong(windowHandle, GWL_STYLE, dwStyle & WS_BORDER);
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y, size.x, size.y, SWP_FRAMECHANGED);
 			ResizeRenderer();
 		}
 	}
@@ -160,19 +164,26 @@ void	Win32Window::SetFullScreen(bool fullScreen) {
 		DEVMODE dmScreenSettings;								// Device Mode
 		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
 
+		DEVMODEA settings;
+		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &settings);
+
 		size = defaultSize;
 
 		dmScreenSettings.dmSize = sizeof(dmScreenSettings);	// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth  = (DWORD)size.x;		// Selected Screen Width
-		dmScreenSettings.dmPelsHeight = (DWORD)size.y;		// Selected Screen Height
-		dmScreenSettings.dmPosition.x = (DWORD)position.x;
-		dmScreenSettings.dmPosition.y = (DWORD)position.y;
+		dmScreenSettings.dmPelsWidth = (DWORD)settings.dmPelsWidth;		// Selected Screen Width
+		dmScreenSettings.dmPelsHeight = (DWORD)settings.dmPelsHeight;		// Selected Screen Height
 		dmScreenSettings.dmBitsPerPel = 32;					// Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = 60;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY | DM_POSITION;
 
 		if (ChangeDisplaySettings(&dmScreenSettings, 0) != DISP_CHANGE_SUCCESSFUL) {
 			std::cout << __FUNCTION__ << " Failed to switch out of fullscreen!\n";
+		}
+		else {
+			DWORD dwStyle = GetWindowLong(windowHandle, GWL_STYLE);
+			//SetWindowLong(windowHandle, GWL_STYLE, dwStyle & ~WS_BORDER);
+			SetWindowPos(windowHandle, HWND_TOP, position.x, position.y, size.x, size.y, SWP_FRAMECHANGED);
+			ResizeRenderer();
 		}
 	}
 }

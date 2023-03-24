@@ -7,62 +7,15 @@ ToonDebugManager* ToonDebugManager::instance = NULL;
 
 ToonDebugManager::ToonDebugManager() {
 	isCollisionDisplayToggled = false;
-}
-
-void ToonDebugManager::StartLoad() {
-	loadStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndLoad() {
-	loadEnd = high_resolution_clock::now();
-	loadTimeTaken = ConvertTimeTaken(loadStart, loadEnd);
-}
-
-void ToonDebugManager::StartFrame() {
-	frameStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndFrame() {
-	frameEnd = high_resolution_clock::now();
-	frameTimeTaken = ConvertTimeTaken(frameStart, frameEnd);
-}
-
-void ToonDebugManager::StartAudio() {
-	audioStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndAudio() {
-	audioEnd = high_resolution_clock::now();
-	audioTimeTaken = ConvertTimeTaken(audioStart, audioEnd);
-}
-
-void ToonDebugManager::StartNetworking() {
-	networkingStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndNetworking() {
-	networkingEnd = high_resolution_clock::now();
-	networkingTimeTaken = ConvertTimeTaken(networkingStart, networkingEnd);
-}
-
-void ToonDebugManager::StartPhysics() {
-	physicsStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndPhysics() {
-	physicsEnd = high_resolution_clock::now();
-	physicsTimeTaken = ConvertTimeTaken(physicsStart, physicsEnd);
-}
-
-void ToonDebugManager::StartAnimation() {
-	animationStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndAnimation() {
-	animationEnd = high_resolution_clock::now();
-	animationTimeTaken = ConvertTimeTaken(animationStart, animationEnd);
-}
-
-void ToonDebugManager::StartRendering() {
-	renderingStart = high_resolution_clock::now();
-}
-void ToonDebugManager::EndRendering() {
-	renderingEnd = high_resolution_clock::now();
-	graphicsTimeTaken = ConvertTimeTaken(frameStart, renderingEnd);
+	showAIPathGraph = false;
+	showAIPathDebug = false;
+	sectionStats.emplace("Loading", CodeSectionStats());
+	sectionStats.emplace("Audio", CodeSectionStats());
+	sectionStats.emplace("Animation", CodeSectionStats());
+	sectionStats.emplace("Networking", CodeSectionStats());
+	sectionStats.emplace("Physics", CodeSectionStats());
+	sectionStats.emplace("Rendering", CodeSectionStats());
+	sectionStats.emplace("Frame", CodeSectionStats());
 }
 
 void ToonDebugManager::Update() {
@@ -73,6 +26,25 @@ void ToonDebugManager::Update() {
 		if (isCollisionDisplayToggled && world)
 			DisplayCollisionBoxes();
 	}
+}
+
+void ToonDebugManager::StartTimeCount(string section) {
+	sectionStats[section].start = high_resolution_clock::now();
+}
+
+void ToonDebugManager::EndTimeCount(string section) {
+	sectionStats[section].end = high_resolution_clock::now();
+	ConvertTimeTaken(sectionStats[section]);
+}
+
+void ToonDebugManager::ConvertTimeTaken(CodeSectionStats& section) {
+	std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(section.end - section.start);
+	double temp = (double)timeTaken.count() / 1000.0f;
+	section.timeTaken = std::to_string(temp) + " ms";
+}
+
+string ToonDebugManager::GetTimeTaken(string section) {
+	return sectionStats[section].timeTaken;
 }
 
 void ToonDebugManager::CalculateMemoryUsage() {
@@ -126,3 +98,4 @@ void ToonDebugManager::DisplayCollisionBoxes() {
 void ToonDebugManager::ToggleCollisionDisplay() {
 	isCollisionDisplayToggled = !isCollisionDisplayToggled;
 }
+

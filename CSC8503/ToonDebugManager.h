@@ -13,8 +13,13 @@ namespace NCL
 	namespace CSC8503
 	{
 		using std::chrono::high_resolution_clock;
-		class ToonDebugManager
-		{
+		struct CodeSectionStats {
+			high_resolution_clock::time_point start;
+			high_resolution_clock::time_point end;
+			string timeTaken;
+		};
+
+		class ToonDebugManager{
 		public:
 			static void Create() {
 				if (instance == NULL)
@@ -31,47 +36,29 @@ namespace NCL
 
 			void Update();
 
-			void StartLoad();
-			void EndLoad();
-
-			void StartFrame();
-			void EndFrame();
-
-			void StartAudio();
-			void EndAudio();
-
-			void StartNetworking();
-			void EndNetworking();
-
-			void StartPhysics();
-			void EndPhysics();
-
-			void StartAnimation();
-			void EndAnimation();
-
-			void StartRendering();
-			void EndRendering();
-
-			double ConvertTimeTaken(high_resolution_clock::time_point start, high_resolution_clock::time_point end) {
-				std::chrono::microseconds timeTaken = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
-				return (double)timeTaken.count();
-			}
+			void StartTimeCount(string section);
+			void EndTimeCount(string section);
 
 			const int byteToMb = 1048576;
+			string ConvertMemoryUsage(auto a) {return std::to_string(a / byteToMb) + " MB"; }
 
-			string GetVirtualMemoryUsage() { return std::to_string(usedVirtualMem / byteToMb) + "/" + std::to_string(totalVirtualMem / byteToMb) + "MB"; }
-			string GetVirutalUsageByProgram() { return std::to_string(virtualMemUsedByProgram / byteToMb) + "MB"; }
-			string GetPhysicalMemoryUsage() { return std::to_string(usedPhysMem / byteToMb) + "/" + std::to_string(totalPhysMem / byteToMb) + "MB"; }
-			string GetPhysicalUsagebyProgram() { return std::to_string(physMemUsedByProgram / byteToMb) + "MB"; }
-			string GetLoadTimeTaken() { return std::to_string(loadTimeTaken / 1000.0f) + " ms"; }
-			string GetFrameTimeTaken() { return std::to_string(frameTimeTaken / 1000.0f) + " ms"; }
-			string GetAudioTimeTaken() { return std::to_string(audioTimeTaken / 1000.0f) + " ms"; }
-			string GetNetworkingTimeTaken() { return std::to_string(networkingTimeTaken / 1000.0f) + " ms"; }
-			string GetPhysicsTimeTaken() { return std::to_string(physicsTimeTaken / 1000.0f) + " ms"; }
-			string GetAnimationTimeTaken() { return std::to_string(animationTimeTaken / 1000.0f) + " ms"; }
-			string GetGraphicsTimeTaken() { return std::to_string(graphicsTimeTaken / 1000.0f) + " ms"; }
+			string GetVirtualMemoryUsage() { return ConvertMemoryUsage(usedVirtualMem); }
+			string GetVirutalUsageByProgram() { return ConvertMemoryUsage(virtualMemUsedByProgram); }
+			string GetTotalVirtualMemory(){ return ConvertMemoryUsage(totalVirtualMem); }
+			string GetPhysicalMemoryUsage() { return ConvertMemoryUsage(usedPhysMem); }
+			string GetPhysicalUsagebyProgram() { return ConvertMemoryUsage(physMemUsedByProgram); }
+			string GetTotalPhysicalMemory() { return ConvertMemoryUsage(totalPhysMem); }
+
+			bool isAIPresent;
+
+			string GetTimeTaken(string section);
 
 			void ToggleCollisionDisplay();
+			bool GetAIPathGraphStatus() const { return showAIPathGraph; }
+			bool GetAIPathDebugStatus() const { return showAIPathDebug; }
+
+			void SetAIPathGraphStatus(bool s) { showAIPathGraph = s; }
+			void SetAIPathDebugStatus(bool s) { showAIPathDebug = s; }
 
 			void SetGameWorld(ToonGameWorld* world) { this->world = world; }
 
@@ -79,6 +66,8 @@ namespace NCL
 			ToonDebugManager();
 			~ToonDebugManager() {}
 			static ToonDebugManager* instance;
+
+			void ConvertTimeTaken(CodeSectionStats& section);
 
 			void DisplayCollisionBoxes();
 			void CalculateMemoryUsage();
@@ -92,38 +81,14 @@ namespace NCL
 			DWORDLONG usedPhysMem;
 			SIZE_T physMemUsedByProgram;
 
-			high_resolution_clock::time_point loadStart;
-			high_resolution_clock::time_point loadEnd;
-
-			high_resolution_clock::time_point frameStart;
-			high_resolution_clock::time_point frameEnd;
-
-			high_resolution_clock::time_point audioStart;
-			high_resolution_clock::time_point audioEnd;
-
-			high_resolution_clock::time_point networkingStart;
-			high_resolution_clock::time_point networkingEnd;
-
-			high_resolution_clock::time_point physicsStart;
-			high_resolution_clock::time_point physicsEnd;
-
-			high_resolution_clock::time_point animationStart;
-			high_resolution_clock::time_point animationEnd;
-
-			high_resolution_clock::time_point renderingStart;
-			high_resolution_clock::time_point renderingEnd;
+			std::map<string, CodeSectionStats> sectionStats;
 
 			ToonGameWorld* world;
 
-			double loadTimeTaken;
-			double frameTimeTaken;
-			double audioTimeTaken;
-			double networkingTimeTaken;
-			double physicsTimeTaken;
-			double animationTimeTaken;
-			double graphicsTimeTaken;
-
 			bool isCollisionDisplayToggled;
+			
+			bool showAIPathGraph;
+			bool showAIPathDebug;
 		};
 	}
 }

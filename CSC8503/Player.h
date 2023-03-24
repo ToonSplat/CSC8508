@@ -20,11 +20,13 @@ using namespace CSC8503;
 
 class Player : public ToonGameObjectAnim, public ApplyPaint {
 public:
+	bool m_ShowTrajectory = false;
 	Player(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, Team* team);
 	~Player();
 
 	bool WeaponUpdate(float dt, PlayerControl* controls);
 	void MovementUpdate(float dt, PlayerControl* controls);
+	void UpdateMovementAnimations();
 	virtual void Update(float dt) override;
 
 	void SetMoveSpeed(float newSpeed) { moveSpeed = newSpeed; }
@@ -38,9 +40,15 @@ public:
 	void SetAiming(bool isAiming) { this->isAiming = isAiming; }
 	bool IsMoving() const { return rigidBody ? rigidBody->getLinearVelocity().length() > 0.1f : false; }
 
+	void CalcCrosshairSpread(float dt);
+	float GetCrosshairSpreadFactor() const { return spread; }
+
 	Team* GetTeam() const { return team; }
 	PaintBallClass& GetWeapon() { return weapon; }
 	void SetWeapon(PaintBallClass* base);
+
+	void PlayVictory();
+	void PlayDefeat();
 
 protected:
 	bool AngleInRange(const float& val, const float& min, const float& max) { return min <= val && val <= max; }
@@ -58,11 +66,16 @@ protected:
 	float sprintTimer = 2.0f;
 	float sprintMulitplier = 5.0f;
 
+	float spread = 1.0f;
+	float crosshairSpreadMin = 1.0f;
+	float crosshairSpreadMax = 2.0f;
 
 	PaintBallClass weapon;
 	AudioSystem* audiosystem;
 
 	bool isAiming, isMoving, isGrounded;
+	bool allowInput;
+
 	NCL::Maths::Vector3 groundDir;
 	NCL::Maths::Vector3 groundNormal;
 	/*

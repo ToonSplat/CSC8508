@@ -15,7 +15,8 @@ namespace NCL::CSC8503
 		virtual void Draw(OGLRenderer& r, bool isMinimap = false) override;
 
 		void SetMeshMaterial(MeshMaterial* newMaterial) { meshMaterial = newMaterial; }
-		void PlayAnim(const std::string& anim, float animSpeed = 1.0f);
+		void PlayAnim(const std::string& anim, bool tween = true, float animSpeed = 1.0f);
+		void TweenAnim(const float& time);
 
 		const std::vector<Matrix4> GetFrameMat() const { return frameMatrices; }
 
@@ -29,8 +30,14 @@ namespace NCL::CSC8503
 		int		nextFrame;
 		float	frameTime;
 
+		bool isTweening;
+		float tweenTime;
+		float tweenTimeCurrent;
+		float tweenBlendFactor;
+
 		float	currentAnimSpeed;
 		MeshAnimation* currentAnim;
+		MeshAnimation* pendingAnim;
 		std::vector<Matrix4> frameMatrices;
 		std::map<std::string, MeshAnimation*> meshAnims;
 	};
