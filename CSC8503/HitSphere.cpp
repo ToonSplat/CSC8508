@@ -23,3 +23,11 @@ bool HitSphere::CheckDelete() {
 	}
 	return true;
 }
+
+bool HitSphere::CheckDrawn() {
+	if (drawn == false) {
+		drawn = true;
+		return false;
+	}
+	return true;
+}

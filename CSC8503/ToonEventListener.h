@@ -21,5 +21,7 @@ namespace NCL::CSC8503 {
 		ToonNetworkedGame* server;
 		ToonLevelManager* levelManager;
 		ToonGameWorld* gameWorld;
+
+		int teamColourPicker = 0;
 	};
 }

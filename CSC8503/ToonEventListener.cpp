@@ -38,7 +38,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             // Get the contact point on the first collider and convert it in world-space 
             reactphysics3d::Vector3 worldPoint = contactPair.getCollider1()->getLocalToWorldTransform() * contactPoint.getLocalPointOnCollider1();
             //std::cout << "CONTACT POINT: " << worldPoint.to_string() << std::endl;
-            
+
         }
 #
         // Check if impact involves a paintball
@@ -46,12 +46,25 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
         void* body2 = contactPair.getBody2()->getUserData();
         for (PaintBallProjectile* i : gameWorld->GetPaintballs()) {
             if (i == body1 || i == body2) {
-                // Make the HitSphere if local play or the server
-                if(gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
-                    levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
+                // Discard if hit the invisible wall
+                for (ToonGameObject* j : gameWorld->GetPaintableObjects())
+                    if (j == body1 || j == body2) {
+                        // Make the HitSphere if local play or the server
+                        if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                        {
+                            HitSphere* hitSphere = levelManager->AddHitSphereToWorld(i->GetRigidbody()->getTransform().getPosition(), i->GetImpactSize(), i->GetTeam());
 
-                i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
-                AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+                            if (gameWorld->GetNetworkStatus() == NetworkingStatus::Server)
+                                server->AddHitsphereImpact(hitSphere, i->GetImpactSize(), i->GetTeam()->GetTeamID());
+
+                        }
+
+
+                        i->GetAudioEmitter()->SetTarget(ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition()));
+                        AudioSystem::GetAudioSystem()->AddSoundEmitter(i->GetAudioEmitter());
+
+
+                    }
                 // Remove the Paintball
                 gameWorld->RemovePaintball(i);
                 gameWorld->RemoveGameObject(i, false);
@@ -59,41 +72,46 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             }
         }
 
-        // Check if collision involves HitSpheres 
-        for (HitSphere* i : gameWorld->GetHitSpheres()) {
-            if (i == body1 || i == body2) {
-                for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
-                    if (p == body1 || p == body2) {
-                        Vector3 localPosition;
+
+            // Client hitspheres are for the map only!
+            if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
+                // Check if collision involves HitSpheres 
+                for (HitSphere* i : gameWorld->GetHitSpheres()) {
+                    if (i == body1 || i == body2) {
+                        for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
+                            if (p == body1 || p == body2) {
+                                Vector3 localPosition;
                         localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
                             p->GetRigidbody()->getTransform().getPosition());
                         if (p->GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) { 
                             Quaternion rotation = ToonUtils::ConvertToNCLQuaternion(p->GetRigidbody()->getTransform().getOrientation());
                             localPosition = rotation.Conjugate() * localPosition;
                         }
-                        if (dynamic_cast<PaintableObject*>(p)) {
-                            PaintableObject* object = (PaintableObject*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                                if (dynamic_cast<PaintableObject*>(p)) {
+                                    PaintableObject* object = (PaintableObject*)p;
+                                    object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                                }
+                                else {
+                                    Player* object = (Player*)p;
+                                    object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
+                                }
+                                if (server)
+                                    server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
+                            }
                         }
-                        else {
-                            Player* object = (Player*)p;
-                            object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
-                        }
-                        if (server)
-                            server->SendImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()), p);
                     }
                 }
+        }
+
+        for (HitSphere* i : gameWorld->GetHitSpheres()) {
+            if ((i->CheckDelete() && i->CheckDrawn()) /*||*/) {
+                //delete the hitsphere
+                gameWorld->RemoveHitSphere(i);
+                gameWorld->RemoveGameObject(i, false);
             }
         }
     }
-    for (HitSphere* i : gameWorld->GetHitSpheres()) {
-        if (i->CheckDelete()) {
-            //delete the hitsphere
-            gameWorld->RemoveHitSphere(i);
-            gameWorld->RemoveGameObject(i, false);
-        }
-    }
-}
+
 
 // Override the onTrigger() method
 void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::CallbackData& callbackData) {

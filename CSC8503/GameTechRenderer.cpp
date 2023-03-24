@@ -16,11 +16,13 @@
 #include "ToonGame.h"
 #include "ToonNetworkedGame.h"
 #include "Player.h"
+#include "HitSphere.h"
 #include "ToonGame.h"
 
 #include "../ThirdParty/imgui/imgui.h"
 #include "../ThirdParty/imgui/imgui_impl_opengl3.h"
 #include "../ThirdParty/imgui/imgui_impl_win32.h"
+#include <corecrt_math_defines.h>
 
 using namespace NCL;
 using namespace Rendering;
@@ -28,7 +30,9 @@ using namespace CSC8503;
 
 Matrix4 biasMatrix = Matrix4::Translation(Vector3(0.5f, 0.5f, 0.5f)) * Matrix4::Scale(Vector3(0.5f, 0.5f, 0.5f));
 
-GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow()) {
+
+GameTechRenderer::GameTechRenderer() : OGLRenderer(*Window::GetWindow())
+{
 
 	ToonDebugManager::Instance().StartTimeCount("Loading");
 	SetupLoadingScreen();
@@ -116,20 +120,23 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 {
 	glEnable(GL_DEPTH_TEST);
 	shadowShader = ToonAssetManager::Instance().GetShader("shadow");
-	minimapShader = ToonAssetManager::Instance().GetShader("minimap");
 	textureShader = ToonAssetManager::Instance().GetShader("texture");
 	sceneShader = ToonAssetManager::Instance().GetShader("scene");
 	scoreBarShader = ToonAssetManager::Instance().GetShader("scoreBar");
-	mapShader = ToonAssetManager::Instance().GetShader("fullMap");
-	animatedShader = ToonAssetManager::Instance().GetShader("animated");
+
+	mapInitShader = ToonAssetManager::Instance().GetShader("map_initial");
+	mapUpdateShader = ToonAssetManager::Instance().GetShader("map_update");
+	sceneScreenShader = ToonAssetManager::Instance().GetShader("sceneScreen");
+	playerShader = ToonAssetManager::Instance().GetShader("animated");
 
 	shadowSize = 2048;
 	GenerateShadowFBO();
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
-	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
+	CreateTextureUBO();
+	CreateMaterialUBO();
 	GenerateAtomicBuffer();
 
 	screenAspect = (float)windowWidth / (float)windowHeight;
@@ -138,14 +145,24 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 
 	sceneLight = LightStruct(Vector4(0.8f, 0.8f, 0.5f, 1.0f), Vector3(0.0f, 500.0f, 0.0f), 500.0f);
 
+	GenerateQuads();
+	
+	LoadSkybox();
+	CreateLightUBO();
+	CreateTeamColourUBO();
+	
+}
+
+void NCL::CSC8503::GameTechRenderer::GenerateQuads()
+{
 	fullScreenQuad = new OGLMesh();
 	fullScreenQuad->SetVertexPositions({ Vector3(-1, 1,1), Vector3(-1,-1,1) , Vector3(1,-1,1) , Vector3(1,1,1) });
 	fullScreenQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	fullScreenQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	fullScreenQuad->UploadToGPU();
-	
+
 	squareQuad = new OGLMesh();
-	squareQuad->SetVertexPositions({Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f), Vector3(0.5f, -0.8f, -1.0f), Vector3(0.5f, 0.8f, -1.0f)});
+	squareQuad->SetVertexPositions({ Vector3(-0.5f, 0.8f, -1.0f), Vector3(-0.5f, -0.8f, -1.0f), Vector3(0.5f, -0.8f, -1.0f), Vector3(0.5f, 0.8f, -1.0f) });
 	squareQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	squareQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	squareQuad->UploadToGPU();
@@ -160,9 +177,12 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	scoreQuad->UploadToGPU();
-	
-	LoadSkybox();
-	CreateLightUBO();
+
+
+	arrowMesh = new OGLMesh();
+	arrowMesh->SetVertexPositions({ Vector3(0.0f, 0.5f, -1.0f), Vector3(-0.3f, 0.0f, -1.0f) , Vector3(0.3f, 0.0f, -1.0f), Vector3(0.0f, -0.5f, -1.0f) });
+	arrowMesh->SetVertexIndices({ 0,1,2, 0,2,3 });
+	arrowMesh->UploadToGPU();
 
 	team1Percentage = 0;
 	team2Percentage = 0;
@@ -197,6 +217,7 @@ void GameTechRenderer::RenderFrame() {
 	if (!gameWorld) return; // Safety Check
 	
 	UpdateLightColour();
+
 	
 	switch (gameWorld->GetMainCameraCount()) {
 	case 1:
@@ -210,13 +231,32 @@ void GameTechRenderer::RenderFrame() {
 		break;
 	}
 
-	DrawMap();
+	if (mapNeedsDrawing) DrawMap();
+	UpdateMap();
 	PresentScene();
   
 	if (displayDebug) RenderImGUI();
 
 	ToonDebugManager::Instance().EndTimeCount("Rendering");
 }
+
+
+void NCL::CSC8503::GameTechRenderer::UpdateLighting()
+{
+	float percentageScale = 0.0f;
+	int winning = GetWinningTeam(percentageScale);
+
+	shaderLight.data[0].lightColour = teamColours[winning - 1] * (1 - percentageScale);
+
+	if (percentageScale > 0.99) {
+		shaderLight.data[0].lightColour = defaultColour;
+	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	glEnable(GL_DEPTH_TEST);
@@ -442,10 +482,18 @@ void GameTechRenderer::RenderScene() {
 
 	for (const auto& i : activeObjects) {
 		if ((*i).GetRenderObject() == nullptr) continue;
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<HitSphere*>(linkedObject))
+			return;
+
 		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
 		BindShader(shader);
 
 		if ((*i).GetRenderObject()->GetDefaultTexture() != nullptr) BindTextureToShader((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture(), "mainTex", 0);
+
+		glActiveTexture(GL_TEXTURE7);
+		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
+		glUniform1i(glGetUniformLocation(shader->GetProgramID(), "mapTex"), 7);
 
 		if (activeShader != shader) {
 			projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
@@ -487,7 +535,6 @@ void GameTechRenderer::RenderScene() {
 		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
 		glUniform3fv(objectPosLocation, 1, objPos.array);
 
-		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
 		if (dynamic_cast<PaintableObject*>(linkedObject) || dynamic_cast<Player*>(linkedObject)) {
 			PassImpactPointDetails(linkedObject, shader);
 		}
@@ -525,9 +572,11 @@ void NCL::CSC8503::GameTechRenderer::Render2Player()
 }
 void NCL::CSC8503::GameTechRenderer::Render3or4Player()
 {
-	screenAspect = ((float)windowWidth / 2) / ((float)windowHeight / 2);
-	float width = (float)windowWidth / 2.0f;
-	float height = (float)windowHeight / 2.0f;
+
+	float width = windowWidth / 2;
+	float height = windowHeight / 2;
+	screenAspect = (width) / (height);
+
 
 	for (int i = 0; i < gameWorld->GetMainCameraCount(); i++)
 	{
@@ -559,65 +608,9 @@ void NCL::CSC8503::GameTechRenderer::Render1Player()
 	 
 	DrawMainScene(1);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	DrawMinimap();
 }
 
-void GameTechRenderer::RenderMaps(OGLShader* shader, Matrix4 viewMatrix, Matrix4 projMatrix){
-	BindShader(shader);
-	for (const auto& i : activeObjects) {
-		if ((*i).GetRenderObject() == nullptr) continue;
-	
-		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
-		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
-		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
-		int colourLocation = glGetUniformLocation(shader->GetProgramID(), "objectColour");
-		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
-		int hasVColLocation = glGetUniformLocation(shader->GetProgramID(), "hasVertexColours");
-		int hasTexLocation = glGetUniformLocation(shader->GetProgramID(), "hasTexture");
-		int objectPosLocation = glGetUniformLocation(shader->GetProgramID(), "objectPosition");
 
-		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
-		if (dynamic_cast<PaintableObject*>(linkedObject)) {
-
-			PaintableObject* paintedObject = (PaintableObject*)linkedObject;
-			int isFloorLocation = glGetUniformLocation(shader->GetProgramID(), "isFloor");
-			glUniform1i(isFloorLocation, paintedObject->IsObjectTheFloor() ? 1 : 0);
-			PassImpactPointDetails(paintedObject, shader);
-		}
-		if (shader == mapShader) {
-			// MAKE COLOUR WORK
-			int atomicLocation = glGetUniformLocation(shader->GetProgramID(), "currentAtomicTarget");
-			glUniform1i(atomicLocation, currentAtomicGPU);
-
-			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-			glUniform3fv(glGetUniformLocation(shader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
-		}
-
-		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
-		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
-
-		Vector3 objPos = ToonUtils::ConvertToNCLVector3((i)->GetRigidbody()->getTransform().getPosition());
-		glUniform3fv(objectPosLocation, 1, objPos.array);
-
-		Matrix4 modelMatrix = (*i).GetModelMatrix();
-		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
-
-		Vector4 colour = i->GetRenderObject()->GetColour();
-		glUniform4fv(colourLocation, 1, colour.array);
-
-		if (shader == minimapShader)
-			glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
-
-		glUniform1i(hasVColLocation, !(*i).GetRenderObject()->GetMesh()->GetColourData().empty());
-
-		int hasTexFlag = ((OGLTexture*)(*i).GetRenderObject()->GetDefaultTexture() || (*i).GetRenderObject()->GetMaterial() != nullptr) ? 1 : 0;
-		glUniform1i(hasTexLocation, hasTexFlag);
-
-		(*i).Draw(*this, shader == minimapShader && (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
-	}
-}
 
 void GameTechRenderer::PresentScene(){
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -683,20 +676,49 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 }
 
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
-	if (!gameWorld->GetMinimapCamera()) return;
+	if (!gameWorld->GetMinimapCamera() || !mapInitialised) return;
+
+	BindShader(textureShader);
+
+	ToonFollowCamera* followCam = (ToonFollowCamera*)gameWorld->GetMainCamera(1);
+	Vector3 playerPos = followCam->GetPlayerPosition();
+
+	Matrix4 stencilModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.4f, 0.4f, 1.0f));
+
+	Vector2 offset(playerPos.x, playerPos.z);
+	Vector2 screenSize(windowWidth, windowHeight);
+	offset = offset / screenSize;
+	offset = offset * 8;
+	offset.x =   -0.7f - offset.x;
+	offset.y =   -0.88f + offset.y;
+
+	Matrix4 playerTranslationMatrix = Matrix4::Translation(Vector3(offset, 0.0f));
+
+
 	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	
 	glEnable(GL_STENCIL_TEST);
 
 	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 	glStencilFunc(GL_ALWAYS, 2, ~0);
 	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
+	Matrix4 minimapModelMatrix = playerTranslationMatrix * Matrix4::Scale(Vector3(0.8f, 0.8f, 1.0f)); 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
+	Matrix4 identityMatrix = Matrix4();
 
-	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
-	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "diffuseTex"), 0);
+	int projLocation = glGetUniformLocation(textureShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(textureShader->GetProgramID(), "viewMatrix");
 
+	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
+	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "mapTex"), 0);
+
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&stencilModelMatrix);
 	BindMesh(minimapStencilQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
@@ -705,35 +727,55 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	BindMesh(squareQuad);
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+
+	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&stencilModelMatrix);
 
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 	glDisable(GL_STENCIL_TEST);
+
+	DrawPlayerIcon();
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::DrawMinimap(){
-	if (!gameWorld->GetMinimapCamera()) return;
-	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
+void GameTechRenderer::DrawPlayerIcon()
+{
+	int useColourLocation = glGetUniformLocation(textureShader->GetProgramID(), "useColour");
+	int colourLocation = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
+	ToonFollowCamera* followCam = (ToonFollowCamera*)gameWorld->GetMainCamera(1);
+	glUniform1i(useColourLocation, true);
 
-	glEnable(GL_CULL_FACE);
-	glClearColor(1, 1, 1, 1);
-	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
-	Matrix4 viewMatrix = gameWorld->GetMinimapCamera()->BuildViewMatrix();
-	Matrix4 projMatrix = gameWorld->GetMinimapCamera()->BuildProjectionMatrix(screenAspect);
-	RenderMaps(minimapShader, viewMatrix, projMatrix);
-	glDisable(GL_BLEND);
-	glEnable(GL_DEPTH_TEST);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	Vector4 black(0, 0, 0, 1);
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	Quaternion playerOrientation = followCam->GetPlayerRotation();
+	Vector3 rotation = playerOrientation.ToEuler();
+
+	float yRot = rotation.y;
+
+	Matrix4 playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 1.0)) * Matrix4::Scale(Vector3(0.06f, 0.12f, 1.0f)) * Matrix4::Rotation(yRot, Vector3(0, 0, 1));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
+	glUniform4fv(colourLocation, 1, black.array);
+	BindMesh(arrowMesh);
+	glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
+
+	playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.5f)) * Matrix4::Scale(Vector3(0.05f, 0.1f, 1.0f)) * Matrix4::Rotation(yRot, Vector3(0, 0, 1)) * Matrix4::Translation(Vector3(0, -0.03, 0));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
+	glUniform4fv(colourLocation, 1, followCam->GetPlayerTeamColour().array);
+	BindMesh(arrowMesh);
+	glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
+
+
+	glUniform1i(useColourLocation, false);
 }
 
+
 void NCL::CSC8503::GameTechRenderer::DrawMap(){
-	if (!gameWorld->GetMapCamera() || !gameWorld->DoesMapNeedChecking()) return;
+	if (!gameWorld->GetMapCamera()/* || !gameWorld->DoesMapNeedChecking()*/) return;
 	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
 
 	glEnable(GL_CULL_FACE);
@@ -744,22 +786,99 @@ void NCL::CSC8503::GameTechRenderer::DrawMap(){
 	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
 	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
 
-	RenderMaps(mapShader, viewMatrix, projMatrix);
+	OGLShader* shader = mapInitShader;
+	BindShader(shader);
+	for (const auto& i : activeObjects) {
+		if ((*i).GetRenderObject() == nullptr ) continue;
 
-	currentAtomicCPU = ((currentAtomicCPU + 1) % 3);
-	currentAtomicGPU = ((currentAtomicGPU + 1) % 3);
-	curretAtomicReset = ((curretAtomicReset + 1) % 3);
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<Player*>(linkedObject))
+			continue;
+
+		int projLocation = glGetUniformLocation(shader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(shader->GetProgramID(), "viewMatrix");
+		int modelLocation = glGetUniformLocation(shader->GetProgramID(), "modelMatrix");
+		int minimapColourLocation = glGetUniformLocation(shader->GetProgramID(), "objectMinimapColour");
+
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+		Matrix4 modelMatrix = (*i).GetModelMatrix();
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		glUniform4fv(minimapColourLocation, 1, i->GetRenderObject()->GetMinimapColour().array);
+
+		(*i).Draw(*this, (*i).GetRenderObject()->GetMinimapMesh() != nullptr);
+	}
+
+
+	mapInitialised = true;
+	updateScorebar = true;
+	mapNeedsDrawing = false;
+}
+
+void GameTechRenderer::UpdateMap() {
+	if (!gameWorld->GetMapCamera() || !mapInitialised) return;
+
+	if (gameWorld->GetHitSpheres().size() > 0) {
+		updateScorebar = true;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, mapFBO);
+	glEnable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	
+	float screenAspect = (float)windowWidth / (float)windowHeight;
+	Matrix4 viewMatrix = gameWorld->GetMapCamera()->BuildViewMatrix();
+	Matrix4 projMatrix = gameWorld->GetMapCamera()->BuildProjectionMatrix(screenAspect);
+
+	OGLShader* shader = mapUpdateShader;
+	BindShader(mapUpdateShader);
+
+	
+
+	for (const auto& i : gameWorld->GetHitSpheres()) {
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, mapColourTexture);
+		glUniform1i(glGetUniformLocation(mapUpdateShader->GetProgramID(), "mapTex"), 0);
+
+		int paintLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "objectColour");
+		glUniform3fv(paintLocation, 1, i->GetTeamColour().array);
+
+		int screenSizeLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "screenSize");
+		Vector2 screenSize(windowWidth, windowHeight);
+		glUniform2fv(screenSizeLocation, 1,  screenSize.array);
+
+		int projLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "projMatrix");
+		int viewLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "viewMatrix");
+
+		glUniformMatrix4fv(projLocation, 1, false, (float*)&projMatrix);
+		glUniformMatrix4fv(viewLocation, 1, false, (float*)&viewMatrix);
+
+		int modelLocation = glGetUniformLocation(mapUpdateShader->GetProgramID(), "modelMatrix");
+		Matrix4 modelMatrix = (*i).GetModelMatrixNoRotation();
+		glUniformMatrix4fv(modelLocation, 1, false, (float*)&modelMatrix);
+
+		i->CheckDrawn();
+
+		(*i).Draw(*this);
+	}
+
+	
+	
+	glEnable(GL_DEPTH_TEST);
 
 	glDisable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 	BindShader(scoreBarShader);
 
-	if (gameWorld->DoesMapNeedChecking()) {
+	if (updateScorebar) {
 		RetrieveAtomicValues();
 
 		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1PercentageOwned"), team1Percentage);
@@ -768,12 +887,8 @@ void NCL::CSC8503::GameTechRenderer::DrawScoreBar() {
 		glUniform1f(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4PercentageOwned"), team4Percentage);
 
 		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "defaultGray"), 1, defaultColour.array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team1Colour"), 1, teamColours[0].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team2Colour"), 1, teamColours[1].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team3Colour"), 1, teamColours[2].array);
-		glUniform3fv(glGetUniformLocation(scoreBarShader->GetProgramID(), "team4Colour"), 1, teamColours[3].array);
 
-		gameWorld->MapNeedsChecking(false);
+		updateScorebar = false;
 	}
 	
 	Matrix4 identityMatrix = Matrix4();
@@ -1198,8 +1313,10 @@ void GameTechRenderer::UpdateLightColour() {
 	default:
 		break;
 	}
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
@@ -1222,7 +1339,7 @@ void GameTechRenderer::BuildObjectList(int index) {
 	);
 }
 
-void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& totalPixels, const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
+void NCL::CSC8503::GameTechRenderer::CalculatePercentages(const int& team1Pixels, const int& team2Pixels, const int& team3Pixels, const int& team4Pixels) {
 	float totalPaintedPixels = (float)team1Pixels + (float)team2Pixels + (float)team3Pixels + (float)team4Pixels;
 	if (totalPaintedPixels != 0) {
 		team1Percentage = (float)team1Pixels / totalPaintedPixels;
@@ -1278,8 +1395,8 @@ void GameTechRenderer::PassImpactPointDetails(ToonGameObject* const& paintedObje
 
 		sprintf_s(buffer, "impactPoints[%i].colour", i);
 		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
-		Vector3 impactColour = point.GetImpactColour();
-		glUniform3fv(impactPointsLocation, 1, (float*)&impactColour);
+		int impactColourIndex = point.GetTeamID() - 1;
+		glUniform1i(impactPointsLocation, impactColourIndex);
 
 		sprintf_s(buffer, "impactPoints[%i].radius", i);
 		impactPointsLocation = glGetUniformLocation(shader->GetProgramID(), buffer);
@@ -1404,60 +1521,49 @@ void GameTechRenderer::NewRenderText() {
 }
 
 void GameTechRenderer::GenerateAtomicBuffer(){
-	glGenBuffers(1, &atomicsBuffer[0]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[0]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer[0]);
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
+	glGenBuffers(1, &atomicsBuffer);
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
-	glGenBuffers(1, &atomicsBuffer[1]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[1]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 1, atomicsBuffer[1]);
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
-	
-	glGenBuffers(1, &atomicsBuffer[2]);
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[2]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 2, atomicsBuffer[2]);
-	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * ATOMIC_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
+	glBufferStorage(GL_ATOMIC_COUNTER_BUFFER, sizeof(GLuint) * TEAM_COUNT, NULL, GL_DYNAMIC_STORAGE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_READ_BIT | GL_MAP_COHERENT_BIT);
 	
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
 	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, 0);
-	
-	currentAtomicCPU = 2;
-	curretAtomicReset = 1;
-	currentAtomicGPU = 0;
 }
 	
 	
 void GameTechRenderer::RetrieveAtomicValues(){
-	GLuint pixelCount[ATOMIC_COUNT];
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
+	GLuint pixelCount[TEAM_COUNT];
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
 
-	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, pixelCount);
+	glGetBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * TEAM_COUNT, pixelCount);
 
 	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, 0);
-	totalPixelCount = pixelCount[0];
+	
 
-	for (GLuint i = 1; i < ATOMIC_COUNT; i++)
+	for (GLuint i = 0; i < TEAM_COUNT; i++)
 	{
-		teamPixelCount[i - 1] = pixelCount[i];
+		teamPixelCount[i] = pixelCount[i];
 	}
 	
-	CalculatePercentages(totalPixelCount, teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
+	CalculatePercentages(teamPixelCount[0], teamPixelCount[1], teamPixelCount[2], teamPixelCount[3]);
 
-	ResetAtomicBuffer();
+	//ResetAtomicBuffer();
 }
 
 void GameTechRenderer::ResetAtomicBuffer(){
-	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer[currentAtomicCPU]);
-	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, currentAtomicCPU, atomicsBuffer[currentAtomicCPU]);
-	GLuint a[ATOMIC_COUNT];
-	for (GLuint i = 0; i < ATOMIC_COUNT; i++)
+	glBindBuffer(GL_ATOMIC_COUNTER_BUFFER, atomicsBuffer);
+	glBindBufferBase(GL_ATOMIC_COUNTER_BUFFER, 0, atomicsBuffer);
+	GLuint a[TEAM_COUNT];
+	for (GLuint i = 0; i < TEAM_COUNT; i++)
 	{
 		a[i] = 0;
 	}
-	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * ATOMIC_COUNT, a);
+	glBufferSubData(GL_ATOMIC_COUNTER_BUFFER, 0, sizeof(GLuint) * TEAM_COUNT, a);
 
+	updateScorebar = true;
+	mapInitialised = false;
 }
 
 int GameTechRenderer::GetWinningTeam(float& percentage) {
@@ -1476,12 +1582,14 @@ int GameTechRenderer::GetWinningTeam(float& percentage) {
 		else if (it->second > secondPercentage) {
 			secondPercentage = it->second;
 		}
-		else if (it->second == winningPercentage) {
-			winningTeam = 5;
-		}
+		
 	}
 
 	percentage = 1.0f / (winningPercentage / secondPercentage);
+
+	if (winningPercentage == 0) {
+		percentage = 1.0f;
+	}
 	return winningTeam;
 }
 
@@ -1503,8 +1611,13 @@ void GameTechRenderer::SetWorld(ToonGameWorld* world)
 	int i = 0;
 	for (auto& [ID, team] : teams) {
 		teamColours[i] = team->GetTeamColour();
+		teamColoursShader.teams[i] = Vector4(team->GetTeamColour(), 1);
 		i++;
 	}
+
+	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), &teamColoursShader.teams, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void GameTechRenderer::SetDebugStringBufferSizes(size_t newVertCount) {
@@ -1642,44 +1755,6 @@ void GameTechRenderer::GenerateSceneFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void GameTechRenderer::GenerateMinimapFBO(int width, int height)
-{
-	glGenFramebuffers(1, &minimapFBO);
-	glBindFramebuffer(GL_FRAMEBUFFER, minimapFBO);
-
-	glGenTextures(1, &minimapColourTexture);
-	glBindTexture(GL_TEXTURE_2D, minimapColourTexture);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, minimapColourTexture, 0);
-	glObjectLabel(GL_TEXTURE, minimapColourTexture, -1, "Minimap Colour Texture");
-
-	glGenTextures(1, &minimapDepthTexture);
-	glBindTexture(GL_TEXTURE_2D, minimapDepthTexture);
-
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH24_STENCIL8, width, height, 0, GL_DEPTH_STENCIL, GL_UNSIGNED_INT_24_8, NULL);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, minimapDepthTexture, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_TEXTURE_2D, minimapDepthTexture, 0);
-
-	glObjectLabel(GL_TEXTURE, minimapDepthTexture, -1, "Minimap Depth Texture");
-
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !minimapColourTexture || !minimapColourTexture) {
-		return;
-	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-}
 void GameTechRenderer::GenerateMapFBO(int width, int height)
 {
 	glGenFramebuffers(1, &mapFBO);
@@ -1711,23 +1786,23 @@ void GameTechRenderer::GenerateMapFBO(int width, int height)
 
 	glObjectLabel(GL_TEXTURE, mapDepthTexture, -1, "Mainmap Depth Texture");
 
-	glGenTextures(1, &mapScoreTexture);
-	glBindTexture(GL_TEXTURE_2D, mapScoreTexture);
+	glGenTextures(1, &mapPositionTexture);
+	glBindTexture(GL_TEXTURE_2D, mapPositionTexture);
 
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, NULL);
 
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapScoreTexture, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, mapPositionTexture, 0);
 
-	glObjectLabel(GL_TEXTURE, mapScoreTexture, -1, "Mainmap Score Texture");
+	glObjectLabel(GL_TEXTURE, mapPositionTexture, -1, "Mainmap Position Texture");
 
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
 	glDrawBuffers(2, attachments);
 
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapScoreTexture) {
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE || !mapColourTexture || !mapPositionTexture) {
 		return;
 	}
 
@@ -1779,20 +1854,6 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
-	glGenBuffers(1, &lightMatrix);
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	
-	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
-	unsigned int animatedIndex = glGetUniformBlockIndex(animatedShader->GetProgramID(), "lights");
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, lightMatrix);
-	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
-	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightMatrix);
-	glUniformBlockBinding(animatedShader->GetProgramID(), animatedIndex, 2);
-}
 
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {
@@ -1845,10 +1906,101 @@ void NCL::CSC8503::GameTechRenderer::DrawLoader()
 	const float height = 5.0f;
 
 	NCL::ToonAssetManager::LoadingDataStructure loadingData = ToonAssetManager::Instance().loadingData;
-
 	Debug::DrawQuad(position, Vector2(width, height), Debug::GREEN);
 	Debug::DrawFilledQuad(position, Vector2(loadingData.assetCountDone * (width / loadingData.assetCountTotal), height), 100.0f/windowHeight, Debug::GREEN);
 	Debug::Print("Loading " + loadingData.loadingText + " (" + std::to_string(loadingData.assetCountDone) + "/" + std::to_string(loadingData.assetCountTotal) + ")", position + Vector2(0.0f, (2 * height)), Debug::GREEN);
+}
+
+
+void NCL::CSC8503::GameTechRenderer::CreateTextureUBO()
+{
+	int index = 0;
+	std::vector<Rendering::TextureBase*>* texBase = ToonAssetManager::Instance().GetBindlessTextures();
+	for (auto const& tex : *texBase)
+	{
+		
+		NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
+		GLuint64 handler = glGetTextureHandleARB(texture->GetObjectID());
+		glMakeTextureHandleResidentARB(handler);
+		textures.values[index] = handler;
+		index++;
+	}
+
+	glGenBuffers(1, &textureUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, textureUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(textureStruct), textures.values, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "textures");
+	unsigned int uniformBlockIndexSceneScreen = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "textures");
+	unsigned int uniformBlockIndexPlayer = glGetUniformBlockIndex(playerShader->GetProgramID(), "textures");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 0, textureUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 0);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), uniformBlockIndexSceneScreen, 0);
+	glUniformBlockBinding(playerShader->GetProgramID(), uniformBlockIndexPlayer, 0);
+}
+
+void GameTechRenderer::CreateMaterialUBO() {
+	int index = 0;
+	for (auto const& mat : *ToonAssetManager::Instance().GetGPUMaterials())
+	{
+		materials.values[index] = mat;
+		index++;
+	}
+
+	glGenBuffers(1, &materialUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, materialUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(materialStruct), &materials, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int uniformBlockIndexScene = glGetUniformBlockIndex(sceneShader->GetProgramID(), "materials");
+	unsigned int uniformBlockIndexSceneScreen = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "materials");
+	unsigned int uniformBlockIndexPlayer = glGetUniformBlockIndex(playerShader->GetProgramID(), "materials");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 1, materialUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), uniformBlockIndexScene, 1);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), uniformBlockIndexSceneScreen, 1);
+	glUniformBlockBinding(playerShader->GetProgramID(), uniformBlockIndexPlayer, 1);
+}
+
+void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
+	glGenBuffers(1, &lightUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
+	unsigned int sceneScreenIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "lights");
+	unsigned int playerIndex = glGetUniformBlockIndex(playerShader->GetProgramID(), "lights");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightUBO);
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 2);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), sceneScreenIndex, 2);
+	glUniformBlockBinding(playerShader->GetProgramID(), playerIndex, 2);
+}
+
+void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
+	glGenBuffers(1, &teamUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");
+	unsigned int mapIndex = glGetUniformBlockIndex(mapUpdateShader->GetProgramID(), "teamColours");
+	unsigned int scorebarIndex = glGetUniformBlockIndex(scoreBarShader->GetProgramID(), "teamColours");
+	unsigned int playerIndex = glGetUniformBlockIndex(playerShader->GetProgramID(), "teamColours");
+	unsigned int screenIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "teamColours");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, teamUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 3);
+	glUniformBlockBinding(mapUpdateShader->GetProgramID(), mapIndex, 3);
+	glUniformBlockBinding(scoreBarShader->GetProgramID(), scorebarIndex, 3);
+	glUniformBlockBinding(playerShader->GetProgramID(), playerIndex, 3);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), screenIndex, 3);
 }
 
 void GameTechRenderer::OnWindowResize(int w, int h) {

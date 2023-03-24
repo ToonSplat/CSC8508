@@ -17,6 +17,7 @@ enum BasicNetworkMessages {
 	Player_Disconnected,
 	Shoot,
 	Impact,
+	HitSphereImpact,
 	Shutdown
 };
 

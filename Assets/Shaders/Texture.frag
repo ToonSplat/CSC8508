@@ -6,6 +6,10 @@ uniform bool discardWhite = true;
 uniform bool applyFillAmount = false;
 uniform float fillAmount = 1.0f;
 
+uniform bool useColour = false;
+
+uniform vec4 colour;
+
 in Vertex {
 	vec2 texCoord;
 } IN;
@@ -21,9 +25,14 @@ void main(void)
 			discard;
 	}
 
+
+	if (useColour){
+		fragColour = colour;
+    return;
+	}
+
 	fragColour = texture(diffuseTex, IN.texCoord) * colour;
 	if (fragColour.rgb == vec3(1.0, 1.0, 1.0) && discardWhite) 
 		fragColour.a = 0.0f;
-	
-	//fragColour = vec4(IN.texCoord, 0, 1);
+
 }

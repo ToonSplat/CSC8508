@@ -6,10 +6,11 @@ uniform float team3PercentageOwned;
 uniform float team4PercentageOwned;
 
 uniform vec3 defaultGray;
-uniform vec3 team1Colour;
-uniform vec3 team2Colour;
-uniform vec3 team3Colour;
-uniform vec3 team4Colour;
+
+#define TEAM_COUNT 4
+layout (std140) uniform teamColours{
+	vec4 teamColour[TEAM_COUNT];
+};
 
 in Vertex {
 	vec2 texCoord;
@@ -37,13 +38,13 @@ void main(void)	{
     float sdf = sdPlane(IN.fragWorldPos.xy, vec2(0.75, 0.5));
     
     if(IN.fragWorldPos.x < team3 && IN.fragWorldPos.x > team1){
-        fragColour = vec4(team3Colour, 1.0);
+        fragColour = teamColour[2];
     }else if(IN.fragWorldPos.x < team1){
-        fragColour = vec4(team1Colour, 1.0);
+        fragColour = teamColour[0];
     }else if(IN.fragWorldPos.x > team4 && IN.fragWorldPos.x < team2){
-        fragColour = vec4(team4Colour, 1.0);
+        fragColour = teamColour[3];
     }else if(IN.fragWorldPos.x > team2){
-        fragColour = vec4(team2Colour, 1.0);
+        fragColour = teamColour[1];
     }else{
         fragColour = vec4(defaultGray, 1.0);
     }
