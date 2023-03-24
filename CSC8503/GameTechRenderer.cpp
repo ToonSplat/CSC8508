@@ -114,6 +114,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	LoadSkybox();
 	CreateLightUBO();
 	CreateTeamColourUBO();
+	
 
 	team1Percentage = 0;
 	team2Percentage = 0;
@@ -719,7 +720,7 @@ void GameTechRenderer::RenderShadowMap() {
 void NCL::CSC8503::GameTechRenderer::Present1Player()
 {
 	PresentGameScene();
-	//PresentMinimap();
+	PresentMinimap();
 }
 void NCL::CSC8503::GameTechRenderer::Present2Player()
 {
@@ -1028,7 +1029,7 @@ void GameTechRenderer::UpdateLightColour() {
 	default:
 		break;
 	}
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -1565,22 +1566,7 @@ void NCL::CSC8503::GameTechRenderer::GenerateSplitFBO(int width, int height)
 }
 
 
-void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
-	glGenBuffers(1, &teamUBO);
-	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");
-	unsigned int mapIndex =   glGetUniformBlockIndex(mapUpdateShader->GetProgramID(), "teamColours");
-	unsigned int scorebarIndex =   glGetUniformBlockIndex(scoreBarShader->GetProgramID(), "teamColours");
-
-	glBindBufferBase(GL_UNIFORM_BUFFER, 1, teamUBO);
-
-	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 1);
-	glUniformBlockBinding(mapUpdateShader->GetProgramID(), mapIndex, 1);
-	glUniformBlockBinding(scoreBarShader->GetProgramID(), scorebarIndex, 1);
-}
 
 void NCL::CSC8503::GameTechRenderer::GenerateQuadFBO(int width, int height)
 {
@@ -1693,17 +1679,38 @@ void GameTechRenderer::CreateMaterialUBO() {
 }
 
 void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
-	glGenBuffers(1, &lightMatrix);
-	glBindBuffer(GL_UNIFORM_BUFFER, lightMatrix);
+	glGenBuffers(1, &lightUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
 	unsigned int sceneScreenIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "lights");
-	unsigned int playerIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "lights");
+	unsigned int playerIndex = glGetUniformBlockIndex(playerShader->GetProgramID(), "lights");
 
-	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightMatrix);
+	glBindBufferBase(GL_UNIFORM_BUFFER, 2, lightUBO);
 	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 2);
 	glUniformBlockBinding(sceneScreenShader->GetProgramID(), sceneScreenIndex, 2);
 	glUniformBlockBinding(playerShader->GetProgramID(), playerIndex, 2);
+}
+
+void NCL::CSC8503::GameTechRenderer::CreateTeamColourUBO() {
+	glGenBuffers(1, &teamUBO);
+	glBindBuffer(GL_UNIFORM_BUFFER, teamUBO);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(TeamColourStruct), NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "teamColours");
+	unsigned int mapIndex = glGetUniformBlockIndex(mapUpdateShader->GetProgramID(), "teamColours");
+	unsigned int scorebarIndex = glGetUniformBlockIndex(scoreBarShader->GetProgramID(), "teamColours");
+	unsigned int playerIndex = glGetUniformBlockIndex(playerShader->GetProgramID(), "teamColours");
+	unsigned int screenIndex = glGetUniformBlockIndex(sceneScreenShader->GetProgramID(), "teamColours");
+
+	glBindBufferBase(GL_UNIFORM_BUFFER, 3, teamUBO);
+
+	glUniformBlockBinding(sceneShader->GetProgramID(), sceneIndex, 3);
+	glUniformBlockBinding(mapUpdateShader->GetProgramID(), mapIndex, 3);
+	glUniformBlockBinding(scoreBarShader->GetProgramID(), scorebarIndex, 3);
+	glUniformBlockBinding(playerShader->GetProgramID(), playerIndex, 3);
+	glUniformBlockBinding(sceneScreenShader->GetProgramID(), screenIndex, 3);
 }
