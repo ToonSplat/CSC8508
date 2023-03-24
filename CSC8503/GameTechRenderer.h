@@ -151,6 +151,7 @@ namespace NCL {
 			OGLShader* mapUpdateShader;
 			OGLShader*	sceneScreenShader;
 			OGLShader* playerShader;
+			OGLShader* uiShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;

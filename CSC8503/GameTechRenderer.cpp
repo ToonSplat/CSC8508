@@ -55,13 +55,9 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteTextures(1, &sceneDepthTexture);
 	glDeleteFramebuffers(1, &sceneFBO);
 	
-	glDeleteTextures(1, &minimapColourTexture);
-	glDeleteTextures(1, &minimapDepthTexture);
-	glDeleteFramebuffers(1, &minimapFBO);
-	
 	glDeleteTextures(1, &mapColourTexture);
 	glDeleteTextures(1, &mapDepthTexture);
-	glDeleteTextures(1, &mapScoreTexture);
+	glDeleteTextures(1, &mapPositionTexture);
 	glDeleteFramebuffers(1, &mapFBO);
 
 	glDeleteTextures(2, splitColourTexture);
@@ -72,7 +68,7 @@ GameTechRenderer::~GameTechRenderer()	{
 	glDeleteTextures(4, quadDepthTexture);
 	glDeleteFramebuffers(4, quadFBO);
 
-	glDeleteBuffers(3, atomicsBuffer);
+	glDeleteBuffers(1, &atomicsBuffer);
 	glDeleteBuffers(1, &lineVertVBO);
 	glDeleteBuffers(1, &textVertVBO);
 	glDeleteBuffers(1, &textColourVBO);
@@ -128,6 +124,7 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	mapUpdateShader = ToonAssetManager::Instance().GetShader("map_update");
 	sceneScreenShader = ToonAssetManager::Instance().GetShader("sceneScreen");
 	playerShader = ToonAssetManager::Instance().GetShader("animated");
+	uiShader = ToonAssetManager::Instance().GetShader("UI");
 
 	shadowSize = 2048;
 	GenerateShadowFBO();
@@ -241,21 +238,7 @@ void GameTechRenderer::RenderFrame() {
 }
 
 
-void NCL::CSC8503::GameTechRenderer::UpdateLighting()
-{
-	float percentageScale = 0.0f;
-	int winning = GetWinningTeam(percentageScale);
 
-	shaderLight.data[0].lightColour = teamColours[winning - 1] * (1 - percentageScale);
-
-	if (percentageScale > 0.99) {
-		shaderLight.data[0].lightColour = defaultColour;
-	}
-
-	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
 
 
 void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
@@ -269,7 +252,7 @@ void NCL::CSC8503::GameTechRenderer::DrawMainScene(int id){
 	RenderScene();
 	RenderRectical(id);
 	RenderWeapon(id);
-	RenderTeamBeacons(id);
+	//RenderTeamBeacons(id);
 }
 
 void GameTechRenderer::RenderRectical(int id)
@@ -280,13 +263,13 @@ void GameTechRenderer::RenderRectical(int id)
 	if (networkGame != nullptr && networkGame->IsServer())
 		return;
 
-	BindShader(textureShader);
+	BindShader(uiShader);
 
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_crosshair"), "diffuseTex", 0);
 
-	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
-	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+	int modelLocation = glGetUniformLocation(uiShader->GetProgramID(), "modelMatrix");
+	int discardWhiteLoc = glGetUniformLocation(uiShader->GetProgramID(), "discardWhite");
+	int colourLoc = glGetUniformLocation(uiShader->GetProgramID(), "colour");
 
 	Vector4 colorWhite = Debug::WHITE;
 	Vector4 teamColor = colorWhite;
@@ -358,15 +341,15 @@ void NCL::CSC8503::GameTechRenderer::RenderWeapon(int id)
 		PaintBallClass playerWeapon = player->GetWeapon();
 		fillAmount = 1.0f - (playerWeapon.getShootTimer() / playerWeapon.getFireRate());
 	}
-
-	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
-	int applyFillAmountLoc = glGetUniformLocation(textureShader->GetProgramID(), "applyFillAmount");
-	int fillAmountLoc = glGetUniformLocation(textureShader->GetProgramID(), "fillAmount");
-	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
-	
-	BindShader(textureShader);
+	BindShader(uiShader);
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_weapon"), "diffuseTex", 0);
+
+	int modelLocation = glGetUniformLocation(uiShader->GetProgramID(), "modelMatrix");
+	int discardWhiteLoc = glGetUniformLocation(uiShader->GetProgramID(), "discardWhite");
+	int applyFillAmountLoc = glGetUniformLocation(uiShader->GetProgramID(), "applyFillAmount");
+	int fillAmountLoc = glGetUniformLocation(uiShader->GetProgramID(), "fillAmount");
+	int colourLoc = glGetUniformLocation(uiShader->GetProgramID(), "colour");
+	
 
 	Matrix4 weaponBorderModelMatrix = Matrix4::Translation(iconPos) * Matrix4::Scale(iconBackgroundScale);
 
@@ -412,11 +395,11 @@ void NCL::CSC8503::GameTechRenderer::RenderTeamBeacons(int id)
 	Matrix4 viewMatrix = currentRenderCamera->BuildViewMatrix();
 	Matrix4 projMatrix = currentRenderCamera->BuildProjectionMatrix(screenAspect);
 
-	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
-	int discardWhiteLoc = glGetUniformLocation(textureShader->GetProgramID(), "discardWhite");
-	int colourLoc = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+	int modelLocation = glGetUniformLocation(uiShader->GetProgramID(), "modelMatrix");
+	int discardWhiteLoc = glGetUniformLocation(uiShader->GetProgramID(), "discardWhite");
+	int colourLoc = glGetUniformLocation(uiShader->GetProgramID(), "colour");
 
-	BindShader(textureShader);
+	BindShader(uiShader);
 	BindTextureToShader((OGLTexture*)ToonAssetManager::Instance().GetTexture("ui_beacon"), "diffuseTex", 0);
 
 	Vector4 colorWhite = Debug::WHITE;
@@ -1314,8 +1297,12 @@ void GameTechRenderer::UpdateLightColour() {
 		break;
 	}
 
+	/*if (percentageScale > 0.99) {
+		shaderLight.data[0].lightColour = defaultColour;
+	}*/
+
 	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
@@ -1969,7 +1956,7 @@ void GameTechRenderer::CreateMaterialUBO() {
 void NCL::CSC8503::GameTechRenderer::CreateLightUBO() {
 	glGenBuffers(1, &lightUBO);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightUBO);
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &shaderLight, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(LightStruct), &sceneLight, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	unsigned int sceneIndex = glGetUniformBlockIndex(sceneShader->GetProgramID(), "lights");
@@ -2012,13 +1999,11 @@ void GameTechRenderer::OnWindowResize(int w, int h) {
 	glDeleteTextures(1, &sceneDepthTexture);
 	glDeleteFramebuffers(1, &sceneFBO);
 
-	glDeleteTextures(1, &minimapColourTexture);
-	glDeleteTextures(1, &minimapDepthTexture);
-	glDeleteFramebuffers(1, &minimapFBO);
+	
 
 	glDeleteTextures(1, &mapColourTexture);
 	glDeleteTextures(1, &mapDepthTexture);
-	glDeleteTextures(1, &mapScoreTexture);
+	glDeleteTextures(1, &mapPositionTexture);
 	glDeleteFramebuffers(1, &mapFBO);
 
 	glDeleteTextures(2, splitColourTexture);
@@ -2032,6 +2017,5 @@ void GameTechRenderer::OnWindowResize(int w, int h) {
 	GenerateSceneFBO(windowWidth, windowHeight);
 	GenerateSplitFBO(windowWidth / 2, windowHeight);
 	GenerateQuadFBO(windowWidth / 2, windowHeight / 2);
-	GenerateMinimapFBO(windowWidth, windowHeight);
 	GenerateMapFBO(windowWidth, windowHeight);
 }
