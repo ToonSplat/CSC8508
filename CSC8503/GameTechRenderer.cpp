@@ -467,7 +467,7 @@ void GameTechRenderer::RenderScene() {
 		if ((*i).GetRenderObject() == nullptr) continue;
 		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
 		if (dynamic_cast<HitSphere*>(linkedObject))
-			return;
+			continue;
 
 		OGLShader* shader = (OGLShader*)(*i).GetRenderObject()->GetShader();
 		BindShader(shader);
@@ -916,6 +916,9 @@ void GameTechRenderer::RenderShadowMap() {
 
 	for (const auto& i : activeObjects)
 	{
+		ToonGameObject* linkedObject = (*i).GetRenderObject()->GetGameObject();
+		if (dynamic_cast<HitSphere*>(linkedObject))
+			continue;
 		if (i->GetName() == "NoShadow") { continue; }
 		Matrix4 modelMatrix = (*i).GetModelMatrix();
 		Matrix4 mvpMatrix = mvMatrix * modelMatrix;

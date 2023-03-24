@@ -72,7 +72,7 @@ void NCL::ToonMeshMaterial::LoadTextures(const std::string& entryName, const Mes
 	materialEntry->GetEntry(entryName, &textureFileName);
 	if (textureFileName != nullptr)
 	{
-		std::string filePath = Assets::TEXTUREDIR + *textureFileName;
+		std::string filePath = Assets::GetTextureDir() + *textureFileName;
 		Rendering::TextureBase* tex = ToonAssetManager::Instance().AddTexture(*textureFileName, filePath, textureIndex, true);
 
 		//NCL::Rendering::OGLTexture* texture = (NCL::Rendering::OGLTexture*)tex;
