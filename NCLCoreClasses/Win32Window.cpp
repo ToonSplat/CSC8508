@@ -55,9 +55,18 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 		DEVMODE dmScreenSettings;								// Device Mode
 		memset(&dmScreenSettings,0,sizeof(dmScreenSettings));	// Makes Sure Memory's Cleared
 
+		DEVMODEA settings;
+		EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &settings);
+
+		if(settings.dmPelsWidth != 0)
+			size.x = settings.dmPelsWidth;
+		if(settings.dmPelsHeight != 0)
+			size.y = settings.dmPelsHeight;
+		defaultSize = size;
+
 		dmScreenSettings.dmSize=sizeof(dmScreenSettings);		// Size Of The Devmode Structure
-		dmScreenSettings.dmPelsWidth		= sizeX;			// Selected Screen Width
-		dmScreenSettings.dmPelsHeight		= sizeY;			// Selected Screen Height
+		dmScreenSettings.dmPelsWidth		= size.x;			// Selected Screen Width
+		dmScreenSettings.dmPelsHeight		= size.y;			// Selected Screen Height
 		dmScreenSettings.dmBitsPerPel		= 32;				// Selected Bits Per Pixel
 		dmScreenSettings.dmDisplayFrequency = 60;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;

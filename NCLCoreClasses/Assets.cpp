@@ -16,7 +16,7 @@ std::string FONTSDIR;
 std::string DATADIRECTORY; // DATADIR is an existing type apparently!
 
 void Assets::SetupAssetDirectory() {
-#ifdef _DEBUG
+#ifndef _DEBUG
 	ASSETROOT = ASSETROOTLOCATION;
 	SHADERDIR = ASSETROOT + "Shaders/";
 	MESHDIR = ASSETROOT + "Meshes/";
@@ -25,6 +25,22 @@ void Assets::SetupAssetDirectory() {
 	FONTSDIR = ASSETROOT + "Fonts/";
 	DATADIRECTORY = ASSETROOT + "Data/";
 #else
+	// This is a hacky solution that will work in time... should do it properly instead but the file path strings are quite different (/ vs \\)
+	std::fstream file(ASSETROOTLOCATION + std::string("Data/ItemsToLoad.csv"));
+	if (file.is_open()) {
+		// If there is a build version just use that directory for now
+		ASSETROOT = ASSETROOTLOCATION;
+		SHADERDIR = ASSETROOT + "Shaders/";
+		MESHDIR = ASSETROOT + "Meshes/";
+		TEXTUREDIR = ASSETROOT + "Textures/";
+		SOUNDSDIR = ASSETROOT + "Sounds/";
+		FONTSDIR = ASSETROOT + "Fonts/";
+		DATADIRECTORY = ASSETROOT + "Data/";
+		file.close();
+		return;
+	}
+
+
 	TCHAR exePath[MAX_PATH];
 	if (GetModuleFileName(NULL, exePath, MAX_PATH))
 		std::wcout << exePath << std::endl;

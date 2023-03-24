@@ -7,4 +7,4 @@ George Bell (190155667) - Graphics
 Ben Summers (190320162) - Graphics
 Mantas Aleskevicius (190344272) - Audio
 Max Elliot (180272185) - PS4 Rendering
-Richard Brown (190357892)
+Richard Brown (190357892) - Misc
