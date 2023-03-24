@@ -197,6 +197,8 @@ namespace NCL {
 
 			OGLMesh* scoreQuad;
 
+			OGLMesh* arrowMesh;
+
 			float team1Percentage;
 			float team2Percentage;
 			float team3Percentage;

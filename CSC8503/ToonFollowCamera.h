@@ -38,6 +38,8 @@ namespace NCL
 
 			Vector3 GetPlayerPosition() const { return player->GetPosition(); }
 
+			Vector4 GetPlayerTeamColour() const { return player->GetTeam()->GetTeamColour(); }
+
 			Vector3 followOffset2;
 
 		protected:

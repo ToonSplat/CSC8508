@@ -127,6 +127,11 @@ void NCL::CSC8503::GameTechRenderer::SetupMain()
 	scoreQuad->SetVertexTextureCoords({ Vector2(0.0f,1.0f), Vector2(0.0f,0.0f), Vector2(1.0f,0.0f), Vector2(1.0f,1.0f) });
 	scoreQuad->SetVertexIndices({ 0,1,2,2,3,0 });
 	scoreQuad->UploadToGPU();
+
+	arrowMesh = new OGLMesh();
+	arrowMesh->SetVertexPositions({ Vector3(0.0f, 0.5f, -1.0f), Vector3(-0.3f, 0.0f, -1.0f) , Vector3(0.3f, 0.0f, -1.0f), Vector3(0.0f, -0.5f, -1.0f) });
+	arrowMesh->SetVertexIndices({ 0,1,2, 0,2,3 });
+	arrowMesh->UploadToGPU();
 	
 	LoadSkybox();
 	CreateLightUBO();
@@ -479,24 +484,38 @@ void NCL::CSC8503::GameTechRenderer::PresentGameScene(){
 void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 	if (!gameWorld->GetMinimapCamera() || !mapInitialised) return;
 
-	BindShader(minimapShader);
+	BindShader(textureShader);
+
+	ToonFollowCamera* followCam = (ToonFollowCamera*)gameWorld->GetMainCamera(1);
+	Vector3 playerPos = followCam->GetPlayerPosition();
+
+	Matrix4 stencilModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.4f, 0.4f, 1.0f));
+
+	Vector2 offset(playerPos.x, playerPos.z);
+	Vector2 screenSize(windowWidth, windowHeight);
+	offset = offset / screenSize;
+	offset = offset * 8;
+	offset.x =   -0.7f - offset.x;
+	offset.y =   -0.88f + offset.y;
+
+	Matrix4 playerTranslationMatrix = Matrix4::Translation(Vector3(offset, 0.0f));
 
 
-	int modelLocation = glGetUniformLocation(minimapShader->GetProgramID(), "modelMatrix");
+	int modelLocation = glGetUniformLocation(textureShader->GetProgramID(), "modelMatrix");
 
 	
-	//glEnable(GL_STENCIL_TEST);
+	glEnable(GL_STENCIL_TEST);
 
-	//glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-	//glStencilFunc(GL_ALWAYS, 2, ~0);
-	//glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-	Matrix4 minimapModelMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.0f)) * Matrix4::Scale(Vector3(0.3f, 0.3f, 1.0f));
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glStencilFunc(GL_ALWAYS, 2, ~0);
+	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+	Matrix4 minimapModelMatrix = playerTranslationMatrix * Matrix4::Scale(Vector3(0.8f, 0.8f, 1.0f)); 
 	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
 
 	Matrix4 identityMatrix = Matrix4();
 
-	int projLocation = glGetUniformLocation(minimapShader->GetProgramID(), "projMatrix");
-	int viewLocation = glGetUniformLocation(minimapShader->GetProgramID(), "viewMatrix");
+	int projLocation = glGetUniformLocation(textureShader->GetProgramID(), "projMatrix");
+	int viewLocation = glGetUniformLocation(textureShader->GetProgramID(), "viewMatrix");
 
 	glUniformMatrix4fv(viewLocation, 1, false, (float*)&identityMatrix);
 	glUniformMatrix4fv(projLocation, 1, false, (float*)&identityMatrix);
@@ -504,39 +523,57 @@ void NCL::CSC8503::GameTechRenderer::PresentMinimap(){
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mapColourTexture);
-	glUniform1i(glGetUniformLocation(minimapShader->GetProgramID(), "mapTex"), 0);
+	glUniform1i(glGetUniformLocation(textureShader->GetProgramID(), "mapTex"), 0);
 
-	int screenSizeLocation = glGetUniformLocation(minimapShader->GetProgramID(), "screenSize");
-	Vector2 screenSize(windowWidth, windowHeight);
-	glUniform2fv(screenSizeLocation, 1, screenSize.array);
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&stencilModelMatrix);
+	BindMesh(minimapStencilQuad);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
-	int playerLocation = glGetUniformLocation(minimapShader->GetProgramID(), "playerPosition");
-	ToonFollowCamera* followCam = (ToonFollowCamera*)gameWorld->GetMainCamera(1);
-	Vector3 playerPos = followCam->GetPlayerPosition();
-	glUniform3fv(playerLocation, 1, playerPos.array);
-
-
-	screenSizeLocation = glGetUniformLocation(minimapShader->GetProgramID(), "screenSize2");
-	glUniform2fv(screenSizeLocation, 1, screenSize.array);
-
-	playerLocation = glGetUniformLocation(minimapShader->GetProgramID(), "playerPosition2");
-	glUniform3fv(playerLocation, 1, playerPos.array);
-
-
-	//BindMesh(minimapStencilQuad);
-	//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-	//glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-	//glStencilFunc(GL_EQUAL, 2, ~0);
-	//glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glStencilFunc(GL_EQUAL, 2, ~0);
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 	glEnable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&minimapModelMatrix);
+
 	BindMesh(fullScreenQuad);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&stencilModelMatrix);
+
+	
+	
+	
+
+	
+	
 	glDisable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
-	//glDisable(GL_STENCIL_TEST);
+	glDisable(GL_STENCIL_TEST);
+
+	int useColourLocation = glGetUniformLocation(textureShader->GetProgramID(), "useColour");
+	int colourLocation = glGetUniformLocation(textureShader->GetProgramID(), "colour");
+
+	glUniform1i(useColourLocation, true);
+
+
+	Vector4 black(0, 0, 0, 1);
+	
+
+	Matrix4 playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.705f, 1.0)) * Matrix4::Scale(Vector3(0.06f, 0.12f, 1.0f));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
+	glUniform4fv(colourLocation, 1, black.array);
+	BindMesh(arrowMesh);
+	glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
+
+	playerIconMatrix = Matrix4::Translation(Vector3(-0.8f, -0.7f, 0.5f)) * Matrix4::Scale(Vector3(0.05f, 0.1f, 1.0f));
+	glUniformMatrix4fv(modelLocation, 1, false, (float*)&playerIconMatrix);
+	glUniform4fv(colourLocation, 1, followCam->GetPlayerTeamColour().array);
+	BindMesh(arrowMesh);
+	glDrawElements(GL_TRIANGLES, 4, GL_UNSIGNED_INT, 0);
+	
+	
+	glUniform1i(useColourLocation, false);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
