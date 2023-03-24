@@ -10,7 +10,7 @@ using namespace NCL::Rendering;
 using std::ifstream;
 
 MeshMaterial::MeshMaterial(const std::string& filename) {
-	ifstream file(Assets::MESHDIR + filename);
+	ifstream file(Assets::GetMeshDir() + filename);
 
 	string dataType;
 	file >> dataType;
@@ -75,7 +75,7 @@ void MeshMaterial::LoadTextures() {
 
 void MeshMaterialEntry::LoadTextures() {
 	for (auto& i : entries) {
-		string filename = Assets::TEXTUREDIR + i.second.first;
+		string filename = Assets::GetTextureDir() + i.second.first;
 
 		TextureBase* t = TextureLoader::LoadAPITexture(filename);
 

@@ -34,7 +34,7 @@ bool TextureLoader::LoadTexture(const std::string& filename, char*& outData, int
 
 	auto it = fileHandlers.find(extension);
 
-	std::string realPath = isAbsolute ? filename : Assets::TEXTUREDIR + filename;
+	std::string realPath = isAbsolute ? filename : Assets::GetTextureDir() + filename;
 
 	if (it != fileHandlers.end()) {
 		//There's a custom handler function for this, just use that

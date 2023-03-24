@@ -19,7 +19,7 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 			matEntry->GetEntry("Diffuse", &diffuseFileName);
 			if (diffuseFileName != nullptr)
 			{
-				std::string filePath = Assets::TEXTUREDIR + *diffuseFileName;
+				std::string filePath = Assets::GetTextureDir() + *diffuseFileName;
 				Rendering::TextureBase* diffuseTex = ToonAssetManager::Instance().AddTexture(*diffuseFileName, filePath, true);
 
 				/*stbi_set_flip_vertically_on_load(true);
@@ -36,7 +36,7 @@ NCL::ToonMeshMaterial::ToonMeshMaterial(const std::string& fileName, const unsig
 			matEntry->GetEntry("Bump", &bumpFileName);
 			if (bumpFileName != nullptr)
 			{
-				std::string bumpFilePath = Assets::TEXTUREDIR + *bumpFileName;
+				std::string bumpFilePath = Assets::GetTextureDir() + *bumpFileName;
 				Rendering::TextureBase* bumpTex = TextureLoader::LoadAPITexture(bumpFilePath);
 				texturesBump.emplace_back(bumpTex);
 			}*/
@@ -53,7 +53,7 @@ void NCL::ToonMeshMaterial::LoadTextures(const std::string& entryName, const Mes
 	materialEntry->GetEntry(entryName, &textureFileName);
 	if (textureFileName != nullptr)
 	{
-		std::string filePath = Assets::TEXTUREDIR + *textureFileName;
+		std::string filePath = Assets::GetTextureDir() + *textureFileName;
 		Rendering::TextureBase* tex = ToonAssetManager::Instance().AddTexture(*textureFileName, filePath, true);
 
 		if (tex != nullptr)

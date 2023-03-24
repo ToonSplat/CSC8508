@@ -28,7 +28,7 @@ SimpleFont::SimpleFont(const std::string&filename, const std::string&texName)
 
 	texture		= TextureLoader::LoadAPITexture(texName);
 
-	std::ifstream fontFile(Assets::FONTSSDIR + filename);
+	std::ifstream fontFile(Assets::GetFontsDir() + filename);
 
 	fontFile >> texWidth;
 	fontFile >> texHeight;

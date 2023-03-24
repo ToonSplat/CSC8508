@@ -262,6 +262,8 @@ void OGLRenderer::InitWithWin32(Window& w) {
 	int major = ver[0] - '0';		//casts the 'correct' major version integer from our version string
 	int minor = ver[2] - '0';		//casts the 'correct' minor version integer from our version string
 
+	std::cout << "Detected OpenGL Version: " << major << "." << minor << std::endl;
+
 	if (major < 3) {					//Graphics hardware does not support OGL 4! Erk...
 		std::cout << __FUNCTION__ << " Device does not support OpenGL 4.x!" << std::endl;
 		wglDeleteContext(tempContext);

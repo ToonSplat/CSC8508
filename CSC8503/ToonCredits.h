@@ -19,7 +19,7 @@ class ToonCredits : public PushdownState
 		ToonGameWorld*			 m_World;
 		Window*					 m_Window;
 		ToonFileHandling*		 m_FileHandler;
-		const std::string		 m_FileName = NCL::Assets::DATADIR + "Credits.txt";
+		const std::string		 m_FileName = NCL::Assets::GetDataDir() + "Credits.txt";
 		const int				 m_MaxCharactersPerLine = 80;
 
 	public:
