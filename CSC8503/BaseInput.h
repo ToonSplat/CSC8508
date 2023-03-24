@@ -75,8 +75,8 @@ namespace NCL {
 			controls->direction[0] = short(linearMovement.x * 1000);
 			controls->direction[1] = short(linearMovement.z * 1000);
 
-			controls->camera[0] = short(camera->GetPitch());
-			controls->camera[1] = short(camera->GetYaw());
+			controls->camera[0] = short(camera->GetPitch() * 72.0f);
+			controls->camera[1] = short(camera->GetYaw() * 72.0f);
 
 			controls->aiming =		IsAiming();
 			controls->shooting =	IsShooting();

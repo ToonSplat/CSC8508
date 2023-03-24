@@ -72,6 +72,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
             }
         }
 
+
             // Client hitspheres are for the map only!
             if (gameWorld->GetNetworkStatus() != NetworkingStatus::Client)
                 // Check if collision involves HitSpheres 
@@ -80,8 +81,12 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                         for (ToonGameObject* p : gameWorld->GetPaintableObjects()) {
                             if (p == body1 || p == body2) {
                                 Vector3 localPosition;
-                                localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
-                                    p->GetRigidbody()->getTransform().getPosition());
+                        localPosition = ToonUtils::ConvertToNCLVector3(i->GetRigidbody()->getTransform().getPosition() -
+                            p->GetRigidbody()->getTransform().getPosition());
+                        if (p->GetRigidbody()->getType() == reactphysics3d::BodyType::DYNAMIC) { 
+                            Quaternion rotation = ToonUtils::ConvertToNCLQuaternion(p->GetRigidbody()->getTransform().getOrientation());
+                            localPosition = rotation.Conjugate() * localPosition;
+                        }
                                 if (dynamic_cast<PaintableObject*>(p)) {
                                     PaintableObject* object = (PaintableObject*)p;
                                     object->AddImpactPoint(ImpactPoint(localPosition, i->GetTeam(), i->GetRadius()));
@@ -97,6 +102,7 @@ void ToonEventListener::onContact(const CollisionCallback::CallbackData& callbac
                     }
                 }
         }
+
         for (HitSphere* i : gameWorld->GetHitSpheres()) {
             if ((i->CheckDelete() && i->CheckDrawn()) /*||*/) {
                 //delete the hitsphere
@@ -127,3 +133,4 @@ void ToonEventListener::onTrigger(const reactphysics3d::OverlapCallback::Callbac
         }
     }
 }
+

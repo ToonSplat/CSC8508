@@ -1,10 +1,13 @@
+#include "ToonGame.h"
 #include "ToonGameWorld.h"
 #include "ToonGameObject.h"
 #include "Window.h"
 #include "PaintableObject.h"
 #include "PaintBallProjectile.h"
 #include "Player.h"
+#include "PlayerNPC.h"
 #include "ToonEventListener.h"
+#include "ToonDebugManager.h"
 
 using namespace NCL;
 using namespace NCL::CSC8503;
@@ -63,18 +66,36 @@ void NCL::CSC8503::ToonGameWorld::Clear()
 
 void NCL::CSC8503::ToonGameWorld::ClearAndErase()
 {
-	for (auto& i : gameObjects) {
-		if (dynamic_cast<Player*>(i))
+	for (auto& i : gameObjects) 
+	{
+		if (dynamic_cast<PlayerNPC*>(i))
+			delete (PlayerNPC*)i;
+		else if (dynamic_cast<Player*>(i))
 			delete (Player*)i;
-		else delete i;
+		else 
+			delete i;
 	}
 
 	Clear();
 }
 
+void NCL::CSC8503::ToonGameWorld::SetToonGame(ToonGame* _toonGame)
+{
+	game = _toonGame;
+}
+
+ToonGame* NCL::CSC8503::ToonGameWorld::GetToonGame()
+{
+	if (game != nullptr) 
+		return game;
+
+	return nullptr;
+}
+
 void NCL::CSC8503::ToonGameWorld::AddGameObject(ToonGameObject* o)
 {
 	gameObjects.emplace_back(o);
+	o->CalculateModelMatrix();
 	if (!dynamic_cast<Player*>(o))
 		o->SetWorldID(worldIDCounter++);
 	worldStateCounter++;
@@ -143,8 +164,12 @@ void NCL::CSC8503::ToonGameWorld::UpdateWorld(float dt)
 		}
 	}
 
-	for (auto& object : gameObjects)
-		object->Update(dt);
+	ToonDebugManager::Instance().StartTimeCount("Animation");
+	for (int i = 0; i < gameObjects.size(); i++)
+	{
+		gameObjects[i]->Update(dt);
+	}
+	ToonDebugManager::Instance().EndTimeCount("Animation");
 }
 
 void NCL::CSC8503::ToonGameWorld::OperateOnContents(ToonGameObjectFunc f)

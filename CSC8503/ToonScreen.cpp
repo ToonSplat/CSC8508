@@ -62,13 +62,11 @@ void NCL::CSC8503::ToonScreen::Draw(OGLRenderer& r, bool isMinimap)
 	r.BindMesh(boundMesh);
 	for (int i = 0; i < (int)boundMesh->GetSubMeshCount(); ++i)
 	{
-		/*if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetDiffuseTextures().size() > 0)
-			r.BindTextureToShader((NCL::Rendering::OGLTexture*)renderObject->GetMaterial()->GetDiffuseTextures()[i], "mainTex", 0);*/
-
 		if (renderObject->GetMaterial() != nullptr && (int)renderObject->GetMaterial()->GetSubMaterials().size() > 0) {
 			int materialIndexLocations = glGetUniformLocation(r.GetBoundShader()->GetProgramID(), "materialIndex");
 			int index = renderObject->GetMaterial()->GetMaterialIndex()[i];
 			glUniform1i(materialIndexLocations, index);
+
 		}
 
 		r.DrawBoundMesh(i);

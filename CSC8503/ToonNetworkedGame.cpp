@@ -46,7 +46,7 @@ ToonNetworkedGame::~ToonNetworkedGame() {
 }
 
 void ToonNetworkedGame::StartAsServer() {
-	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 4);
+	thisServer = new GameServer(NetworkBase::GetDefaultPort(), 12);
 
 	thisServer->RegisterPacketHandler(Received_State, this);
 	thisServer->RegisterPacketHandler(Player_Connected, this);
@@ -136,7 +136,7 @@ PushdownState::PushdownResult ToonNetworkedGame::OnUpdate(float dt, PushdownStat
 
 void ToonNetworkedGame::UpdateGame(float dt) {
 	;
-	ToonDebugManager::Instance().StartNetworking();
+	ToonDebugManager::Instance().StartTimeCount("Networking");
 	if (thisServer)
 		Debug::Print("Server", Vector2(0, 5));
 	else
@@ -175,7 +175,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 			PlayerControl* playersControl = player.second.controls;
 			player.second.player->MovementUpdate(dt, playersControl);
 			if (player.second.player->WeaponUpdate(dt, playersControl)) {
-				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal((player.second.controls->camera[0] + 10) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
+				reactphysics3d::Vector3 orientation = player.second.player->GetRigidbody()->getTransform().getOrientation() * reactphysics3d::Quaternion::fromEulerAngles(reactphysics3d::Vector3(reactphysics3d::decimal(((player.second.controls->camera[0] / 72.0f) + 5) / 180.0f * Maths::PI), 0, 0)) * reactphysics3d::Vector3(0, 0, -10.0f); // TODO: Update this to Sunit's new method of getting angle
 				reactphysics3d::Vector3 dirOri = orientation;
 				dirOri.y = 0;
 				dirOri.normalize();
@@ -200,7 +200,7 @@ void ToonNetworkedGame::UpdateGame(float dt) {
 		ServerStartGame();
 		return;
 	}
-	ToonDebugManager::Instance().EndNetworking();
+	ToonDebugManager::Instance().EndTimeCount("Networking");
 	if (!closeGame)
 		ToonGame::UpdateGame(dt);
 }

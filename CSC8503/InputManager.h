@@ -23,10 +23,14 @@ namespace NCL {
 			playerInputs[player] = inputScheme;
 		}
 
+		float GetFOV() const { return fov; }
+		void SetFOV(float fov) { this->fov = fov; }
+
 		std::map<int, BaseInput*>& GetInputs() { return playerInputs; }
 
 	private:
 		InputManager() {
+			fov = 60.0f;
 			// Initialize player inputs here
 		}
 
@@ -37,5 +41,6 @@ namespace NCL {
 		}
 
 		std::map<int, BaseInput*> playerInputs;
+		float fov;
 	};
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <reactphysics3d/reactphysics3d.h>
-#include <Vector3.h>
+#include <Maths.h>
+#include <random>
 
 namespace ToonUtils
 {
@@ -22,5 +23,29 @@ namespace ToonUtils
 	static reactphysics3d::Quaternion ConvertToRP3DQuaternion(const NCL::Maths::Quaternion& q)
 	{
 		return reactphysics3d::Quaternion(q.x, q.y, q.z, q.w);
+	}	
+
+	static float RandF(const float& min, const float& max)
+	{
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_real_distribution<> dis(min, max);
+
+		return (float)dis(gen);
+	}
+
+	static Matrix4 LerpMat(const Matrix4& a, const Matrix4& b, float t)
+	{
+		Matrix4 res;
+
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				res.array[i][j] = Lerp(a.array[i][j], b.array[i][j], t);
+			}
+		}
+
+		return res;
 	}
 }

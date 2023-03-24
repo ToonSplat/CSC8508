@@ -17,6 +17,12 @@ namespace NCL {
 			Vector3 lightPosition;
 			float lightRadius;
 		};
+		struct CrosshairStruct
+		{
+			Vector3 pos;
+			float rot;
+			Vector3 scale;
+		};
 		struct ShaderLights {
 			LightStruct data[1];
 		};
@@ -41,6 +47,8 @@ namespace NCL {
 		} materials;
 
 		public:
+			bool m_EnableDynamicCrosshair = true;
+
 			GameTechRenderer();		
 			~GameTechRenderer();
 
@@ -57,6 +65,8 @@ namespace NCL {
 			bool IsMapInitialised() { return mapInitialised; }
 
 			bool mapNeedsDrawing = false;
+			void ToggleDebug() { displayDebug = !displayDebug; }
+			void OnWindowResize(int w, int h)	override;
 		protected:
 
 			void SetupLoadingScreen();
@@ -100,15 +110,21 @@ namespace NCL {
 			void DrawMap();
 			void UpdateMap();
 
-			void DrawMainScene();
+			void DrawMainScene(int id = 1);
 
-			void RenderRectical();
+			void RenderRectical(int id = -1);
+			CrosshairStruct crosshairs[4];
+			float crosshairSpreadFactor;
+
+			void RenderWeapon(int id);
+
+			void RenderTeamBeacons(int id = -1);
 
 			OGLShader*		defaultShader;
 
-			ToonGameWorld*	gameWorld = nullptr;			
+			ToonGameWorld*	gameWorld = nullptr;
 
-			void BuildObjectList();
+			void BuildObjectList(int index = 0);
 			void SortObjectList();
 			void RenderShadowMap();
 
@@ -146,7 +162,7 @@ namespace NCL {
 			Matrix4 shadowMatrix;
 			int shadowSize;
 
-			ShaderLights shaderLight;
+			LightStruct sceneLight;
 			void UpdateLightColour();
 
 			//Debug data storage things
@@ -232,6 +248,7 @@ namespace NCL {
 			unsigned int materialUBO;
 			void CreateMaterialUBO();
 
+			bool displayDebug = false;
 		};
 	}
 }

@@ -36,6 +36,7 @@ namespace NCL {
 		bool		UpdateWindow();
 		void		SetRenderer(RendererBase* r);
 
+		bool		IsFullScreen()		const { return fullScreen; }
 		bool		HasInitialised()	const { return init; }
 
 		float		GetScreenAspect()	const {
@@ -76,6 +77,7 @@ namespace NCL {
 
 		RendererBase*	renderer;
 
+		bool				fullScreen;
 		bool				minimised;
 		bool				init;
 		Vector2				position;

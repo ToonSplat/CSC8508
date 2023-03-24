@@ -35,6 +35,9 @@ namespace NCL
 			void Clear();
 			void ClearAndErase();
 
+			void SetToonGame(ToonGame* _toonGame);
+			ToonGame* GetToonGame();
+
 			void AddEventListener(ToonEventListener* eventListener) { this->eventListener = eventListener; }
 			ToonEventListener* GetEventListener() const { return eventListener; }
 
@@ -102,9 +105,11 @@ namespace NCL
 			void GameStarted()  { gameStarted = true;}
 			void GameEnded()	{ gameStarted = false;}
 
-			bool HasGameStarted() { return gameStarted; }
+			bool HasGameStarted() const { return gameStarted; }
 
 		protected:
+
+			ToonGame* game;
 			std::unordered_map<int, Camera*> mainCameras;
 			Camera* minimapCamera;
 			Camera* mapCamera;

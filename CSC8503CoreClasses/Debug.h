@@ -12,6 +12,7 @@ namespace NCL {
 	public:
 		struct DebugStringEntry {
 			std::string	data;
+			float size;
 			Vector2 position;
 			Vector4 colour;
 		};
@@ -25,7 +26,7 @@ namespace NCL {
 			Vector4 colourB;
 		};
 
-		static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1));
+		static void Print(const std::string& text, const Vector2& pos, const Vector4& colour = Vector4(1, 1, 1, 1), const float& size = 20.0f);
 		static void DrawLine(const Vector3& startpoint, const Vector3& endpoint, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 		static void DrawBox(const Vector3& boxCenter, const Vector3& boxSize, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);
 		static void DrawTriangle(const Vector3& v1, const Vector3& v2, const Vector3& v3, const Vector4& colour = Vector4(1, 1, 1, 1), float time = 0.0f);

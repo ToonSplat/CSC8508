@@ -10,7 +10,7 @@ namespace NCL
 		class PaintBallProjectile : public ToonGameObject 
 		{
 		public:
-			PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, const float& _impactSize, Team* _team);
+			PaintBallProjectile(reactphysics3d::PhysicsWorld& RP3D_World, ToonGameWorld* gameWorld, const float& _impactSize, Team* _team, std::string objectName = "");
 			~PaintBallProjectile();
 
 			float GetImpactSize() const { return impactSize; }
