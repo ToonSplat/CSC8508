@@ -92,7 +92,11 @@ int main()
 	//Audio
 	NCL::CSC8503::AudioSystem::Initialise();
 
+#ifdef _DEBUG
 	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720);
+#else
+	Window* w = Window::CreateGameWindow("ToonSplat", 1280, 720, true);
+#endif
 	ToonAssetManager::Create();
 	ToonDebugManager::Create();
 	GameTechRenderer* renderer = new GameTechRenderer();
