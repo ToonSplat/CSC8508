@@ -64,7 +64,7 @@ ToonGame::~ToonGame()
 }
 
 void ToonGame::StartGame() {
-	gameTime = 90.0f;
+	gameTime = 75.0f;
 	winner = nullptr;
 	allPlayers.clear();
 	world->MapNeedsChecking(true);
@@ -242,7 +242,7 @@ void ToonGame::UpdateTime(float dt) {
 			StartGame();
 		}
 	}
-	else if (gameTime <= 89.7 && !renderer->IsMapInitialised()) {
+	else if (gameTime <= 74.7 && !renderer->IsMapInitialised()) {
 		renderer->mapNeedsDrawing = true;
 	}
 }

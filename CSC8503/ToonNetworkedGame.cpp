@@ -308,7 +308,7 @@ void ToonNetworkedGame::StartGame() {
 	renderer->ResetAtomicBuffer();
 	world->GameStarted();
 	winner = nullptr;
-	gameTime = 90.0f;
+	gameTime = 75.0f;
 	levelManager->ResetLevel(&networkObjects);
 	int i = 1;
 }
