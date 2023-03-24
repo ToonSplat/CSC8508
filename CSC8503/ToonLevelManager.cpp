@@ -766,9 +766,9 @@ PaintBallProjectile* ToonLevelManager::AddPaintBallProjectileToWorld(const react
 	paintball->GetRigidbody()->setType(reactphysics3d::BodyType::DYNAMIC);
 	paintball->GetRigidbody()->setMass(reactphysics3d::decimal(0.1));
 
-	reactphysics3d::SphereShape* sphereShape = gameWorld->GetPhysicsCommon().createSphereShape(radius);
-	paintball->SetCollisionShape(sphereShape);
-	paintball->SetCollider(sphereShape);
+	reactphysics3d::CapsuleShape* capsuleShape = gameWorld->GetPhysicsCommon().createCapsuleShape(radius * 2, radius * 2);
+	paintball->SetCollisionShape(capsuleShape);
+	paintball->SetCollider(capsuleShape);
 	paintball->SetColliderLayer(ToonCollisionLayer::Paintball);
 	int collisionMask = ToonCollisionLayer::Default | ToonCollisionLayer::Character;
 	paintball->SetColliderLayerMask(ToonCollisionLayer(collisionMask));

@@ -67,7 +67,25 @@ namespace NCL {
 		ToonMeshMaterial* GetMaterial(const string& name);
 		CSC8503::Sound*			GetSound(const string& name);
 
+		//std::vector<const Rendering::TextureBase*> GetTextures() const {
+		//	std::vector<const Rendering::TextureBase*> allTextures;
+		//	for (auto& [first, second] : textures) {
+		//	/*	if (first == "mesh") {
+		//			continue;
+		//		}*/
+		//		allTextures.push_back(second);
+		//	}
+		//	return allTextures;
+		//}
+		std::vector<Rendering::TextureBase*>* GetBindlessTextures() {
+			return &bindlessTextures;
+		}
+
+		std::vector<Vector4>* GetGPUMaterials() {
+			return &gpuMaterials;
+		}
 		LoadingDataStructure loadingData;
+
 
 	protected:
 		ToonAssetManager(void);
@@ -75,6 +93,9 @@ namespace NCL {
 		static ToonAssetManager* instance;
 
 		Rendering::TextureBase*		AddTexture(const string& name, const string& fileName, const bool& invert = false);
+
+		Rendering::TextureBase*		AddTexture(const string& name, const string& fileName, int& textureIndex, const bool& invert = false);
+
 		Rendering::TextureBase*		AddTexture(vector<string> tokens);
 
 		MeshGeometry*				AddMesh(const string& name, const string& fileName, const GeometryPrimitive& type = GeometryPrimitive::Triangles);
@@ -101,10 +122,16 @@ namespace NCL {
 		string currentLine;
 
 		map<string, Rendering::TextureBase*> textures;
+		//map<string, Rendering::TextureBase*> bindlessTextures;
+
+		vector<Rendering::TextureBase*> bindlessTextures;
+
 		map<string, MeshGeometry*> meshes;
 		map<string, Rendering::OGLShader*> shaders;
 		map<string, MeshAnimation*> animations;
 		map<string, ToonMeshMaterial*> materials;
 		map<string, CSC8503::Sound*> sounds;
+
+		vector<Vector4> gpuMaterials;
 	};
 }

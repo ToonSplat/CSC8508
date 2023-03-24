@@ -24,10 +24,22 @@ namespace NCL {
 		
 		
 		class GameTechRenderer : public OGLRenderer	{
+
 		#define TEAM_COUNT 4
 		struct TeamColourStruct {
 			Vector4 teams[4];
 		} teamColoursShader;
+
+		#define ATOMIC_COUNT 5
+		
+		struct textureStruct {
+			GLuint64 values[30];
+		}textures;
+
+		struct materialStruct {
+			Vector4 values[100];
+		} materials;
+
 		public:
 			GameTechRenderer();		
 			~GameTechRenderer();
@@ -124,7 +136,8 @@ namespace NCL {
 			OGLShader*  sceneShader;
 			OGLShader*  mapInitShader;
 			OGLShader* mapUpdateShader;
-
+			OGLShader*	sceneScreenShader;
+			OGLShader* playerShader;
 
 			OGLMesh*	skyboxMesh;
 			GLuint		skyboxTex;
@@ -137,6 +150,7 @@ namespace NCL {
 			int shadowSize;
 
 			ShaderLights shaderLight;
+			void UpdateLightColour();
 
 			//Debug data storage things
 			vector<Vector3> debugLineData;
@@ -214,6 +228,13 @@ namespace NCL {
 			bool mapInitialised = false;
 			bool updateScorebar;
 			
+
+			unsigned int textureUBO;
+			void CreateTextureUBO();
+
+			unsigned int materialUBO;
+			void CreateMaterialUBO();
+
 		};
 	}
 }

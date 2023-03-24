@@ -1,4 +1,15 @@
 #version 420 core
+#extension GL_ARB_bindless_texture : enable
+
+layout(bindless_sampler) uniform sampler2D bindless;
+uniform textures{
+    sampler2D arr[30];
+} bindless_textures;
+
+layout (std140) uniform materials{
+	vec4 key[100];
+} materialReferencer;
+
 
 struct ImpactPoint{
 	vec3 position;
@@ -26,11 +37,12 @@ layout (std140) uniform teamColours{
 uniform ImpactPoint impactPoints[MAX_IMPACT_POINTS];
 
 uniform int impactPointCount;
+uniform int materialIndex = -1;
 
 uniform vec4 		objectColour;
-layout(binding = 5) uniform sampler2D 	mainTex;
-layout(binding = 6) uniform sampler2D	bumpTex;
+
 layout(binding = 7) uniform sampler2D 	mapTex;
+
 uniform sampler2DShadow shadowTex;
 
 uniform vec3	cameraPos;
@@ -80,17 +92,19 @@ float SplatNoise(vec3 inWorldPos){
 
 void main(void)
 {
-	float shadow = 1.0; // New !
+	float shadow = 1.0; 
 	
-	if(IN.shadowProj.w > 0.0) { // New !
+	if(IN.shadowProj.w > 0.0) { 
 		shadow = textureProj(shadowTex , IN.shadowProj);
 	}
 
 	mat3 TBN = mat3(normalize(IN.tangent), normalize(IN.binormal), normalize(IN.normal));
 	
 	vec3 bumpNormal;
-	if(hasTexture) {
-		bumpNormal = texture(bumpTex, IN.texCoord).rgb;
+
+	vec4 linkedMaterial = materialReferencer.key[materialIndex];
+	if(linkedMaterial.y != -1) {
+		bumpNormal = texture(bindless_textures.arr[int(linkedMaterial.y)], IN.texCoord).rgb;
 		bumpNormal = normalize(TBN * normalize(bumpNormal * 2.0 - 1.0));
 	}
 	else{
@@ -106,14 +120,13 @@ void main(void)
 	float sFactor = pow ( rFactor , 80.0 );
 
 	vec4 albedo = IN.colour;
-	
-	if(hasTexture) {
-	 albedo *= texture(mainTex, IN.texCoord);
-	}
 
+	if (linkedMaterial.x != -1){	
+		albedo *= texture(bindless_textures.arr[int(linkedMaterial.x)], IN.texCoord);
+	}
+	
 	for (int i = 0; i < impactPointCount; i++){
 		float distanceBetween = distance(IN.localPos.xyz, impactPoints[i].position + objectPosition);
-		float distancePercentage = distanceBetween / impactPoints[i].radius;
 		if (distanceBetween <= impactPoints[i].radius - SplatNoise((IN.localPos.xyz - objectPosition)*(5+(0.1*(mod(i, 10)))))){
 			albedo = teamColour[impactPoints[i].colour];
 		}
