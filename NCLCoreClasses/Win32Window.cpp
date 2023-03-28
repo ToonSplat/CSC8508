@@ -71,7 +71,7 @@ Win32Window::Win32Window(const std::string& title, int sizeX, int sizeY, bool fu
 		dmScreenSettings.dmPelsWidth		= size.x;			// Selected Screen Width
 		dmScreenSettings.dmPelsHeight		= size.y;			// Selected Screen Height
 		dmScreenSettings.dmBitsPerPel		= 32;				// Selected Bits Per Pixel
-		dmScreenSettings.dmDisplayFrequency = 60;
+		dmScreenSettings.dmDisplayFrequency = settings.dmDisplayFrequency;
 		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if(ChangeDisplaySettings(&dmScreenSettings,CDS_FULLSCREEN)!=DISP_CHANGE_SUCCESSFUL)	{

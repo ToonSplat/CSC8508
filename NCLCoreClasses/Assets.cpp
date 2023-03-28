@@ -16,7 +16,7 @@ std::string FONTSDIR;
 std::string DATADIRECTORY; // DATADIR is an existing type apparently!
 
 void Assets::SetupAssetDirectory() {
-#ifndef _DEBUG
+#ifdef _DEBUG
 	ASSETROOT = ASSETROOTLOCATION;
 	SHADERDIR = ASSETROOT + "Shaders/";
 	MESHDIR = ASSETROOT + "Meshes/";
@@ -24,6 +24,34 @@ void Assets::SetupAssetDirectory() {
 	SOUNDSDIR = ASSETROOT + "Sounds/";
 	FONTSDIR = ASSETROOT + "Fonts/";
 	DATADIRECTORY = ASSETROOT + "Data/";
+	std::fstream file(ASSETROOTLOCATION + std::string("Data/ItemsToLoad.csv"));
+	if (file.is_open()) {
+		file.close();
+		return;
+	}
+
+	// This should only be hit if you installed the debug version for some reason
+	TCHAR exePath[MAX_PATH];
+	if (GetModuleFileName(NULL, exePath, MAX_PATH))
+		std::wcout << exePath << std::endl;
+
+	TCHAR* extension = _tcsrchr(exePath, _T('\\'));
+	_tcsicmp(extension, _T("/"));
+	size_t length = extension - exePath;
+
+	TCHAR newPath[MAX_PATH];
+
+	_tcsncpy_s(newPath, exePath, length);
+
+	length = _tcslen(newPath);
+	ASSETROOT = newPath;
+	ASSETROOT += "\\Assets\\";
+	SHADERDIR = ASSETROOT + "Shaders\\";
+	MESHDIR = ASSETROOT + "Meshes\\";
+	TEXTUREDIR = ASSETROOT + "Textures\\";
+	SOUNDSDIR = ASSETROOT + "Sounds\\";
+	FONTSDIR = ASSETROOT + "Fonts\\";
+	DATADIRECTORY = ASSETROOT + "Data\\";
 #else
 	// This is a hacky solution that will work in time... should do it properly instead but the file path strings are quite different (/ vs \\)
 	std::fstream file(ASSETROOTLOCATION + std::string("Data/ItemsToLoad.csv"));
